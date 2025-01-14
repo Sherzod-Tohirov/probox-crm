@@ -1,5 +1,5 @@
 // src/styles/globals.scss
-@import './reset';
-@import './variables';
-@import './mixins';
-@import './fonts';
+@use "./variables";
+@use "./mixins";
+@use "./fonts";
+@use "./reset";
