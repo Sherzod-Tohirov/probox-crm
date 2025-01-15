@@ -1,7 +1,38 @@
-// src/styles/_variables.scss
-$primary-color: #3498db;
-$secondary-color: #2ecc71;
+// Main color variables
+$primary-bg: #ffffff;
+$secondary-bg: #fdfdfd;
+$primary-color: #3c3f47;
+$secondary-color: #8e97a9;
+$tertiary-color: #000000;
+$primary-border-color: #e9e9e9;
+$secondary-border-color: #f3f4f2;
 
-$spacing-sm: 8px;
-$spacing-md: 16px;
-$spacing-lg: 32px;
+// Success colors
+$success-bg: #f0ffef;
+$success-color: #027243;
+
+// Warning colors
+$info-bg: #fefae8;
+$info-color: #b94b20;
+
+// Danger colors
+$danger-bg: #ffefef;
+$danger-color: #ac2734;
+
+// Spacing variables
+$spacing-sm: 2rem;
+$spacing-md: 4rem;
+$spacing-lg: 8rem;
+
+// -- Element colors --
+
+// Button colors
+$button-bg: #0a4d68;
+$button-color: #ffffff;
+$text-button-color: #0a4d68;
+
+// Input colors
+$primary-input-bg: #f3f4f2;
+$filter-input-bg: #ffffff;
+$filter-input-color: #94a3b8;
+$filter-input-border-color: #cbd5e1;

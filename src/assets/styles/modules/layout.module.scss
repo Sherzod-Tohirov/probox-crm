@@ -1,0 +1,19 @@
+@use "../mixins" as m;
+@use "../variables" as v;
+
+.sidebar-layout {
+  @include m.flex-direction(column);
+  padding: 6rem;
+  width: clamp(240px, 240px, 240px);
+  min-height: 100dvh;
+  border-right: 1px solid #f3f4f2;
+  background: v.$secondary-bg;
+}
+
+.dashboard-layout {
+  display: flex;
+}
+
+.main-layout {
+  display: flex;
+}

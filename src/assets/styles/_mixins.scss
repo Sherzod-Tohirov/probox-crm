@@ -1,13 +1,17 @@
 // src/styles/_mixins.scss
 @mixin flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-direction($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+}
+
+@mixin responsive($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
   }
-  
-  @mixin responsive($breakpoint) {
-    @media (max-width: $breakpoint) {
-      @content;
-    }
-  }
-  
+}
