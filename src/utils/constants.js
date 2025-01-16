@@ -1,27 +1,27 @@
 export const sidebarLinks = [
-    {
-        title: 'Dashboard',
-        icon: 'dashboard',
-        link: '/dashboard'
-    },
-    {
-        title: 'Clients',
-        icon: 'clients',
-        link: '/clients'
-    },
-    {
-        title: 'Calendar',
-        icon: 'calendar',
-        link: '/calendar'
-    },
-    {
-        title: 'Products',
-        icon: 'products',
-        link: '/products'
-    },
-    {
-        title: 'Leads',
-        icon: 'leads',
-        link: '/leads'
-    }
+  {
+    title: "Dashboard",
+    icon: "dashboard",
+    path: "/dashboard",
+  },
+  {
+    title: "Clients",
+    icon: "clients",
+    path: "/clients",
+  },
+  {
+    title: "Calendar",
+    icon: "calendar",
+    path: "/calendar",
+  },
+  {
+    title: "Products",
+    icon: "products",
+    path: "/products",
+  },
+  {
+    title: "Leads",
+    icon: "leads",
+    path: "/leads",
+  },
 ];

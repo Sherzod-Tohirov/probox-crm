@@ -1,3 +1,33 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
 .sidebar {
   display: flex;
+}
+
+.sidebar-text {
+  display: flex;
+  padding: 0 3rem;
+  color: v.$secondary-color;
+  font-weight: 600;
+  line-height: 150%;
+}
+
+.sidebar-link {
+  @include m.flex(center, start, 2rem);
+  padding: 2rem 3rem;
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 150%;
+  color: v.$secondary-color;
+  text-decoration: none;
+  transition: color v.$transition-time v.$transition-type;
+
+  &.active {
+    color: v.$tertiary-color;
+  }
+
+  &:hover {
+    color: v.$tertiary-color;
+  }
 }

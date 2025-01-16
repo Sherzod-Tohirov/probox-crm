@@ -17,19 +17,4 @@ function Col({ children, span, offset, className, style }) {
   );
 }
 
-Col.propTypes = {
-  children: PropTypes.node.isRequired,
-  span: PropTypes.number, // Number of columns to span (out of 12)
-  offset: PropTypes.number, // Number of columns to offset
-  className: PropTypes.string,
-  style: PropTypes.object,
-};
-
-Col.defaultProps = {
-  span: undefined,
-  offset: undefined,
-  className: "",
-  style: {},
-};
-
 export default memo(Col);

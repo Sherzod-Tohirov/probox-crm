@@ -9,13 +9,4 @@ const Item = ({ children, className, ...props }) => {
   );
 };
 
-Item.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-};
-
-Item.defaultProps = {
-  className: "",
-};
-
 export default memo(Item);

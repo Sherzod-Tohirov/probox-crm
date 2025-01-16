@@ -1,5 +1,4 @@
 import { memo } from "react";
-import PropTypes from "prop-types";
 import classNames from "classnames";
 import styles from "./list.module.scss";
 import Item from "../Item";
@@ -8,7 +7,7 @@ function List({
   items,
   renderItem,
   className,
-  direction = "horizontal",
+  direction = "vertical",
   itemClassName = "",
   ...props
 }) {
@@ -29,13 +28,5 @@ function List({
     </ul>
   );
 }
-
-List.propTypes = {
-  items: PropTypes.array.isRequired,
-  renderItem: PropTypes.func.isRequired,
-  className: PropTypes.string,
-  itemClassName: PropTypes.string,
-  direction: PropTypes.oneOf(["horizontal", "vertical"]),
-};
 
 export default memo(List);

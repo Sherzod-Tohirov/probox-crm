@@ -24,6 +24,11 @@ $spacing-sm: 2rem;
 $spacing-md: 4rem;
 $spacing-lg: 8rem;
 
+// Transation variables
+$transition-time: 0.3s;
+$transition-type: ease-in-out;
+$transition-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+
 // -- Element colors --
 
 // Button colors
