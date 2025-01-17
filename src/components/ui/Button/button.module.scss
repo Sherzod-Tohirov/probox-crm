@@ -1,0 +1,25 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
+.btn {
+  @include m.flex-center;
+  gap: 2rem;
+
+  // variants
+  &.text {
+    background-color: transparent;
+    border: none;
+  }
+
+  //colors
+  &.secondary {
+    color: v.$text-button-color-secondary;
+  }
+
+  // icons
+
+  &.icon {
+    width: 5rem;
+    height: 5rem;
+  }
+}

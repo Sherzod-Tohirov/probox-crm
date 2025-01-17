@@ -6,7 +6,7 @@ import classNames from "classnames";
 function Row({
   children,
   gutter,
-  direction = "vertical",
+  direction = "column",
   justify,
   align,
   wrap,
@@ -15,7 +15,7 @@ function Row({
 }) {
   const rowStyle = {
     display: "flex",
-    flexDirection: direction === "horizontal" ? "row" : "column",
+    flexDirection: direction,
     flexWrap: wrap ? "wrap" : "nowrap",
     justifyContent: justify,
     alignItems: align,

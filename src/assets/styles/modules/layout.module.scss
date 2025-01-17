@@ -17,3 +17,8 @@
 .main-layout {
   display: flex;
 }
+
+.primary-layout {
+  @include m.flex-direction(column);
+  width: 100%;
+}

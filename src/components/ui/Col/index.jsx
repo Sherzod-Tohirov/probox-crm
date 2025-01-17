@@ -1,5 +1,4 @@
 import { memo } from "react";
-import PropTypes from "prop-types";
 import styles from "./col.module.scss";
 import classNames from "classnames";
 function Col({ children, span, offset, className, style }) {
