@@ -9,12 +9,24 @@ import {
   Search,
   Telephone,
   Notification,
+  TickCircle,
+  Close,
+  CloseCircle,
+  InfoCircle,
+  BarCode,
+  Photo,
+  Avatar,
+  Income,
+  Expense,
+  PresentationChart,
+  CalendarFact,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
   dashboard: <Dashboard />,
   clients: <Clients />,
   calendar: <Calendar />,
+  calendarFact: <CalendarFact />,
   products: <Products />,
   leads: <Leads />,
   toggleClose: <ToggleClose />,
@@ -22,6 +34,16 @@ const iconsMap = {
   search: <Search />,
   telephone: <Telephone />,
   notification: <Notification />,
+  tickCircle: <TickCircle />,
+  close: <Close />,
+  closeCircle: <CloseCircle />,
+  infoCircle: <InfoCircle />,
+  barCode: <BarCode />,
+  photo: <Photo />,
+  avatar: <Avatar />,
+  income: <Income />,
+  expense: <Expense />,
+  presentationChart: <PresentationChart />,
 };
 
 export default iconsMap;

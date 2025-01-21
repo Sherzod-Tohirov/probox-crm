@@ -1,9 +1,9 @@
 export const tableColumns = [
-  { key: "name", title: "Name", icon: "dashbord" },
-  { key: "email", title: "Email", icon: "email" },
-  { key: "phone", title: "Phone", icon: "phone" },
-  { key: "address", title: "Address", icon: "address" },
-  { key: "company", title: "Company", icon: "company" },
+  { key: "name", title: "Name", icon: "calendar", width: "10%" },
+  { key: "email", title: "Email", icon: "clients" },
+  { key: "phone", title: "Phone", icon: "income" },
+  { key: "address", title: "Address", icon: "expense" },
+  { key: "company", title: "Company", icon: "calendarFact" },
 ];
 
 export const tableData = Array.from({ length: 40 }, (_, index) => ({

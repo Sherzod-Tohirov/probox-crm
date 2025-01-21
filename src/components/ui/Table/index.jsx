@@ -2,7 +2,12 @@ import classNames from "classnames";
 import styles from "./table.module.scss";
 import iconsMap from "../../../utils/iconsMap";
 
-export default function Table({ columns, data, className, style }) {
+export default function Table({
+  columns = [],
+  data = [],
+  className,
+  style = {},
+}) {
   return (
     <table
       className={classNames(styles["base-table"], className)}
@@ -10,8 +15,10 @@ export default function Table({ columns, data, className, style }) {
       <thead>
         <tr>
           {columns.map((column) => (
-            <th key={column.key}>
-              {column.title} {iconsMap[column.icon]}
+            <th key={column.key} style={{ width: column.width || "auto" }}>
+              <div className={styles["table-header-cell"]}>
+                {iconsMap[column.icon]} {column.title}{" "}
+              </div>
             </th>
           ))}
         </tr>
