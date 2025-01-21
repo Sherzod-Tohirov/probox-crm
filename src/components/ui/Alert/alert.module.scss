@@ -1,0 +1,39 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
+.alert {
+  position: fixed;
+  width: clamp(100rem, 100%, 160rem);
+  top: 11rem;
+  right: 6rem;
+  z-index: 1000;
+  padding: 4rem;
+  font-family: "Inter";
+  border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
+
+  &-success {
+    background-color: v.$success-bg;
+    color: v.$success-color;
+    border-radius: 4rem;
+    border-color: rgba(v.$success-color, 0.2);
+  }
+
+  &-content {
+    max-width: 136rem;
+    width: 100%;
+  }
+
+  &-title {
+    color: v.$success-color;
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  &-desc {
+    color: v.$success-color;
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: normal;
+  }
+}

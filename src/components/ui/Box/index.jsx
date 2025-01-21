@@ -1,16 +1,20 @@
 import { memo, useMemo } from "react";
-import styles from "./box.module.css";
+import styles from "./box.module.scss";
+import classNames from "classnames";
 
-function Box({ children, direction = "horizontal", gap = 0, ...props }) {
+function Box({ children, dir = "row", gap = 0, className, ...props }) {
   const boxStyle = useMemo(
     () => ({
-      flexDirection: direction === "horizontal" ? "row" : "column",
+      flexDirection: dir,
       gap: gap + "rem",
     }),
-    [direction, gap]
+    [dir, gap]
   );
   return (
-    <div style={boxStyle} className={styles.box} {...props}>
+    <div
+      style={boxStyle}
+      className={classNames(styles.box, className)}
+      {...props}>
       {children}
     </div>
   );

@@ -3,14 +3,17 @@
 
 .sidebar {
   display: flex;
+  position: sticky;
+  top: 6rem;
 }
 
 .sidebar-text {
   display: flex;
   padding: 0 3rem;
-  color: v.$secondary-color;
+  font-size: 3rem;
   font-weight: 600;
   line-height: 150%;
+  color: v.$secondary-color;
 
   &.minified {
     @include m.flex(center, center, 0);
