@@ -7,4 +7,7 @@
   height: 36px;
   margin: 0 auto;
   display: block;
+  &.minified {
+    width: 11rem;
+  }
 }

@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { memo } from "react";
 import styles from "./button.module.scss";
 import iconsMap from "@utils/iconsMap";
+import Typography from "../Typography";
 function Button({ children, className, variant, color, icon, ...props }) {
   return (
     <button
@@ -13,7 +14,10 @@ function Button({ children, className, variant, color, icon, ...props }) {
         { icon }
       )}
       {...props}>
-      {iconsMap[icon]} {children}
+      <Typography element="span" className={styles["icon-text"]}>
+        {iconsMap[icon]}
+      </Typography>
+      {children}
     </button>
   );
 }

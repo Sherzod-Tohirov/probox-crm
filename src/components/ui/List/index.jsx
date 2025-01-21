@@ -6,6 +6,7 @@ import Item from "../Item";
 function List({
   items,
   renderItem,
+  gutter,
   className,
   direction = "vertical",
   itemClassName = "",
@@ -13,6 +14,7 @@ function List({
 }) {
   const listStyles = {
     display: "flex",
+    gap: `${gutter}rem`,
     flexDirection: direction === "horizontal" ? "row" : "column",
   };
   return (

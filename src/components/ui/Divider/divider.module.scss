@@ -1,0 +1,14 @@
+@use "@styles/variables" as v;
+
+.divider {
+  display: flex;
+  height: 100%;
+  width: 0.3rem;
+  background-color: v.$secondary-border-color;
+  &.primary {
+    background-color: red;
+  }
+  &.secondary {
+    background-color: v.$tertiary-color;
+  }
+}

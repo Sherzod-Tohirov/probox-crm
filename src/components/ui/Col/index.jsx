@@ -1,11 +1,21 @@
 import { memo } from "react";
 import styles from "./col.module.scss";
 import classNames from "classnames";
-function Col({ children, span, offset, className, style }) {
+function Col({
+  children,
+  span,
+  align = "",
+  justify = "",
+  offset,
+  className,
+  style,
+}) {
   const colStyle = {
-    flex: span ? `0 0 ${(span / 12) * 100}%` : "1 1 auto",
+    flex: span ? `0 0 ${(span / 12) * 100}%` : "0 0 auto",
     marginLeft: offset ? `${(offset / 12) * 100}%` : undefined,
     maxWidth: span ? `${(span / 12) * 100}%` : undefined,
+    alignSelf: align,
+    justifySelf: justify,
     ...style,
   };
 

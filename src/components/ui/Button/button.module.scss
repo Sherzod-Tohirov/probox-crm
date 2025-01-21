@@ -4,10 +4,20 @@
 .btn {
   @include m.flex-center;
   gap: 2rem;
-
+  cursor: pointer;
+  transition: transform v.$transition-time v.$transition-type;
+  transform: scale(1);
+  transform-origin: center;
+  &:active {
+    transform: scale(0.9);
+  }
   // variants
   &.text {
     background-color: transparent;
+    font-size: 4rem;
+    font-weight: 500;
+    line-height: 150%;
+    color: v.$primary-color;
     border: none;
   }
 
@@ -19,7 +29,12 @@
   // icons
 
   &.icon {
-    width: 5rem;
-    height: 5rem;
+    width: 50rem;
+    height: 50rem;
   }
+}
+
+.icon-text {
+  @include m.flex(center, center, 0);
+  color: v.$secondary-color;
 }

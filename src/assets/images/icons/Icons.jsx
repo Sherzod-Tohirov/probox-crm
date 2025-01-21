@@ -126,7 +126,7 @@ export const Leads = () => {
   );
 };
 
-export const Toggle = () => {
+export const ToggleClose = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -152,6 +152,39 @@ export const Toggle = () => {
         d="M12.4751 7.86661L10.3418 9.99994L12.4751 12.1333"
         stroke="currentColor"
         strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ToggleOpen = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none">
+      <path
+        d="M18.3083 12.5V7.49999C18.3083 3.33332 16.6417 1.66666 12.475 1.66666H7.475C3.30833 1.66666 1.64166 3.33332 1.64166 7.49999V12.5C1.64166 16.6667 3.30833 18.3333 7.475 18.3333H12.475C16.6417 18.3333 18.3083 16.6667 18.3083 12.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12.475 1.66666V18.3333"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.64166 7.86667L8.775 10L6.64166 12.1333"
+        stroke="currentColor"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

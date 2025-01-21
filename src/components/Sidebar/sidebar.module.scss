@@ -11,6 +11,11 @@
   color: v.$secondary-color;
   font-weight: 600;
   line-height: 150%;
+
+  &.minified {
+    @include m.flex(center, center, 0);
+    padding: 0;
+  }
 }
 
 .sidebar-link {
@@ -25,9 +30,15 @@
 
   &.active {
     color: v.$tertiary-color;
+    &.minified {
+      color: v.$fourth-color;
+    }
   }
 
   &:hover {
     color: v.$tertiary-color;
+    &.minified {
+      color: v.$fourth-color;
+    }
   }
 }

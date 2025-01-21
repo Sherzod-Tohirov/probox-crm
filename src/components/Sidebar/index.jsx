@@ -7,40 +7,48 @@ import iconsMap from "../../utils/iconsMap";
 import { useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
+import useSidebar from "../../hooks/useSidebar";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
-  console.log("pathname: ", pathname);
+  const { isOpen } = useSidebar();
+  console.log(isOpen, "isOpen");
   const renderLinks = useCallback(
     (link) => {
       return (
         <Link
           className={classNames(
             styles[`sidebar-link`],
-            styles[pathname === link.path ? "active" : ""]
+            styles[pathname === link.path ? "active" : ""],
+            !isOpen && styles["minified"]
           )}
           to={link.path}>
           {iconsMap[link.icon]}
-          <Typography element="span">{link.title}</Typography>
+          {isOpen && <Typography element="span">{link.title}</Typography>}
         </Link>
       );
     },
-    [pathname]
+    [pathname, isOpen]
   );
   return (
     <Row className={styles.sidebar} wrap gutter={8}>
       <Col>
-        <Logo />
+        <Logo isMinified={!isOpen} />
       </Col>
       <Col>
-        <Row gutter={3}>
+        <Row gutter={3} align={!isOpen ? "center" : "start"}>
           <Col>
-            <Typography element="span" className={styles["sidebar-text"]}>
+            <Typography
+              element="span"
+              className={classNames(
+                styles["sidebar-text"],
+                !isOpen && styles["minified"]
+              )}>
               MAIN
             </Typography>
           </Col>
           <Col>
-            <List items={sidebarLinks} renderItem={renderLinks} />
+            <List gutter={1} items={sidebarLinks} renderItem={renderLinks} />
           </Col>
         </Row>
       </Col>

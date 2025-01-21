@@ -1,0 +1,35 @@
+@use "@styles/mixins.scss" as m;
+@use "@styles/variables.scss" as v;
+
+.input {
+  width: 41rem;
+}
+
+.input-wrapper {
+  @include m.flex(center, start, 2rem);
+}
+
+.search {
+  width: 50rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  outline: none;
+  border-bottom: 0.5rem v.$primary-border-type transparent;
+  transition: border v.$transition-time v.$transition-type;
+  &,
+  &::placeholder {
+    color: v.$primary-color;
+    font-size: 4rem;
+    font-weight: 500;
+    line-height: 150%;
+  }
+
+  &:focus {
+    border-bottom-color: v.$primary-color;
+  }
+}
+
+.icon-text {
+  @include m.flex(center, center, 0);
+  color: v.$secondary-color;
+}

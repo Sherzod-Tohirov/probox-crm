@@ -4,6 +4,11 @@ import {
   Dashboard,
   Leads,
   Products,
+  ToggleClose,
+  ToggleOpen,
+  Search,
+  Telephone,
+  Notification,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -12,6 +17,11 @@ const iconsMap = {
   calendar: <Calendar />,
   products: <Products />,
   leads: <Leads />,
+  toggleClose: <ToggleClose />,
+  toggleOpen: <ToggleOpen />,
+  search: <Search />,
+  telephone: <Telephone />,
+  notification: <Notification />,
 };
 
 export default iconsMap;
