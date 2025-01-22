@@ -17,15 +17,18 @@
 }
 
 .dashboard-layout {
+  position: relative;
   @include m.flex-direction(column);
   padding: 6rem;
 }
 
 .main-layout {
+  position: relative;
   display: flex;
 }
 
 .primary-layout {
+  position: relative;
   @include m.flex-direction(column);
   width: 100%;
 }

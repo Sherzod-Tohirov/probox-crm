@@ -1,0 +1,19 @@
+@use "@styles/variables" as v;
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  margin-bottom: -6rem;
+  padding: 3rem 6rem;
+  border-radius: 24px 24px 0px 0px;
+  border-top: v.$primary-border-width v.$primary-border-type
+    v.$secondary-border-color;
+  background-color: v.$primary-footer-bg;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+
+  &-text {
+    font-size: 6rem;
+    text-align: center;
+  }
+}
