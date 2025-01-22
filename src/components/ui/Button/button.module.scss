@@ -5,11 +5,16 @@
   @include m.flex-center;
   gap: 2rem;
   cursor: pointer;
-  transition: transform v.$transition-time v.$transition-type;
   transform: scale(1);
   transform-origin: center;
+  transition: transform v.$transition-time v.$transition-type;
   &:active {
     transform: scale(0.9);
+  }
+
+  &.loading {
+    pointer-events: none;
+    opacity: 0.95;
   }
   // variants
   &.text {
@@ -19,6 +24,19 @@
     line-height: 150%;
     color: v.$primary-color;
     border: none;
+  }
+
+  &.primary {
+    background-color: v.$button-bg;
+    color: v.$button-color;
+    padding: 2.5rem 4rem;
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: 143%;
+    color: v.$button-color;
+    border: none;
+    border-radius: 3rem;
+    background-color: v.$button-bg;
   }
 
   //colors
@@ -37,4 +55,27 @@
 .icon-text {
   @include m.flex(center, center, 0);
   color: v.$secondary-color;
+}
+
+.loading-icon {
+  width: 5rem !important;
+  height: 5rem !important;
+}
+
+.hide {
+  visibility: hidden;
+  background-color: red !important;
+}
+
+.loading-wrapper {
+  @include m.flex-center();
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  z-index: 100;
+
+  & span {
+    @include m.flex-center();
+  }
 }

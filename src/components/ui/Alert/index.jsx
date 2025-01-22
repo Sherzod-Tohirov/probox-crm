@@ -3,24 +3,54 @@ import styles from "./alert.module.scss";
 import { Row, Col, Button, Box } from "@components/ui";
 import Typography from "../Typography";
 import iconsMap from "../../../utils/iconsMap";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 export default function Alert({
   message,
   type = "success",
+  timer = 5000,
+  persistant = false,
   onClose = () => {},
 }) {
+  const [closeAlert, setCloseAlert] = useState(false);
+  const handleClose = useCallback(() => {
+    setCloseAlert(true);
+    if (onClose) onClose();
+  }, [onClose]);
+
   const icon = useMemo(
     () => ({
       success: "tickCircle",
       error: "closeCircle",
-      warning: "infoCircle",
+      info: "infoCircle",
     }),
     []
   );
+
+  useEffect(() => {
+    if (persistant) return;
+
+    const timerId = setTimeout(() => {
+      setCloseAlert(true);
+      if (onClose) onClose();
+      console.log("close alert");
+    }, timer);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [timer, persistant, onClose]);
+
+  if (closeAlert) {
+    return null;
+  }
+
   return (
     <Row
       direction={"row"}
-      className={classNames(styles["alert"], styles[`alert-${type}`])}
+      className={classNames(styles["alert"], styles[`alert-${type}`], {
+        disappear: closeAlert,
+      })}
       gutter={3}>
       <Col>
         <Box>{iconsMap[icon[type]]}</Box>
@@ -40,7 +70,7 @@ export default function Alert({
         </Row>
       </Col>
       <Col>
-        <Button icon={"close"} variant={"text"} onClick={onClose}></Button>
+        <Button icon={"close"} variant={"text"} onClick={handleClose}></Button>
       </Col>
     </Row>
   );

@@ -17,7 +17,7 @@
 }
 
 .dashboard-layout {
-  display: flex;
+  @include m.flex-direction(column);
   padding: 6rem;
 }
 

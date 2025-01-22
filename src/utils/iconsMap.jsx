@@ -20,6 +20,7 @@ import {
   Expense,
   PresentationChart,
   CalendarFact,
+  Send,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -44,6 +45,7 @@ const iconsMap = {
   income: <Income />,
   expense: <Expense />,
   presentationChart: <PresentationChart />,
+  send: <Send />,
 };
 
 export default iconsMap;

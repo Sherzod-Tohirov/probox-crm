@@ -3,7 +3,17 @@ import { memo } from "react";
 import styles from "./button.module.scss";
 import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
-function Button({ children, className, variant, color, icon, ...props }) {
+import { OrbitProgress } from "react-loading-indicators";
+import Box from "../Box";
+function Button({
+  children,
+  className,
+  variant,
+  color,
+  icon,
+  isLoading = false,
+  ...props
+}) {
   return (
     <button
       className={classNames(
@@ -11,13 +21,32 @@ function Button({ children, className, variant, color, icon, ...props }) {
         styles["btn"],
         styles[variant],
         styles[color],
+        isLoading && styles["loading"],
         { icon }
       )}
+      disabled={isLoading}
       {...props}>
-      <Typography element="span" className={styles["icon-text"]}>
-        {iconsMap[icon]}
-      </Typography>
-      {children}
+      {isLoading ? (
+        <Box
+          className={styles["loading-wrapper"]}
+          gap={2}
+          align="center"
+          justify="center">
+          <OrbitProgress style={{ fontSize: "1rem" }} color="currentColor" />
+        </Box>
+      ) : (
+        ""
+      )}
+      <Box
+        className={classNames(isLoading && styles["hide"])}
+        gap={2}
+        align="center"
+        justify="center">
+        <Typography element="span" className={styles["icon-text"]}>
+          {iconsMap[icon]}
+        </Typography>
+        {children}
+      </Box>
     </button>
   );
 }
