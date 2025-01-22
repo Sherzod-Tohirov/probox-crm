@@ -1,6 +1,11 @@
 @use "@styles/variables" as v;
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   padding: 6.5rem 6rem;
-  border-bottom: 1px solid v.$secondary-border-color;
+  border-bottom: v.$primary-border-width v.$primary-border-type
+    v.$secondary-border-color;
+  background-color: v.$primary-bg;
 }
