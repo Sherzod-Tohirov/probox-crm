@@ -447,7 +447,7 @@ export const Photo = () => {
   );
 };
 
-export const Avatar = () => {
+export const AvatarFilled = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -462,6 +462,32 @@ export const Avatar = () => {
       <path
         d="M9.99999 12.083C5.82499 12.083 2.42499 14.883 2.42499 18.333C2.42499 18.5663 2.60832 18.7497 2.84165 18.7497H17.1583C17.3917 18.7497 17.575 18.5663 17.575 18.333C17.575 14.883 14.175 12.083 9.99999 12.083Z"
         fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+export const Avatar = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -574,6 +600,196 @@ export const Send = () => {
       <path
         d="M13.5525 6.38248L7.1325 3.17248C2.82 1.01248 1.05 2.78248 3.21 7.09498L3.8625 8.39998C4.05 8.78248 4.05 9.22498 3.8625 9.60748L3.21 10.905C1.05 15.2175 2.8125 16.9875 7.1325 14.8275L13.5525 11.6175C16.4325 10.1775 16.4325 7.82248 13.5525 6.38248ZM11.13 9.56248H7.08C6.7725 9.56248 6.5175 9.30748 6.5175 8.99998C6.5175 8.69248 6.7725 8.43748 7.08 8.43748H11.13C11.4375 8.43748 11.6925 8.69248 11.6925 8.99998C11.6925 9.30748 11.4375 9.56248 11.13 9.56248Z"
         fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+export const CalendarDays = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={16}
+      height={16}
+      viewBox="0 0 16 16"
+      fill="none">
+      <path
+        d="M12.6667 2.66666H3.33333C2.59695 2.66666 2 3.26361 2 3.99999V13.3333C2 14.0697 2.59695 14.6667 3.33333 14.6667H12.6667C13.403 14.6667 14 14.0697 14 13.3333V3.99999C14 3.26361 13.403 2.66666 12.6667 2.66666Z"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.6667 1.33334V4.00001"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.33325 1.33334V4.00001"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 6.66666H14"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.33325 9.33334H5.33992"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 9.33334H8.00667"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.6667 9.33334H10.6734"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.33325 12H5.33992"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 12H8.00667"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.6667 12H10.6734"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const Email = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 9L13.87 11.5C12.84 12.32 11.15 12.32 10.12 11.5L7 9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ArrowUp = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M19.92 15.05L13.4 8.53001C12.63 7.76001 11.37 7.76001 10.6 8.53001L4.08 15.05"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ArrowDown = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M19.92 8.94995L13.4 15.47C12.63 16.24 11.37 16.24 10.6 15.47L4.07999 8.94995"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ArrowRight = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M8.91 19.92L15.43 13.4C16.2 12.63 16.2 11.37 15.43 10.6L8.91 4.07996"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ArrowLeft = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M15 19.92L8.48 13.4C7.71 12.63 7.71 11.37 8.48 10.6L15 4.07996"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

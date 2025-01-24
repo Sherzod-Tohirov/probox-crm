@@ -1,3 +1,5 @@
+// Inter Tight fonts
+
 @font-face {
   font-family: "Inter Tight";
   font-weight: 300;
@@ -30,6 +32,8 @@
     url("../fonts/inter-tight/woff/semibold.woff") format("woff");
 }
 
+// Inter fonts
+
 @font-face {
   font-family: "Inter";
   font-weight: 500;
@@ -44,4 +48,14 @@
   font-style: normal;
   src: url("../fonts/inter/woff2/bold.woff2") format("woff2"),
     url("../fonts/inter/woff/bold.woff") format("woff");
+}
+
+// Open Sans fonts
+
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 600;
+  font-style: normal;
+  src: url("../fonts/open-sans/woff2/semibold.woff2") format("woff2"),
+    url("../fonts/open-sans/woff/semibold.woff") format("woff");
 }

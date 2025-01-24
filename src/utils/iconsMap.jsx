@@ -21,6 +21,13 @@ import {
   PresentationChart,
   CalendarFact,
   Send,
+  CalendarDays,
+  Email,
+  ArrowUp,
+  ArrowDown,
+  ArrowRight,
+  ArrowLeft,
+  AvatarFilled,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -42,10 +49,17 @@ const iconsMap = {
   barCode: <BarCode />,
   photo: <Photo />,
   avatar: <Avatar />,
+  avatarFilled: <AvatarFilled />,
   income: <Income />,
   expense: <Expense />,
   presentationChart: <PresentationChart />,
   send: <Send />,
+  calendarDays: <CalendarDays />,
+  email: <Email />,
+  arrowUp: <ArrowUp />,
+  arrowDown: <ArrowDown />,
+  arrowRight: <ArrowRight />,
+  arrowLeft: <ArrowLeft />,
 };
 
 export default iconsMap;

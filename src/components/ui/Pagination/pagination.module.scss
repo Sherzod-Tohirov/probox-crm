@@ -1,0 +1,46 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
+.pagination {
+  @include m.flex(center, center, 1.25rem);
+  font-family: "Open Sans";
+  list-style: none;
+}
+
+.page {
+  @include m.flex-center;
+  width: 8rem;
+  height: 8rem;
+  padding: 2.5rem;
+  font-size: 3.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  color: v.$fifth-color;
+  border-radius: 2rem;
+  border-radius: 8px;
+  border: v.$primary-border-width v.$primary-border-type
+    v.$primary-button-border-color;
+  background: v.$button-bg-secondary;
+
+  cursor: pointer;
+
+  &.active {
+    background-color: v.$button-bg;
+    color: v.$button-color;
+  }
+}
+
+.indicator {
+  color: v.$sixth-color;
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.disabled {
+  color: v.$primary-disabled-color;
+  cursor: not-allowed;
+}

@@ -12,7 +12,7 @@ import useSidebar from "../../hooks/useSidebar";
 export default function Sidebar() {
   const { pathname } = useLocation();
   const { isOpen } = useSidebar();
-  console.log(isOpen, "isOpen");
+  
   const renderLinks = useCallback(
     (link) => {
       return (

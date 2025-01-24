@@ -5,4 +5,19 @@ import List from "./List";
 import Item from "./Item";
 import Button from "./Button";
 import Box from "./Box";
-export { Row, Col, Typography, List, Item, Button, Box };
+import Alert from "./Alert";
+import Pagination from "./Pagination";
+import Input from "./Input";
+
+export {
+  Row,
+  Col,
+  Typography,
+  List,
+  Item,
+  Button,
+  Input,
+  Box,
+  Alert,
+  Pagination,
+};

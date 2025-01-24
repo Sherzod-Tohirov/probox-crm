@@ -2,7 +2,7 @@ import { tableColumns, tableData } from "../../mockData";
 import Alert from "../components/ui/Alert";
 import Button from "../components/ui/Button";
 import Table from "../components/ui/Table";
-import { Box } from "../components/ui";
+import { Box, Col, Pagination, Row, Input } from "../components/ui";
 import Footer from "../components/Footer";
 export default function Dashboard() {
   return (
@@ -19,7 +19,14 @@ export default function Dashboard() {
           Send
         </Button>
       </Box>
-      <Footer></Footer>
+      <Input variant={"filter"} type={"text"} label={"name"} icon={"avatar"} />
+      <Footer>
+        <Row direction="row" justify="center">
+          <Col>
+            <Pagination />
+          </Col>
+        </Row>
+      </Footer>
     </>
   );
 }
