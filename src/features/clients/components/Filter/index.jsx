@@ -48,7 +48,10 @@ export default function Filter({ onFilter }) {
           />
         </Col>
         <Col align="end">
-          <Button className={styles["filter-btn"]} variant={"primary"}>
+          <Button
+            className={styles["filter-btn"]}
+            icon={"search"}
+            variant={"primary"}>
             Поиск
           </Button>
         </Col>

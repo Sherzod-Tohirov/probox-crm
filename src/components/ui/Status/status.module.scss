@@ -1,0 +1,23 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.status {
+  @include m.flex-center;
+  width: 58px;
+  padding: 4px 12px;
+  border-radius: 32px;
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 150%;
+  text-align: center;
+
+  &.active {
+    color: v.$success-color;
+    background: rgba(v.$success-color, 0.1);
+  }
+
+  &.inactive {
+    color: v.$danger-color;
+    background: rgba(v.$danger-color, 0.1);
+  }
+}

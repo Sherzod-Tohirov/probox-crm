@@ -3,7 +3,7 @@
 
 .sidebar-layout {
   @include m.flex-direction(column);
-
+  width: 64px !important;
   padding: 6rem 2.5rem;
   min-height: 100dvh;
   border-right: 1px solid #f3f4f2;
@@ -19,6 +19,7 @@
 .dashboard-layout {
   position: relative;
   @include m.flex-direction(column);
+  flex: 1;
   padding: 6rem;
 }
 

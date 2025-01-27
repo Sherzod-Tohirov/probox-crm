@@ -14,3 +14,14 @@ export const tableData = Array.from({ length: 40 }, (_, index) => ({
   address: `1234 Street ${index + 1}, City, Country`,
   company: `Company ${index + 1}`,
 }));
+
+export const mockDataClients = Array.from({ length: 100 }, (_, index) => ({
+  clientCode: `PBS${2017 + index}`, // Increment client code
+  clientName: "Maqsudov Nodir Xabibullayev",
+  product: index % 2 === 0 ? "iPhone 12 Pro max 256 gb" : "iPhone 12",
+  monthlyPayment: "$100",
+  status: "Active",
+  saleDate: "2024.11.01",
+  executor: "You",
+  term: "100 days",
+}));

@@ -16,22 +16,41 @@ const inputIcons = {
   date: "calendarDays",
 };
 
-function Input({ type, variant, icon, label, options = [], ...props }) {
+function Input({
+  type,
+  variant,
+  icon,
+  label,
+  options = [],
+  width,
+  style = {},
+  ...props
+}) {
+  const inputStyle = useMemo(
+    () => ({
+      ...(width ? { width } : {}),
+      ...style,
+    }),
+    [width, style]
+  );
+
   const inputTypeMatcher = useMemo(
     () => ({
       date: (
         <Flatpickr
+          style={inputStyle}
           className={classNames(styles["input"], styles[variant], styles[type])}
           data-enable-time
           options={{
             dateFormat: "d.m.Y", // Custom date format
-            defaultDate: "20.12.2031", // Default selected date
+            defaultDate: "01.01.2025", // Default selected date
           }}
           {...props}
         />
       ),
       select: (
         <select
+          style={inputStyle}
           className={classNames(styles["input"], styles[variant], styles[type])}
           {...props}>
           {options.map((option) => (
@@ -43,13 +62,14 @@ function Input({ type, variant, icon, label, options = [], ...props }) {
       ),
       default: (
         <input
+          style={inputStyle}
           type={type}
           className={classNames(styles["input"], styles[variant], styles[type])}
           {...props}
         />
       ),
     }),
-    [props, type, variant]
+    [props, type, variant, options, inputStyle]
   );
 
   if (variant === "search") {
@@ -66,6 +86,7 @@ function Input({ type, variant, icon, label, options = [], ...props }) {
       </Box>
     );
   }
+
   return (
     <Row className={styles["input-wrapper"]} gutter={1.5}>
       {label && (

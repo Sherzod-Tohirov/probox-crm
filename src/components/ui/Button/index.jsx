@@ -42,9 +42,13 @@ function Button({
         gap={2}
         align="center"
         justify="center">
-        <Typography element="span" className={styles["icon-text"]}>
-          {iconsMap[icon]}
-        </Typography>
+        {icon ? (
+          <Typography element="span" className={styles["icon-text"]}>
+            {iconsMap[icon]}
+          </Typography>
+        ) : (
+          ""
+        )}
         {children}
       </Box>
     </button>

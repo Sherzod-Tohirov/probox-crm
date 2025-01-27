@@ -14,13 +14,6 @@ export default function Dashboard() {
           "Alert informs users about important changes or conditions in the interface. Use this component if you need to communicate to users in a prominent way."
         }
       />
-      <Footer>
-        <Row direction="row" justify="center">
-          <Col>
-            <Pagination />
-          </Col>
-        </Row>
-      </Footer>
     </Row>
   );
 }
