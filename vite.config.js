@@ -19,6 +19,7 @@ export default defineConfig({
       "@layouts": path.resolve(__dirname, "src/layouts"),
       "@utils": path.resolve(__dirname, "src/utils"),
       "@services": path.resolve(__dirname, "src/services"),
+      "@features": path.resolve(__dirname, "src/features"),
       "@store": path.resolve(__dirname, "src/store"),
       "@assets": path.resolve(__dirname, "src/assets"),
       "@styles": path.resolve(__dirname, "src/assets/styles"),

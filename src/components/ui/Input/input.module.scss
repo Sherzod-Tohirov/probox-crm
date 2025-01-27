@@ -3,10 +3,39 @@
 
 .input {
   width: 41rem;
+  color: v.$filter-input-color !important;
+  &::placeholder {
+    color: v.$filter-input-placeholder-color;
+  }
+
+  &.filter {
+    width: 165px;
+    padding: 8px 30px 8px 12px;
+    border-radius: 6px;
+    border: v.$primary-border-width v.$primary-border-type
+      v.$filter-input-border-color;
+    background: v.$filter-input-bg;
+  }
+
+  &.select {
+    appearance: none;
+    color: v.$filter-input-placeholder-color !important;
+  }
+
+  &.date {
+    color: v.$filter-input-placeholder-color !important;
+  }
+
+  &.date ::-webkit-inner-spin-button,
+  &.date::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+  }
 }
 
 .input-wrapper {
   @include m.flex(center, start, 2rem);
+  flex-direction: column !important;
 }
 
 .search {
@@ -29,16 +58,27 @@
   }
 }
 
+.icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translate(0, -50%);
+  color: v.$filter-input-placeholder-color;
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .icon-text {
   @include m.flex(center, center, 0);
   color: v.$secondary-color;
 }
 
 .label {
-  font-family: "Inter Tight";
   font-size: 3.5rem;
   font-style: normal;
   font-weight: 500;
   line-height: 143%;
-  color: #0f172a;
+  color: v.$primary-label-color;
 }

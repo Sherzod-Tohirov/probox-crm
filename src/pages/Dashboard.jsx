@@ -6,7 +6,7 @@ import { Box, Col, Pagination, Row, Input } from "../components/ui";
 import Footer from "../components/Footer";
 export default function Dashboard() {
   return (
-    <>
+    <Row direction="column" gap={4}>
       <Table columns={tableColumns} data={tableData} />
       <Alert
         type="success"
@@ -14,12 +14,6 @@ export default function Dashboard() {
           "Alert informs users about important changes or conditions in the interface. Use this component if you need to communicate to users in a prominent way."
         }
       />
-      <Box>
-        <Button isLoading={true} variant={"primary"} icon={"send"}>
-          Send
-        </Button>
-      </Box>
-      <Input variant={"filter"} type={"text"} label={"name"} icon={"avatar"} />
       <Footer>
         <Row direction="row" justify="center">
           <Col>
@@ -27,6 +21,6 @@ export default function Dashboard() {
           </Col>
         </Row>
       </Footer>
-    </>
+    </Row>
   );
 }

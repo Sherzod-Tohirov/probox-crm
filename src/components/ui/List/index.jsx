@@ -8,14 +8,14 @@ function List({
   renderItem,
   gutter,
   className,
-  direction = "vertical",
+  direction = "column",
   itemClassName = "",
   ...props
 }) {
   const listStyles = {
     display: "flex",
     gap: `${gutter}rem`,
-    flexDirection: direction === "horizontal" ? "row" : "column",
+    flexDirection: direction,
   };
   return (
     <ul

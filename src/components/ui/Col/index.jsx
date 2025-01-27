@@ -7,11 +7,13 @@ function Col({
   align = "",
   justify = "",
   offset,
+  gutter,
   className,
   style,
 }) {
   const colStyle = {
     flex: span ? `0 0 ${(span / 12) * 100}%` : "0 0 auto",
+    gap: `${gutter}rem`,
     marginLeft: offset ? `${(offset / 12) * 100}%` : undefined,
     maxWidth: span ? `${(span / 12) * 100}%` : undefined,
     alignSelf: align,

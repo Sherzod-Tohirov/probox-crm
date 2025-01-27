@@ -28,7 +28,7 @@ function Header() {
         <Col>
           <Row direction="row" gutter={6}>
             <Col>
-              <Button icon={"telephone"} variant={"text"} />
+              <Button icon={"telephoneFilled"} variant={"text"} />
             </Col>
             <Col>
               <Button icon={"notification"} variant={"text"}>

@@ -28,6 +28,7 @@ import {
   ArrowRight,
   ArrowLeft,
   AvatarFilled,
+  TelephoneFilled,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -60,6 +61,7 @@ const iconsMap = {
   arrowDown: <ArrowDown />,
   arrowRight: <ArrowRight />,
   arrowLeft: <ArrowLeft />,
+  telephoneFilled: <TelephoneFilled />,
 };
 
 export default iconsMap;

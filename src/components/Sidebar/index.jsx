@@ -12,19 +12,25 @@ import useSidebar from "../../hooks/useSidebar";
 export default function Sidebar() {
   const { pathname } = useLocation();
   const { isOpen } = useSidebar();
-  
+
   const renderLinks = useCallback(
     (link) => {
       return (
         <Link
           className={classNames(
             styles[`sidebar-link`],
-            styles[pathname === link.path ? "active" : ""],
+            styles[pathname.startsWith(link.path) ? "active" : ""],
             !isOpen && styles["minified"]
           )}
           to={link.path}>
           {iconsMap[link.icon]}
-          {isOpen && <Typography element="span">{link.title}</Typography>}
+          <Typography
+            element="span"
+            className={classNames(styles["sidebar-link-title"], {
+              [styles["minified"]]: !isOpen,
+            })}>
+            {link.title}
+          </Typography>
         </Link>
       );
     },

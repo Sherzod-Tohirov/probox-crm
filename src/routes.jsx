@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
+import Clients from "./pages/Clients";
+
+import { Navigate } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
@@ -8,12 +11,22 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
+        index: true,
+        element: <Navigate to="/dashboard" />,
+      },
+      {
         path: "/dashboard",
         element: <Dashboard />,
       },
       {
         path: "/clients",
-        element: <>CLients</>,
+        element: <Clients />,
+        children: [
+          {
+            path: "/clients/:name",
+            element: <>Client</>,
+          },
+        ],
       },
       {
         path: "/calendar",

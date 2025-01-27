@@ -1,5 +1,17 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
 .logo {
   display: inline-block;
+}
+
+.logo-link {
+  display: flex;
+  max-width: 122px;
+  overflow: hidden;
+
+  & {
+    transition: all v.$transition-time v.$transition-type;
+  }
 }
 
 .logo-img {
@@ -8,6 +20,13 @@
   margin: 0 auto;
   display: block;
   &.minified {
-    width: 11rem;
+    position: absolute;
+    z-index: -1000;
+    opacity: 0;
   }
+}
+
+.logo-small-img {
+  width: 11rem;
+  height: 9rem;
 }

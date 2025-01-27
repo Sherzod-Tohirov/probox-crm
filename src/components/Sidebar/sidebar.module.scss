@@ -45,3 +45,10 @@
     }
   }
 }
+
+.sidebar-link-title {
+  transition: all v.$transition-time v.$transition-type;
+  &.minified {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.breadcrumb-list {
+  @include m.flex(center, start, 2rem);
+}
+
+.breadcrumb-link {
+  @include m.flex(center, start, 2rem);
+
+  font-size: 3.5rem;
+  font-weight: 500;
+  line-height: 143%;
+  color: v.$primary-color;
+  text-decoration: none;
+
+  & svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.main-link {
+    color: v.$secondary-color;
+  }
+}

@@ -1,0 +1,11 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.filter-form {
+  @include m.flex(center, start, 4rem);
+}
+
+.filter-btn {
+  margin-top: auto;
+  width: 132px !important;
+}

@@ -7,13 +7,18 @@ import classNames from "classnames";
 function Logo({ isMinified = false }) {
   return (
     <div className={styles.logo}>
-      <Link to={"/dashboard"}>
+      <Link to={"/dashboard"} className={styles["logo-link"]}>
         <img
           className={classNames(
             styles["logo-img"],
             isMinified && styles["minified"]
           )}
-          src={isMinified ? logoSmall : logo}
+          src={logo}
+          alt="logo"
+        />
+        <img
+          className={classNames(styles["logo-small-img"])}
+          src={logoSmall}
           alt="logo"
         />
       </Link>
