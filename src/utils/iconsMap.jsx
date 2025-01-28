@@ -29,6 +29,7 @@ import {
   ArrowLeft,
   AvatarFilled,
   TelephoneFilled,
+  BarCodeFilled,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -48,6 +49,7 @@ const iconsMap = {
   closeCircle: <CloseCircle />,
   infoCircle: <InfoCircle />,
   barCode: <BarCode />,
+  barCodeFilled: <BarCodeFilled />,
   photo: <Photo />,
   avatar: <Avatar />,
   avatarFilled: <AvatarFilled />,

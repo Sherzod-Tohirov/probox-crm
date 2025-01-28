@@ -9,7 +9,7 @@
   border-right: 1px solid #f3f4f2;
   background: v.$secondary-bg;
   transition: all v.$transition-time v.$transition-type;
-
+  
   &.open {
     width: clamp(240px, 240px, 240px) !important;
     padding: 6rem;
@@ -21,6 +21,7 @@
   @include m.flex-direction(column);
   flex: 1;
   padding: 6rem;
+  padding-bottom: 68px;
 }
 
 .main-layout {

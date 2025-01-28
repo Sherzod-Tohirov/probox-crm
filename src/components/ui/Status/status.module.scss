@@ -11,12 +11,17 @@
   line-height: 150%;
   text-align: center;
 
-  &.active {
+  &.paid {
     color: v.$success-color;
     background: rgba(v.$success-color, 0.1);
   }
 
-  &.inactive {
+  &.partially_paid {
+    color: v.$info-color;
+    background: rgba(v.$info-color, 0.1);
+  }
+
+  &.unpaid {
     color: v.$danger-color;
     background: rgba(v.$danger-color, 0.1);
   }

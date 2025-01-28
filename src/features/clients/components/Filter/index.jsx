@@ -8,9 +8,10 @@ export default function Filter({ onFilter }) {
         <Col gutter={4}>
           <Input
             variant={"filter"}
-            label={"Email"}
-            type={"email"}
-            placeholder={"Email"}
+            label={"IMEI"}
+            type={"text"}
+            placeholder={"IMEI number"}
+            icon={"barCode"}
           />
           <Input
             variant={"filter"}
@@ -42,8 +43,10 @@ export default function Filter({ onFilter }) {
             label={"Status"}
             type={"select"}
             options={[
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
+              { value: "all", label: "All" },
+              { value: "paid", label: "Paid" },
+              { value: "partially_paid", label: "Partially paid" },
+              { value: "not_paid", label: "Not paid" },
             ]}
           />
         </Col>

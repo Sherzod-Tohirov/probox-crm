@@ -429,7 +429,7 @@ export const InfoCircle = () => {
   );
 };
 
-export const BarCode = () => {
+export const BarCodeFilled = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -440,6 +440,82 @@ export const BarCode = () => {
       <path
         d="M14.1667 2.91699H5.83335C3.33335 2.91699 1.66669 4.16699 1.66669 7.08366V12.917C1.66669 15.8337 3.33335 17.0837 5.83335 17.0837H14.1667C16.6667 17.0837 18.3334 15.8337 18.3334 12.917V7.08366C18.3334 4.16699 16.6667 2.91699 14.1667 2.91699ZM5.62502 13.3337C5.62502 13.6753 5.34169 13.9587 5.00002 13.9587C4.65835 13.9587 4.37502 13.6753 4.37502 13.3337V6.66699C4.37502 6.32533 4.65835 6.04199 5.00002 6.04199C5.34169 6.04199 5.62502 6.32533 5.62502 6.66699V13.3337ZM8.12502 13.3337C8.12502 13.6753 7.84169 13.9587 7.50002 13.9587C7.15835 13.9587 6.87502 13.6753 6.87502 13.3337V12.5003C6.87502 12.1587 7.15835 11.8753 7.50002 11.8753C7.84169 11.8753 8.12502 12.1587 8.12502 12.5003V13.3337ZM8.12502 10.0003C8.12502 10.342 7.84169 10.6253 7.50002 10.6253C7.15835 10.6253 6.87502 10.342 6.87502 10.0003V6.66699C6.87502 6.32533 7.15835 6.04199 7.50002 6.04199C7.84169 6.04199 8.12502 6.32533 8.12502 6.66699V10.0003ZM10.625 13.3337C10.625 13.6753 10.3417 13.9587 10 13.9587C9.65835 13.9587 9.37502 13.6753 9.37502 13.3337V6.66699C9.37502 6.32533 9.65835 6.04199 10 6.04199C10.3417 6.04199 10.625 6.32533 10.625 6.66699V13.3337ZM13.125 13.3337C13.125 13.6753 12.8417 13.9587 12.5 13.9587C12.1584 13.9587 11.875 13.6753 11.875 13.3337V10.0003C11.875 9.65866 12.1584 9.37533 12.5 9.37533C12.8417 9.37533 13.125 9.65866 13.125 10.0003V13.3337ZM13.125 7.50033C13.125 7.84199 12.8417 8.12533 12.5 8.12533C12.1584 8.12533 11.875 7.84199 11.875 7.50033V6.66699C11.875 6.32533 12.1584 6.04199 12.5 6.04199C12.8417 6.04199 13.125 6.32533 13.125 6.66699V7.50033ZM15.625 13.3337C15.625 13.6753 15.3417 13.9587 15 13.9587C14.6584 13.9587 14.375 13.6753 14.375 13.3337V6.66699C14.375 6.32533 14.6584 6.04199 15 6.04199C15.3417 6.04199 15.625 6.32533 15.625 6.66699V13.3337Z"
         fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+export const BarCode = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 8V16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 8V12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 15V16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15 8V9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 8V16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15 12V16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18 8V16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

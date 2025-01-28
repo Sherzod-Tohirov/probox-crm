@@ -20,7 +20,7 @@ export const mockDataClients = Array.from({ length: 100 }, (_, index) => ({
   clientName: "Maqsudov Nodir Xabibullayev",
   product: index % 2 === 0 ? "iPhone 12 Pro max 256 gb" : "iPhone 12",
   monthlyPayment: "$100",
-  status: "Active",
+  status: "paid",
   saleDate: "2024.11.01",
   executor: "You",
   term: "100 days",

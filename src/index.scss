@@ -1,3 +1,5 @@
+@use "@styles/variables" as v;
+
 :root {
   font-family: "Inter Tight", Arial, Helvetica, sans-serif;
   line-height: 1.5;
@@ -8,4 +10,31 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+// Custom styles for flatpickr
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background-color: v.$fourth-color !important; /* Custom selection color */
+  color: #fff; /* Text color for selected date */
+  border-color: v.$fourth-color !important; /* Border color for selected date */
+}
+
+.flatpickr-day.today {
+  &:hover {
+    background-color: v.$secondary-color !important;
+    border-color: v.$primary-color !important;
+  }
+  border-bottom-color: v.$primary-color !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  &:hover svg {
+    fill: v.$fourth-color;
+  }
 }
