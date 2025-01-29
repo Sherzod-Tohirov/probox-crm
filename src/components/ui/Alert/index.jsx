@@ -1,27 +1,25 @@
+import { CSSTransition } from "react-transition-group";
 import classNames from "classnames";
 import styles from "./alert.module.scss";
 import { Row, Col, Button, Box } from "@components/ui";
 import Typography from "../Typography";
 import iconsMap from "@utils/iconsMap";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CSSTransition } from "react-transition-group";
+
 export default function Alert({
   message,
-  show: showAlert,
   type = "success",
   timer = 4000,
   persistant = false,
   onClose = () => {},
 }) {
-  const [show, setShow] = useState(showAlert);
+  const [show, setShow] = useState(true);
   const handleClose = useCallback(() => {
     setShow(false);
-    if (onClose) onClose();
+    if (typeof onClose === "function") {
+      onClose();
+    }
   }, [onClose]);
-
-  useEffect(() => {
-    setShow(showAlert);
-  }, [showAlert]);
 
   const icon = useMemo(
     () => ({
@@ -80,7 +78,7 @@ export default function Alert({
             </Col>
           </Row>
         </Col>
-        <Col>
+        <Col style={{ marginLeft: "auto" }}>
           <Button
             icon={"close"}
             variant={"text"}

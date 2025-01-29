@@ -47,8 +47,7 @@
   }
 
   &-content {
-    max-width: 136rem;
-    width: 100%;
+    width: clamp(100rem, 100%, 136rem);
   }
 
   &-title {
@@ -62,9 +61,9 @@
     font-weight: 500;
     line-height: normal;
   }
-  
+
   &-enter {
-     transform: translateX(100%);
+    transform: translateX(100%);
     opacity: 0;
   }
 
