@@ -12,7 +12,84 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+// Alert styles
+.alert {
+  width: clamp(100rem, 100%, 160rem) !important;
+  padding: 4rem !important;
+  font-family: "Inter";
+  border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
+  border-radius: 4rem;
+  transition: opacity v.$transition-time v.$transition-type;
 
+  &-success {
+    background-color: v.$success-bg;
+    color: v.$success-color;
+    border-color: rgba(v.$success-color, 0.2);
+
+    &-title,
+    &-desc {
+      color: v.$success-color;
+    }
+  }
+
+  &-info {
+    background-color: v.$info-bg;
+    color: v.$info-color;
+    border-color: rgba(v.$info-color, 0.2);
+
+    &-title,
+    &-desc {
+      color: v.$info-color;
+    }
+  }
+
+  &-error {
+    background-color: v.$danger-bg;
+    color: v.$danger-color;
+    border-color: rgba(v.$danger-color, 0.2);
+
+    &-title,
+    &-desc {
+      color: v.$danger-color;
+    }
+  }
+
+  &-content {
+    width: clamp(100rem, 100%, 136rem);
+  }
+
+  &-title {
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  &-desc {
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &-enter {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  &-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 300ms ease, opacity 300ms ease;
+  }
+  &-exit {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  &-exit-active {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: transform 300ms ease, opacity 300ms ease;
+  }
+}
 
 // Custom styles for flatpickr
 

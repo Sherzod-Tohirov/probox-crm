@@ -1,0 +1,13 @@
+@use "@styles/variables" as v;
+
+.messenger {
+  position: sticky;
+  top: 0;
+  right: 0;
+  width: 356px;
+  min-height: 100dvh;
+  height: 100%;
+  border-left: v.$primary-border-width v.$primary-border-type
+    v.$secondary-border-color;
+  background: red;
+}

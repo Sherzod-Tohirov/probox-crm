@@ -2,17 +2,13 @@
 @use "@styles/variables" as v;
 
 .alert {
-  position: fixed;
   width: clamp(100rem, 100%, 160rem);
-  top: 11rem;
-  right: 6rem;
-  z-index: 1000;
   padding: 4rem;
   font-family: "Inter";
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
   transition: opacity v.$transition-time v.$transition-type;
-
+  
   &-success {
     background-color: v.$success-bg;
     color: v.$success-color;

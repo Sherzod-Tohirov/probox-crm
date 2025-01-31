@@ -7,6 +7,8 @@ import DashboardLayout from "@layouts/DashboardLayout";
 import PrimaryLayout from "@layouts/PrimaryLayout";
 import Header from "@components/Header";
 import useAlert from "@hooks/useAlert";
+import Messenger from "./components/ui/Messenger";
+import { Col, Row } from "./components/ui";
 
 function App() {
   const { AlertContainer } = useAlert();
@@ -17,9 +19,16 @@ function App() {
       </SidebarLayout>
       <PrimaryLayout>
         <Header />
-        <DashboardLayout>
-          <Outlet />
-        </DashboardLayout>
+        <Row direction="row" flexGrow>
+          <Col flexGrow>
+            <DashboardLayout>
+              <Outlet />
+            </DashboardLayout>
+          </Col>
+          <Col>
+            <Messenger />
+          </Col>
+        </Row>
       </PrimaryLayout>
       <AlertContainer />
     </MainLayout>

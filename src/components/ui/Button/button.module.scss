@@ -67,6 +67,10 @@
   background-color: red !important;
 }
 
+.right {
+  flex-direction: row-reverse !important;
+}
+
 .loading-wrapper {
   @include m.flex-center();
   position: absolute;

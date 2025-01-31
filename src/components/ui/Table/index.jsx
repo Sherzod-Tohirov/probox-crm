@@ -7,6 +7,7 @@ export default function Table({
   data = [],
   className,
   style = {},
+  onRowClick = () => {},
 }) {
   return (
     <table
@@ -25,7 +26,7 @@ export default function Table({
       </thead>
       <tbody>
         {data.map((row) => (
-          <tr key={row.id}>
+          <tr key={row.id} onClick={() => onRowClick(row)}>
             {columns.map((column) => {
               console.log("column", column);
               return (

@@ -347,6 +347,48 @@ export const TickCircle = () => {
   );
 };
 
+export const DoubleTick = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none">
+      <path
+        d="M3.75 9.85834L6.67433 12.7827L12.5333 6.93401"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.8833 9.85834L10.8076 12.7827L16.6666 6.93401"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const AddCircle = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={18}
+      height={18}
+      viewBox="0 0 18 18"
+      fill="none">
+      <path
+        d="M9 1.5C4.8675 1.5 1.5 4.8675 1.5 9C1.5 13.1325 4.8675 16.5 9 16.5C13.1325 16.5 16.5 13.1325 16.5 9C16.5 4.8675 13.1325 1.5 9 1.5ZM12 9.5625H9.5625V12C9.5625 12.3075 9.3075 12.5625 9 12.5625C8.6925 12.5625 8.4375 12.3075 8.4375 12V9.5625H6C5.6925 9.5625 5.4375 9.3075 5.4375 9C5.4375 8.6925 5.6925 8.4375 6 8.4375H8.4375V6C8.4375 5.6925 8.6925 5.4375 9 5.4375C9.3075 5.4375 9.5625 5.6925 9.5625 6V8.4375H12C12.3075 8.4375 12.5625 8.6925 12.5625 9C12.5625 9.3075 12.3075 9.5625 12 9.5625Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
+
 export const Close = () => {
   return (
     <svg

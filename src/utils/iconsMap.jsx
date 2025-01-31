@@ -30,6 +30,8 @@ import {
   AvatarFilled,
   TelephoneFilled,
   BarCodeFilled,
+  DoubleTick,
+  AddCircle,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -45,6 +47,8 @@ const iconsMap = {
   telephone: <Telephone />,
   notification: <Notification />,
   tickCircle: <TickCircle />,
+  addCircle: <AddCircle />,
+  doubleTick: <DoubleTick />,
   close: <Close />,
   closeCircle: <CloseCircle />,
   infoCircle: <InfoCircle />,

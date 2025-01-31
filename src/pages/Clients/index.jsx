@@ -1,12 +1,12 @@
-import { Outlet } from "react-router-dom";
-import { Col, Row } from "@components/ui";
-import Navigation from "@components/ui/Navigation";
+import { Col, Row, Navigation } from "@components/ui";
 import Filter from "@features/clients/components/Filter";
-import Status from "../components/ui/Status";
-import Footer from "../components/Footer";
-import { Button, Input, Pagination } from "../components/ui";
-import Table from "../components/ui/Table";
-import { mockDataClients } from "../../mockData";
+import Status from "../../components/ui/Status";
+import Footer from "../../components/Footer";
+import { Button, Input, Pagination } from "../../components/ui";
+import Table from "../../components/ui/Table";
+import { mockDataClients } from "../../../mockData";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 const tableSizeSelectOptions = [
   { value: "10", label: "10" },
@@ -33,9 +33,16 @@ const columns = [
 ];
 
 export default function Clients() {
+  const navigate = useNavigate();
+  const handleRowClick = useCallback(
+    (row) => {
+      navigate(`/clients/${row.clientCode}`);
+    },
+    [navigate]
+  );
   return (
     <>
-      <Row gutter={6}>
+      <Row gutter={6} style={{ width: "100%" }}>
         <Col>
           <Navigation />
         </Col>
@@ -43,9 +50,13 @@ export default function Clients() {
           <Filter />
         </Col>
         <Col style={{ width: "100%" }}>
-          <Table columns={columns} data={mockDataClients} />
+          <Table
+            columns={columns}
+            data={mockDataClients}
+            onRowClick={handleRowClick}
+          />
         </Col>
-        <Outlet />
+        <Col style={{ width: "100%" }}></Col>
       </Row>
       <Footer>
         <Row direction={"row"} justify={"space-between"}>

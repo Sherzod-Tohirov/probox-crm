@@ -8,6 +8,7 @@ import Box from "./Box";
 import Alert from "./Alert";
 import Pagination from "./Pagination";
 import Input from "./Input";
+import Navigation from "./Navigation";
 
 export {
   Row,
@@ -20,4 +21,5 @@ export {
   Box,
   Alert,
   Pagination,
+  Navigation,
 };

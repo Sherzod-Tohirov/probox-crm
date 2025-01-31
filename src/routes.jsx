@@ -4,6 +4,8 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 
 import { Navigate } from "react-router-dom";
+import ClientPage from "./pages/Clients/ClientPage";
+import ClientPageLayout from "./layouts/ClientPageLayout";
 
 const router = createBrowserRouter([
   {
@@ -20,11 +22,14 @@ const router = createBrowserRouter([
       },
       {
         path: "/clients",
-        element: <Clients />,
         children: [
           {
+            index: true,
+            element: <Clients />,
+          },
+          {
             path: "/clients/:name",
-            element: <>Client</>,
+            element: <ClientPage />,
           },
         ],
       },

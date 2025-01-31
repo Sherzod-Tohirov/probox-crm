@@ -11,6 +11,7 @@ function Button({
   variant,
   color,
   icon,
+  iconPosition = "left",
   isLoading = false,
   ...props
 }) {
@@ -38,7 +39,10 @@ function Button({
         ""
       )}
       <Box
-        className={classNames(isLoading && styles["hide"])}
+        className={classNames(
+          isLoading && styles["hide"],
+          styles[iconPosition]
+        )}
         gap={2}
         align="center"
         justify="center">

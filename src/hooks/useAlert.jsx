@@ -3,6 +3,7 @@ import { Alert } from "../components/ui";
 
 export default function useAlert() {
   const [alertProps, setAlertProps] = useState({});
+
   const alert = useCallback((message, options = {}) => {
     setAlertProps({ message, ...options, open: true });
   }, []);

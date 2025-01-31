@@ -9,12 +9,15 @@ function Row({
   direction = "column",
   justify = "start",
   align = "start",
+  flexGrow = false,
   wrap,
   className,
   style,
 }) {
   const rowStyle = {
     display: "flex",
+    flexGrow: flexGrow ? "1" : "0",
+    width: "100%",
     flexDirection: direction,
     flexWrap: wrap ? "wrap" : "nowrap",
     justifyContent: justify,
