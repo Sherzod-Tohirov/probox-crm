@@ -25,7 +25,7 @@ function App() {
               <Outlet />
             </DashboardLayout>
           </Col>
-          <Col>
+          <Col style={{ position: "sticky", top: "83px" }}>
             <Messenger />
           </Col>
         </Row>

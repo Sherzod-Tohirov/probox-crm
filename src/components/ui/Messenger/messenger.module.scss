@@ -7,7 +7,16 @@
   width: 356px;
   min-height: 100dvh;
   height: 100%;
+  padding: 13px 24px 24px 24px;
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
-  background: red;
+  background: v.$secondary-bg;
+}
+
+.title {
+  color: v.$primary-color;
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: 500;
+  line-height: 143%;
 }
