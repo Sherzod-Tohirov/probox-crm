@@ -54,7 +54,7 @@ export default function Filter({ onFilter }) {
           <Button
             className={styles["filter-btn"]}
             icon={"search"}
-            variant={"primary"}>
+            variant={"filled"}>
             Поиск
           </Button>
         </Col>

@@ -32,7 +32,7 @@ export default function ClientPage() {
                 <Navigation />
               </Col>
               <Col>
-                <Button variant={"primary"}>Сохранить</Button>
+                <Button variant={"filled"}>Сохранить</Button>
               </Col>
             </Row>
           </Col>

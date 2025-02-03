@@ -72,7 +72,7 @@ export default function Clients() {
             <Pagination />
           </Col>
           <Col>
-            <Button variant={"primary"}>Распределение должников</Button>
+            <Button variant={"filled"}>Распределение должников</Button>
           </Col>
         </Row>
       </Footer>

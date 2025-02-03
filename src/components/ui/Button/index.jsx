@@ -12,6 +12,7 @@ function Button({
   color,
   icon,
   iconPosition = "left",
+  iconColor,
   isLoading = false,
   ...props
 }) {
@@ -22,6 +23,7 @@ function Button({
         styles["btn"],
         styles[variant],
         styles[color],
+        styles[`icon-${iconColor}-color`],
         isLoading && styles["loading"],
         { icon }
       )}

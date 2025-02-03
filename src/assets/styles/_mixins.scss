@@ -1,7 +1,8 @@
 // src/styles/_mixins.scss
 
-@mixin flex($align: start, $justify: start, $gap: 0) {
+@mixin flex($align: start, $justify: start, $gap: 0, $direction: row) {
   display: flex;
+  flex-direction: $direction;
   align-items: $align;
   justify-content: $justify;
   gap: $gap !important;

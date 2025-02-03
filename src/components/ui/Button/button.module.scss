@@ -26,7 +26,7 @@
     border: none;
   }
 
-  &.primary {
+  &.filled {
     background-color: v.$button-bg;
     color: v.$button-color;
     padding: 2.5rem 4rem;
@@ -40,8 +40,13 @@
   }
 
   //colors
+
+  &.primary {
+    color: v.$text-button-color !important;
+  }
+
   &.secondary {
-    color: v.$text-button-color-secondary;
+    color: v.$text-button-color-secondary !important;
   }
 
   // icons
@@ -49,6 +54,12 @@
   &.icon {
     width: 50rem;
     height: 50rem;
+  }
+
+  &.icon-primary-color {
+    span {
+      color: v.$text-button-color !important;
+    }
   }
 }
 

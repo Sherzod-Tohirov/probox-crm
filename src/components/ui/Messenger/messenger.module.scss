@@ -1,16 +1,20 @@
 @use "@styles/variables" as v;
+@use "@styles/mixins" as m;
 
 .messenger {
+  font-family: "Poppins", sans-serif;
+  @include m.flex-direction(column);
   position: sticky;
   top: 0;
   right: 0;
   width: 356px;
-  min-height: 100dvh;
+  min-height: 88dvh;
   height: 100%;
   padding: 13px 24px 24px 24px;
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   background: v.$secondary-bg;
+  overflow-y: auto;
 }
 
 .title {
@@ -19,4 +23,37 @@
   font-size: 3.5rem;
   font-weight: 500;
   line-height: 143%;
+}
+
+.text-input-form {
+  @include m.flex(start, space-between, 0, column);
+  height: 114px;
+  padding: 0 9px 12px 12px;
+  border-radius: 12px;
+  background: v.$primary-chat-input-bg;
+}
+
+.text-input {
+  padding-top: 10px !important;
+  width: 100%;
+  height: 74px;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  color: v.$primary-color;
+  font-size: 4rem;
+  resize: none;
+
+  &::placeholder {
+    color: rgba(60, 63, 71, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.messenger-body {
+  flex: 1;
+  overflow-y: auto;
 }
