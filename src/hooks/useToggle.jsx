@@ -1,11 +1,11 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMessenger, toggleSidebar } from "../store/slices/toggleSlice";
 
-export default function useToggle(toggleName) {
+const useToggle = (toggleName) => {
   const dispatch = useDispatch();
+  const toggleState = useSelector((state) => state.toggle);
 
-  const toggleNameUpper = toggleName[0].toUpperCase() + toggleName.slice(1);
   const toggleFuncMap = useMemo(
     () => ({
       sidebar: toggleSidebar,
@@ -14,17 +14,23 @@ export default function useToggle(toggleName) {
     []
   );
 
-  const isOpen = useSelector(
-    (state) => state.toggle["is" + toggleNameUpper + "Open"]
-  );
+  if (Array.isArray(toggleName)) {
+    const toggleStates = {};
+    toggleName.forEach((name) => {
+      const nameUpper = name[0].toUpperCase() + name.slice(1);
+      toggleStates[name] = {
+        isOpen: toggleState["is" + nameUpper + "Open"],
+        toggle: () => dispatch(toggleFuncMap[name]()),
+      };
+    });
+    return toggleStates;
+  }
 
-  const toggle = useCallback(
-    () => dispatch(toggleFuncMap[toggleName]()),
-    [dispatch, toggleFuncMap, toggleName]
-  );
-
+  const nameUpper = toggleName[0].toUpperCase() + toggleName.slice(1);
   return {
-    isOpen,
-    [`toggle${toggleNameUpper}`]: toggle,
+    isOpen: toggleState["is" + nameUpper + "Open"],
+    toggle: () => dispatch(toggleFuncMap[toggleName]()),
   };
-}
+};
+
+export default useToggle;

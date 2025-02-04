@@ -4,7 +4,7 @@ import Divider from "../ui/Divider";
 import Input from "../ui/Input";
 import styles from "./header.module.scss";
 function Header() {
-  const { isOpen, toggleSidebar } = useToggle("sidebar");
+  const { isSidebarOpen, toggleSidebar } = useToggle("sidebar");
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">
@@ -14,7 +14,7 @@ function Header() {
               <Button
                 variant="text"
                 color="secondary"
-                icon={isOpen ? "toggleClose" : "toggleOpen"}
+                icon={isSidebarOpen ? "toggleClose" : "toggleOpen"}
                 onClick={toggleSidebar}></Button>
             </Col>
             <Col align="stretch">

@@ -5,7 +5,6 @@ import Clients from "./pages/Clients";
 
 import { Navigate } from "react-router-dom";
 import ClientPage from "./pages/Clients/ClientPage";
-import ClientPageLayout from "./layouts/ClientPageLayout";
 
 const router = createBrowserRouter([
   {
