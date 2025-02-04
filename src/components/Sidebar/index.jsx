@@ -7,11 +7,11 @@ import iconsMap from "../../utils/iconsMap";
 import { useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
-import useSidebar from "../../hooks/useSidebar";
+import useToggle from "../../hooks/useToggle";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
-  const { isOpen } = useSidebar();
+  const { isOpen } = useToggle("sidebar");
 
   const renderLinks = useCallback(
     (link) => {

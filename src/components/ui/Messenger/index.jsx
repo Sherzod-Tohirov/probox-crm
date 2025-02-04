@@ -2,6 +2,7 @@ import Button from "../Button";
 import Col from "../Col";
 import Row from "../Row";
 import Typography from "../Typography";
+import Message from "./Message";
 import styles from "./messenger.module.scss";
 
 export default function Messenger() {
@@ -12,7 +13,19 @@ export default function Messenger() {
           Messenger
         </Typography>
       </div>
-      <div className={styles["messenger-body"]}></div>
+      <div className={styles["messenger-body"]}>
+        <Message isRead>
+          Hi, how are yourwerwewqewqeeqweqeqeqweqwewrrwerwerewrwerwerrwrwe?r
+        </Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+      </div>
       <div className={styles["messenger-footer"]}>
         <form className={styles["text-input-form"]}>
           <textarea
@@ -35,7 +48,8 @@ export default function Messenger() {
                 variant={"text"}
                 iconPosition="right"
                 iconColor={"primary"}
-                color={"primary"}>
+                color={"primary"}
+                type={"button"}>
                 Send
               </Button>
             </Col>

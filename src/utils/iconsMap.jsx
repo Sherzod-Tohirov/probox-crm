@@ -32,6 +32,7 @@ import {
   BarCodeFilled,
   DoubleTick,
   AddCircle,
+  Clock,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -50,6 +51,7 @@ const iconsMap = {
   addCircle: <AddCircle />,
   doubleTick: <DoubleTick />,
   close: <Close />,
+  clock: <Clock />,
   closeCircle: <CloseCircle />,
   infoCircle: <InfoCircle />,
   barCode: <BarCode />,

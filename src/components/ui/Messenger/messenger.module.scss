@@ -2,19 +2,48 @@
 @use "@styles/mixins" as m;
 
 .messenger {
+  position: relative;
   font-family: "Poppins", sans-serif;
   @include m.flex-direction(column);
-  position: sticky;
-  top: 0;
-  right: 0;
-  width: 356px;
-  min-height: 88dvh;
+  width: 0;
+  min-height: 100dvh;
   height: 100%;
   padding: 13px 24px 24px 24px;
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   background: v.$secondary-bg;
-  overflow-y: auto;
+  overflow: auto;
+
+  &-header {
+    position: sticky;
+    top: 0;
+    padding-bottom: 12px;
+  }
+
+  &-body {
+    @include m.flex(start, end, 4rem, column);
+    flex: 1;
+    overflow: auto;
+    padding: 10px 10px 16px;
+
+    &::-webkit-scrollbar {
+      width: 14px;
+    }
+    &::-webkit-scrollbar-thumb {
+      width: 12px;
+      border-radius: 10px;
+      background-color: red;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: v.$secondary-bg;
+    }
+  }
+
+  &-footer {
+    position: sticky;
+    bottom: 0;
+  }
 }
 
 .title {
@@ -53,7 +82,57 @@
   }
 }
 
-.messenger-body {
-  flex: 1;
-  overflow-y: auto;
+.message {
+  @include m.flex(start, start, 1rem, column);
+
+  &-text {
+    position: relative;
+    display: flex;
+    padding: 13px 17px;
+    color: v.$primary-color;
+    font-size: 3.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 143%;
+    border-radius: 24px 29px 29px 0px;
+    background: #e6f0ff;
+
+    p {
+      word-break: break-word;
+    }
+  }
+
+  &-data {
+    @include m.flex(start, start, 1rem);
+  }
+
+  &-author {
+    color: v.$secondary-color;
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+  }
+
+  &-time {
+    position: absolute;
+    color: v.$secondary-color;
+    right: 16px;
+    bottom: 0;
+    font-size: 2.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 17px;
+  }
+
+  &-avatar-icon {
+    @include m.flex-center;
+    font-size: 14px;
+    color: #8e97a9;
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
 }
+

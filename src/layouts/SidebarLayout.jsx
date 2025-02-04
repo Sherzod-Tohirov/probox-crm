@@ -1,9 +1,9 @@
 import styles from "@assets/styles/modules/layout.module.scss";
-import useSidebar from "../hooks/useSidebar";
+import useToggle from "../hooks/useToggle";
 import classNames from "classnames";
 
 export default function SidebarLayout({ children }) {
-  const { isOpen } = useSidebar();
+  const { isOpen } = useToggle("sidebar");
   return (
     <aside
       className={classNames(styles["sidebar-layout"], {

@@ -1,10 +1,10 @@
-import useSidebar from "../../hooks/useSidebar";
+import useToggle from "../../hooks/useToggle";
 import { Col, Row, Button } from "../ui";
 import Divider from "../ui/Divider";
 import Input from "../ui/Input";
 import styles from "./header.module.scss";
 function Header() {
-  const { toggleSidebar, isOpen } = useSidebar();
+  const { isOpen, toggleSidebar } = useToggle("sidebar");
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">
