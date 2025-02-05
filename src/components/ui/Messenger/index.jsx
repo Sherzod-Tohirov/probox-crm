@@ -1,22 +1,38 @@
+import classNames from "classnames";
 import Button from "../Button";
 import Col from "../Col";
 import Row from "../Row";
 import Typography from "../Typography";
 import Message from "./Message";
 import styles from "./messenger.module.scss";
-
+import useToggle from "../../../hooks/useToggle";
+import { motion } from "framer-motion";
 export default function Messenger() {
+  const { isOpen } = useToggle("messenger");
   return (
-    <div className={styles.messenger}>
+    <motion.div
+      initial={{ x: "0", display: "none" }}
+      animate={{
+        x: isOpen ? "0" : "100%",
+        display: isOpen ? "flex" : "none",
+      }}
+      exit={{ x: "100%", display: "none" }}
+      transition={{ type: "spring", stiffness: 100, damping: 16 }}
+      className={classNames(styles.messenger)}>
       <div className={styles["messenger-header"]}>
         <Typography element="h2" className={styles.title}>
           Messenger
         </Typography>
       </div>
       <div className={styles["messenger-body"]}>
-        <Message isRead>
-          Hi, how are yourwerwewqewqeeqweqeqeqweqwewrrwerwerewrwerwerrwrwe?r
-        </Message>
+        <Message isRead>Hi, how are you ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
+        <Message isRead>Hi, how are ?</Message>
         <Message isRead>Hi, how are ?</Message>
         <Message isRead>Hi, how are ?</Message>
         <Message isRead>Hi, how are ?</Message>
@@ -56,6 +72,6 @@ export default function Messenger() {
           </Row>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }

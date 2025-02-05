@@ -17,6 +17,20 @@
     background: v.$filter-input-bg;
   }
 
+  &.filled {
+    width: 310px;
+    padding: 11px 12px;
+    background: v.$primary-input-bg;
+    border: none;
+    font-size: 3.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 143%;
+    color: v.$primary-color;
+    border-radius: 12px;
+    background-color: "";
+  }
+
   &.select {
     appearance: none;
     color: v.$filter-input-placeholder-color !important;

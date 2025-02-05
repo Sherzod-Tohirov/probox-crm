@@ -4,7 +4,7 @@ import moment from "moment";
 import Col from "../Col";
 import Row from "../Row";
 import Typography from "../Typography";
-import Box from "../Box";
+
 export default function Message({ children, isRead }) {
   return (
     <Row className={styles.message}>

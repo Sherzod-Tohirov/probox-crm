@@ -11,7 +11,6 @@ export default function Dashboard() {
       <Button
         onClick={() => {
           toast.custom((t) => {
-            console.log(t, "toast");
             return (
               <Alert
                 message={"Hello world"}

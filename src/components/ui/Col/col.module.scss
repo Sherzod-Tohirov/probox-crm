@@ -1,4 +1,7 @@
+@use "@styles/variables" as v;
+
 .col {
   display: flex;
   box-sizing: border-box;
+  transition: all v.$transition-time v.$transition-type;
 }

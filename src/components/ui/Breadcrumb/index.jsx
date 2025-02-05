@@ -40,7 +40,6 @@ export default function Breadcrumb() {
 
   const breadcrumbs = generateBreadcrumb(pathname);
 
-  console.log(breadcrumbs);
   return (
     <List
       direction="row"

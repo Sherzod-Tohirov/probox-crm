@@ -28,7 +28,6 @@ export default function Table({
         {data.map((row) => (
           <tr key={row.id} onClick={() => onRowClick(row)}>
             {columns.map((column) => {
-              console.log("column", column);
               return (
                 <td key={column.key}>
                   {column.renderCell ? column.renderCell(row) : row[column.key]}

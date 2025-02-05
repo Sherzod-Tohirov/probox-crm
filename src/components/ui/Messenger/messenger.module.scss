@@ -5,44 +5,51 @@
   position: relative;
   font-family: "Poppins", sans-serif;
   @include m.flex-direction(column);
-  width: 0;
   min-height: 100dvh;
+  width: 356px;
   height: 100%;
-  padding: 13px 24px 24px 24px;
+  padding-left: 24px;
+  padding-right: 24px;
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   background: v.$secondary-bg;
-  overflow: auto;
+  overflow: scroll;
+  transition: width 0.3s v.$transition-type;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    width: 10px;
+    border-radius: 10px;
+    background-color: v.$button-bg;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: v.$secondary-bg;
+  }
 
   &-header {
     position: sticky;
     top: 0;
-    padding-bottom: 12px;
+    z-index: 100;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    background-color: inherit;
   }
 
   &-body {
     @include m.flex(start, end, 4rem, column);
     flex: 1;
-    overflow: auto;
-    padding: 10px 10px 16px;
-
-    &::-webkit-scrollbar {
-      width: 14px;
-    }
-    &::-webkit-scrollbar-thumb {
-      width: 12px;
-      border-radius: 10px;
-      background-color: red;
-    }
-
-    &::-webkit-scrollbar-track {
-      background-color: v.$secondary-bg;
-    }
+    padding-bottom: 60px;
   }
 
   &-footer {
     position: sticky;
-    bottom: 0;
+    padding-top: 12px;
+    padding-bottom: 24px;
+    bottom: 63px;
+    background-color: inherit;
   }
 }
 
@@ -57,7 +64,7 @@
 .text-input-form {
   @include m.flex(start, space-between, 0, column);
   height: 114px;
-  padding: 0 9px 12px 12px;
+  padding: 0 12px 12px 12px;
   border-radius: 12px;
   background: v.$primary-chat-input-bg;
 }
@@ -135,4 +142,3 @@
     }
   }
 }
-

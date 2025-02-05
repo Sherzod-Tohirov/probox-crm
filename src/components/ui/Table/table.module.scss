@@ -14,7 +14,7 @@
     v.$primary-border-color;
   overflow: hidden;
   background-color: v.$primary-table-bg;
-  transition: width v.$transition-type v.$transition-time;
+  transition: all v.$transition-type v.$transition-time;
 
   tr {
     transition: background-color v.$transition-type v.$transition-time;

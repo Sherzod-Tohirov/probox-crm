@@ -1,10 +1,15 @@
+import { matchPath, useLocation } from "react-router-dom";
 import useToggle from "../../hooks/useToggle";
 import { Col, Row, Button } from "../ui";
 import Divider from "../ui/Divider";
 import Input from "../ui/Input";
 import styles from "./header.module.scss";
+import { isMessengerRoute } from "../../utils/routesConfig";
 function Header() {
-  const { isSidebarOpen, toggleSidebar } = useToggle("sidebar");
+  const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
+  const { pathname } = useLocation();
+  console.log("Header -> pathname", pathname, isMessengerRoute(pathname));
+  console.log(matchPath("/clients/:name", pathname));
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">
@@ -14,8 +19,8 @@ function Header() {
               <Button
                 variant="text"
                 color="secondary"
-                icon={isSidebarOpen ? "toggleClose" : "toggleOpen"}
-                onClick={toggleSidebar}></Button>
+                icon={sidebar.isOpen ? "toggleClose" : "toggleOpen"}
+                onClick={sidebar.toggle}></Button>
             </Col>
             <Col align="stretch">
               <Divider />
@@ -35,6 +40,15 @@ function Header() {
                 Notification
               </Button>
             </Col>
+            {isMessengerRoute(pathname) ? (
+              <Col>
+                <Button
+                  icon={messenger.isOpen ? "toggleOpen" : "toggleClose"}
+                  variant={"text"}
+                  onClick={messenger.toggle}
+                />
+              </Col>
+            ) : null}
           </Row>
         </Col>
       </Row>

@@ -1,5 +1,5 @@
 import "@assets/styles/globals.scss";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import SidebarLayout from "@layouts/SidebarLayout";
 import Sidebar from "@components/Sidebar";
 import MainLayout from "@layouts/MainLayout";
@@ -9,9 +9,20 @@ import Header from "@components/Header";
 import useAlert from "@hooks/useAlert";
 import Messenger from "./components/ui/Messenger";
 import { Col, Row } from "./components/ui";
+import useToggle from "./hooks/useToggle";
+import { useEffect } from "react";
+import { isMessengerRoute } from "./utils/routesConfig";
 
 function App() {
   const { AlertContainer } = useAlert();
+  const { isOpen, toggle } = useToggle("messenger");
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    // Toggle off messenger when route changes
+    !isMessengerRoute(pathname) && isOpen && toggle();
+  }, [pathname, toggle, isOpen]);
+
   return (
     <MainLayout>
       <SidebarLayout>
@@ -19,15 +30,23 @@ function App() {
       </SidebarLayout>
       <PrimaryLayout>
         <Header />
-        <Row direction="row" flexGrow>
-          <Col flexGrow>
+        <Row direction="row" flexGrow gutter={6}>
+          <Col
+            flexGrow
+            style={{ width: isOpen ? "calc(100% - (356px + 32px))" : "100%" }}>
             <DashboardLayout>
               <Outlet />
             </DashboardLayout>
           </Col>
-          {/* <Col style={{ position: "sticky", top: "83px" }}>
+          <Col
+            style={{
+              position: "sticky",
+              top: "83px",
+              marginLeft: "auto",
+              height: "100vh",
+            }}>
             <Messenger />
-          </Col> */}
+          </Col>
         </Row>
       </PrimaryLayout>
       <AlertContainer />

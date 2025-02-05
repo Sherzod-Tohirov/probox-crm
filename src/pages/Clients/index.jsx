@@ -23,7 +23,6 @@ const columns = [
     key: "status",
     title: "Status",
     renderCell: (value) => {
-      console.log("value", value);
       return <Status status={value.status} />;
     },
   },

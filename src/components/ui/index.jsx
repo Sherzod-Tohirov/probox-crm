@@ -9,6 +9,7 @@ import Alert from "./Alert";
 import Pagination from "./Pagination";
 import Input from "./Input";
 import Navigation from "./Navigation";
+import Table from "./Table";
 
 export {
   Row,
@@ -22,4 +23,5 @@ export {
   Alert,
   Pagination,
   Navigation,
+  Table,
 };

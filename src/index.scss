@@ -12,6 +12,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 // Alert styles
 .alert {
   width: clamp(100rem, 100%, 160rem) !important;

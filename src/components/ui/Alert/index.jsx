@@ -16,7 +16,6 @@ export default function Alert({
   const [show, setShow] = useState(true);
   const handleClose = useCallback(() => {
     setShow(false);
-    console.log("worked");
     if (typeof onClose === "function") {
       onClose();
     }
@@ -37,14 +36,12 @@ export default function Alert({
     const timerId = setTimeout(() => {
       setShow(false);
       if (onClose) onClose();
-      console.log("close alert");
     }, timer);
 
     return () => {
       clearTimeout(timerId);
     };
   }, [timer, persistant, onClose]);
-  console.log(show, "closeAlert");
 
   return (
     <Row

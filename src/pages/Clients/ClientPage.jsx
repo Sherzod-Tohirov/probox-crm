@@ -1,46 +1,74 @@
-import { Col, Navigation, Row } from "@components/ui";
-import Messenger from "@components/ui/Messenger";
-import { Button } from "../../components/ui";
-import Table from "../../components/ui/Table";
-import { mockDataClients } from "../../../mockData";
-import Status from "../../components/ui/Status";
+import {
+  Col,
+  Navigation,
+  Row,
+  Button,
+  Typography,
+  Table,
+} from "@components/ui";
+
+import Footer from "@components/Footer";
+import ClientPageForm from "@features/clients/components/ClientPageForm";
+
 const columns = [
-  { key: "clientCode", title: "Код клиента", width: "15%" },
-  { key: "clientName", title: "Имя клиента" },
-  { key: "product", title: "Товар" },
-  { key: "monthlyPayment", title: "месячная оплата" },
-  {
-    key: "status",
-    title: "Status",
-    renderCell: (value) => {
-      console.log("value", value);
-      return <Status status={value.status} />;
-    },
-  },
-  { key: "saleDate", title: "Дата продажи" },
-  { key: "executor", title: "Исполнитель" },
-  { key: "term", title: "Срок" },
+  { key: "no", title: "No", width: "15%", icon: "" },
+  { key: "date", title: "📅 Date", width: "15%", icon: "" },
+  { key: "payment", title: "💰 Payment", width: "15%", icon: "" },
+  { key: "paid", title: "✔ Paid", width: "10%", icon: "" },
+  { key: "accountDate", title: "📅 Date hisob", width: "15%", icon: "" },
+  { key: "account", title: "📅 Date hisob", width: "20%", icon: "" },
+  { key: "bill", title: "💳 Счет", width: "10%", icon: "" },
 ];
+
+const mockData = Array.from({ length: 50 }, (_, index) => ({
+  no: index + 1,
+  date: "2024.12.01",
+  payment: "300.00 so'm",
+  paid: "300.00",
+  accountDate: "2024.11.01",
+  account: "Samarqand Darvoza kassa",
+  bill: "300.00",
+}));
 export default function ClientPage() {
   return (
-    <Row direction="row" gutter={6}>
-      <Col style={{ flexGrow: 1 }}>
-        <Row>
-          <Col fullWidth>
-            <Row direction="row" align="center" justify="space-between">
-              <Col>
-                <Navigation />
-              </Col>
-              <Col>
-                <Button variant={"filled"}>Сохранить</Button>
-              </Col>
-            </Row>
+    <>
+      <Row direction="column" gutter={6}>
+        <Col fullWidth>
+          <Row>
+            <Col fullWidth>
+              <Row direction="row" align="center" justify="space-between">
+                <Col>
+                  <Navigation />
+                </Col>
+                <Col>
+                  <Button variant={"filled"}>Сохранить</Button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Col>
+        <Col fullWidth>
+          <ClientPageForm />
+        </Col>
+        <Col fullWidth>
+          <Table columns={columns} data={mockData} />
+        </Col>
+      </Row>
+      <Footer>
+        <Row direction={"row"} align={"center"} justify={"space-between"}>
+          <Typography style={{ fontSize: "4rem" }} element={"span"}>
+            Итого: 1000$
+          </Typography>
+          <Col>
+            <Typography element={"span"} style={{ fontSize: "4rem" }}>
+              Курс доллара : 13000 som
+            </Typography>
           </Col>
-          <Col fullWidth>
-            <Table columns={columns} data={mockDataClients} />
+          <Col>
+            <Button variant={"filled"}>Оплатить</Button>
           </Col>
         </Row>
-      </Col>
-    </Row>
+      </Footer>
+    </>
   );
 }
