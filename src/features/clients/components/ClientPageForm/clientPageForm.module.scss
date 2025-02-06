@@ -1,0 +1,22 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
+.form {
+  @include m.flex(center, start);
+  width: 100%;
+}
+
+.label {
+  @include m.flex(center, start, 2rem);
+  min-width: 165px;
+  color: v.$secondary-color;
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 143%;
+
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+}

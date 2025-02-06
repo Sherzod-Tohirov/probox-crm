@@ -1,13 +1,14 @@
 import classNames from "classnames";
 import styles from "./input.module.scss";
 import { memo, useMemo } from "react";
-import iconsMap from "../../../utils/iconsMap";
+import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
 import Box from "../Box";
 import Col from "../Col";
 import Row from "../Row";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/airbnb.css";
+
 const inputIcons = {
   email: "email",
   select: "arrowDown",
@@ -24,6 +25,9 @@ function Input({
   options = [],
   width,
   style = {},
+  size = "",
+  disabled = false,
+  hasIcon = true,
   ...props
 }) {
   const inputStyle = useMemo(
@@ -33,25 +37,37 @@ function Input({
     }),
     [width, style]
   );
-
+  const classes = useMemo(
+    () =>
+      classNames(
+        styles["input"],
+        styles[variant],
+        styles[type],
+        styles[size],
+        styles[disabled ? "disabled" : ""]
+      ),
+    [variant, type, size, disabled]
+  );
   const inputTypeMatcher = useMemo(
     () => ({
       date: (
         <Flatpickr
           style={inputStyle}
-          className={classNames(styles["input"], styles[variant], styles[type])}
+          className={classes}
           data-enable-time
           options={{
             dateFormat: "d.m.Y", // Custom date format
             defaultDate: "01.01.2025", // Default selected date
           }}
+          disabled={disabled}
           {...props}
         />
       ),
       select: (
         <select
           style={inputStyle}
-          className={classNames(styles["input"], styles[variant], styles[type])}
+          className={classes}
+          disabled={disabled}
           {...props}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -64,12 +80,13 @@ function Input({
         <input
           style={inputStyle}
           type={type}
-          className={classNames(styles["input"], styles[variant], styles[type])}
+          className={classes}
+          disabled={disabled}
           {...props}
         />
       ),
     }),
-    [props, type, variant, options, inputStyle]
+    [props, type, options, inputStyle, classes, disabled]
   );
 
   if (variant === "search") {
@@ -100,9 +117,11 @@ function Input({
       <Col>
         <Box pos="relative">
           {inputTypeMatcher[type] || inputTypeMatcher.default}
-          <Typography element="span" className={styles["icon"]}>
-            {iconsMap[icon || inputIcons[type] || ""]}
-          </Typography>
+          {hasIcon ? (
+            <Typography element="span" className={styles["icon"]}>
+              {iconsMap[icon || inputIcons[type] || ""]}
+            </Typography>
+          ) : null}
         </Box>
       </Col>
     </Row>

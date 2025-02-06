@@ -29,6 +29,11 @@
     color: v.$primary-color;
     border-radius: 12px;
     background-color: "";
+    transition: width v.$transition-time v.$transition-type;
+  }
+
+  &.filled.small {
+    width: 257px !important;
   }
 
   &.select {
@@ -38,6 +43,14 @@
 
   &.date {
     color: v.$filter-input-placeholder-color !important;
+  }
+
+  &.filled.date {
+    color: inherit !important;
+  }
+
+  &.disabled {
+    pointer-events: none !important;
   }
 
   &.date ::-webkit-inner-spin-button,
