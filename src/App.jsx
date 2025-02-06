@@ -30,7 +30,7 @@ function App() {
       </SidebarLayout>
       <PrimaryLayout>
         <Header />
-        <Row direction="row" flexGrow gutter={6}>
+        <Row direction="row" flexGrow>
           <Col
             flexGrow
             style={{ width: isOpen ? "calc(100% - (356px + 32px))" : "100%" }}>

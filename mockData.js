@@ -15,8 +15,30 @@ export const tableData = Array.from({ length: 40 }, (_, index) => ({
   company: `Company ${index + 1}`,
 }));
 
+export const images = [
+  {
+    img: "https://plus.unsplash.com/premium_photo-1738078691405-3527a067a6fb?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    url: "https://unsplash.com/photos/1738078691405-3527a067a6fb",
+    title: "Premium Aesthetic View",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1735586971748-96f7425c0162?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    url: "https://unsplash.com/photos/1735586971748-96f7425c0162",
+    title: "Urban Landscape",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1738557555727-7116a7d5ce83?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    url: "https://unsplash.com/photos/1738557555727-7116a7d5ce83",
+    title: "Nature Serenity",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1738168601626-00a692f3638d?q=80&w=1975&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    url: "https://unsplash.com/photos/1738168601626-00a692f3638d",
+    title: "Golden Sunset",
+  },
+];
 
-
+console.log(images);
 
 export const mockDataClients = [
   {

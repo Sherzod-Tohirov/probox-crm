@@ -5,8 +5,9 @@ import Footer from "../../components/Footer";
 import { Button, Input, Pagination } from "../../components/ui";
 import Table from "../../components/ui/Table";
 import { mockDataClients } from "../../../mockData";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useToggle from "../../hooks/useToggle";
 
 const tableSizeSelectOptions = [
   { value: "10", label: "10" },
@@ -39,6 +40,7 @@ export default function Clients() {
     },
     [navigate]
   );
+
   return (
     <>
       <Row gutter={6} style={{ width: "100%" }}>

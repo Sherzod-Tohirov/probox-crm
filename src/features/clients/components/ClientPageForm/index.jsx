@@ -3,6 +3,7 @@ import styles from "./clientPageForm.module.scss";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
 import useToggle from "@hooks/useToggle";
+import { images } from "../../../../../mockData";
 
 export default function ClientPageForm({ formId, ...props }) {
   const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
@@ -27,7 +28,8 @@ export default function ClientPageForm({ formId, ...props }) {
               <InputGroup>
                 <Label icon="photo">Photo</Label>
                 <Input
-                  type="text"
+                  type="file"
+                  images={images}
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
                 />
@@ -47,7 +49,7 @@ export default function ClientPageForm({ formId, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="barCode">Code</Label>
+                <Label icon="barCodeFilled">Code</Label>
                 <Input
                   type="text"
                   variant={"filled"}
@@ -99,7 +101,7 @@ export default function ClientPageForm({ formId, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="barCode">IMEI</Label>
+                <Label icon="barCodeFilled">IMEI</Label>
                 <Input
                   type="text"
                   variant={"filled"}

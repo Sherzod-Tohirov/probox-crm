@@ -41,6 +41,16 @@
     color: v.$filter-input-placeholder-color !important;
   }
 
+  &.file[type="file"] {
+    display: none !important;
+  }
+
+  &.file[type="file"] + label {
+    min-height: 43px;
+    max-height: 68px;
+    overflow: auto;
+  }
+
   &.date {
     color: v.$filter-input-placeholder-color !important;
   }
@@ -109,4 +119,10 @@
   font-weight: 500;
   line-height: 143%;
   color: v.$primary-label-color;
+}
+
+.file-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
 }
