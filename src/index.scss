@@ -119,3 +119,9 @@ body {
     fill: v.$fourth-color;
   }
 }
+
+// Custom styles for react-toastify
+
+.Toastify__toast {
+  margin-bottom: 12px !important;
+}

@@ -10,7 +10,7 @@ export default function ClientPageForm({ formId, ...props }) {
   console.log(sidebar, messenger);
   return (
     <form className={styles.form} id={formId} {...props}>
-      <Row direction={"row"} gutter={6} justify={"space-between"}>
+      <Row direction={"row"} gutter={6}>
         <Col>
           <Row gutter={1}>
             <Col>

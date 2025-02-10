@@ -1,4 +1,3 @@
-import { CSSTransition } from "react-transition-group";
 import classNames from "classnames";
 import styles from "./alert.module.scss";
 import { Row, Col, Button, Box } from "@components/ui";
@@ -51,7 +50,7 @@ export default function Alert({
       <Col>
         <Box>{iconsMap[icon[type]]}</Box>
       </Col>
-      <Col>
+      <Col span={10}>
         <Row gutter={2} className={styles["alert-content"]}>
           <Col>
             <Typography className={styles["alert-title"]} element="strong">

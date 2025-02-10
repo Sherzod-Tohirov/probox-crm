@@ -1,21 +1,46 @@
-import { useCallback, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import styles from "@styles/modules/hook.module.scss";
+import { toast, ToastContainer } from "react-toastify";
+import { useCallback } from "react";
 import { Alert } from "../components/ui";
-
 export default function useAlert() {
-  const [alertProps, setAlertProps] = useState({});
-
   const alert = useCallback((message, options = {}) => {
-    setAlertProps({ message, ...options, open: true });
-  }, []);
-
-  const closeAlert = useCallback(() => {
-    setAlertProps((prev) => ({ ...prev, open: false }));
+    return toast(
+      <Alert
+        message={message}
+        onClose={() => {
+          typeof options.onClose === "function" &&
+            options.onClose &&
+            options.onClose();
+        }}
+        {...options}
+      />,
+      {
+        type: "default",
+        className: styles["alert-container"],
+        progressClassName: styles["alert-progress"],
+      }
+    );
   }, []);
 
   const AlertContainer = () => {
-    return alertProps.open ? (
-      <Alert {...alertProps} onClose={closeAlert} />
-    ) : null;
+    return (
+      <ToastContainer
+        toastClassName={styles["alert-container"]}
+        progressClassName={styles["alert-progress"]}
+        position="top-right"
+        autoClose={50000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        closeButton={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    );
   };
 
   return { alert, AlertContainer };

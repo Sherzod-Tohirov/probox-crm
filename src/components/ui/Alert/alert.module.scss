@@ -8,7 +8,7 @@
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
   transition: opacity v.$transition-time v.$transition-type;
-  
+
   &-success {
     background-color: v.$success-bg;
     color: v.$success-color;
@@ -43,7 +43,7 @@
   }
 
   &-content {
-    width: clamp(100rem, 100%, 136rem);
+    width: clamp(100rem, 100%, 136rem) !important;
   }
 
   &-title {
@@ -56,6 +56,7 @@
     font-size: 3.5rem;
     font-weight: 500;
     line-height: normal;
+    word-wrap: break-word;
   }
 
   &-enter {
