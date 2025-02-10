@@ -13,7 +13,7 @@ export default function Dashboard() {
           variant={"filled"}
           onClick={() => {
             alert("This is success message", {
-              type: "success",
+              type: "su",
             });
           }}>
           Alert Success

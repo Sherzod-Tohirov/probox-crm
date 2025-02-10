@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 import styles from "@styles/modules/hook.module.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { Slide, toast, ToastContainer } from "react-toastify";
 import { useCallback } from "react";
 import { Alert } from "../components/ui";
 export default function useAlert() {
@@ -17,6 +17,7 @@ export default function useAlert() {
       />,
       {
         type: "default",
+        autoClose: options.autoClose || 5000,
         className: styles["alert-container"],
         progressClassName: styles["alert-progress"],
       }
@@ -29,11 +30,12 @@ export default function useAlert() {
         toastClassName={styles["alert-container"]}
         progressClassName={styles["alert-progress"]}
         position="top-right"
-        autoClose={50000}
+        autoClose={5000}
         hideProgressBar={true}
         newestOnTop={false}
         closeOnClick
         closeButton={false}
+        transition={Slide}
         rtl={false}
         pauseOnFocusLoss
         draggable
