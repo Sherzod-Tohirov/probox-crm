@@ -1,0 +1,31 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.statistic-date {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: v.$primary-bg;
+}
+
+.title {
+  font-size: 3rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  color: v.$secondary-color;
+}
+
+.date {
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  color: v.$seventh-color;
+}
+
+.arrow-icon {
+  @include m.flex-center;
+  width: 18px;
+  height: 18px;
+  color: v.$primary-color;
+}

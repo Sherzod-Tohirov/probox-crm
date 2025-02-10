@@ -33,6 +33,8 @@ import {
   DoubleTick,
   AddCircle,
   Clock,
+  ArrowRightLong,
+  MoneyAdd,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -68,8 +70,10 @@ const iconsMap = {
   arrowUp: <ArrowUp />,
   arrowDown: <ArrowDown />,
   arrowRight: <ArrowRight />,
+  arrowRightLong: <ArrowRightLong />,
   arrowLeft: <ArrowLeft />,
   telephoneFilled: <TelephoneFilled />,
+  moneyAdd: <MoneyAdd />,
 };
 
 export default iconsMap;

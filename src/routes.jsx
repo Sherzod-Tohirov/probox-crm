@@ -5,6 +5,7 @@ import Clients from "./pages/Clients";
 
 import { Navigate } from "react-router-dom";
 import ClientPage from "./pages/Clients/ClientPage";
+import Statistics from "./pages/Statistics";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/calendar",
         element: <>Calendar</>,
+      },
+      {
+        path: "/statistics",
+        element: <Statistics />,
       },
       {
         path: "/products",

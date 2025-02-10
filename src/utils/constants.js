@@ -15,6 +15,11 @@ export const sidebarLinks = [
     path: "/calendar",
   },
   {
+    title: "Statistics",
+    icon: "presentationChart",
+    path: "/statistics",
+  },
+  {
     title: "Products",
     icon: "products",
     path: "/products",

@@ -1,0 +1,11 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.statistics {
+  @include m.flex(start, start);
+  width: 100%;
+  min-height: 256px;
+  padding: 24px;
+  background-color: v.$fourth-bg;
+  border-radius: 12px;
+}
