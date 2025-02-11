@@ -10,12 +10,12 @@ export default function DashboardStatisticDate({ startDate, endDate }) {
           <Row gutter={1}>
             <Col>
               <Typography element="p" className={styles.title}>
-                {startDate || "01.02.2025"}
+                Start date
               </Typography>
             </Col>
             <Col>
               <Typography element="span" className={styles.date}>
-                {endDate || "10.02.2025"}
+                {startDate || "01.02.2025"}
               </Typography>
             </Col>
           </Row>
@@ -34,7 +34,7 @@ export default function DashboardStatisticDate({ startDate, endDate }) {
             </Col>
             <Col>
               <Typography element="time" className={styles.date}>
-                10.02.2025
+                {endDate || "10.02.2025"}
               </Typography>
             </Col>
           </Row>

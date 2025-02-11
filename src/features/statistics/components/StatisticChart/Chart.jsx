@@ -13,15 +13,17 @@ export default function Chart() {
   const data = [
     { name: "Jan", sales: 4000, revenue: 2400 },
     { name: "Feb", sales: 3000, revenue: 1398 },
-    { name: "Mar", sales: 2000, revenue: 9800 },
+    { name: "Mar", sales: 2000, revenue: 4400 },
     { name: "Apr", sales: 2780, revenue: 3908 },
     { name: "May", sales: 1890, revenue: 4800 },
     { name: "Jun", sales: 2390, revenue: 3800 },
     { name: "Jul", sales: 3490, revenue: 4300 },
+    { name: "Aug", sales: 3550, revenue: 4500 },
+    { name: "Sep", sales: 4500, revenue: 6500 },
   ];
 
   return (
-    <div style={{ width: "100%", minHeight: "400px" }}>
+    <div style={{ width: "100%", minHeight: "400px", fontSize: "3rem" }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
@@ -48,20 +50,28 @@ export default function Chart() {
           />
           <Legend verticalAlign="top" height={36} iconType="circle" />
           <Line
-            type="monotone"
+            type="linear"
             dataKey="sales"
-            stroke="#0088FE"
+            stroke="#8979FF"
             strokeWidth={2}
-            dot={{ fill: "#0088FE" }}
-            activeDot={{ r: 8 }}
+            dot={{ fill: "#fff" }}
+            activeDot={{ r: 6 }}
+            style={{
+              filter:
+                "drop-shadow(0px 3px 3px rgba(137, 121, 255, 0.40)) drop-shadow(0px 6px 9px rgba(137, 121, 255, 0.40))",
+            }}
           />
           <Line
-            type="monotone"
+            type="linear"
             dataKey="revenue"
-            stroke="#00C49F"
+            stroke="#FF928A"
             strokeWidth={2}
-            dot={{ fill: "#00C49F" }}
-            activeDot={{ r: 8 }}
+            dot={{ fill: "#fff" }}
+            activeDot={{ r: 6 }}
+            style={{
+              filter:
+                "drop-shadow(0px 3px 3px rgba(255, 146, 138, 0.40)) drop-shadow(0px 6px 9px rgba(255, 146, 138, 0.40)) drop-shadow(0px 9px 18px rgba(255, 146, 138, 0.40))",
+            }}
           />
         </LineChart>
       </ResponsiveContainer>

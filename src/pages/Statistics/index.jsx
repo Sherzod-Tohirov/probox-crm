@@ -23,6 +23,20 @@ const generalStatisticData = Array.from({ length: 1 }, (_, index) => ({
   oylik2: "5 400 000 UZS",
 }));
 
+const table2Columns = [
+  { key: "sana", title: "Sana", icon: "calendar" },
+  { key: "plan", title: "Plan", icon: "calendarFact" },
+  { key: "fakt", title: "Fakt", icon: "calendarFact" },
+  { key: "foiz", title: "Foiz", icon: "presentationChart" },
+];
+
+const table2Data = Array.from({ length: 20 }, (_, index) => ({
+  sana: "November",
+  plan: "94 089,64 $",
+  fakt: "88 552,00 $",
+  foiz: "94.11%",
+}));
+
 export default function Statistics() {
   return (
     <Row gutter={8}>
@@ -32,7 +46,9 @@ export default function Statistics() {
       <Col fullWidth>
         <StatisticChart />
       </Col>
-      <Col></Col>
+      <Col fullWidth>
+        <Table columns={table2Columns} data={table2Data} />
+      </Col>
     </Row>
   );
 }
