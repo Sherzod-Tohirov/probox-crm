@@ -22,6 +22,7 @@
   flex: 1;
   padding: 6rem;
   padding-bottom: 68px;
+  min-height: 100dvh;
 }
 
 .main-layout {
@@ -32,8 +33,9 @@
 .primary-layout {
   position: relative;
   @include m.flex-direction(column);
+  min-height: 100dvh;
   width: 100%;
- }
+}
 
 .client-page-layout {
   position: relative;

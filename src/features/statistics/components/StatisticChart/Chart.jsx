@@ -29,11 +29,11 @@ export default function Chart() {
           data={data}
           margin={{
             top: 20,
-            right: 30,
-            left: 20,
+            right: 15,
+            left: -20,
             bottom: 20,
           }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 26, 0.15)" />
           <XAxis
             dataKey="name"
             tick={{ fill: "#666" }}

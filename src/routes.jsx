@@ -1,37 +1,60 @@
-import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
-import Dashboard from "./pages/Dashboard";
-import Clients from "./pages/Clients";
+import { Navigate, createBrowserRouter } from "react-router-dom";
+import PageLoader from "./pages/helper/PageLoader";
+import Error from "./pages/helper/Error";
+import { lazy, Suspense } from "react";
 
-import { Navigate } from "react-router-dom";
-import ClientPage from "./pages/Clients/ClientPage";
-import Statistics from "./pages/Statistics";
+const App = lazy(() => import("./App"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Clients = lazy(() => import("./pages/Clients"));
+const ClientPage = lazy(() => import("./pages/Clients/ClientPage"));
+const Statistics = lazy(() => import("./pages/Statistics"));
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <App />
+      </Suspense>
+    ),
     children: [
       {
         index: true,
         element: <Navigate to="/dashboard" />,
+        errorElement: <Error />,
       },
       {
         path: "/dashboard",
-        element: <Dashboard />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Dashboard />
+          </Suspense>
+        ),
+        errorElement: <Error />,
       },
       {
         path: "/clients",
         children: [
           {
             index: true,
-            element: <Clients />,
+            element: (
+              <Suspense fallback={<PageLoader />}>
+                <Clients />
+              </Suspense>
+            ),
+            errorElement: <Error />,
           },
           {
             path: "/clients/:name",
-            element: <ClientPage />,
+            element: (
+              <Suspense fallback={<PageLoader />}>
+                <ClientPage />
+              </Suspense>
+            ),
+            errorElement: <Error />,
           },
         ],
+        errorElement: <Error />,
       },
       {
         path: "/calendar",
@@ -39,7 +62,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/statistics",
-        element: <Statistics />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Statistics />
+          </Suspense>
+        ),
+        errorElement: <Error />,
       },
       {
         path: "/products",
@@ -50,6 +78,7 @@ const router = createBrowserRouter([
         element: <>Leads</>,
       },
     ],
+    errorElement: <Error />,
   },
 ]);
 

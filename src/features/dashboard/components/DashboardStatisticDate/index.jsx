@@ -34,7 +34,7 @@ export default function DashboardStatisticDate({ startDate, endDate }) {
             </Col>
             <Col>
               <Typography element="time" className={styles.date}>
-                {endDate || "10.02.2025"}
+                {endDate || "12.02.2025"}
               </Typography>
             </Col>
           </Row>

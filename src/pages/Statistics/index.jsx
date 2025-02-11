@@ -49,6 +49,9 @@ export default function Statistics() {
       <Col fullWidth>
         <Table columns={table2Columns} data={table2Data} />
       </Col>
+      <Col fullWidth>
+        <Table columns={table2Columns} data={table2Data} />
+      </Col>
     </Row>
   );
 }
