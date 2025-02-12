@@ -7,10 +7,6 @@
   cursor: pointer;
   transform: scale(1);
   transform-origin: center;
-  transition: transform v.$transition-time v.$transition-type;
-  &:active {
-    transform: scale(0.9);
-  }
 
   &.loading {
     pointer-events: none;

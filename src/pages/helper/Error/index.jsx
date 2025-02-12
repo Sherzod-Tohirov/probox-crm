@@ -5,7 +5,9 @@ export default function Error({
   error = {
     message: "Iltimos, qayta urinib ko'ring.",
   },
-  onRetry,
+  onRetry = () => {
+    window.location.reload();
+  },
 }) {
   return (
     <div className={styles["page-error"]}>

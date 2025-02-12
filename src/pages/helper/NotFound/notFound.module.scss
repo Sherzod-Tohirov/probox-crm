@@ -1,0 +1,32 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.not-found {
+  @include m.flex(center, center, 8rem, column);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-weight: bold;
+  background-color: #f8f9fa;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin: 0;
+  font-size: 20rem;
+  font-weight: 600;
+  line-height: normal;
+  color: v.$primary-color;
+  letter-spacing: 4rem;
+}
+
+.desc {
+  margin: 0;
+  font-size: 8rem;
+  font-weight: 500;
+  line-height: normal;
+  color: v.$secondary-color;
+  letter-spacing: 0.7rem;
+}

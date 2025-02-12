@@ -1,7 +1,7 @@
-import { tableColumns, tableData } from "../../mockData";
-import Button from "../components/ui/Button";
-import Table from "../components/ui/Table";
-import { Box, Col, Row } from "../components/ui";
+import { tableColumns, tableData } from "../../../mockData";
+import Button from "../../components/ui/Button";
+import Table from "../../components/ui/Table";
+import { Box, Col, Row } from "../../components/ui";
 import useAlert from "@hooks/useAlert";
 import {
   DashboardStatisticDate,

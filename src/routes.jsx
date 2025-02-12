@@ -1,6 +1,4 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import PageLoader from "./pages/helper/PageLoader";
-import Error from "./pages/helper/Error";
 import { lazy, Suspense } from "react";
 
 const App = lazy(() => import("./App"));
@@ -8,6 +6,9 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Clients = lazy(() => import("./pages/Clients"));
 const ClientPage = lazy(() => import("./pages/Clients/ClientPage"));
 const Statistics = lazy(() => import("./pages/Statistics"));
+const NotFound = lazy(() => import("./pages/helper/NotFound"));
+const PageLoader = lazy(() => import("./pages/helper/PageLoader"));
+const Error = lazy(() => import("./pages/helper/Error"));
 
 const router = createBrowserRouter([
   {
@@ -27,7 +28,7 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: (
           <Suspense fallback={<PageLoader />}>
-            <Error />
+            <Dashboard />
           </Suspense>
         ),
         errorElement: <Error />,
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/calendar",
-        element: <>Calendar</>,
+        element: <h2 style={{ fontSize: "5rem" }}>Calendar</h2>,
       },
       {
         path: "/statistics",
@@ -71,14 +72,22 @@ const router = createBrowserRouter([
       },
       {
         path: "/products",
-        element: <>Products</>,
+        element: <h2 style={{ fontSize: "5rem" }}>Products</h2>,
       },
       {
         path: "/leads",
-        element: <>Leads</>,
+        element: <h2 style={{ fontSize: "5rem" }}>Leads</h2>,
       },
     ],
     errorElement: <Error />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/404" />,
+  },
+  {
+    path: "/404",
+    element: <NotFound />,
   },
 ]);
 

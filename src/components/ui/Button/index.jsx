@@ -5,10 +5,11 @@ import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
 import { OrbitProgress } from "react-loading-indicators";
 import Box from "../Box";
+import { motion } from "framer-motion";
 function Button({
   children,
   className,
-  variant,
+  variant = "filled",
   color,
   icon,
   iconPosition = "left",
@@ -17,7 +18,7 @@ function Button({
   ...props
 }) {
   return (
-    <button
+    <motion.button
       className={classNames(
         className,
         styles["btn"],
@@ -27,6 +28,14 @@ function Button({
         isLoading && styles["loading"],
         { icon }
       )}
+      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.05 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 15,
+        duration: 0.1,
+      }}
       disabled={isLoading}
       {...props}>
       {isLoading ? (
@@ -57,7 +66,7 @@ function Button({
         )}
         {children}
       </Box>
-    </button>
+    </motion.button>
   );
 }
 
