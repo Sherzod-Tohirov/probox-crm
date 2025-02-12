@@ -13,7 +13,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<PageLoader fullscreen={true} />}>
         <App />
       </Suspense>
     ),
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: (
           <Suspense fallback={<PageLoader />}>
-            <Dashboard />
+            <Error />
           </Suspense>
         ),
         errorElement: <Error />,

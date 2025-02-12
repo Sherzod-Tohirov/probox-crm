@@ -1,0 +1,23 @@
+@use "@styles/variables" as v;
+
+.page-error {
+  max-width: 500px;
+  width: 100%;
+}
+
+.title {
+  font-family: "Inter Tight";
+  font-size: 6rem;
+  font-weight: 500;
+  line-height: normal;
+  color: lighten(v.$danger-color, 20%);
+}
+
+.desc {
+  font-family: "Inter Tight";
+  font-size: 4rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+  color: #000000b8;
+}

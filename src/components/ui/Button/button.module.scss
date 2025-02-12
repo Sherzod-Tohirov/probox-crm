@@ -61,6 +61,12 @@
       color: v.$text-button-color !important;
     }
   }
+
+  &.icon-secondary-color {
+    span {
+      color: v.$button-color !important;
+    }
+  }
 }
 
 .icon-text {

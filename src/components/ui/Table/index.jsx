@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import styles from "./table.module.scss";
-import iconsMap from "../../../utils/iconsMap";
+import iconsMap from "@utils/iconsMap";
 
 export default function Table({
   columns = [],

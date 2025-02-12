@@ -1,9 +1,13 @@
 import { ClipLoader } from "react-spinners";
 import styles from "./loader.module.scss";
-export default function PageLoader() {
+import classNames from "classnames";
+export default function PageLoader({ fullscreen = false }) {
   return (
-    <div className={styles["page-loader"]}>
-      <ClipLoader color={"#00000067"} loading={true} size={50} />
+    <div
+      className={classNames(styles["page-loader"], {
+        [styles.fullscreen]: fullscreen,
+      })}>
+      <ClipLoader color={"#7e7c7cf9"} loading={true} size={65} />
     </div>
   );
 }

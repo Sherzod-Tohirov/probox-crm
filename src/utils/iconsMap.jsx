@@ -35,7 +35,8 @@ import {
   Clock,
   ArrowRightLong,
   MoneyAdd,
-} from "../assets/images/icons/Icons";
+  Refresh,
+} from "@assets/images/icons/Icons";
 
 const iconsMap = {
   dashboard: <Dashboard />,
@@ -74,6 +75,7 @@ const iconsMap = {
   arrowLeft: <ArrowLeft />,
   telephoneFilled: <TelephoneFilled />,
   moneyAdd: <MoneyAdd />,
+  refresh: <Refresh />,
 };
 
 export default iconsMap;
