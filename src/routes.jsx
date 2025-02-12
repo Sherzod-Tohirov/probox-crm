@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import Login from "./pages/auth/Login";
 
 const App = lazy(() => import("./App"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -82,12 +83,25 @@ const router = createBrowserRouter([
     errorElement: <Error />,
   },
   {
-    path: "*",
-    element: <Navigate to="/404" />,
+    path: "/login",
+    element: (
+      <Suspense fallback={<PageLoader fullscreen={true} />}>
+        <Login />
+      </Suspense>
+    ),
+    errorElement: <Error />,
   },
   {
     path: "/404",
-    element: <NotFound />,
+    element: (
+      <Suspense fallback={<PageLoader fullscreen={true} />}>
+        <NotFound />
+      </Suspense>
+    ),
+  },
+  {
+    path: "*",
+    element: <Navigate to="/404" />,
   },
 ]);
 

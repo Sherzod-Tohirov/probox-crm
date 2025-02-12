@@ -15,6 +15,7 @@ function Button({
   iconPosition = "left",
   iconColor,
   isLoading = false,
+  fullWidth = false,
   ...props
 }) {
   return (
@@ -26,6 +27,7 @@ function Button({
         styles[color],
         styles[`icon-${iconColor}-color`],
         isLoading && styles["loading"],
+        fullWidth && styles["full-width"],
         { icon }
       )}
       whileTap={{ scale: 0.95 }}

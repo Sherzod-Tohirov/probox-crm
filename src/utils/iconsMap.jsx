@@ -36,6 +36,7 @@ import {
   ArrowRightLong,
   MoneyAdd,
   Refresh,
+  Lock,
 } from "@assets/images/icons/Icons";
 
 const iconsMap = {
@@ -76,6 +77,7 @@ const iconsMap = {
   telephoneFilled: <TelephoneFilled />,
   moneyAdd: <MoneyAdd />,
   refresh: <Refresh />,
+  lock: <Lock />,
 };
 
 export default iconsMap;
