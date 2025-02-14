@@ -9,6 +9,10 @@
   max-width: 122px;
   overflow: hidden;
 
+  &.not-touchable {
+    pointer-events: none;
+  }
+
   & {
     transition: all v.$transition-time v.$transition-type;
   }

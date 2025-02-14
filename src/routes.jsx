@@ -1,6 +1,5 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import Login from "./pages/auth/Login";
 
 const App = lazy(() => import("./App"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -10,6 +9,8 @@ const Statistics = lazy(() => import("./pages/Statistics"));
 const NotFound = lazy(() => import("./pages/helper/NotFound"));
 const PageLoader = lazy(() => import("./pages/helper/PageLoader"));
 const Error = lazy(() => import("./pages/helper/Error"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Logout = lazy(() => import("./pages/auth/Logout"));
 
 const router = createBrowserRouter([
   {
@@ -87,6 +88,15 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader fullscreen={true} />}>
         <Login />
+      </Suspense>
+    ),
+    errorElement: <Error />,
+  },
+  {
+    path: "/logout",
+    element: (
+      <Suspense fallback={<PageLoader fullscreen={true} />}>
+        <Logout />
       </Suspense>
     ),
     errorElement: <Error />,

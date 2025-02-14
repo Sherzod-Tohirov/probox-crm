@@ -37,6 +37,8 @@ import {
   MoneyAdd,
   Refresh,
   Lock,
+  Logout,
+  LogoutFilled,
 } from "@assets/images/icons/Icons";
 
 const iconsMap = {
@@ -78,6 +80,8 @@ const iconsMap = {
   moneyAdd: <MoneyAdd />,
   refresh: <Refresh />,
   lock: <Lock />,
+  logout: <Logout />,
+  logoutFilled: <LogoutFilled />,
 };
 
 export default iconsMap;

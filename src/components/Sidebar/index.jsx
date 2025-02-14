@@ -1,6 +1,6 @@
 import Logo from "../Logo";
 import styles from "./sidebar.module.scss";
-import { Row, Col, List, Typography } from "../ui";
+import { Row, Col, List, Typography, Button } from "../ui";
 import { sidebarLinks } from "../../utils/constants";
 import iconsMap from "../../utils/iconsMap";
 
@@ -20,6 +20,7 @@ export default function Sidebar() {
           className={classNames(
             styles[`sidebar-link`],
             styles[pathname.startsWith(link.path) ? "active" : ""],
+            link.color && styles[link.color],
             !isOpen && styles["minified"]
           )}
           to={link.path}>

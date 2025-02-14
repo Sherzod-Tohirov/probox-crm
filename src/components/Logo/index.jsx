@@ -4,10 +4,14 @@ import { Link } from "react-router-dom";
 import styles from "./logo.module.scss";
 import { memo } from "react";
 import classNames from "classnames";
-function Logo({ isMinified = false }) {
+function Logo({ isMinified = false, isTouchable = true }) {
   return (
     <div className={styles.logo}>
-      <Link to={"/dashboard"} className={styles["logo-link"]}>
+      <Link
+        to={"/dashboard"}
+        className={classNames(styles["logo-link"], {
+          [styles["not-touchable"]]: !isTouchable,
+        })}>
         <img
           className={classNames(
             styles["logo-img"],

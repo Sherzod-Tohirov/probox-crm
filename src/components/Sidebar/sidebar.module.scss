@@ -31,11 +31,19 @@
   text-decoration: none;
   transition: color v.$transition-time v.$transition-type;
 
+  & svg {
+    width: 18px;
+    height: 18px;
+  }
+
   &.active {
     color: v.$tertiary-color;
     &.minified {
       color: v.$fourth-color;
     }
+  }
+  &.danger {
+    color: lighten(v.$danger-color, 20);
   }
 
   &:hover {

@@ -29,4 +29,10 @@ export const sidebarLinks = [
     icon: "leads",
     path: "/leads",
   },
+  {
+    title: "Logout",
+    icon: "logoutFilled",
+    path: "/logout",
+    color: "danger",
+  },
 ];

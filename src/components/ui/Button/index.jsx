@@ -16,6 +16,7 @@ function Button({
   iconColor,
   isLoading = false,
   fullWidth = false,
+  disabled = false,
   ...props
 }) {
   return (
@@ -26,6 +27,7 @@ function Button({
         styles[variant],
         styles[color],
         styles[`icon-${iconColor}-color`],
+        disabled && styles["disabled"],
         isLoading && styles["loading"],
         fullWidth && styles["full-width"],
         { icon }

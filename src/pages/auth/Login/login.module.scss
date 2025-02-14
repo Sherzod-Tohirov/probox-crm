@@ -25,3 +25,9 @@
   font-weight: 600;
   margin: 0;
 }
+
+.error-desc {
+  font-size: 3.5rem;
+  color: lighten(v.$danger-color, 30%);
+  margin: 0;
+}

@@ -33,7 +33,7 @@ const Input = forwardRef(
       hasIcon = true,
       id,
       className,
-      error,
+      error = null,
       ...props
     },
     ref
@@ -57,6 +57,7 @@ const Input = forwardRef(
           styles[type],
           styles[size],
           styles[disabled ? "disabled" : ""],
+          styles[error ? "error" : ""],
           className,
           { [styles.error]: error }
         ),
@@ -150,11 +151,18 @@ const Input = forwardRef(
         )}
 
         <Col>
-          <Box pos="relative">
-            {inputTypeMatcher[type] || inputTypeMatcher.default}
-            {hasIcon ? (
-              <Typography element="span" className={styles["icon"]}>
-                {iconsMap[icon || inputIcons[type] || ""]}
+          <Box dir="column" gap={1}>
+            <Box pos="relative">
+              {inputTypeMatcher[type] || inputTypeMatcher.default}
+              {hasIcon ? (
+                <Typography element="span" className={styles["icon"]}>
+                  {iconsMap[icon || inputIcons[type] || ""]}
+                </Typography>
+              ) : null}
+            </Box>
+            {error ? (
+              <Typography element="span" className={styles["error-text"]}>
+                {error}
               </Typography>
             ) : null}
           </Box>

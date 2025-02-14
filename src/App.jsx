@@ -1,5 +1,5 @@
 import "@assets/styles/globals.scss";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import SidebarLayout from "@layouts/SidebarLayout";
 import Sidebar from "@components/Sidebar";
 import MainLayout from "@layouts/MainLayout";
@@ -7,12 +7,12 @@ import DashboardLayout from "@layouts/DashboardLayout";
 import PrimaryLayout from "@layouts/PrimaryLayout";
 import Header from "@components/Header";
 import useAlert from "@hooks/useAlert";
-import Messenger from "./components/ui/Messenger";
-import { Col, Row } from "./components/ui";
-import useToggle from "./hooks/useToggle";
+import Messenger from "@components/ui/Messenger";
+import { Col, Row } from "@components/ui";
+import useToggle from "@hooks/useToggle";
 import { useEffect } from "react";
-import { isMessengerRoute } from "./utils/routesConfig";
-import useAuth from "./hooks/useAuth";
+import { isMessengerRoute } from "@utils/routesConfig";
+import useAuth from "@hooks/useAuth";
 
 function App() {
   const { AlertContainer } = useAlert();
@@ -26,8 +26,7 @@ function App() {
   }, [pathname, toggle, isOpen]);
 
   if (!isAuthenticated) {
-    window.location.href = "/login";
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   return (

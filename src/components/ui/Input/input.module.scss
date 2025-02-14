@@ -4,6 +4,8 @@
 .input {
   width: 41rem;
   color: v.$filter-input-color !important;
+  border: 1px solid transparent;
+
   &::placeholder {
     color: v.$filter-input-placeholder-color;
   }
@@ -21,7 +23,6 @@
     width: 310px;
     padding: 11px 12px;
     background: v.$primary-input-bg;
-    border: none;
     font-size: 3.5rem;
     font-style: normal;
     font-weight: 500;
@@ -61,6 +62,9 @@
 
   &.disabled {
     pointer-events: none !important;
+  }
+  &.error {
+    border-color: v.$danger-color !important;
   }
 
   &.date ::-webkit-inner-spin-button,
@@ -125,4 +129,14 @@
   width: 24px;
   height: 24px;
   border-radius: 6px;
+}
+
+.error-text {
+  margin-top: 4px;
+  font-size: 3.2rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 143%;
+  color: lighten(v.$danger-color, 20);
+  pointer-events: none;
 }

@@ -8,6 +8,7 @@ function Col({
   align = "",
   justify = "",
   fullWidth = false,
+  fullHeight = false,
   offset,
   gutter,
   className,
@@ -22,6 +23,7 @@ function Col({
     alignSelf: align,
     justifySelf: justify,
     width: fullWidth ? "100%" : "auto",
+    height: fullHeight ? "100%" : "auto",
     ...style,
   };
 
