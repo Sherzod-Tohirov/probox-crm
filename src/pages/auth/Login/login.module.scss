@@ -6,9 +6,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  min-width: 50%;
-  @include m.flex(center, center, 2rem, column);
-
+  min-width: 30%;
+  @include m.flex(center, 2rem, column);
   &-wrapper {
     width: 100%;
     padding: 24px;
@@ -28,6 +27,6 @@
 
 .error-desc {
   font-size: 3.5rem;
-  color: lighten(v.$danger-color, 30%);
+  color: rgba(v.$danger-color, 0.8);
   margin: 0;
 }

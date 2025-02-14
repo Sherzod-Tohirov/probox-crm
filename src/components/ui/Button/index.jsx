@@ -51,25 +51,21 @@ function Button({
           <OrbitProgress style={{ fontSize: "1rem" }} color="currentColor" />
         </Box>
       ) : (
-        ""
+        <Box
+          className={classNames(styles[iconPosition])}
+          gap={2}
+          align="center"
+          justify="center">
+          {icon ? (
+            <Typography element="span" className={styles["icon-text"]}>
+              {iconsMap[icon]}
+            </Typography>
+          ) : (
+            ""
+          )}
+          {children}
+        </Box>
       )}
-      <Box
-        className={classNames(
-          isLoading && styles["hide"],
-          styles[iconPosition]
-        )}
-        gap={2}
-        align="center"
-        justify="center">
-        {icon ? (
-          <Typography element="span" className={styles["icon-text"]}>
-            {iconsMap[icon]}
-          </Typography>
-        ) : (
-          ""
-        )}
-        {children}
-      </Box>
     </motion.button>
   );
 }

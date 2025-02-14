@@ -9,14 +9,17 @@ const OPTIONS = {
   month: "Month",
 };
 
-export default function FilterToggle() {
+export default function FilterToggle({ onFilter }) {
   const [selected, setSelected] = useState("all");
 
   return (
     <motion.div className={styles["filter-btn-group"]}>
       {Object.keys(OPTIONS).map((key) => (
         <motion.button
-          onClick={() => setSelected(key)}
+          onClick={() => {
+            setSelected(key);
+            onFilter(key);
+          }}
           whileTap={{ scale: 0.9 }} // Click effect
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
           className={classNames(

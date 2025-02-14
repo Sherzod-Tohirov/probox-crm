@@ -7,10 +7,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Typography } from "../../../components/ui";
 
 export default function Login() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isLoginValid, setIsLoginValid] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -20,16 +24,23 @@ export default function Login() {
     resolver: yupResolver(loginSchema),
   });
   const onSubmit = (data) => {
-    if (r.isEmpty(errors)) {
-      if (data.username === "admin" && data.password === "admin") {
-        console.log(data, "data");
-        setIsAuthenticated(true);
-        navigate("/");
-        console.log("Login successful");
-      } else {
-        console.log("Invalid credentials");
+    setIsLoading(true);
+    setTimeout(() => {
+      if (r.isEmpty(errors)) {
+        if (data.username === "admin" && data.password === "admin") {
+          console.log(data, "data");
+          setIsAuthenticated(true);
+          navigate("/");
+          console.log("Login successful");
+          setIsLoginValid(true);
+        } else {
+          console.log("Invalid credentials");
+          setIsLoginValid(false);
+        }
+
+        setIsLoading(false);
       }
-    }
+    }, 2000);
   };
   console.log(errors, "errors");
 
@@ -42,6 +53,11 @@ export default function Login() {
       <div className={styles["login-wrapper"]}>
         <Box dir="column" gap={3} align="center">
           <Logo isTouchable={false} />
+          {isLoginValid === false && (
+            <Typography className={styles["error-desc"]} element="span">
+              Invalid username or password !
+            </Typography>
+          )}
         </Box>
         <form
           className={styles.form}
@@ -77,6 +93,7 @@ export default function Login() {
             <Col fullWidth>
               <Button
                 fullWidth
+                isLoading={isLoading}
                 type="submit"
                 className={styles.button}
                 disabled={r.isEmpty(errors) ? false : true}>
