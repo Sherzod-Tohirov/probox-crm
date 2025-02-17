@@ -1,0 +1,48 @@
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.modal-overlay {
+  @include m.overlay;
+  @include m.flex-center;
+}
+
+.modal {
+  max-width: 650px;
+  width: 100%;
+  background-color: v.$secondary-bg;
+  border-radius: 10px;
+
+  &-close-btn {
+    margin-left: auto;
+    font-size: 4rem !important;
+
+    & svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &-title {
+    font-size: 6rem;
+    font-weight: 500;
+    line-height: 150%;
+  }
+
+  &-header {
+    @include m.flex(center, space-between);
+    padding: 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  }
+
+  &-body {
+    height: 400px;
+  }
+
+  &-footer {
+    padding: 16px;
+    font-size: 4rem;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+  }
+}

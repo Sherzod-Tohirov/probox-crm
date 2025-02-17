@@ -1,16 +1,16 @@
 import { tableColumns, tableData } from "../../../mockData";
-import Button from "../../components/ui/Button";
-import Table from "../../components/ui/Table";
-import { Box, Col, Row } from "../../components/ui";
+import { Button, Table, Box, Col, Row, Modal } from "@components/ui";
 import useAlert from "@hooks/useAlert";
 import {
   DashboardStatisticDate,
   DashboardStatistics,
   DashboardChart,
 } from "@features/dashboard/components";
+import { useState } from "react";
 
 export default function Dashboard() {
   const { alert } = useAlert();
+  const [modal, setModal] = useState(false);
   return (
     <Row direction="column" gutter={8}>
       <Col fullWidth>
@@ -85,8 +85,17 @@ export default function Dashboard() {
             }}>
             Long Toast
           </Button>
+          <Button variant={"filled"} onClick={() => {}}>
+            Long Toast
+          </Button>
+          <Button variant={"filled"} onClick={() => setModal(true)}>
+            Open Modal
+          </Button>
         </Box>
       </Col>
+      <Modal isOpen={modal} onClose={() => setModal(false)}>
+        Hello
+      </Modal>
     </Row>
   );
 }

@@ -10,7 +10,7 @@ import Pagination from "./Pagination";
 import Input from "./Input";
 import Navigation from "./Navigation";
 import Table from "./Table";
-
+import Modal from "./Modal";
 export {
   Row,
   Col,
@@ -23,5 +23,6 @@ export {
   Alert,
   Pagination,
   Navigation,
+  Modal,
   Table,
 };
