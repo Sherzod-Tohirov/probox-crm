@@ -3,7 +3,7 @@
 
 .messenger {
   position: relative;
-  font-family: "Poppins", sans-serif;
+  font-family: "Open Sans", sans-serif;
   @include m.flex-direction(column);
   min-height: 100dvh;
   width: 356px;
@@ -13,8 +13,9 @@
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   background: v.$secondary-bg;
-  overflow: scroll;
-  transition: width 0.3s v.$transition-type;
+  // Remove overflow: auto from parent container
+  display: flex;
+  flex-direction: column;
 
   &::-webkit-scrollbar {
     width: 10px;
@@ -39,17 +40,32 @@
   }
 
   &-body {
-    @include m.flex(start, end, 4rem, column);
+    @include m.flex(start, start, 4rem, column);
     flex: 1;
-    padding-bottom: 60px;
+    overflow-y: scroll;
+    padding-bottom: 80px;
+    // Add custom scrollbar for body
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: v.$button-bg;
+      border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: v.$secondary-bg;
+    }
   }
 
   &-footer {
     position: sticky;
     padding-top: 12px;
     padding-bottom: 24px;
-    bottom: 63px;
+    bottom: 0; // Change from 63px to 0
     background-color: inherit;
+    z-index: 100; // Add z-index to keep footer above content
   }
 }
 
@@ -77,8 +93,24 @@
   border: none;
   background: transparent;
   color: v.$primary-color;
-  font-size: 4rem;
+  font-style: normal;
+  font-family: inherit;
+  font-size: 3.5rem;
+  letter-spacing: 0.8px;
   resize: none;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: v.$button-bg;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: v.$secondary-bg;
+  }
 
   &::placeholder {
     color: rgba(60, 63, 71, 0.4);

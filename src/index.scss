@@ -116,7 +116,7 @@ body {
 .flatpickr-prev-month,
 .flatpickr-next-month {
   &:hover svg {
-    fill: v.$fourth-color;
+    fill: v.$fourth-color !important;
   }
 }
 

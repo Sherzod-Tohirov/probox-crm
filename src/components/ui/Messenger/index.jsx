@@ -5,7 +5,7 @@ import Row from "../Row";
 import Typography from "../Typography";
 import Message from "./Message";
 import styles from "./messenger.module.scss";
-import useToggle from "../../../hooks/useToggle";
+import useToggle from "@hooks/useToggle";
 import { motion } from "framer-motion";
 export default function Messenger() {
   const { isOpen } = useToggle("messenger");
@@ -38,15 +38,12 @@ export default function Messenger() {
         <Message isRead>Hi, how are ?</Message>
         <Message isRead>Hi, how are ?</Message>
         <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
       </div>
       <div className={styles["messenger-footer"]}>
         <form className={styles["text-input-form"]}>
           <textarea
             className={styles["text-input"]}
-            placeholder="Type a comment..."></textarea>
+            placeholder="Type here..."></textarea>
           <Row direction="row" align="center" justify="space-between">
             <Col>
               <Button

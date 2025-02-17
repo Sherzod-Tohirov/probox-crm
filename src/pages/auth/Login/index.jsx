@@ -8,7 +8,7 @@ import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Typography } from "../../../components/ui";
+import { Typography } from "@components/ui";
 
 export default function Login() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
