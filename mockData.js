@@ -6,7 +6,7 @@ export const tableColumns = [
   { key: "company", title: "Company", icon: "calendarFact" },
 ];
 
-export const tableData = Array.from({ length: 40 }, (_, index) => ({
+export const tableData = Array.from({ length: 10 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
   email: `user${index + 1}@example.com`,

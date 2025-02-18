@@ -4,12 +4,23 @@ import InputGroup from "./InputGroup";
 import Label from "./Label";
 import useToggle from "@hooks/useToggle";
 import { images } from "../../../../../mockData";
+import { useCallback, useState } from "react";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 export default function ClientPageForm({ formId, ...props }) {
-  const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
-  console.log(sidebar, messenger);
+  const { sidebar } = useToggle(["sidebar", "messenger"]);
+  const [imgPreviewModal, setImgPreviewModal] = useState(false);
+  const handleImageInputClick = useCallback((e) => {
+    e.preventDefault();
+    setImgPreviewModal(true);
+  }, []);
   return (
     <form className={styles.form} id={formId} {...props}>
+      <ImagePreviewModal
+        images={images}
+        isOpen={imgPreviewModal}
+        onClose={() => setImgPreviewModal(false)}
+      />
       <Row direction={"row"} gutter={6}>
         <Col>
           <Row gutter={1}>
@@ -32,6 +43,8 @@ export default function ClientPageForm({ formId, ...props }) {
                   images={images}
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
+                  className={styles.fileInput}
+                  onClick={handleImageInputClick}
                 />
               </InputGroup>
             </Col>

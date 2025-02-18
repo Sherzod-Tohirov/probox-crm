@@ -66,12 +66,13 @@ const Input = forwardRef(
 
     const commonProps = useMemo(
       () => ({
+        id: id || uniqueId,
         style: inputStyle,
         className: classes,
         disabled,
         ref,
       }),
-      [inputStyle, classes, disabled, ref]
+      [inputStyle, classes, disabled, ref, id, uniqueId]
     );
 
     const inputTypeMatcher = useMemo(
@@ -105,7 +106,7 @@ const Input = forwardRef(
               {...commonProps}
               {...props}
             />
-            <label htmlFor={props.id || uniqueId} {...commonProps}>
+            <label htmlFor={props.id || uniqueId} {...commonProps} {...props}>
               <Row direction="row" align="center" gutter={1} wrap={true}>
                 {images.map((image, index) => (
                   <Col key={index}>

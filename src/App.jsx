@@ -49,7 +49,6 @@ function App() {
               position: "sticky",
               top: "83px",
               marginLeft: "auto",
-              height: "100vh",
             }}>
             <Messenger />
           </Col>

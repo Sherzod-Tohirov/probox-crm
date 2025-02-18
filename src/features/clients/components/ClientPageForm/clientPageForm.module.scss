@@ -20,3 +20,28 @@
     height: 20px;
   }
 }
+
+.fileInput {
+  cursor: pointer;
+}
+
+.image-preview {
+  width: 550px;
+  @include m.flex(center, start, 1rem);
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &-container {
+    @include m.flex(center, center, 1rem);
+    padding: 20px;
+    overflow: hidden;
+  }
+}
+
+.preview-img {
+  flex-shrink: 0;
+  width: 550px;
+  height: 220px;
+  border-radius: 12px;
+  object-fit: cover;
+}

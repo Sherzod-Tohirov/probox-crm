@@ -6,6 +6,7 @@ import {
   DashboardStatistics,
   DashboardChart,
 } from "@features/dashboard/components";
+
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -83,9 +84,6 @@ export default function Dashboard() {
                 }
               );
             }}>
-            Long Toast
-          </Button>
-          <Button variant={"filled"} onClick={() => {}}>
             Long Toast
           </Button>
           <Button variant={"filled"} onClick={() => setModal(true)}>

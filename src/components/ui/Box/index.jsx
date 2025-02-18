@@ -29,6 +29,7 @@ function Box({
   const boxStyle = useMemo(
     () => ({
       position: pos,
+      width: "100%",
       flexDirection: dir,
       alignItems: align,
       justifyContent: justify,

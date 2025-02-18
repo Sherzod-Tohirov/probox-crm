@@ -20,7 +20,7 @@
   }
 
   &.filled {
-    width: 310px;
+    min-width: 310px;
     padding: 11px 12px;
     background: v.$primary-input-bg;
     font-size: 3.5rem;
@@ -30,11 +30,11 @@
     color: v.$primary-color;
     border-radius: 12px;
     background-color: "";
-    transition: width v.$transition-time v.$transition-type;
+    transition: min-width v.$transition-time v.$transition-type;
   }
 
   &.filled.small {
-    width: 257px !important;
+    min-width: 257px !important;
   }
 
   &.select {
