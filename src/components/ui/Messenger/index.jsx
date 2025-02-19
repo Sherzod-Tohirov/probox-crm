@@ -7,6 +7,7 @@ import Message from "./Message";
 import styles from "./messenger.module.scss";
 import useToggle from "@hooks/useToggle";
 import { motion } from "framer-motion";
+import MessageDate from "./MessageDate";
 export default function Messenger() {
   const { isOpen } = useToggle("messenger");
   return (
@@ -25,19 +26,20 @@ export default function Messenger() {
         </Typography>
       </div>
       <div className={styles["messenger-body"]}>
-        <Message isRead>Hi, how are you ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
-        <Message isRead>Hi, how are ?</Message>
+        <div className={styles["messenger-messages"]}>
+          <MessageDate />
+          <Message text={"Hi, how are you ?"} />
+          <Message text={"Good, and you ?"} />
+          <Message text={"Good, thanks ?"} />
+          <Message text={"Thanks ?"} />
+          <MessageDate />
+          <Message text={"Bye ?"} />
+          <Message text={"Hi, how are you ?"} />
+          <Message text={"Good, and you ?"} />
+          <Message text={"Good, thanks ?"} />
+          <Message text={"Thanks ?"} />
+          <Message text={"Bye ?"} />
+        </div>
       </div>
       <div className={styles["messenger-footer"]}>
         <form className={styles["text-input-form"]}>

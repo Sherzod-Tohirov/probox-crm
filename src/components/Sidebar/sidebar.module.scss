@@ -43,7 +43,7 @@
     }
   }
   &.danger {
-    color: lighten(v.$danger-color, 20);
+    color: rgba(v.$danger-color, 0.8);
   }
 
   &:hover {
