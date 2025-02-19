@@ -32,16 +32,56 @@
   transition: all 0.3s ease;
 
   &-container {
-    @include m.flex(center, center, 1rem);
+    @include m.flex(center, center, 8rem, column);
     padding: 20px;
     overflow: hidden;
   }
 }
 
 .preview-img {
+  display: none;
   flex-shrink: 0;
   width: 550px;
   height: 220px;
   border-radius: 12px;
   object-fit: cover;
+
+  &.active {
+    display: block;
+  }
+}
+
+.image-indicator {
+  @include m.flex(center, center, 1.5rem);
+  flex-wrap: wrap;
+  & img {
+    width: 100px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    will-change: opacity;
+    transition: opacity v.$transition-time v.$transition-type;
+    opacity: 0.6;
+
+    &.active {
+      opacity: 1;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  & .upload-photo-label {
+    @include m.flex(center, center);
+    width: 100px;
+    height: 65px;
+    cursor: pointer;
+    color: v.$primary-color;
+    font-size: 2.5rem;
+    background-color: v.$fifth-bg;
+    border: 3px dotted v.$primary-color;
+    border-radius: 8px;
+  }
 }

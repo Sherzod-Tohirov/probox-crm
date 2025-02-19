@@ -137,6 +137,6 @@
   font-style: normal;
   font-weight: 500;
   line-height: 143%;
-  color: lighten(v.$danger-color, 20);
+  color: rgba(v.$danger-color, 0.6);
   pointer-events: none;
 }

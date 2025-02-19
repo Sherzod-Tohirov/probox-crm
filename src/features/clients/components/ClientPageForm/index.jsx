@@ -10,13 +10,13 @@ import ImagePreviewModal from "./ImagePreviewModal";
 export default function ClientPageForm({ formId, ...props }) {
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
-  const handleImageInputClick = useCallback((e) => {
-    e.preventDefault();
+  const handleImageInputClick = useCallback(() => {
     setImgPreviewModal(true);
   }, []);
   return (
     <form className={styles.form} id={formId} {...props}>
       <ImagePreviewModal
+        inputId={"photo"}
         images={images}
         isOpen={imgPreviewModal}
         onClose={() => setImgPreviewModal(false)}
@@ -37,8 +37,11 @@ export default function ClientPageForm({ formId, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="photo">Photo</Label>
+                <Label icon="photo" htmlFor={"photo"}>
+                  Photo
+                </Label>
                 <Input
+                  id={"photo"}
                   type="file"
                   images={images}
                   variant={"filled"}
