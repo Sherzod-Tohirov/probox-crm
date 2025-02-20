@@ -54,6 +54,10 @@
     color: v.$text-button-color-secondary !important;
   }
 
+  &.danger {
+    background-color: v.$danger-color !important;
+  }
+
   // icons
 
   &.icon {

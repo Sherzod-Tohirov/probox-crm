@@ -78,10 +78,16 @@
     width: 100px;
     height: 65px;
     cursor: pointer;
-    color: v.$primary-color;
+    color: v.$secondary-color;
     font-size: 2.5rem;
     background-color: v.$fifth-bg;
     border: 3px dotted v.$primary-color;
     border-radius: 8px;
+    transition: all v.$transition-time v.$transition-type;
+
+    &:hover {
+      background-color: v.$button-bg;
+      color: v.$button-color;
+    }
   }
 }

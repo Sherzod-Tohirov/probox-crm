@@ -1,8 +1,22 @@
-import { Modal, Box, Typography } from "@components/ui";
+import { Modal, Box, Typography, Button } from "@components/ui";
 import styles from "./clientPageForm.module.scss";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { useState } from "react";
+
+const PreviewModalFooter = ({ onCancel, onApply }) => {
+  return (
+    <Box dir="row" justify="end" gap={4}>
+      <Button fullWidth color="danger" onClick={onCancel}>
+        Отмена
+      </Button>
+      <Button fullWidth onClick={onApply}>
+        Сохранить
+      </Button>
+    </Box>
+  );
+};
+
 export default function ImagePreviewModal({
   images = [],
   inputId,
@@ -11,7 +25,11 @@ export default function ImagePreviewModal({
 }) {
   const [currentImage, setCurrentImage] = useState(0);
   return (
-    <Modal title="Image preview" isOpen={isOpen} onClose={onClose}>
+    <Modal
+      title="Изображения продукта"
+      isOpen={isOpen}
+      onClose={onClose}
+      footer={<PreviewModalFooter onCancel={onClose} />}>
       <div className={styles["image-preview-container"]}>
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
@@ -42,7 +60,7 @@ export default function ImagePreviewModal({
           <label htmlFor={inputId} className={styles["upload-photo-label"]}>
             <Box dir="column" align="center" gap={1}>
               <Typography element="span">{iconsMap["addCircle"]}</Typography>
-              <Typography element="span">Upload photo</Typography>
+              <Typography element="span">Загрузить фото</Typography>
             </Box>
           </label>
         </div>
