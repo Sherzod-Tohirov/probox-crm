@@ -9,7 +9,8 @@ import {
 
 import Footer from "@components/Footer";
 import ClientPageForm from "@features/clients/components/ClientPageForm";
-
+import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
+import { useState } from "react";
 const columns = [
   { key: "no", title: "No", width: "15%", icon: "" },
   { key: "date", title: "📅 Date", width: "15%", icon: "" },
@@ -30,6 +31,9 @@ const mockData = Array.from({ length: 50 }, (_, index) => ({
   bill: "300.00",
 }));
 export default function ClientPage() {
+  const [paymentModal, setPaymentModal] = useState();
+  const onClose = () => setPaymentModal(false);
+  const onApply = () => {};
   return (
     <>
       <Row direction="column" gutter={6}>
@@ -65,9 +69,12 @@ export default function ClientPage() {
             </Typography>
           </Col>
           <Col>
-            <Button variant={"filled"}>Оплатить</Button>
+            <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
+              Оплатить
+            </Button>
           </Col>
         </Row>
+        <ClientPaymentModal isOpen={paymentModal} onClose={onClose} />
       </Footer>
     </>
   );

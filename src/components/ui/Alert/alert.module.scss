@@ -7,7 +7,7 @@
   font-family: "Inter";
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
-  transition: opacity v.$transition-time v.$transition-type;
+  transition: all v.$transition-time v.$transition-type;
 
   &-success {
     background-color: v.$success-bg;

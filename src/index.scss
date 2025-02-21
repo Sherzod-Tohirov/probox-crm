@@ -103,6 +103,10 @@ button {
 
 // Custom styles for flatpickr
 
+.flatpickr-calendar {
+  z-index: 99999999 !important;
+}
+
 .flatpickr-day.selected,
 .flatpickr-day.startRange,
 .flatpickr-day.endRange {

@@ -1,12 +1,11 @@
+import { memo, forwardRef, useMemo } from "react";
+import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
-import { memo, forwardRef, useMemo } from "react";
 import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
-import Box from "../Box";
-import Col from "../Col";
-import Row from "../Row";
-import Flatpickr from "react-flatpickr";
+import { Box, Col, Row } from "@components/ui";
+import { omit } from "ramda";
 import "flatpickr/dist/themes/airbnb.css";
 
 const inputIcons = {
@@ -38,6 +37,8 @@ const Input = forwardRef(
     },
     ref
   ) => {
+    console.log("props", props);
+
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -81,11 +82,12 @@ const Input = forwardRef(
           <Flatpickr
             data-enable-time
             options={{
+              ...(props.datePickerOptions || {}), // Custom options
               dateFormat: "d.m.Y", // Custom date format
               defaultDate: "01.01.2025", // Default selected date
             }}
             {...commonProps}
-            {...props}
+            {...omit(props, ["datePickerOptions"])}
           />
         ),
         select: (
@@ -151,7 +153,7 @@ const Input = forwardRef(
           </Col>
         )}
 
-        <Col>
+        <Col fullWidth>
           <Box dir="column" gap={1}>
             <Box pos="relative">
               {inputTypeMatcher[type] || inputTypeMatcher.default}

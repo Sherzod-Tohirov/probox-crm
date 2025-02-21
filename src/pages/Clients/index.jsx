@@ -1,13 +1,19 @@
-import { Col, Row, Navigation } from "@components/ui";
+import {
+  Col,
+  Row,
+  Navigation,
+  Table,
+  Button,
+  Input,
+  Pagination,
+  Status,
+} from "@components/ui";
 import Filter from "@features/clients/components/Filter";
-import Status from "../../components/ui/Status";
-import Footer from "../../components/Footer";
-import { Button, Input, Pagination } from "../../components/ui";
-import Table from "../../components/ui/Table";
+import Footer from "@components/Footer";
+
 import { mockDataClients } from "../../../mockData";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import useToggle from "../../hooks/useToggle";
 
 const tableSizeSelectOptions = [
   { value: "10", label: "10" },

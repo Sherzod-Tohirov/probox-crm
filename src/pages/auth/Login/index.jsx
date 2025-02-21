@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Typography } from "@components/ui";
 
 export default function Login() {
@@ -23,6 +23,8 @@ export default function Login() {
     mode: "all",
     resolver: yupResolver(loginSchema),
   });
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
   const onSubmit = (data) => {
     setIsLoading(true);
     setTimeout(() => {
@@ -66,6 +68,7 @@ export default function Login() {
           <Row gutter={4}>
             <Col>
               <Input
+                ref={usernameRef}
                 type="text"
                 name="username"
                 id="username"
@@ -79,6 +82,7 @@ export default function Login() {
             </Col>
             <Col>
               <Input
+                ref={passwordRef}
                 type="password"
                 name="password"
                 id="password"

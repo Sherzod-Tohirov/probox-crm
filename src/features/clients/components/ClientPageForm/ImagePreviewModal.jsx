@@ -3,12 +3,13 @@ import styles from "./clientPageForm.module.scss";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { useState } from "react";
+import useAlert from "@hooks/useAlert";
 
 const PreviewModalFooter = ({ onCancel, onApply }) => {
   return (
     <Box dir="row" justify="end" gap={4}>
       <Button fullWidth color="danger" onClick={onCancel}>
-        Отмена
+        Закрыть
       </Button>
       <Button fullWidth onClick={onApply}>
         Сохранить
@@ -24,12 +25,21 @@ export default function ImagePreviewModal({
   onClose,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
+  const { alert } = useAlert();
   return (
     <Modal
       title="Изображения продукта"
       isOpen={isOpen}
       onClose={onClose}
-      footer={<PreviewModalFooter onCancel={onClose} />}>
+      footer={
+        <PreviewModalFooter
+          onCancel={onClose}
+          onApply={() => {
+            alert("Изображения сохранены");
+            onClose();
+          }}
+        />
+      }>
       <div className={styles["image-preview-container"]}>
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>

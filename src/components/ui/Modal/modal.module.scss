@@ -37,7 +37,8 @@
   }
 
   &-body {
-    height: 400px;
+    min-height: 400px;
+    padding: 16px;
   }
 
   &-footer {

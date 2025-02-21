@@ -11,6 +11,8 @@ import Input from "./Input";
 import Navigation from "./Navigation";
 import Table from "./Table";
 import Modal from "./Modal";
+import Status from "./Status";
+
 export {
   Row,
   Col,
@@ -25,4 +27,5 @@ export {
   Navigation,
   Modal,
   Table,
+  Status,
 };

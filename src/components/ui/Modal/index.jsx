@@ -3,18 +3,21 @@ import styles from "./modal.module.scss";
 import { createPortal } from "react-dom";
 import Typography from "../Typography";
 import Button from "../Button";
-import { useCallback, useEffect } from "react";
+import { forwardRef, memo, useCallback, useEffect } from "react";
 import classNames from "classnames";
 
-export default function Modal({
-  isOpen = false,
-  onClose = () => "",
-  title,
-  footer,
-  preventScroll = false,
-  children,
-  size = "md",
-}) {
+const Modal = forwardRef(function Modal(
+  {
+    isOpen = false,
+    onClose = () => "",
+    title,
+    footer,
+    preventScroll = false,
+    children,
+    size = "md",
+  },
+  ref
+) {
   // Prevent background scrolling
   useEffect(() => {
     if (preventScroll) {
@@ -55,6 +58,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}>
           <motion.div
+            ref={ref}
             className={classNames(styles["modal"], size)}
             initial={{ opacity: 0, y: -50, scale: 0.95 }}
             animate={{
@@ -102,4 +106,8 @@ export default function Modal({
     </AnimatePresence>,
     document.body
   );
-}
+});
+
+Modal.displayName = 'Modal';
+
+export default memo(Modal);
