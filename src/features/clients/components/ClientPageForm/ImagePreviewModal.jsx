@@ -4,7 +4,7 @@ import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { useState } from "react";
 import useAlert from "@hooks/useAlert";
-
+import { AnimatePresence, motion } from "framer-motion";
 const PreviewModalFooter = ({ onCancel, onApply }) => {
   return (
     <Box dir="row" justify="end" gap={4}>
@@ -57,15 +57,22 @@ export default function ImagePreviewModal({
         </div>
         <div className={styles["image-indicator"]}>
           {images.map((image, index) => (
-            <img
-              className={classNames(styles["indicator-img"], {
-                [styles["active"]]: currentImage === index,
-              })}
-              key={index}
-              src={image.img}
-              alt={image.title}
-              onClick={() => setCurrentImage(index)}
-            />
+            <div className={styles["indicator-img-wrapper"]} key={index}>
+              <img
+                className={classNames(styles["indicator-img"], {
+                  [styles["active"]]: currentImage === index,
+                })}
+                key={index}
+                src={image.img}
+                alt={image.title}
+                onClick={() => setCurrentImage(index)}
+              />
+              <motion.span
+                whileTap={{ scale: 0.9 }}
+                className={styles["indicator-img-close"]}>
+                {iconsMap["close"]}
+              </motion.span>
+            </div>
           ))}
           <label htmlFor={inputId} className={styles["upload-photo-label"]}>
             <Box dir="column" align="center" gap={1}>

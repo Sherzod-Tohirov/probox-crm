@@ -73,6 +73,34 @@
     }
   }
 
+  .indicator-img-wrapper {
+    position: relative;
+    &:hover .indicator-img-close {
+      display: flex;
+    }
+  }
+
+  .indicator-img-close {
+    @include m.flex(center, center);
+    display: none;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 22px;
+    height: 22px;
+    background-color: v.$primary-bg;
+    color: v.$primary-color;
+    border-bottom-left-radius: 50%;
+    cursor: pointer;
+    will-change: transform;
+
+    & svg {
+      width: 14px;
+      height: 14px;
+      fill: v.$button-color;
+    }
+  }
+
   & .upload-photo-label {
     @include m.flex(center, center);
     width: 100px;
