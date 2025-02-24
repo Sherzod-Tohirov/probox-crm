@@ -11,6 +11,8 @@ import Footer from "@components/Footer";
 import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
 import { useState } from "react";
+import useAlert from "@hooks/useAlert";
+
 const columns = [
   { key: "no", title: "No", width: "15%", icon: "" },
   { key: "date", title: "📅 Date", width: "15%", icon: "" },
@@ -33,7 +35,7 @@ const mockData = Array.from({ length: 50 }, (_, index) => ({
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState();
   const onClose = () => setPaymentModal(false);
-  const onApply = () => {};
+  const { alert } = useAlert();
   return (
     <>
       <Row direction="column" gutter={6}>
@@ -74,7 +76,14 @@ export default function ClientPage() {
             </Button>
           </Col>
         </Row>
-        <ClientPaymentModal isOpen={paymentModal} onClose={onClose} />
+        <ClientPaymentModal
+          isOpen={paymentModal}
+          onClose={onClose}
+          onApply={() => {
+            alert("Платеж прошел успешно.");
+            onClose();
+          }}
+        />
       </Footer>
     </>
   );

@@ -9,7 +9,7 @@
   font-size: 4rem;
   font-weight: 500;
   line-height: 150%;
-  color: v.$secondary-color;
+  color: v.$primary-color;
 }
 
 .modal-subtitle {
@@ -17,4 +17,45 @@
   font-weight: 500;
   line-height: 150%;
   color: v.$primary-color;
+}
+
+.radio-input-wrapper {
+  @include m.flex(center, center, 4rem);
+  width: 100%;
+}
+
+.radio-input {
+  display: none;
+
+  &:checked + .radio-input-label {
+    color: v.$button-color;
+    background-color: rgba(v.$button-bg, 0.75);
+    border-color: transparent;
+  }
+}
+
+.radio-input-label {
+  @include m.flex-center;
+  flex: 1;
+  width: 100%;
+  gap: 1rem;
+  padding: 7rem 3rem;
+  font-size: 3.7rem;
+  font-weight: 500;
+  line-height: 143%;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 3rem;
+  background-color: v.$fourth-bg;
+  color: v.$tertiary-color;
+  border: 2px solid v.$primary-border-color;
+  transition: background-color v.$transition-time v.$transition-type,
+    color v.$transition-time v.$transition-type,
+    border-color v.$transition-time v.$transition-type;
+  cursor: pointer;
+
+  & svg {
+    width: 25px;
+    height: 25px;
+  }
 }
