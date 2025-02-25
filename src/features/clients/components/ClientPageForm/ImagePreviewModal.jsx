@@ -2,10 +2,10 @@ import { Modal, Box, Typography, Button } from "@components/ui";
 import styles from "./clientPageForm.module.scss";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
-import { useState } from "react";
-import useAlert from "@hooks/useAlert";
-import { AnimatePresence, motion } from "framer-motion";
-const PreviewModalFooter = ({ onCancel, onApply }) => {
+import { memo, useState } from "react";
+import { motion } from "framer-motion";
+
+const PreviewModalFooter = memo(({ onCancel, onApply }) => {
   return (
     <Box dir="row" justify="end" gap={4}>
       <Button fullWidth color="danger" onClick={onCancel}>
@@ -16,16 +16,18 @@ const PreviewModalFooter = ({ onCancel, onApply }) => {
       </Button>
     </Box>
   );
-};
+});
 
 export default function ImagePreviewModal({
   images = [],
   inputId,
   isOpen,
   onClose,
+  onApply,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
-  const { alert } = useAlert();
+  console.log(currentImage, "currentImage");
+  console.log(images, "images");
   return (
     <Modal
       title="Изображения продукта"
@@ -33,11 +35,11 @@ export default function ImagePreviewModal({
       onClose={onClose}
       footer={
         <PreviewModalFooter
-          onCancel={onClose}
-          onApply={() => {
-            alert("Изображения сохранены");
+          onCancel={() => {
             onClose();
+            setCurrentImage(0);
           }}
+          onApply={onApply}
         />
       }>
       <div className={styles["image-preview-container"]}>

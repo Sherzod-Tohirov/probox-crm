@@ -37,7 +37,6 @@ const Input = forwardRef(
     },
     ref
   ) => {
-    console.log("props", props);
 
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,

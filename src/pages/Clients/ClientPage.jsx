@@ -33,7 +33,7 @@ const mockData = Array.from({ length: 50 }, (_, index) => ({
   bill: "300.00",
 }));
 export default function ClientPage() {
-  const [paymentModal, setPaymentModal] = useState();
+  const [paymentModal, setPaymentModal] = useState(false);
   const onClose = () => setPaymentModal(false);
   const { alert } = useAlert();
   return (
@@ -47,14 +47,19 @@ export default function ClientPage() {
                   <Navigation />
                 </Col>
                 <Col>
-                  <Button variant={"filled"}>Сохранить</Button>
+                  <Button
+                    type={"submit"}
+                    form={"clientForm"}
+                    variant={"filled"}>
+                    Сохранить
+                  </Button>
                 </Col>
               </Row>
             </Col>
           </Row>
         </Col>
         <Col fullWidth>
-          <ClientPageForm />
+          <ClientPageForm formId={"clientForm"} />
         </Col>
         <Col fullWidth>
           <Table columns={columns} data={mockData} />

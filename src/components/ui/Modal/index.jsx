@@ -92,7 +92,8 @@ const Modal = forwardRef(function Modal(
                 className={styles["modal-close-btn"]}
                 variant="text"
                 icon={"close"}
-                onClick={onClose}></Button>
+                onClick={onClose}
+              />
             </div>
             <div className={styles["modal-body"]}>{children}</div>
             {footer ? (
@@ -108,6 +109,6 @@ const Modal = forwardRef(function Modal(
   );
 });
 
-Modal.displayName = 'Modal';
+Modal.displayName = "Modal";
 
 export default memo(Modal);

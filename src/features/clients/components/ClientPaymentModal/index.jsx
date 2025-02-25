@@ -1,11 +1,11 @@
 import { Modal, Input, Typography, Row, Col, Button } from "@components/ui";
 import styles from "./clientPaymentModal.module.scss";
-import moment from "moment/moment";
 import formatterCurrency from "@utils/formatterCurrency";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import RadioInput from "./RadioInput";
+import moment from "moment/moment";
 
-const ModalFooter = ({ onClose, onApply }) => {
+const ModalFooter = memo(({ onClose, onApply }) => {
   return (
     <Row direction="row" align="center" justify="center" gutter={4}>
       <Col flexGrow>
@@ -20,7 +20,7 @@ const ModalFooter = ({ onClose, onApply }) => {
       </Col>
     </Row>
   );
-};
+});
 
 export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
   const [price, setPrice] = useState(0);
