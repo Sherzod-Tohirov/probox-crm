@@ -121,3 +121,22 @@
     }
   }
 }
+
+.no-image {
+  @include m.flex-center;
+  width: 550px;
+  height: 220px;
+  border-radius: 12px;
+  background-color: v.$fourth-bg;
+  border-radius: 12px;
+  border: 1px dashed v.$secondary-color;
+  &-text {
+    color: v.$secondary-color;
+    font-size: 5rem;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 143%;
+    pointer-events: none;
+  }
+}

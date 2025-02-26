@@ -12,7 +12,8 @@ import useAlert from "@hooks/useAlert";
 export default function ClientPageForm({ formId, ...props }) {
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
-  const [selectedProductImages, setSelectedProductImages] = useState([]);
+  const [selectedProductImages, setSelectedProductImages] = useState(images);
+  const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -34,7 +35,6 @@ export default function ClientPageForm({ formId, ...props }) {
   }, []);
 
   const handleImageChange = useCallback((e) => {
-    console.log("previous: ", selectedProductImages);
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => {
       return {
@@ -43,11 +43,8 @@ export default function ClientPageForm({ formId, ...props }) {
         file,
       };
     });
-    setSelectedProductImages((prev) => [...prev, ...newImages]);
-    setValue("photo", newImages);
+    setCopyProductImages((prev) => [...prev, ...newImages]);
   }, []);
-
-  console.log("after", selectedProductImages);
 
   return (
     <form
@@ -57,14 +54,23 @@ export default function ClientPageForm({ formId, ...props }) {
       {...props}>
       <ImagePreviewModal
         inputId={"photo"}
-        images={[...images, ...selectedProductImages]}
+        images={copyPorductImages}
         isOpen={imgPreviewModal}
+        onRemoveImage={(index) => {
+          setCopyProductImages((prev) => {
+            const newImages = [...prev];
+            newImages.splice(index, 1);
+            console.log("newImages", newImages);
+            return newImages;
+          });
+        }}
         onClose={() => {
           setImgPreviewModal(false);
           setSelectedProductImages([]);
         }}
         onApply={() => {
           alert("Images saved");
+          setSelectedProductImages(() => [...copyPorductImages]);
           setImgPreviewModal(false);
         }}
       />
@@ -90,7 +96,7 @@ export default function ClientPageForm({ formId, ...props }) {
                 <Input
                   id={"photo"}
                   type="file"
-                  images={images}
+                  images={copyPorductImages}
                   accept="image/*"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
