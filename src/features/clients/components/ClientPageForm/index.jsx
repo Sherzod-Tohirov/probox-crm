@@ -66,7 +66,7 @@ export default function ClientPageForm({ formId, ...props }) {
         }}
         onClose={() => {
           setImgPreviewModal(false);
-          setSelectedProductImages([]);
+          setCopyProductImages(() => [...selectedProductImages]);
         }}
         onApply={() => {
           alert("Images saved");
@@ -96,7 +96,7 @@ export default function ClientPageForm({ formId, ...props }) {
                 <Input
                   id={"photo"}
                   type="file"
-                  images={copyPorductImages}
+                  images={selectedProductImages}
                   accept="image/*"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
