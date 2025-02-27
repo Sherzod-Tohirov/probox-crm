@@ -27,8 +27,6 @@ export default function ImagePreviewModal({
   onRemoveImage,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
-  console.log(currentImage, "currentImage");
-  console.log(images, "images");
   return (
     <Modal
       title="Изображения продукта"

@@ -56,7 +56,6 @@ export default function StatisticChart() {
             <Col>
               <ButtonGroup
                 onFilter={(type) => {
-                  console.log("worked type: ", type);
                   setFilterType(type);
                 }}
               />

@@ -17,7 +17,7 @@ export default function ClientPageForm({ formId, ...props }) {
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
 
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, control, setValue } = useForm({
     defaultValues: {
       name: "Maqsudov Nodir",
       photo: [],
@@ -170,7 +170,7 @@ export default function ClientPageForm({ formId, ...props }) {
                   type="date"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"12.03.2030"}
+                  control={control}
                   hasIcon={false}
                   disabled={true}
                   {...register("deadline")}

@@ -7,6 +7,8 @@ import Typography from "../Typography";
 import { Box, Col, Row } from "@components/ui";
 import { omit } from "ramda";
 import "flatpickr/dist/themes/airbnb.css";
+import { Controller } from "react-hook-form";
+import moment from "moment";
 
 const inputIcons = {
   email: "email",
@@ -37,7 +39,6 @@ const Input = forwardRef(
     },
     ref
   ) => {
-
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -78,15 +79,31 @@ const Input = forwardRef(
     const inputTypeMatcher = useMemo(
       () => ({
         date: (
-          <Flatpickr
-            data-enable-time
-            options={{
-              ...(props.datePickerOptions || {}), // Custom options
-              dateFormat: "d.m.Y", // Custom date format
-              defaultDate: "01.01.2025", // Default selected date
-            }}
-            {...commonProps}
-            {...omit(props, ["datePickerOptions"])}
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <Flatpickr
+                value={field.value || props.defaultValue}
+                {...commonProps}
+                options={{
+                  enableTime: false,
+                  defaultDate:
+                    field.value ||
+                    props.defaultValue ||
+                    moment().format("d.m.y"),
+                  dateFormat: "d.m.Y", // Custom date format
+
+                  locale: {
+                    firstDayOfWeek: 1,
+                  },
+
+                  ...(props.datePickerOptions || {}), // Custom options
+                }}
+                onChange={(date) => field.onChange(date[0])}
+                {...omit(props, ["datePickerOptions"])}
+              />
+            )}
           />
         ),
         select: (

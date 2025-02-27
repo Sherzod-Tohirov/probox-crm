@@ -38,7 +38,6 @@ export const images = [
   },
 ];
 
-console.log(images);
 
 export const mockDataClients = [
   {

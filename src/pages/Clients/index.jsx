@@ -54,7 +54,7 @@ export default function Clients() {
           <Navigation />
         </Col>
         <Col>
-          <Filter />
+          <Filter onFilter={(filterData) => console.log(filterData)} />
         </Col>
         <Col style={{ width: "100%" }}>
           <Table

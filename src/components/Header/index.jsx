@@ -8,8 +8,6 @@ import { isMessengerRoute } from "../../utils/routesConfig";
 function Header() {
   const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
   const { pathname } = useLocation();
-  console.log("Header -> pathname", pathname, isMessengerRoute(pathname));
-  console.log(matchPath("/clients/:name", pathname));
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">
