@@ -139,8 +139,7 @@
   transform-origin: bottom left;
   &-text {
     position: relative;
-    display: flex;
-    padding: 14px 17px;
+    padding: 8px 16px !important;
     color: v.$primary-color;
     font-size: 3.5rem;
     font-style: normal;
@@ -167,10 +166,8 @@
   }
 
   &-time {
-    position: absolute;
+    align-self: end;
     color: v.$secondary-color;
-    right: 16px;
-    bottom: 1.5px;
     font-size: 2.5rem;
     font-style: normal;
     font-weight: 500;

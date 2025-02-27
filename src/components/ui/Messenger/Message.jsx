@@ -14,13 +14,15 @@ export default function Message({ msg }) {
       animate={{ scale: 1, y: 0 }}
       exit={{ scale: 0, y: -20 }}
       transition={{ damping: 20, type: "spring", duration: 0.05 }}>
-      <Col className={styles["message-text"]}>
-        <p>{msg.text}</p>
-        <time
-          className={styles["message-time"]}
-          dateTime={moment(msg.timestamp).format("HH:mm")}>
-          {moment(msg.timestamp).format("HH:mm")}
-        </time>
+      <Col>
+        <Box dir="column" className={styles["message-text"]}>
+          <p>{msg.text}</p>
+          <time
+            className={styles["message-time"]}
+            dateTime={moment(msg.timestamp).format("HH:mm")}>
+            {moment(msg.timestamp).format("HH:mm")}
+          </time>
+        </Box>
       </Col>
       <Col>
         <Box dir="row" gap={1} align="center">
