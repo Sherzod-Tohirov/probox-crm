@@ -1042,3 +1042,94 @@ export const mockDataClients = [
     term: "100 days",
   },
 ];
+
+export const mockMessages = [
+  {
+    id: 1,
+    text: "Hi, how can I help you today?",
+    sender: "agent",
+    timestamp: "2024-01-20T09:00:00",
+    status: "read",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  },
+  {
+    id: 2,
+    text: "I have a question about my recent order",
+    sender: "user",
+    timestamp: "2024-01-20T09:01:00",
+    status: "read",
+  },
+  {
+    id: 3,
+    text: "Of course! Could you please provide your order number?",
+    sender: "agent",
+    timestamp: "2024-01-20T09:02:00",
+    status: "read",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  },
+  {
+    id: 4,
+    text: "Yes, it's #PBS2024",
+    sender: "user",
+    timestamp: "2024-01-20T09:03:00",
+    status: "sent",
+  },
+  {
+    id: 5,
+    text: "Thank you, let me check that for you",
+    sender: "agent",
+    timestamp: "2024-01-20T09:04:00",
+    status: "sent",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  },
+  {
+    id: 5,
+    text: "Ok, I have checked your order and it's on its way to you",
+    sender: "agent",
+    timestamp: "2024-01-21T09:04:00",
+    status: "sent",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  },
+];
+
+export const mockChats = [
+  {
+    id: 1,
+    user: {
+      name: "John Doe",
+      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+      status: "online",
+    },
+    lastMessage: {
+      text: "Thank you, let me check that for you",
+      timestamp: "2024-01-20T09:04:00",
+      unread: 2,
+    },
+  },
+  {
+    id: 2,
+    user: {
+      name: "Jane Smith",
+      avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+      status: "offline",
+    },
+    lastMessage: {
+      text: "When will my order arrive?",
+      timestamp: "2024-01-19T15:30:00",
+      unread: 0,
+    },
+  },
+  {
+    id: 3,
+    user: {
+      name: "Mike Johnson",
+      avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+      status: "away",
+    },
+    lastMessage: {
+      text: "Perfect, thanks!",
+      timestamp: "2024-01-18T11:20:00",
+      unread: 1,
+    },
+  },
+];

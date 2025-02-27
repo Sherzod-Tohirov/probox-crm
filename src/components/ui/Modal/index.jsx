@@ -6,7 +6,7 @@ import Button from "../Button";
 import { forwardRef, memo, useCallback, useEffect } from "react";
 import classNames from "classnames";
 
-const Modal = forwardRef(function Modal(
+const Modal = forwardRef(function (
   {
     isOpen = false,
     onClose = () => "",
@@ -92,8 +92,7 @@ const Modal = forwardRef(function Modal(
                 className={styles["modal-close-btn"]}
                 variant="text"
                 icon={"close"}
-                onClick={onClose}
-              />
+                onClick={onClose}></Button>
             </div>
             <div className={styles["modal-body"]}>{children}</div>
             {footer ? (
@@ -108,7 +107,5 @@ const Modal = forwardRef(function Modal(
     document.body
   );
 });
-
-Modal.displayName = "Modal";
 
 export default memo(Modal);

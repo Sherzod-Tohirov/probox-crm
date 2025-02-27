@@ -48,10 +48,9 @@
       @include m.flex(start, start, 4rem, column);
       width: 100%;
       max-height: 450px;
-      padding-bottom: 10px;
-
+      padding: 10px;
+      padding-right: 15px;
       overflow-y: scroll;
-
       &::-webkit-scrollbar {
         width: 8px;
       }
@@ -64,6 +63,19 @@
       &::-webkit-scrollbar-track {
         background-color: v.$secondary-bg;
       }
+
+      .message {
+        will-change: transform;
+        transform-origin: bottom left;
+
+        &.own {
+          transform-origin: bottom right;
+        }
+      }
+    }
+
+    .messenger-message {
+      width: 100%;
     }
     // Add custom scrollbar for body
   }
@@ -136,7 +148,7 @@
   &-text {
     position: relative;
     display: flex;
-    padding: 13px 17px;
+    padding: 14px 17px;
     color: v.$primary-color;
     font-size: 3.5rem;
     font-style: normal;
@@ -166,7 +178,7 @@
     position: absolute;
     color: v.$secondary-color;
     right: 16px;
-    bottom: 0;
+    bottom: 1.5px;
     font-size: 2.5rem;
     font-style: normal;
     font-weight: 500;

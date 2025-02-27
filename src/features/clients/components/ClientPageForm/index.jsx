@@ -9,12 +9,14 @@ import { useCallback, useState } from "react";
 import ImagePreviewModal from "./ImagePreviewModal";
 import useClientPageForm from "../../hooks/useClientPageForm";
 import useAlert from "@hooks/useAlert";
+
 export default function ClientPageForm({ formId, ...props }) {
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
+  
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: "Maqsudov Nodir",
@@ -60,7 +62,6 @@ export default function ClientPageForm({ formId, ...props }) {
           setCopyProductImages((prev) => {
             const newImages = [...prev];
             newImages.splice(index, 1);
-            console.log("newImages", newImages);
             return newImages;
           });
         }}

@@ -8,6 +8,9 @@ import styles from "./messenger.module.scss";
 import useToggle from "@hooks/useToggle";
 import { motion } from "framer-motion";
 import MessageDate from "./MessageDate";
+import { mockMessages } from "../../../../mockData";
+import Box from "../Box";
+import { groupBy } from "ramda";
 export default function Messenger() {
   const { isOpen } = useToggle("messenger");
   return (
@@ -27,18 +30,18 @@ export default function Messenger() {
       </div>
       <div className={styles["messenger-body"]}>
         <div className={styles["messenger-messages"]}>
-          <MessageDate />
-          <Message text={"Hi, how are you ?"} />
-          <Message text={"Good, and you ?"} />
-          <Message text={"Good, thanks ?"} />
-          <Message text={"Thanks ?"} />
-          <MessageDate />
-          <Message text={"Bye ?"} />
-          <Message text={"Hi, how are you ?"} />
-          <Message text={"Good, and you ?"} />
-          <Message text={"Good, thanks ?"} />
-          <Message text={"Thanks ?"} />
-          <Message text={"Bye ?"} />
+          {Object.entries(
+            groupBy((msg) => msg.timestamp.slice(0, 10), mockMessages)
+          ).map(([date, messages], index) => {
+            return (
+              <Box dir="column" gap={2} key={index}>
+                <MessageDate date={date} />
+                {messages.map((message) => (
+                  <Message msg={message} />
+                ))}
+              </Box>
+            );
+          })}
         </div>
       </div>
       <div className={styles["messenger-footer"]}>
