@@ -101,6 +101,9 @@ export default function ImagePreviewModal({
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
                     onRemoveImage(index);
+                    if (index === currentImage) {
+                      setCurrentImage(0);
+                    }
                   }}
                   className={styles["indicator-img-close"]}>
                   {iconsMap["close"]}

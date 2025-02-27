@@ -16,7 +16,7 @@ export default function ClientPageForm({ formId, ...props }) {
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
-  
+
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: "Maqsudov Nodir",
