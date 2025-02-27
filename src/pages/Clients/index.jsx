@@ -69,7 +69,7 @@ export default function Clients() {
         <Row direction={"row"} justify={"space-between"}>
           <Col>
             <Input
-              variant={"filter"}
+              variant={"outlined"}
               type={"select"}
               options={tableSizeSelectOptions}
               width={"clamp(69px, 10vw, 100px)"}

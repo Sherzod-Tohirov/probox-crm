@@ -5,10 +5,15 @@ import Col from "../Col";
 import Row from "../Row";
 import Typography from "../Typography";
 import Box from "../Box";
-
+import { motion } from "framer-motion";
 export default function Message({ msg }) {
   return (
-    <Row className={styles.message}>
+    <motion.div
+      className={styles.message}
+      initial={{ scale: 0, y: 20 }}
+      animate={{ scale: 1, y: 0 }}
+      exit={{ scale: 0, y: -20 }}
+      transition={{ damping: 20, type: "spring", duration: 0.05 }}>
       <Col className={styles["message-text"]}>
         <p>{msg.text}</p>
         <time
@@ -31,6 +36,6 @@ export default function Message({ msg }) {
           </Typography>
         </Box>
       </Col>
-    </Row>
+    </motion.div>
   );
 }

@@ -24,6 +24,7 @@ function Box({
   marginLeft = 0,
   marginRight = 0,
   className,
+  component,
   ...props
 }) {
   const boxStyle = useMemo(
@@ -67,13 +68,14 @@ function Box({
       marginRight,
     ]
   );
+  const Component = component || "div";
   return (
-    <div
+    <Component
       style={boxStyle}
       className={classNames(styles.box, className)}
       {...props}>
       {children}
-    </div>
+    </Component>
   );
 }
 

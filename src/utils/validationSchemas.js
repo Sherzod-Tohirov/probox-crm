@@ -15,3 +15,7 @@ export const clientPageFormSchema = yup.object().shape({
   deadline: yup.string().datetime().required("Deadline is required"),
   imei: yup.string().required("IMEI is required"),
 });
+
+export const messengerSchema = yup.object().shape({
+  msgText: yup.string().required("Text is required !")
+})
