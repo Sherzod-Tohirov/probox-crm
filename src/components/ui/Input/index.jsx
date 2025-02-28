@@ -24,6 +24,7 @@ const Input = forwardRef(
       type = "text",
       variant,
       icon,
+      iconText,
       label,
       options = [],
       images = [],
@@ -81,7 +82,7 @@ const Input = forwardRef(
         date: (
           <Controller
             name={props.name}
-            control={props.control}
+            {...(props.control ? { control: props.control } : {})}
             render={({ field }) => (
               <Flatpickr
                 value={field.value || props.defaultValue}
@@ -175,7 +176,7 @@ const Input = forwardRef(
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography element="span" className={styles["icon"]}>
-                  {iconsMap[icon || inputIcons[type] || ""]}
+                  {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
               ) : null}
             </Box>

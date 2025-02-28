@@ -4,8 +4,10 @@ import formatterCurrency from "@utils/formatterCurrency";
 import { memo, useCallback, useState } from "react";
 import RadioInput from "./RadioInput";
 import moment from "moment/moment";
+import { useForm } from "react-hook-form";
+import { CURRENCY_MAP } from "@utils/constants";
 
-const ModalFooter = memo(({ onClose, onApply }) => {
+const ModalFooter = memo(({ onClose }) => {
   return (
     <Row direction="row" align="center" justify="center" gutter={4}>
       <Col flexGrow>
@@ -14,7 +16,11 @@ const ModalFooter = memo(({ onClose, onApply }) => {
         </Button>
       </Col>
       <Col flexGrow>
-        <Button fullWidth variant={"filled"} onClick={onApply}>
+        <Button
+          form={"payment_form"}
+          fullWidth
+          variant={"filled"}
+          type={"submit"}>
           Оплатить
         </Button>
       </Col>
@@ -24,24 +30,45 @@ const ModalFooter = memo(({ onClose, onApply }) => {
 
 export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
   const [price, setPrice] = useState(0);
+  const { register, handleSubmit, control, reset, setValue, watch } = useForm({
+    defaultValues: {
+      price: 0,
+      date: moment().format("DD.MM.YYYY"),
+      payment_type: "cash",
+      currency: "usd",
+    },
+  });
   const handlePriceChange = useCallback((e) => {
     let value = e.target.value.replace(/[^0-9.,-]/g, ""); // Remove non-numeric characters
 
     if (value === "" || value === "." || value === "-") {
       setPrice(value); // Allow empty input, "." or "-" temporarily
+      setValue("price", value);
       return;
     }
 
     const numericValue = Number(value.replace(/,/g, "")); // Convert to number
-    setPrice(numericValue); // Store the raw numeric value
+    setPrice(numericValue);
+    setValue("price", numericValue); // Store the raw numeric value
   });
+  const customOnApply = useCallback(
+    (data) => {
+      onApply(data);
+      reset();
+    },
+    [setValue]
+  );
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={"Добавить платеж"}
-      footer={<ModalFooter onClose={onClose} onApply={onApply} />}>
-      <form className={styles["modal-form"]} onSubmit={onApply}>
+      footer={<ModalFooter onClose={onClose} />}>
+      <form
+        id={"payment_form"}
+        className={styles["modal-form"]}
+        onSubmit={handleSubmit(customOnApply)}>
         <Row direction="row" gutter={4}>
           <Col flexGrow>
             <Row gutter={1}>
@@ -63,7 +90,9 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                   onChange={handlePriceChange}
                   type="text"
                   variant={"outlined"}
+                  iconText={CURRENCY_MAP[watch("currency") || "usd"]}
                   placeholder="Цена"
+                  name={"price"}
                 />
               </Col>
             </Row>
@@ -79,8 +108,9 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                 <Input
                   size="full"
                   type="date"
+                  control={control}
                   variant={"outlined"}
-                  placeholder={moment().format("DD.MM.YYYY")}
+                  {...register("date")}
                 />
               </Col>
             </Row>
@@ -97,18 +127,20 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
               <Col flexGrow>
                 <RadioInput
                   id={"payment_type_cash"}
-                  name={"payment_type"}
                   label={"Наличные"}
                   icon={"walletFilled"}
+                  value={"cash"}
                   defaultChecked
+                  {...register("payment_type")}
                 />
               </Col>
               <Col flexGrow>
                 <RadioInput
                   id={"payment_type_card"}
-                  name={"payment_type"}
                   label={"Карта"}
                   icon={"cardFilled"}
+                  value={"card"}
+                  {...register("payment_type")}
                 />
               </Col>
             </Row>
@@ -129,6 +161,8 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                   label={"Доллар"}
                   icon={"cash"}
                   defaultChecked
+                  value={"usd"}
+                  {...register("currency")}
                 />
               </Col>
               <Col flexGrow>
@@ -137,6 +171,8 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                   name={"currency"}
                   label={"Сум"}
                   icon={"card"}
+                  value={"uzs"}
+                  {...register("currency")}
                 />
               </Col>
             </Row>

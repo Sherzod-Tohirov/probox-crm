@@ -1,10 +1,12 @@
+import { forwardRef } from "react";
 import styles from "./clientPaymentModal.module.scss";
 import iconsMap from "@utils/iconsMap";
 
-export default function RadioInput({ label, icon, id, ...props }) {
+function RadioInput({ label, icon, id, ...props }, ref) {
   return (
     <div className={styles["radio-input-wrapper"]}>
       <input
+        ref={ref}
         id={id}
         type="radio"
         className={styles["radio-input"]}
@@ -17,3 +19,5 @@ export default function RadioInput({ label, icon, id, ...props }) {
     </div>
   );
 }
+
+export default forwardRef(RadioInput);

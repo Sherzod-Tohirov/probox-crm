@@ -1,13 +1,12 @@
 import Logo from "../Logo";
 import styles from "./sidebar.module.scss";
-import { Row, Col, List, Typography, Button } from "../ui";
-import { sidebarLinks } from "../../utils/constants";
-import iconsMap from "../../utils/iconsMap";
-
+import { Row, Col, List, Typography } from "@components/ui";
+import useToggle from "@hooks/useToggle";
+import sidebarLinks from "@utils/sidebarLinks";
+import iconsMap from "@utils/iconsMap";
 import { useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
-import useToggle from "../../hooks/useToggle";
 
 export default function Sidebar() {
   const { pathname } = useLocation();

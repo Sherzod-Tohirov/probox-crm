@@ -84,9 +84,10 @@ export default function ClientPage() {
         <ClientPaymentModal
           isOpen={paymentModal}
           onClose={onClose}
-          onApply={() => {
+          onApply={(data) => {
             alert("Платеж прошел успешно.");
             onClose();
+            console.log(data, "data");
           }}
         />
       </Footer>
