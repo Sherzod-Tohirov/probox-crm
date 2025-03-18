@@ -1,27 +1,27 @@
 import classNames from "classnames";
-import Button from "../Button";
-import Col from "../Col";
-import Row from "../Row";
-import Typography from "../Typography";
-import Message from "./Message";
-import styles from "./messenger.module.scss";
-import useToggle from "@hooks/useToggle";
-import { AnimatePresence, motion } from "framer-motion";
-import MessageDate from "./MessageDate";
-import { mockMessages } from "../../../../mockData";
-import Box from "../Box";
-import { groupBy } from "ramda";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { AnimatePresence, motion } from "framer-motion";
+import { Button, Col, Row, Typography, Box } from "@components/ui";
+
+import Message from "./Message";
+import useToggle from "@hooks/useToggle";
+import MessageDate from "./MessageDate";
+
+import { mockMessages } from "../../../../mockData";
+import { groupBy } from "ramda";
 import { v4 as uuidv4 } from "uuid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { messengerSchema } from "../../../utils/validationSchemas";
+import { messengerSchema } from "@utils/validationSchemas";
 
+import styles from "./messenger.module.scss";
+import moment from "moment";
 
 export default function Messenger() {
   const { isOpen } = useToggle("messenger");
   const scrollRef = useRef(null);
   const [messages, setMessages] = useState(mockMessages);
+  console.log(messages, "messages");
   const {
     register,
     handleSubmit,
@@ -30,6 +30,7 @@ export default function Messenger() {
   } = useForm({
     resolver: yupResolver(messengerSchema),
   });
+
   const handleSendMessage = useCallback((data) => {
     setMessages((prev) => {
       return [
@@ -38,7 +39,7 @@ export default function Messenger() {
           id: uuidv4(),
           text: data.msgText,
           sender: "agent",
-          timestamp: "2024-01-22T09:04:00",
+          timestamp: `${moment().format("YYYY-MM-DDTHH:mm:ss")}.000Z`,
           status: "sent",
           avatar: "https://randomuser.me/api/portraits/men/1.jpg",
         },
@@ -46,9 +47,12 @@ export default function Messenger() {
     });
     reset();
   }, []);
+
+  // Scroll to bottom when new message is added
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
   return (
     <motion.div
       initial={{ x: "0", display: "none" }}

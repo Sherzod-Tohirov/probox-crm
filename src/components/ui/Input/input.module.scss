@@ -110,6 +110,7 @@
   position: absolute;
   top: 50%;
   right: 12px;
+  @include m.flex-center;
   transform: translate(0, -50%);
   font-size: 3.8rem;
   z-index: 1000;

@@ -1082,7 +1082,7 @@ export const mockMessages = [
     avatar: "https://randomuser.me/api/portraits/men/1.jpg",
   },
   {
-    id: 5,
+    id: 6,
     text: "Ok, I have checked your order and it's on its way to you",
     sender: "agent",
     timestamp: "2024-01-21T09:04:00",

@@ -1,10 +1,10 @@
-import { memo, forwardRef, useMemo } from "react";
+import { memo, forwardRef, useMemo, useCallback } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
 import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
-import { Box, Col, Row } from "@components/ui";
+import { Box, Col, Row, List } from "@components/ui";
 import { omit } from "ramda";
 import "flatpickr/dist/themes/airbnb.css";
 import { Controller } from "react-hook-form";
@@ -18,9 +18,36 @@ const inputIcons = {
   date: "calendarDays",
 };
 
+const SearchField = ({ data = [], onSelect }) => {
+  const render = useCallback((item) => {
+    return (
+      <Box
+        onClick={() => onSelect(item)}
+        className={styles["search-field-item"]}>
+        <Typography element="span">{item}</Typography>
+      </Box>
+    );
+  });
+
+  return (
+    <Box className={styles["search-field"]}>
+      <List
+        className={styles["search-field-list"]}
+        items={data}
+        renderItem={render}
+        itemClassName={styles["search-field-item"]}
+      />
+    </Box>
+  );
+};
+
 const Input = forwardRef(
   (
     {
+      id,
+      style = {},
+      className,
+      width,
       type = "text",
       variant,
       icon,
@@ -28,13 +55,12 @@ const Input = forwardRef(
       label,
       options = [],
       images = [],
-      width,
-      style = {},
       size = "",
+      searchable = false,
+      onSearch = () => {},
+      onSearchSelect = () => {},
       disabled = false,
       hasIcon = true,
-      id,
-      className,
       error = null,
       ...props
     },
@@ -65,6 +91,7 @@ const Input = forwardRef(
         ),
       [variant, type, size, disabled, className, error]
     );
+    // console.log("value", value);
 
     const commonProps = useMemo(
       () => ({
@@ -140,7 +167,29 @@ const Input = forwardRef(
             </label>
           </Box>
         ),
-        default: <input type={type} {...commonProps} {...props} />,
+        default: searchable ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => {
+              return (
+                <input
+                  {...field}
+                  value={field.value || ""}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    onSearch(e.target.value);
+                  }}
+                  type={type}
+                  {...commonProps}
+                  placeholder={props?.placeholder}
+                />
+              );
+            }}
+          />
+        ) : (
+          <input type={type} {...commonProps} {...props} />
+        ),
       }),
       [props, type, options, commonProps, images, uniqueId]
     );
@@ -173,12 +222,18 @@ const Input = forwardRef(
         <Col fullWidth>
           <Box dir="column" gap={1}>
             <Box pos="relative">
+              {console.log("props", props)}
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography element="span" className={styles["icon"]}>
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
               ) : null}
+              {searchable ? (
+                <SearchField onSearch={onSearch} onSelect={onSearchSelect} />
+              ) : (
+                ""
+              )}
             </Box>
             {error ? (
               <Typography element="span" className={styles["error-text"]}>

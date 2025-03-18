@@ -10,7 +10,10 @@ export default function Filter({ onFilter }) {
     },
   });
   return (
-    <form className={styles["filter-form"]} onSubmit={handleSubmit(onFilter)}>
+    <form
+      className={styles["filter-form"]}
+      onSubmit={handleSubmit(onFilter)}
+      autoComplete="off">
       <Row direction={"row"} gutter={6.25}>
         <Col gutter={4}>
           <Input
@@ -27,6 +30,8 @@ export default function Filter({ onFilter }) {
             label={"Name"}
             type={"text"}
             placeholder={"Akmal Toshev"}
+            searchable={true}
+            control={control}
             {...register("name")}
           />
           <Input
@@ -62,6 +67,18 @@ export default function Filter({ onFilter }) {
               { value: "paid", label: "Paid" },
               { value: "partially_paid", label: "Partially paid" },
               { value: "not_paid", label: "Not paid" },
+            ]}
+          />
+          <Input
+            variant={"outlined"}
+            label={"Executor"}
+            type={"select"}
+            {...register("executor")}
+            options={[
+              { value: "1", label: "Aziz Toshev" },
+              { value: "2", label: "Tolib Yo'ldoshev" },
+              { value: "3", label: "Salim Temirov" },
+              { value: "4", label: "Fayzulla Berdiyev" },
             ]}
           />
         </Col>

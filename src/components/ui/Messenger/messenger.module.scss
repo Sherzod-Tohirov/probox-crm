@@ -47,7 +47,8 @@
     .messenger-messages {
       @include m.flex(start, start, 4rem, column);
       width: 100%;
-      max-height: 450px;
+      max-height: 62vh;
+      flex: 1;
       padding: 10px;
       padding-right: 15px;
       overflow-y: scroll;
