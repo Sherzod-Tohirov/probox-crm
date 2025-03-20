@@ -31,11 +31,13 @@ function Header() {
         <Col>
           <Row direction="row" gutter={6}>
             <Col>
-              <Button icon={"telephoneFilled"} variant={"text"} />
+              <Button variant={"text"} icon={"expense"} iconColor={"primary"}>
+                12900 so'm
+              </Button>
             </Col>
             <Col>
-              <Button icon={"notification"} variant={"text"}>
-                Notification
+              <Button icon={"avatar"} variant={"text"} iconColor={"primary"}>
+                Azamat Berdiyev
               </Button>
             </Col>
             {isMessengerRoute(pathname) ? (

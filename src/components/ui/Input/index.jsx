@@ -1,4 +1,4 @@
-import { memo, forwardRef, useMemo, useCallback } from "react";
+import { memo, forwardRef, useMemo, useCallback, useEffect, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
@@ -6,10 +6,14 @@ import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
 import { Box, Col, Row, List } from "@components/ui";
 import { omit } from "ramda";
-import "flatpickr/dist/themes/airbnb.css";
 import { Controller } from "react-hook-form";
+import PhoneInput from "react-phone-input-2";
 import moment from "moment";
-
+import * as r from "ramda";
+import "flatpickr/dist/themes/airbnb.css";
+import "react-phone-input-2/lib/style.css";
+import { ClipLoader } from "react-spinners";
+import { motion } from "framer-motion";
 const inputIcons = {
   email: "email",
   select: "arrowDown",
@@ -18,26 +22,36 @@ const inputIcons = {
   date: "calendarDays",
 };
 
-const SearchField = ({ data = [], onSelect }) => {
+const SearchField = ({ data = [], searchText, onSearch, onSelect }) => {
+  const [date,setData] = useState([]);
   const render = useCallback((item) => {
-    return (
-      <Box
-        onClick={() => onSelect(item)}
-        className={styles["search-field-item"]}>
-        <Typography element="span">{item}</Typography>
-      </Box>
-    );
+    return <Typography element="span">{item}</Typography>;
   });
 
+  useEffect(() => {
+    const delaySearch = setTimeout(async () => {
+          const results = await onsubmit(searchText);
+          if(results?.length > 0) {
+            setData(results);
+          }
+    }, 500);
+
+    return () => clearTimeout(delaySearch);
+  }, [searchText]);
+
   return (
-    <Box className={styles["search-field"]}>
-      <List
-        className={styles["search-field-list"]}
-        items={data}
-        renderItem={render}
-        itemClassName={styles["search-field-item"]}
-      />
-    </Box>
+    <motion.div className={styles["search-field"]}>
+      {data.length > 0 ? (
+        <List
+          className={styles["search-field-list"]}
+          items={data}
+          renderItem={render}
+          itemClassName={styles["search-field-item"]}
+        />
+      ) : (
+        <ClipLoader color={"black"} loading={true} size={20} />
+      )}
+    </motion.div>
   );
 };
 
@@ -56,6 +70,7 @@ const Input = forwardRef(
       options = [],
       images = [],
       size = "",
+      searchText,
       searchable = false,
       onSearch = () => {},
       onSearchSelect = () => {},
@@ -91,7 +106,6 @@ const Input = forwardRef(
         ),
       [variant, type, size, disabled, className, error]
     );
-    // console.log("value", value);
 
     const commonProps = useMemo(
       () => ({
@@ -167,10 +181,38 @@ const Input = forwardRef(
             </label>
           </Box>
         ),
+        tel: (
+          <Controller
+            name={props.name}
+            {...(props.control ? { control: props.control } : {})}
+            render={({ field }) => {
+              return (
+                <PhoneInput
+                  {...field}
+                  {...r.omit(["className", "style"], commonProps)}
+                  inputClass={classNames(
+                    styles[`input-tel-${variant}`],
+                    styles[size]
+                  )}
+                  inputStyle={commonProps.style}
+                  containerClass={styles["input-tel-container"]}
+                  onlyCountries={["uz"]}
+                  disableDropdown={true}
+                  countryCodeEditable={false}
+                  buttonClass={styles["hidden"]}
+                  country={"uz"}
+                  onChange={(v) => {
+                    field.onChange(v);
+                  }}
+                />
+              );
+            }}
+          />
+        ),
         default: searchable ? (
           <Controller
             name={props.name}
-            control={props.control}
+            {...(props.control ? { control: props.control } : {})}
             render={({ field }) => {
               return (
                 <input
@@ -220,21 +262,24 @@ const Input = forwardRef(
         )}
 
         <Col fullWidth>
-          <Box dir="column" gap={1}>
+          <Box dir="column" pos={"relative"} gap={1}>
             <Box pos="relative">
-              {console.log("props", props)}
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography element="span" className={styles["icon"]}>
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
               ) : null}
-              {searchable ? (
-                <SearchField onSearch={onSearch} onSelect={onSearchSelect} />
-              ) : (
-                ""
-              )}
             </Box>
+            {searchable ? (
+              <SearchField
+                searchText={searchText}
+                onSearch={onSearch}
+                onSelect={onSearchSelect}
+              />
+            ) : (
+              ""
+            )}
             {error ? (
               <Typography element="span" className={styles["error-text"]}>
                 {error}

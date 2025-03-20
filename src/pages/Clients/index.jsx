@@ -14,6 +14,7 @@ import Footer from "@components/Footer";
 import { mockDataClients } from "../../../mockData";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Typography } from "../../components/ui";
 
 const tableSizeSelectOptions = [
   { value: "10", label: "10" },
@@ -68,12 +69,19 @@ export default function Clients() {
       <Footer>
         <Row direction={"row"} justify={"space-between"}>
           <Col>
-            <Input
-              variant={"outlined"}
-              type={"select"}
-              options={tableSizeSelectOptions}
-              width={"clamp(69px, 10vw, 100px)"}
-            />
+            <Row direction={"row"} align={"center"} gutter={3}>
+              <Col>
+                <Input
+                  variant={"outlined"}
+                  type={"select"}
+                  options={tableSizeSelectOptions}
+                  width={"clamp(69px, 10vw, 100px)"}
+                />
+              </Col>
+              <Col>
+                <Typography variant={"primary"} element="span">1-10 of 50</Typography>
+              </Col>
+            </Row>
           </Col>
           <Col>
             <Pagination />

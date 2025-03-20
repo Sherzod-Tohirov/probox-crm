@@ -1,3 +1,4 @@
+import moment from "moment";
 import * as yup from "yup";
 
 export const loginSchema = yup.object().shape({
@@ -17,5 +18,15 @@ export const clientPageFormSchema = yup.object().shape({
 });
 
 export const messengerSchema = yup.object().shape({
-  msgText: yup.string().required("Text is required !")
-})
+  msgText: yup.string().required("Text is required !"),
+});
+
+export const filterClientFormSchema = yup.object().shape({
+  // startDate: yup.string().required("Start date is required !"),
+  // endDate: yup
+  //   .string()
+  //   .test("is-greater", "End date cannot be werwerwe re rwerwe !", function (value) {
+  //     const { startDate } = this.parent;
+  //     return moment(value, "DD.MM.YYYY").isSameOrAfter(startDate, "DD.MM.YYYY");
+  //   }),
+});

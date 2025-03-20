@@ -1,7 +1,12 @@
+import classNames from "classnames";
 import { memo } from "react";
-
-function Typography({ element: Element = "p", children, ...props }) {
-  return <Element {...props}>{children}</Element>;
+import styles from "./typography.module.scss";
+function Typography({ element: Element = "p", children, variant, ...props }) {
+  return (
+    <Element className={classNames(styles[variant])} {...props}>
+      {children}
+    </Element>
+  );
 }
 
 export default memo(Typography);

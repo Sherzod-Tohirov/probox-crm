@@ -2,11 +2,11 @@ import iconsMap from "@utils/iconsMap";
 import styles from "./messenger.module.scss";
 import moment from "moment";
 import Col from "../Col";
+import Row from "../Row";
 import Typography from "../Typography";
 import Box from "../Box";
 import { motion } from "framer-motion";
 export default function Message({ msg }) {
-  console.log(moment(msg.timestamp).format("HH:mm"), "time");
   return (
     <motion.div
       className={styles.message}
@@ -27,8 +27,8 @@ export default function Message({ msg }) {
       <Col>
         <Box dir="row" gap={1} align="center">
           <Typography element="span" className={styles["message-avatar-icon"]}>
-            {msg.avatar ? (
-              <img style={{borderRadius: "50%"}} src={msg.avatar} width={20} height={20} />
+            {msg.avattar ? (
+              <img src={msg.avatar} width={50} height={50} />
             ) : (
               iconsMap["avatarFilled"]
             )}

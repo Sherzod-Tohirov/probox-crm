@@ -113,6 +113,7 @@ export default function ClientPageForm({ formId, ...props }) {
                 <Label icon="telephoneFilled">Telephone</Label>
                 <Input
                   type="tel"
+                  control={control}
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
                   value={"+998 94 534 33 24"}

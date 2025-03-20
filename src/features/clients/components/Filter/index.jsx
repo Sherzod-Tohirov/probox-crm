@@ -1,14 +1,30 @@
 import { Button, Col, Input, Row } from "@components/ui";
 import styles from "./filter.module.scss";
 import { useForm } from "react-hook-form";
-
+import moment from "moment";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { filterClientFormSchema } from "@utils/validationSchemas";
 export default function Filter({ onFilter }) {
-  const { register, handleSubmit, control } = useForm({
+  const today = moment().format("DD.MM.YYYY");
+  const endOfMonth = moment().endOf("month").format("DD.MM.YYYY");
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      startDate: "01.01.2025",
-      endDate: "01.02.2025",
+      query: "",
+      phone: "+998",
+      startDate: today,
+      endDate: endOfMonth,
     },
+    resolver: yupResolver(filterClientFormSchema),
+    mode: "all",
   });
+
   return (
     <form
       className={styles["filter-form"]}
@@ -17,35 +33,31 @@ export default function Filter({ onFilter }) {
       <Row direction={"row"} gutter={6.25}>
         <Col gutter={4}>
           <Input
+            style={{ width: "240px" }}
             variant={"outlined"}
-            label={"IMEI"}
+            label={"IMEI | Name"}
             type={"text"}
-            placeholder={"IMEI number"}
-            icon={"barCode"}
-            {...register("imei")}
-          />
-          <Input
-            variant={"outlined"}
-            icon={"avatar"}
-            label={"Name"}
-            type={"text"}
-            placeholder={"Akmal Toshev"}
+            placeholder={"4567890449494 | Azam Toshev"}
+            searchText={watch("query")}
             searchable={true}
             control={control}
-            {...register("name")}
+            icon={"avatar"}
+            {...register("query")}
           />
           <Input
             variant={"outlined"}
             label={"Phone number"}
             type={"tel"}
             placeholder={"90 123 45 67"}
-            {...register("phone")}
+            control={control}
+            name={"phone"}
           />
           <Input
             id={"Hello World"}
             variant={"outlined"}
             label={"Start date"}
             type={"date"}
+            placeholder={today}
             control={control}
             {...register("startDate")}
           />
@@ -53,7 +65,9 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"End date"}
             type={"date"}
-            placeholder={"01.01.2025"}
+            placeholder={endOfMonth}
+            datePickerOptions={{ minDate: watch("startDate") }}
+            error={errors?.endDate?.message}
             control={control}
             {...register("endDate")}
           />
@@ -82,7 +96,7 @@ export default function Filter({ onFilter }) {
             ]}
           />
         </Col>
-        <Col align="end">
+        <Col style={{ marginTop: "25px" }}>
           <Button
             className={styles["filter-btn"]}
             icon={"search"}
