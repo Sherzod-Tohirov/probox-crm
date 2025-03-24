@@ -1,13 +1,15 @@
-import { Button, Col, Input, Row } from "@components/ui";
 import styles from "./filter.module.scss";
 import { useForm } from "react-hook-form";
-import moment from "moment";
+import { useSelector } from "react-redux";
+import useFilter from "../../hooks/useFilter";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
+import { useEffect } from "react";
+import useWatchFilterFields from "../../hooks/useWatchFilterFields";
 export default function Filter({ onFilter }) {
-  const today = moment().format("DD.MM.YYYY");
-  const endOfMonth = moment().endOf("month").format("DD.MM.YYYY");
-
+  const filterState = useSelector((state) => state.page.clients.filter);
+  console.log(filterState, "filterState");
   const {
     register,
     handleSubmit,
@@ -15,15 +17,14 @@ export default function Filter({ onFilter }) {
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      query: "",
-      phone: "+998",
-      startDate: today,
-      endDate: endOfMonth,
-    },
+    defaultValues: filterState,
     resolver: yupResolver(filterClientFormSchema),
     mode: "all",
   });
+
+  const { query } = useFilter();
+  console.log("query", watch("query"));
+  const watchedFields = useWatchFilterFields(watch);
 
   return (
     <form
@@ -39,6 +40,9 @@ export default function Filter({ onFilter }) {
             type={"text"}
             placeholder={"4567890449494 | Azam Toshev"}
             searchText={watch("query")}
+            onSearch={query.onSearch}
+            onSelect={(item) => console.log(item)}
+            renderSearchItem={query.renderItem}
             searchable={true}
             control={control}
             icon={"avatar"}
@@ -48,6 +52,7 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Phone number"}
             type={"tel"}
+            // searchable={true}
             placeholder={"90 123 45 67"}
             control={control}
             name={"phone"}
@@ -57,7 +62,6 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Start date"}
             type={"date"}
-            placeholder={today}
             control={control}
             {...register("startDate")}
           />
@@ -65,7 +69,6 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"End date"}
             type={"date"}
-            placeholder={endOfMonth}
             datePickerOptions={{ minDate: watch("startDate") }}
             error={errors?.endDate?.message}
             control={control}
