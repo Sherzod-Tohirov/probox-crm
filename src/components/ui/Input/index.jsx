@@ -276,10 +276,18 @@ const Input = forwardRef(
             <Box pos="relative">
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
-                <Typography element="span" className={styles["icon"]}>
+                <Typography
+                  style={{ cursor: props.onIconClick ? "pointer" : "default" }}
+                  element="span"
+                  className={styles["icon"]}
+                  {...(props.onIconClick
+                    ? { onClick: props.onIconClick }
+                    : {})}>
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
-              ) : null}
+              ) : (
+                ""
+              )}
             </Box>
             <AnimatePresence mode="popLayout">
               {searchable && searchText.length && searchText !== "998" ? (
@@ -293,11 +301,20 @@ const Input = forwardRef(
                 ""
               )}
             </AnimatePresence>
-            {error ? (
-              <Typography element="span" className={styles["error-text"]}>
-                {error}
-              </Typography>
-            ) : null}
+            <AnimatePresence mode="popLayout">
+              {error ? (
+                <motion.span
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className={styles["error-text"]}>
+                  {error}
+                </motion.span>
+              ) : (
+                ""
+              )}
+            </AnimatePresence>
           </Box>
         </Col>
       </Row>

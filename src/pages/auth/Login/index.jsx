@@ -8,9 +8,11 @@ import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { Typography } from "@components/ui";
-
+import { motion } from "framer-motion";
+import { useState } from "react";
 export default function Login() {
   const { isAuthenticated, handleLogin, loginState } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -25,10 +27,9 @@ export default function Login() {
     return <Navigate to="/" />;
   }
 
-
   return (
     <div className={styles.login}>
-      <div className={styles["login-wrapper"]}>
+      <motion.div className={styles["login-wrapper"]}>
         <Box dir="column" gap={3} align="center">
           <Logo isTouchable={false} />
           {loginState.isError && (
@@ -45,24 +46,23 @@ export default function Login() {
             <Col>
               <Input
                 type="text"
-                name="login"
                 id="login"
                 placeholder="Login (test user: admin)"
                 variant="filled"
                 icon="avatar"
-                error={errors.username?.message}
+                error={errors.login?.message}
                 className={styles.input}
                 {...register("login")}
               />
             </Col>
             <Col>
               <Input
-                type="password"
-                name="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Password (test password: 1234)"
                 variant="filled"
-                icon="lock"
+                icon={showPassword ? "eyeClosed" : "eye"}
+                onIconClick={() => setShowPassword((p) => !p)}
                 className={styles.input}
                 error={errors.password?.message}
                 {...register("password")}
@@ -80,7 +80,7 @@ export default function Login() {
             </Col>
           </Row>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

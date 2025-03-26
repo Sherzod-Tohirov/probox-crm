@@ -21,7 +21,7 @@
 
   &.filled {
     min-width: 310px;
-    padding: 11px 12px;
+    padding: 11px 32px 11px 12px;
     background: v.$primary-input-bg;
     font-size: 3.5rem;
     font-style: normal;
@@ -148,7 +148,6 @@
     width: 16px;
     height: 16px;
   }
-  pointer-events: none;
 }
 
 .icon-text {

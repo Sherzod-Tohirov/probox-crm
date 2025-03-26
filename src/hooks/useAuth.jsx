@@ -14,7 +14,6 @@ export default function useAuth() {
   const mutation = useMutation({
     mutationFn: login,
     onError: (error) => {
-      console.log("errror login", error);
       console.log("Error while logging in: ", error);
       alert(error.response.data.message, {
         type: "error",
