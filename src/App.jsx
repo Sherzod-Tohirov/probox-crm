@@ -13,7 +13,7 @@ import useToggle from "@hooks/useToggle";
 import { useEffect } from "react";
 import { isMessengerRoute } from "@utils/routesConfig";
 import useAuth from "@hooks/useAuth";
-import { scan } from "react-scan/dist/index";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // scan({
 //   enabled: true,
@@ -44,7 +44,9 @@ function App() {
         <Row direction="row" flexGrow>
           <Col
             flexGrow
-            style={{ width: isOpen ? "calc(100% - (356px + 32px))" : "100%" }}>
+            style={{
+              width: isOpen ? "calc(100% - (356px + 32px))" : "100%",
+            }}>
             <DashboardLayout>
               <Outlet />
             </DashboardLayout>

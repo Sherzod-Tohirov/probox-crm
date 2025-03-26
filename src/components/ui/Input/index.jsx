@@ -1,11 +1,4 @@
-import {
-  memo,
-  forwardRef,
-  useMemo,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { memo, forwardRef, useMemo, useEffect, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
@@ -38,7 +31,7 @@ const SearchField = ({ searchText, onSearch, renderItem, onSelect }) => {
     const delaySearch = setTimeout(async () => {
       const results = await onSearch(searchText);
       console.log(results, "results");
-      if (results?.length > 0) {
+      if (results) {
         setData(results);
       }
       setIsLoading(false);
@@ -289,7 +282,7 @@ const Input = forwardRef(
               ) : null}
             </Box>
             <AnimatePresence mode="popLayout">
-              {searchable && searchText.length ? (
+              {searchable && searchText.length && searchText !== "998" ? (
                 <SearchField
                   searchText={searchText}
                   renderItem={props.renderSearchItem}

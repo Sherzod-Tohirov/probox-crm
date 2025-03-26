@@ -1,24 +1,44 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@services/authService";
+import { logoutUser, setUser } from "@store/slices/authSlice";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "../services/authService";
+import useAlert from "./useAlert";
 
 export default function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem("token") ? true : false
-  );
+  const dispatch = useDispatch();
+  const { alert } = useAlert();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      localStorage.setItem("token", "token");
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [isAuthenticated]);
+  const mutation = useMutation({
+    mutationFn: login,
+    onError: (error) => {
+      console.log("errror login", error);
+      console.log("Error while logging in: ", error);
+      alert(error.response.data.message, {
+        type: "error",
+      });
+    },
+    onSuccess: (response) => {
+      dispatch(setUser(response));
+    },
+  });
+  const handleLogin = useCallback(async (credentials) => {
+    console.log(credentials, "credentials");
+    mutation.mutate(credentials);
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    dispatch(logoutUser());
+  }, []);
 
   return {
+    user,
     isAuthenticated,
-    setIsAuthenticated,
-    user: {
-      name: "John Doe",
-      email: "john.doe@mail.ru",
-    },
+    loginState: mutation,
+    handleLogin,
+    handleLogout,
   };
 }

@@ -15,7 +15,7 @@ export default defineConfig({
   plugins: [react()],
   base: "/",
   server: {
-    port: process.env.REACT_APP_PORT,
+    port: process.env.PORT,
   },
   resolve: {
     alias: {

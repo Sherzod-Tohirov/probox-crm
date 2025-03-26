@@ -6,15 +6,11 @@ import { loginSchema } from "@utils/validationSchemas";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import { Typography } from "@components/ui";
 
 export default function Login() {
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [isLoginValid, setIsLoginValid] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, handleLogin, loginState } = useAuth();
   const {
     register,
     handleSubmit,
@@ -23,37 +19,19 @@ export default function Login() {
     mode: "all",
     resolver: yupResolver(loginSchema),
   });
-  const onSubmit = (data) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      if (r.isEmpty(errors)) {
-        if (data.username === "admin" && data.password === "admin") {
-          console.log(data, "data");
-          setIsAuthenticated(true);
-          navigate("/");
-          console.log("Login successful");
-          setIsLoginValid(true);
-        } else {
-          console.log("Invalid credentials");
-          setIsLoginValid(false);
-        }
-
-        setIsLoading(false);
-      }
-    }, 2000);
-  };
   console.log(errors, "errors");
 
   if (isAuthenticated) {
     return <Navigate to="/" />;
   }
 
+
   return (
     <div className={styles.login}>
       <div className={styles["login-wrapper"]}>
         <Box dir="column" gap={3} align="center">
           <Logo isTouchable={false} />
-          {isLoginValid === false && (
+          {loginState.isError && (
             <Typography className={styles["error-desc"]} element="span">
               Invalid username or password !
             </Typography>
@@ -62,19 +40,19 @@ export default function Login() {
         <form
           className={styles.form}
           autoComplete="off"
-          onSubmit={handleSubmit(onSubmit)}>
+          onSubmit={handleSubmit(handleLogin)}>
           <Row gutter={4}>
             <Col>
               <Input
                 type="text"
-                name="username"
-                id="username"
-                placeholder="Username (test user: admin)"
+                name="login"
+                id="login"
+                placeholder="Login (test user: admin)"
                 variant="filled"
                 icon="avatar"
                 error={errors.username?.message}
                 className={styles.input}
-                {...register("username")}
+                {...register("login")}
               />
             </Col>
             <Col>
@@ -82,7 +60,7 @@ export default function Login() {
                 type="password"
                 name="password"
                 id="password"
-                placeholder="Password (test password: admin)"
+                placeholder="Password (test password: 1234)"
                 variant="filled"
                 icon="lock"
                 className={styles.input}
@@ -93,7 +71,7 @@ export default function Login() {
             <Col fullWidth>
               <Button
                 fullWidth
-                isLoading={isLoading}
+                isLoading={loginState.isLoading}
                 type="submit"
                 className={styles.button}
                 disabled={r.isEmpty(errors) ? false : true}>

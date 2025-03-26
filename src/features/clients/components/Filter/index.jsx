@@ -5,11 +5,9 @@ import useFilter from "../../hooks/useFilter";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
-import { useEffect } from "react";
 import useWatchFilterFields from "../../hooks/useWatchFilterFields";
 export default function Filter({ onFilter }) {
   const filterState = useSelector((state) => state.page.clients.filter);
-  console.log(filterState, "filterState");
   const {
     register,
     handleSubmit,
@@ -21,11 +19,8 @@ export default function Filter({ onFilter }) {
     resolver: yupResolver(filterClientFormSchema),
     mode: "all",
   });
-
-  const { query } = useFilter();
-  console.log("query", watch("query"));
+  const { query, phone } = useFilter();
   const watchedFields = useWatchFilterFields(watch);
-
   return (
     <form
       className={styles["filter-form"]}
@@ -39,7 +34,7 @@ export default function Filter({ onFilter }) {
             label={"IMEI | Name"}
             type={"text"}
             placeholder={"4567890449494 | Azam Toshev"}
-            searchText={watch("query")}
+            searchText={watchedFields.query}
             onSearch={query.onSearch}
             onSelect={(item) => console.log(item)}
             renderSearchItem={query.renderItem}
@@ -52,7 +47,11 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Phone number"}
             type={"tel"}
-            // searchable={true}
+            searchable={true}
+            searchText={watchedFields.phone}
+            onSearch={phone.onSearch}
+            onSelect={(item) => console.log(item)}
+            renderSearchItem={phone.renderItem}
             placeholder={"90 123 45 67"}
             control={control}
             name={"phone"}
@@ -82,8 +81,8 @@ export default function Filter({ onFilter }) {
             options={[
               { value: "all", label: "All" },
               { value: "paid", label: "Paid" },
-              { value: "partially_paid", label: "Partially paid" },
-              { value: "not_paid", label: "Not paid" },
+              { value: "partial", label: "Partially paid" },
+              { value: "unpaid", label: "Not paid" },
             ]}
           />
           <Input
