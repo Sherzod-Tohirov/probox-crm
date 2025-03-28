@@ -16,7 +16,6 @@ const loadState = () => {
   try {
     const serializedState = localStorage.getItem("clientsPageState");
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
-
     return {
       clients: [],
       filter: parsedState.filter || initialFilter,
@@ -35,11 +34,11 @@ const loadState = () => {
 };
 
 const saveState = (state) => {
+  console.log(state, "state");
   try {
     const { filter, currentPage, pageSize } = state;
-    console.log("state: ", state);
+    console.log("state page size: ", pageSize);
     const serializedState = JSON.stringify({ filter, currentPage, pageSize });
-    console.log(serializedState, "serializedState");
     localStorage.setItem("clientsPageState", serializedState);
   } catch (error) {
     console.log("Error saving state", error);
@@ -67,6 +66,7 @@ const clientsPageSlice = createSlice({
       saveState(state);
     },
     setClientsPageSize(state, action) {
+      console.log(action, "action");
       state.pageSize = action.payload;
       saveState(state);
     },

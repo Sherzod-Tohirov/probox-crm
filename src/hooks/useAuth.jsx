@@ -15,11 +15,12 @@ export default function useAuth() {
     mutationFn: login,
     onError: (error) => {
       console.log("Error while logging in: ", error);
-      alert(error.response.data.message, {
-        type: "error",
-      });
     },
     onSuccess: (response) => {
+      console.log("Login successful: ", response);
+
+      if (!response?.data) return;
+
       dispatch(setUser(response));
     },
   });

@@ -84,6 +84,7 @@ const Input = forwardRef(
       searchable = false,
       onSearch = () => {},
       onSearchSelect = () => {},
+      onIconClick,
       disabled = false,
       hasIcon = true,
       error = null,
@@ -91,6 +92,7 @@ const Input = forwardRef(
     },
     ref
   ) => {
+    if (type === "select") console.log(props, "props");
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -277,12 +279,10 @@ const Input = forwardRef(
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography
-                  style={{ cursor: props.onIconClick ? "pointer" : "default" }}
+                  style={{ cursor: onIconClick ? "pointer" : "default" }}
                   element="span"
                   className={styles["icon"]}
-                  {...(props.onIconClick
-                    ? { onClick: props.onIconClick }
-                    : {})}>
+                  {...(onIconClick ? { onClick: onIconClick } : {})}>
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
               ) : (

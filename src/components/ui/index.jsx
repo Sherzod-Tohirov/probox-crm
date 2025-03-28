@@ -12,6 +12,7 @@ import Navigation from "./Navigation";
 import Table from "./Table";
 import Modal from "./Modal";
 import Status from "./Status";
+import Divider from "./Divider";
 
 export {
   Row,
@@ -28,4 +29,5 @@ export {
   Modal,
   Table,
   Status,
+  Divider,
 };

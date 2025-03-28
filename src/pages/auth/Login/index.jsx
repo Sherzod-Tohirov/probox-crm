@@ -7,9 +7,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate } from "react-router-dom";
-import { Typography } from "@components/ui";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { startTransition, useState } from "react";
+
 export default function Login() {
   const { isAuthenticated, handleLogin, loginState } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -27,16 +27,27 @@ export default function Login() {
     return <Navigate to="/" />;
   }
 
+  console.log(loginState, "loginState");
+
   return (
     <div className={styles.login}>
       <motion.div className={styles["login-wrapper"]}>
         <Box dir="column" gap={3} align="center">
           <Logo isTouchable={false} />
-          {loginState.isError && (
-            <Typography className={styles["error-desc"]} element="span">
-              Invalid username or password !
-            </Typography>
-          )}
+          <AnimatePresence exitBeforeEnter>
+            {loginState.isError && (
+              <motion.span
+                className={styles["error-desc"]}
+                element="span"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                key="errorText">
+                {loginState?.error?.response?.data?.message ||
+                  "Invalid username or password !"}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Box>
         <form
           className={styles.form}
@@ -71,7 +82,7 @@ export default function Login() {
             <Col fullWidth>
               <Button
                 fullWidth
-                isLoading={loginState.isLoading}
+                isLoading={loginState.isPending}
                 type="submit"
                 className={styles.button}
                 disabled={r.isEmpty(errors) ? false : true}>

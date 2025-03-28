@@ -16,10 +16,10 @@ function Table({
       style={style}>
       <thead>
         <tr>
-          {columns.map((column, index) => (
+          {columns.map((column) => (
             <th
               // Use combination of key and index for uniqueness
-              key={`header-${column.key}-${index}`}
+              key={`header-${column.key}`}
               style={{ width: column.width || "auto" }}>
               <div className={styles["table-header-cell"]}>
                 {column.icon && iconsMap[column.icon]} {column.title}
@@ -29,15 +29,15 @@ function Table({
         </tr>
       </thead>
       <tbody>
-        {data.map((row, rowIndex) => (
+        {data.map((row) => (
           <tr
             // Use combination of id and index for uniqueness
-            key={`row-${row.id}-${rowIndex}`}
+            key={`row${row.id}`}
             onClick={() => onRowClick(row)}>
-            {columns.map((column, colIndex) => (
+            {columns.map((column) => (
               <td
                 // Use combination of all relevant ids for uniqueness
-                key={`cell-${row.id}-${column.key}-${colIndex}`}>
+                key={`cell${row.id}${column.key}`}>
                 {column.renderCell ? column.renderCell(row) : row[column.key]}
               </td>
             ))}

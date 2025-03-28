@@ -1,13 +1,20 @@
-import { matchPath, useLocation } from "react-router-dom";
-import useToggle from "../../hooks/useToggle";
-import { Col, Row, Button } from "../ui";
-import Divider from "../ui/Divider";
-import Input from "../ui/Input";
+import { useLocation } from "react-router-dom";
+import { Col, Row, Button, Divider, Input } from "../ui";
+
+import useToggle from "@hooks/useToggle";
+import useAuth from "@hooks/useAuth";
+import useFetchCurrency from "@hooks/data/useFetchCurrency";
+
+import { isMessengerRoute } from "@utils/routesConfig";
+import formatterCurrency from "@utils/formatterCurrency";
 import styles from "./header.module.scss";
-import { isMessengerRoute } from "../../utils/routesConfig";
+
 function Header() {
   const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
+  const { user } = useAuth();
   const { pathname } = useLocation();
+  const { data: currency } = useFetchCurrency();
+  console.log(currency, "Currency");
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">
@@ -32,12 +39,12 @@ function Header() {
           <Row direction="row" gutter={6}>
             <Col>
               <Button variant={"text"} icon={"expense"} iconColor={"primary"}>
-                12900 so'm
+                {formatterCurrency(currency?.Rate, currency?.Currency)}
               </Button>
             </Col>
             <Col>
               <Button icon={"avatar"} variant={"text"} iconColor={"primary"}>
-                Azamat Berdiyev
+                {user.SlpName}
               </Button>
             </Col>
             {isMessengerRoute(pathname) ? (

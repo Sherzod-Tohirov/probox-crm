@@ -13,13 +13,13 @@ import useToggle from "@hooks/useToggle";
 import { useEffect } from "react";
 import { isMessengerRoute } from "@utils/routesConfig";
 import useAuth from "@hooks/useAuth";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // scan({
 //   enabled: true,
 // });
 
 function App() {
+  
   const { AlertContainer } = useAlert();
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
