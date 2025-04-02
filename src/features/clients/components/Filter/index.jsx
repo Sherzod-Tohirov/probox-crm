@@ -6,6 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
 import useWatchFilterFields from "../../hooks/useWatchFilterFields";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useAuth from "@hooks/useAuth";
+import { useMemo } from "react";
 export default function Filter({ onFilter }) {
   const filterState = useSelector((state) => state.page.clients.filter);
   const {
@@ -21,6 +24,26 @@ export default function Filter({ onFilter }) {
   });
   const { query, phone } = useFilter();
   const watchedFields = useWatchFilterFields(watch);
+  const { data: executors } = useFetchExecutors();
+
+  const { user } = useAuth();
+
+  const executorsOptions = useMemo(
+    () =>
+      executors?.data.map((executor) => ({
+        value: executor.SlpCode,
+        label: executor.SlpName,
+      })),
+    [executors?.data]
+  );
+
+  const defaultExecutor = useMemo(
+    () =>
+      executors?.data?.find((executor) => executor.SlpCode === user?.SlpCode)
+        ?.SlpCode,
+    [user?.SlpCode] || executorsOptions?.[0]?.value
+  );
+
   return (
     <form
       className={styles["filter-form"]}
@@ -90,12 +113,8 @@ export default function Filter({ onFilter }) {
             label={"Executor"}
             type={"select"}
             {...register("executor")}
-            options={[
-              { value: "1", label: "Aziz Toshev" },
-              { value: "2", label: "Tolib Yo'ldoshev" },
-              { value: "3", label: "Salim Temirov" },
-              { value: "4", label: "Fayzulla Berdiyev" },
-            ]}
+            defaultValue={defaultExecutor}
+            options={executorsOptions}
           />
         </Col>
         <Col style={{ marginTop: "25px" }}>

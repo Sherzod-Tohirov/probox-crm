@@ -14,7 +14,6 @@ function Header() {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const { data: currency } = useFetchCurrency();
-  console.log(currency, "Currency");
   return (
     <header className={styles["site-header"]}>
       <Row direction="row" justify="space-between">

@@ -30,7 +30,6 @@ const SearchField = ({ searchText, onSearch, renderItem, onSelect }) => {
     setIsLoading(true);
     const delaySearch = setTimeout(async () => {
       const results = await onSearch(searchText);
-      console.log(results, "results");
       if (results) {
         setData(results);
       }
@@ -85,6 +84,7 @@ const Input = forwardRef(
       onSearch = () => {},
       onSearchSelect = () => {},
       onIconClick,
+      canClickIcon = true,
       disabled = false,
       hasIcon = true,
       error = null,
@@ -279,7 +279,10 @@ const Input = forwardRef(
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography
-                  style={{ cursor: onIconClick ? "pointer" : "default" }}
+                  style={{
+                    cursor: onIconClick ? "pointer" : "default",
+                    pointerEvents: canClickIcon ? "auto" : "none",
+                  }}
                   element="span"
                   className={styles["icon"]}
                   {...(onIconClick ? { onClick: onIconClick } : {})}>

@@ -1323,5 +1323,4 @@ export const clients = [
     InsTotal: "150.000000",
     IntrSerial: "353650699435500",
   },
-  
 ];

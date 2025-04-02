@@ -25,7 +25,6 @@ const useWatchFilterFields = (watch) => {
     executor,
   };
 
-  console.log(watchedFields, "watchedFields");
   useEffect(() => {
     dispatch(
       setClientsFilter({

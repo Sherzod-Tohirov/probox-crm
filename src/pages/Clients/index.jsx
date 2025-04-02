@@ -11,15 +11,15 @@ import {
 } from "@components/ui";
 import Filter from "@features/clients/components/Filter";
 import Footer from "@components/Footer";
-
-import { mockDataClients } from "../../../mockData";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setClientsPageSize,
   setClientsCurrentPage,
 } from "@store/slices/clientsPageSlice";
+import useFetchClients from "@hooks/data/useFetchClients";
+import moment from "moment/moment";
 
 const tableSizeSelectOptions = [
   { value: 10, label: "10" },
@@ -33,68 +33,108 @@ const columns = [
   { key: "DocEntry", title: "Код документа", width: "15%" },
   { key: "CardName", title: "Имя клиента" },
   { key: "Dscription", title: "Товар" },
-  { key: "InsTotal", title: "месячная оплата" },
+  { key: "InsTotal", title: "Месячная оплата" },
+  {
+    key: "saleDate",
+    title: "Оплачено",
+    renderCell: (column) => {
+      return column.PaidToDate || "Unknown";
+    },
+  },
   {
     key: "status",
     title: "Status",
     renderCell: (column) => {
-      return <Status status={column.status} />;
+      let status = "unpaid";
+
+      const statusCalc =
+        parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
+      if (statusCalc > 0 && statusCalc < column.InsTotal) status = "partial";
+      if (statusCalc === 0) status = "paid";
+
+      return <Status status={status} />;
     },
   },
-  { key: "saleDate", title: "Дата продажи" },
-  { key: "executor", title: "Исполнитель" },
-  { key: "term", title: "Срок" },
-];
 
-const obj = {
-  DueDate: "2024-02-26 00:00:00.000000000",
-  InstlmntID: 2,
-  PaidToDate: "125.000000",
-  InsTotal: "125.000000",
-  PaysList: [
-    {
-      SumApplied: "32.590000",
-      AcctName: "Karta",
-      DocDate: "2024-02-29 00:00:00.000000000",
-      CashAcct: "5020",
-      CheckAcct: null,
+  {
+    key: "executor",
+    title: "Исполнитель",
+    renderCell: (column) => {
+      if (!column.SlpCode) return "Unknown";
+
+      const executors = useFetchExecutors();
+      const { user } = useAuth();
+      const executor = executors?.data?.find(
+        (executor) => executor.SlpCode === column.SlpCode
+      );
+      if (user.SlpCode === executor.SlpCode) return "You";
+      return executor.SlpName || "Unknown";
     },
-    {
-      SumApplied: "92.410000",
-      AcctName: "Karta",
-      DocDate: "2024-02-27 00:00:00.000000000",
-      CashAcct: "5020",
-      CheckAcct: null,
+  },
+  {
+    key: "term",
+    title: "Срок",
+    renderCell: (column) => {
+      if (!column.DueDate) return "Unknown";
+      return moment(column.DueDate).format("DD.MM.YYYY");
     },
-  ],
-};
+  },
+];
 
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [clientsDetails, setClientsDetails] = useState({
+    totalPages: 0,
+    total: 0,
+    data: [],
+  });
+  console.log(clientsDetails, "clientsDetails");
   const { currentPage, pageSize } = useSelector((state) => state.page.clients);
-  console.log(pageSize, "page size from redux");
-  console.log(currentPage, pageSize, "page size");
+  const { data, isLoading } = useFetchClients({ page: currentPage + 1 });
+  console.log(data, "data");
+  console.log(isLoading, "isLoading");
+  console.log(currentPage, "currentPage");
   const handleRowClick = useCallback(
     (row) => {
-      navigate(`/clients/${row.clientCode}`);
+      navigate(`/clients/${row.DocEntry}`);
     },
     [navigate]
   );
 
+  useEffect(() => {
+    console.log("dataaaaa", data);
+    if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
+      setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
+    }
+
+    if (data?.data.length > 0) {
+      setClientsDetails((p) => ({ ...p, data: data?.data }));
+    }
+
+    if (data?.total && clientsDetails.total !== data?.total) {
+      setClientsDetails((p) => ({ ...p, total: data?.total }));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    dispatch(setClientsCurrentPage(0));
+  }, [pageSize]);
+
   return (
     <>
-      <Row gutter={6} style={{ width: "100%" }}>
+      <Row gutter={6} style={{ width: "100%", height: "100%" }}>
         <Col>
           <Navigation />
         </Col>
         <Col>
           <Filter onFilter={(filterData) => console.log(filterData)} />
         </Col>
-        <Col style={{ width: "100%" }}>
+        <Col style={{ width: "100%" }} flexGrow>
           <Table
+            isLoading={isLoading}
             columns={columns}
-            data={mockDataClients}
+            data={clientsDetails.data}
             onRowClick={handleRowClick}
           />
         </Col>
@@ -113,19 +153,25 @@ export default function Clients() {
                   onChange={(e) =>
                     dispatch(setClientsPageSize(Number(e.target.value)))
                   }
+                  canClickIcon={false}
                   width={"clamp(69px, 10vw, 100px)"}
                 />
               </Col>
               <Col>
                 <Typography variant={"primary"} element="span">
-                  1-10 of 50
+                  {currentPage * pageSize + 1}
+                  {"-"}
+                  {(currentPage + 1) * pageSize > data?.total
+                    ? data.total
+                    : currentPage * pageSize + pageSize}{" "}
+                  of {clientsDetails.total}
                 </Typography>
               </Col>
             </Row>
           </Col>
           <Col>
             <Pagination
-              pageCount={10}
+              pageCount={clientsDetails.totalPages}
               activePage={currentPage}
               onPageChange={(page) =>
                 dispatch(setClientsCurrentPage(page.selected))

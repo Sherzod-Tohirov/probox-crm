@@ -5,7 +5,7 @@ export default function Status({ status, ...props }) {
   const lowerCaseStatus = String(status).toLowerCase();
   const statusText = {
     paid: "Paid",
-    partially_paid: "Partially paid",
+    partial: "Partial",
     unpaid: "Unpaid",
   };
   return (

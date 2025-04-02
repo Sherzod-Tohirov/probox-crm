@@ -184,6 +184,7 @@
   position: absolute !important;
   top: 120% !important;
   bottom: 0;
+  z-index: 100;
   @include m.flex-center;
   width: 160%;
   min-height: 180px;

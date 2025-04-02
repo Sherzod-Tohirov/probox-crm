@@ -8,7 +8,7 @@ import * as r from "ramda";
 import useAuth from "@hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 
 export default function Login() {
   const { isAuthenticated, handleLogin, loginState } = useAuth();
@@ -27,7 +27,6 @@ export default function Login() {
     return <Navigate to="/" />;
   }
 
-  console.log(loginState, "loginState");
 
   return (
     <div className={styles.login}>

@@ -21,7 +21,6 @@ export default function Messenger() {
   const { isOpen } = useToggle("messenger");
   const scrollRef = useRef(null);
   const [messages, setMessages] = useState(mockMessages);
-  console.log(messages, "messages");
   const {
     register,
     handleSubmit,

@@ -2,7 +2,9 @@
 @use "@styles/mixins" as m;
 
 .base-table {
+  position: relative;
   width: 100%;
+  min-height: 55dvh;
   font-size: 3rem;
   color: #3c3f47;
   font-style: normal;
@@ -15,13 +17,24 @@
   overflow: hidden;
   background-color: v.$primary-table-bg;
   transition: all v.$transition-type v.$transition-time;
+  &.loading {
+    opacity: 0.6;
+  }
 
   tr {
     transition: background-color v.$transition-type v.$transition-time;
+
+    &.loading-row {
+      position: absolute;
+      top: 30%;
+      width: 100%;
+      @include m.flex(start, center, 0);
+    }
   }
 
   tbody tr {
     cursor: pointer;
+    max-height: 50px !important;
   }
 
   tr:hover {
@@ -49,6 +62,18 @@
     padding: 3rem;
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;
+
+    &.empty-table {
+      font-size: 4rem;
+      font-weight: 500;
+      line-height: normal;
+      color: v.$secondary-color;
+
+      & span {
+        display: flex !important;
+        margin: 0 auto;
+      }
+    }
   }
 }
 
