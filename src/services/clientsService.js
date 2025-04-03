@@ -6,11 +6,6 @@ export const getClients = async (params = {}) => {
       params: {
         page: params.page,
         limit: params.limit,
-        // search: params.search,
-        // startDate: params.startDate,
-        // endDate: params.endDate,
-        // status: params.status,
-        // executor: params.executor,
         ...params,
       },
     });
@@ -19,3 +14,18 @@ export const getClients = async (params = {}) => {
     throw error.response?.data || error;
   }
 };
+
+export const searchClients = async (params = {}) => {
+  try {
+    const response = await api.get("/search", {
+      params: {
+        page: params.page,
+        limit: params.limit,
+        ...params,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

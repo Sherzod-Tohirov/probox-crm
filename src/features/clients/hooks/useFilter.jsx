@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { clients } from "../../../../mockData";
 import { Typography } from "@components/ui";
 import { useSelector } from "react-redux";
+import { useInfiniteSearchClients } from "../../../hooks/data/useInfiniteSearchClients";
 
 export default function useFilter() {
   const filterObj = useSelector((state) => state.page.clients.filter);
@@ -27,20 +28,7 @@ export default function useFilter() {
   const query = {
     onSearch: useCallback(
       async (searchedText) => {
-        console.log("searchedText", searchedText);
-        const response = await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(
-              clients.filter((client) => {
-                return (
-                  client.CardName.toLowerCase().includes(
-                    searchedText.toLowerCase()
-                  ) || client.IntrSerial.includes(searchedText)
-                );
-              })
-            );
-          }, 1000);
-        });
+        const response = useInfiniteSearchClients()
         console.log("response", response);
         return response;
       },

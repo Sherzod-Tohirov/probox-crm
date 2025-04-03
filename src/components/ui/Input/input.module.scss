@@ -231,6 +231,11 @@
   }
 }
 
+.infinite-scroll-wrapper {
+  @include m.flex-center;
+  width: 100%;
+}
+
 .hidden {
   display: none;
 }

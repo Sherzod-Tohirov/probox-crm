@@ -16,7 +16,6 @@
 //   overflow-x: hidden;
 // }
 
-
 button {
   will-change: transform;
   backface-visibility: hidden;
@@ -135,4 +134,10 @@ button {
 
 .Toastify__toast {
   margin-bottom: 12px !important;
+}
+
+// Infinite scroll styles
+
+.infinite-scroll-component__outerdiv {
+  width: 100% !important;
 }

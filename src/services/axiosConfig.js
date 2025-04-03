@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "@store/store.js";
-
+import { logoutUser } from "@store/slices/authSlice.js";
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const api = axios.create({
@@ -16,19 +16,20 @@ api.interceptors.request.use(function (config) {
   return config;
 });
 
-// api.interceptors.request.use(
-//   (response) => {
-//     console.log("interceptor", response);
-//     return response;
-//   },
-//   (error) => {
-//     console.log("interceptor error", error);
-//     if (error.response?.status === 401) {
-//       store.dispatch(logoutUser());
-//       window.location.href = "/login";
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+api.interceptors.response.use(
+  (response) => {
+    console.log("interceptor", response);
+    return response;
+  },
+  (error) => {
+    console.log("interceptor error", error);
+    console.log(error.response?.status === 401, "401 error");
+    if (error.response?.status === 401) {
+      store.dispatch(logoutUser());
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

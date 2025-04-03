@@ -14,6 +14,8 @@ import "flatpickr/dist/themes/airbnb.css";
 import "react-phone-input-2/lib/style.css";
 import { ClipLoader } from "react-spinners";
 import { AnimatePresence, motion } from "framer-motion";
+import InfiniteScroll from "react-infinite-scroll-component";
+
 const inputIcons = {
   email: "email",
   select: "arrowDown",
@@ -22,7 +24,13 @@ const inputIcons = {
   date: "calendarDays",
 };
 
-const SearchField = ({ searchText, onSearch, renderItem, onSelect }) => {
+const SearchField = ({
+  searchText,
+  onSearch,
+  renderItem,
+  onSelect,
+  infiniteScrollProps = {},
+}) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,20 +54,25 @@ const SearchField = ({ searchText, onSearch, renderItem, onSelect }) => {
       animate={{ opacity: 1, height: "auto", scale: 1 }}
       exit={{ opacity: 0, height: 0, scale: 0.8 }}
       transition={{ duration: 0.3 }}>
-      {isLoading ? (
-        <ClipLoader color={"black"} loading={true} size={20} />
-      ) : data.length > 0 ? (
-        <List
-          className={styles["search-field-list"]}
-          items={data}
-          renderItem={renderItem}
-          itemClassName={styles["search-field-item"]}
-        />
-      ) : (
-        <Typography element="span" className={styles["search-field-empty"]}>
-          No results found
-        </Typography>
-      )}
+      <InfiniteScroll
+        {...infiniteScrollProps}
+        dataLength={data.length}
+        className={styles["infinite-scroll-wrapper"]}>
+        {isLoading ? (
+          <ClipLoader color={"black"} loading={true} size={20} />
+        ) : data.length > 0 ? (
+          <List
+            className={styles["search-field-list"]}
+            items={data}
+            renderItem={renderItem}
+            itemClassName={styles["search-field-item"]}
+          />
+        ) : (
+          <Typography element="span" className={styles["search-field-empty"]}>
+            No results found
+          </Typography>
+        )}
+      </InfiniteScroll>
     </motion.div>
   );
 };
