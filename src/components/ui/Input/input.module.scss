@@ -185,8 +185,8 @@
   top: 120% !important;
   bottom: 0;
   z-index: 100;
-  @include m.flex-center;
-  width: 160%;
+  width: 450px;
+  display: flex;
   min-height: 180px;
   max-height: 500px;
   overflow-y: auto;
@@ -203,8 +203,6 @@
     padding: 0;
     margin: 0;
     list-style: none;
-    overflow-y: auto;
-
     & li {
       padding: 10px;
       font-size: 3rem;
@@ -234,6 +232,7 @@
 .infinite-scroll-wrapper {
   @include m.flex-center;
   width: 100%;
+  height: 100% !important;
 }
 
 .hidden {

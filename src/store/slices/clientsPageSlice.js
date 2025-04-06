@@ -5,7 +5,7 @@ const loadState = () => {
   const today = moment().startOf("month").toISOString();
   const endOfMonth = moment().endOf("month").toISOString();
   const initialFilter = {
-    query: "",
+    search: "",
     phone: "998",
     startDate: today,
     endDate: endOfMonth,

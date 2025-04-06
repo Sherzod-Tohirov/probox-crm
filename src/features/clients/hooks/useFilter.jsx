@@ -1,12 +1,11 @@
 import { useCallback } from "react";
-import { clients } from "../../../../mockData";
 import { Typography } from "@components/ui";
 import { useSelector } from "react-redux";
-import { useInfiniteSearchClients } from "../../../hooks/data/useInfiniteSearchClients";
 
 export default function useFilter() {
   const filterObj = useSelector((state) => state.page.clients.filter);
   const highlightText = useCallback((text, searchText) => {
+    if (!text || !searchText) return text;
     const parts = text.split(new RegExp(`(${searchText})`, "gi"));
     return parts.map((part, index) => (
       <span
@@ -26,20 +25,13 @@ export default function useFilter() {
   });
 
   const query = {
-    onSearch: useCallback(
-      async (searchedText) => {
-        const response = useInfiniteSearchClients()
-        console.log("response", response);
-        return response;
-      },
-      [filterObj]
-    ),
+    onSearch: "",
     renderItem: useCallback(
       (client) => {
         return (
           <Typography element="span">
-            {highlightText(client.CardName, filterObj.query)}-{" "}
-            {highlightText(client.IntrSerial, filterObj.query)}
+            {highlightText(client.CardName, filterObj.search)}-{" "}
+            {highlightText(client.IntrSerial, filterObj.search)}
           </Typography>
         );
       },
@@ -48,25 +40,7 @@ export default function useFilter() {
   };
 
   const phone = {
-    onSearch: useCallback(
-      async (searchedText) => {
-        console.log("searchedText", searchedText);
-        const response = await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(
-              clients.filter((client) => {
-                return client["Phone1"]
-                  .toLowerCase()
-                  .includes(searchedText.toLowerCase());
-              })
-            );
-          }, 1000);
-        });
-        console.log("response", response);
-        return response;
-      },
-      [filterObj]
-    ),
+    onSearch: "",
     renderItem: useCallback(
       (client) => {
         return (

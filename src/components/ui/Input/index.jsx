@@ -25,28 +25,23 @@ const inputIcons = {
 };
 
 const SearchField = ({
-  searchText,
-  onSearch,
   renderItem,
+  searchText,
+  searchFieldProps = {},
   onSelect,
-  infiniteScrollProps = {},
 }) => {
-  const [data, setData] = useState([]);
+  console.log(searchFieldProps, "searchFieldProps");
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
-    setIsLoading(true);
-    const delaySearch = setTimeout(async () => {
-      const results = await onSearch(searchText);
-      if (results) {
-        setData(results);
-      }
+    if (!searchFieldProps.isLoading) {
+      setIsLoading(true);
+    }
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(delaySearch);
+    }, 400);
+    return () => clearTimeout(timer);
   }, [searchText]);
-
+  if (!searchFieldProps?.data?.pages?.[0]?.data?.length) return null;
   return (
     <motion.div
       className={styles["search-field"]}
@@ -55,15 +50,24 @@ const SearchField = ({
       exit={{ opacity: 0, height: 0, scale: 0.8 }}
       transition={{ duration: 0.3 }}>
       <InfiniteScroll
-        {...infiniteScrollProps}
-        dataLength={data.length}
+        dataLength={searchFieldProps?.data?.pages?.[0]?.data?.total || 1}
+        next={() => {
+          if (
+            !searchFieldProps?.isFetchingNextPage &&
+            searchFieldProps?.hasNextPage
+          ) {
+            searchFieldProps?.fetchNextPage();
+          }
+        }}
+        hasMore={searchFieldProps?.hasNextPage}
+        loader={<ClipLoader color={"black"} loading={true} size={20} />}
         className={styles["infinite-scroll-wrapper"]}>
-        {isLoading ? (
+        {searchFieldProps?.isLoading ? (
           <ClipLoader color={"black"} loading={true} size={20} />
-        ) : data.length > 0 ? (
+        ) : searchFieldProps?.data?.pages?.[0].data?.length > 0 ? (
           <List
             className={styles["search-field-list"]}
-            items={data}
+            items={searchFieldProps?.data?.pages?.flatMap((page) => page.data)}
             renderItem={renderItem}
             itemClassName={styles["search-field-item"]}
           />
@@ -94,7 +98,7 @@ const Input = forwardRef(
       size = "",
       searchText,
       searchable = false,
-      onSearch = () => {},
+      searchFieldProps = {},
       onSearchSelect = () => {},
       onIconClick,
       canClickIcon = true,
@@ -245,7 +249,6 @@ const Input = forwardRef(
                   value={field.value || ""}
                   onChange={(e) => {
                     field.onChange(e.target.value);
-                    onSearch(e.target.value);
                   }}
                   type={type}
                   {...commonProps}
@@ -306,11 +309,10 @@ const Input = forwardRef(
               )}
             </Box>
             <AnimatePresence mode="popLayout">
-              {searchable && searchText.length && searchText !== "998" ? (
+              {searchable && searchText?.length && searchText !== "998" ? (
                 <SearchField
-                  searchText={searchText}
+                  searchFieldProps={searchFieldProps}
                   renderItem={props.renderSearchItem}
-                  onSearch={onSearch}
                   onSelect={onSearchSelect}
                 />
               ) : (

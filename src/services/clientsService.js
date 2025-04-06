@@ -24,8 +24,9 @@ export const searchClients = async (params = {}) => {
         ...params,
       },
     });
+    console.log(response, "response");
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
