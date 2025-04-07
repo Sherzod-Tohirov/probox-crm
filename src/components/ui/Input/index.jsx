@@ -1,10 +1,10 @@
-import { memo, forwardRef, useMemo, useEffect, useState } from "react";
+import { memo, forwardRef, useMemo } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
 import iconsMap from "@utils/iconsMap";
 import Typography from "../Typography";
-import { Box, Col, Row, List } from "@components/ui";
+import { Box, Col, Row } from "@components/ui";
 import { omit } from "ramda";
 import { Controller } from "react-hook-form";
 import PhoneInput from "react-phone-input-2";
@@ -12,9 +12,9 @@ import moment from "moment";
 import * as r from "ramda";
 import "flatpickr/dist/themes/airbnb.css";
 import "react-phone-input-2/lib/style.css";
-import { ClipLoader } from "react-spinners";
 import { AnimatePresence, motion } from "framer-motion";
-import InfiniteScroll from "react-infinite-scroll-component";
+import SearchField from "./SearchField";
+import formatPhoneNumber from "@utils/formatPhoneNumber";
 
 const inputIcons = {
   email: "email",
@@ -22,63 +22,6 @@ const inputIcons = {
   search: "search",
   tel: "telephone",
   date: "calendarDays",
-};
-
-const SearchField = ({
-  renderItem,
-  searchText,
-  searchFieldProps = {},
-  onSelect,
-}) => {
-  console.log(searchFieldProps, "searchFieldProps");
-  const [isLoading, setIsLoading] = useState(false);
-  useEffect(() => {
-    if (!searchFieldProps.isLoading) {
-      setIsLoading(true);
-    }
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchText]);
-  if (!searchFieldProps?.data?.pages?.[0]?.data?.length) return null;
-  return (
-    <motion.div
-      className={styles["search-field"]}
-      initial={{ opacity: 0, height: 0, scale: 0.8 }}
-      animate={{ opacity: 1, height: "auto", scale: 1 }}
-      exit={{ opacity: 0, height: 0, scale: 0.8 }}
-      transition={{ duration: 0.3 }}>
-      <InfiniteScroll
-        dataLength={searchFieldProps?.data?.pages?.[0]?.data?.total || 1}
-        next={() => {
-          if (
-            !searchFieldProps?.isFetchingNextPage &&
-            searchFieldProps?.hasNextPage
-          ) {
-            searchFieldProps?.fetchNextPage();
-          }
-        }}
-        hasMore={searchFieldProps?.hasNextPage}
-        loader={<ClipLoader color={"black"} loading={true} size={20} />}
-        className={styles["infinite-scroll-wrapper"]}>
-        {searchFieldProps?.isLoading ? (
-          <ClipLoader color={"black"} loading={true} size={20} />
-        ) : searchFieldProps?.data?.pages?.[0].data?.length > 0 ? (
-          <List
-            className={styles["search-field-list"]}
-            items={searchFieldProps?.data?.pages?.flatMap((page) => page.data)}
-            renderItem={renderItem}
-            itemClassName={styles["search-field-item"]}
-          />
-        ) : (
-          <Typography element="span" className={styles["search-field-empty"]}>
-            No results found
-          </Typography>
-        )}
-      </InfiniteScroll>
-    </motion.div>
-  );
 };
 
 const Input = forwardRef(
@@ -98,7 +41,7 @@ const Input = forwardRef(
       size = "",
       searchText,
       searchable = false,
-      searchFieldProps = {},
+      onSearch = () => {},
       onSearchSelect = () => {},
       onIconClick,
       canClickIcon = true,
@@ -217,8 +160,10 @@ const Input = forwardRef(
             render={({ field }) => {
               return (
                 <PhoneInput
+                  {...(props.onFocus ? { onFocus: props.onFocus } : {})}
                   {...field}
                   {...r.omit(["className", "style"], commonProps)}
+                  value={formatPhoneNumber(field.value || "")}
                   inputClass={classNames(
                     styles[`input-tel-${variant}`],
                     styles[size]
@@ -230,8 +175,10 @@ const Input = forwardRef(
                   countryCodeEditable={false}
                   buttonClass={styles["hidden"]}
                   country={"uz"}
-                  onChange={(v) => {
-                    field.onChange(v);
+                  onChange={(value) => {
+                    // Ensure the value always starts with 998
+                    const formattedValue = formatPhoneNumber(value);
+                    field.onChange(formattedValue);
                   }}
                 />
               );
@@ -311,8 +258,9 @@ const Input = forwardRef(
             <AnimatePresence mode="popLayout">
               {searchable && searchText?.length && searchText !== "998" ? (
                 <SearchField
-                  searchFieldProps={searchFieldProps}
                   renderItem={props.renderSearchItem}
+                  onSearch={onSearch}
+                  searchText={searchText}
                   onSelect={onSearchSelect}
                 />
               ) : (

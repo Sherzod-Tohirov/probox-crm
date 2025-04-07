@@ -9,8 +9,10 @@ import {
   Typography,
   Status,
 } from "@components/ui";
+
 import Filter from "@features/clients/components/Filter";
 import Footer from "@components/Footer";
+
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +22,7 @@ import {
 } from "@store/slices/clientsPageSlice";
 import useFetchClients from "@hooks/data/useFetchClients";
 import moment from "moment/moment";
+import { setCurrentCLient } from "../../store/slices/clientsPageSlice";
 
 const tableSizeSelectOptions = [
   { value: 10, label: "10" },
@@ -89,18 +92,27 @@ export default function Clients() {
     total: 0,
     data: [],
   });
+  const [params, setParams] = useState({});
   console.log(clientsDetails, "clientsDetails");
   const { currentPage, pageSize } = useSelector((state) => state.page.clients);
-  const { data, isLoading } = useFetchClients({ page: currentPage + 1 });
-  console.log(data, "data");
-  console.log(isLoading, "isLoading");
-  console.log(currentPage, "currentPage");
+  const { data, isLoading } = useFetchClients({
+    page: currentPage + 1,
+    params,
+  });
+
   const handleRowClick = useCallback(
     (row) => {
       navigate(`/clients/${row.DocEntry}`);
+      dispatch(setCurrentCLient(row));
     },
     [navigate]
   );
+
+  const handleFilter = useCallback((filterData) => {
+    console.log(filterData, "filterData");
+    setParams(() => ({ ...filterData }));
+    dispatch(setClientsCurrentPage(0));
+  }, []);
 
   useEffect(() => {
     console.log("dataaaaa", data);
@@ -128,7 +140,7 @@ export default function Clients() {
           <Navigation />
         </Col>
         <Col>
-          <Filter onFilter={(filterData) => console.log(filterData)} />
+          <Filter onFilter={handleFilter} />
         </Col>
         <Col style={{ width: "100%" }} flexGrow>
           <Table

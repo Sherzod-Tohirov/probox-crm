@@ -9,6 +9,8 @@ function Box({
   justify,
   gap = 0,
   pos = "static",
+  height = "auto",
+  width = "100%",
   padding = 0,
   paddingX = 0,
   paddingY = 0,
@@ -30,7 +32,8 @@ function Box({
   const boxStyle = useMemo(
     () => ({
       position: pos,
-      width: "100%",
+      width: width || "100%",
+      height,
       flexDirection: dir,
       alignItems: align,
       justifyContent: justify,

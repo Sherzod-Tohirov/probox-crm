@@ -1,15 +1,16 @@
 import styles from "./filter.module.scss";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import useFilter from "../../hooks/useFilter";
+import { useDispatch, useSelector } from "react-redux";
+import useWatchFilterFields from "@features/clients/hooks/useWatchFilterFields";
+import useFilter from "@features/clients/hooks/useFilter";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
-import useWatchFilterFields from "../../hooks/useWatchFilterFields";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useAuth from "@hooks/useAuth";
-import { useEffect, useMemo, useState } from "react";
-import useInfiniteSearchClients from "@hooks/data/useInfiniteSearchClients";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { setClientsFilter } from "@store/slices/clientsPageSlice";
+import formatPhoneNumber from "@utils/formatPhoneNumber";
 
 export default function Filter({ onFilter }) {
   const filterState = useSelector((state) => state.page.clients.filter);
@@ -17,6 +18,7 @@ export default function Filter({ onFilter }) {
     register,
     handleSubmit,
     control,
+    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -24,27 +26,29 @@ export default function Filter({ onFilter }) {
     resolver: yupResolver(filterClientFormSchema),
     mode: "all",
   });
-  const [debouncedFields, setDebouncedFields] = useState({
-    search: "",
-    phone: "",
+
+  const [toggleSearchFields, setToggleSearchFields] = useState({
+    search: false,
+    phone: false,
   });
-  const { query, phone } = useFilter();
 
-  const watchedFields = useWatchFilterFields(watch);
-
-  const { data: executors } = useFetchExecutors();
-
+  const dispatch = useDispatch(); // Add dispatch
+  const filterObj = useSelector((state) => state.page.clients.filter);
   const { user } = useAuth();
-
-  const executorsOptions = useMemo(
-    () =>
+  const { query, phone } = useFilter();
+  const { data: executors } = useFetchExecutors();
+  const watchedFields = useWatchFilterFields(watch);
+  
+  const executorsOptions = useMemo(() => {
+    const allOption = [{ value: "", label: "All" }];
+    const executorOption =
       executors?.data.map((executor) => ({
         value: executor.SlpCode,
         label: executor.SlpName,
-      })),
-    [executors?.data]
-  );
-
+      })) || [];
+    return [...allOption, ...executorOption];
+  }, [executors?.data]);
+  console.log(executorsOptions, "executoropiotns");
   const defaultExecutor = useMemo(
     () =>
       executors?.data?.find((executor) => executor.SlpCode === user?.SlpCode)
@@ -52,24 +56,24 @@ export default function Filter({ onFilter }) {
     [user?.SlpCode] || executorsOptions?.[0]?.value
   );
 
-  const searchQuery = useInfiniteSearchClients(debouncedFields.search, {
-    search: debouncedFields.search,
-  });
+  const handleSearchSelect = useCallback((client) => {
+    const formattedPhone = formatPhoneNumber(client.Phone1);
+    setValue("search", client.CardName);
+    setValue("phone", formattedPhone);
 
-  const phoneQuery = useInfiniteSearchClients(debouncedFields.phone, {
-    phone: debouncedFields.phone,
-  });
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFields({
-        search: watchedFields.search,
-        phone: watchedFields.phone,
-      });
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [watchedFields.search, watchedFields.phone]);
+    dispatch(
+      setClientsFilter({
+        ...filterObj, // Preserve existing filters
+        search: client.CardName,
+        phone: formattedPhone,
+      })
+    );
+    setToggleSearchFields((prev) => ({
+      ...prev,
+      search: false,
+      phone: false,
+    }));
+  }, []);
 
   return (
     <form
@@ -85,10 +89,13 @@ export default function Filter({ onFilter }) {
             type={"text"}
             placeholder={"4567890449494 | Azam Toshev"}
             searchText={watchedFields.search}
-            searchFieldProps={searchQuery}
-            onSelect={(item) => console.log(item)}
+            onFocus={() =>
+              setToggleSearchFields((prev) => ({ ...prev, search: true }))
+            }
+            onSearch={query.onSearch}
+            onSearchSelect={handleSearchSelect}
             renderSearchItem={query.renderItem}
-            searchable={true}
+            searchable={toggleSearchFields.search}
             control={control}
             icon={"avatar"}
             {...register("search")}
@@ -97,10 +104,14 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Phone number"}
             type={"tel"}
-            searchable={true}
-            searchFieldProps={phoneQuery}
+            searchable={toggleSearchFields.phone}
             searchText={watchedFields.phone}
-            onSelect={(item) => console.log(item)}
+            onSearch={phone.onSearch}
+            onFocus={() => {
+              console.log("Phone focused ");
+              setToggleSearchFields((prev) => ({ ...prev, phone: true }));
+            }}
+            onSearchSelect={handleSearchSelect}
             renderSearchItem={phone.renderItem}
             placeholder={"90 123 45 67"}
             control={control}
@@ -127,7 +138,7 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Status"}
             type={"select"}
-            {...register("status")}
+            {...register("paymentStatus")}
             options={[
               { value: "all", label: "All" },
               { value: "paid", label: "Paid" },

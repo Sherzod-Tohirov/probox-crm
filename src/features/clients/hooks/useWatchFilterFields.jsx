@@ -7,12 +7,12 @@ const useWatchFilterFields = (watch) => {
   const dispatch = useDispatch();
   const filterState = useSelector((state) => state.page.clients.filter);
 
-  const [search, phone, startDate, endDate, status, executor] = watch([
+  const [search, phone, startDate, endDate, paymentStatus, executor] = watch([
     "search",
     "phone",
     "startDate",
     "endDate",
-    "status",
+    "paymentStatus",
     "executor",
   ]);
 
@@ -21,7 +21,7 @@ const useWatchFilterFields = (watch) => {
     phone,
     startDate,
     endDate,
-    status,
+    paymentStatus,
     executor,
   };
 
@@ -31,7 +31,7 @@ const useWatchFilterFields = (watch) => {
         ...watchedFields,
       })
     );
-  }, [search, phone, startDate, endDate, status, executor]);
+  }, [search, phone, startDate, endDate, paymentStatus, executor]);
 
   return watchedFields;
 };

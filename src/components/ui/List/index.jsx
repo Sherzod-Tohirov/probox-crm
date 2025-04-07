@@ -6,6 +6,7 @@ import Item from "../Item";
 function List({
   items,
   renderItem,
+  onSelect,
   gutter,
   className,
   direction = "column",
@@ -23,7 +24,7 @@ function List({
       className={classNames(styles.list, className)}
       {...props}>
       {items.map((item, index) => (
-        <Item className={itemClassName} key={index}>
+        <Item className={itemClassName} key={index} onClick={() => onSelect(item)}>
           {renderItem(item)}
         </Item>
       ))}

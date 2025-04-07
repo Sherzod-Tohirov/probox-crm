@@ -1,9 +1,13 @@
 import { useCallback } from "react";
 import { Typography } from "@components/ui";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"; // Add useDispatch
+import { searchClients } from "@services/clientsService";
+import { setClientsFilter } from "@store/slices/clientsPageSlice";
 
 export default function useFilter() {
+  const dispatch = useDispatch(); // Add dispatch
   const filterObj = useSelector((state) => state.page.clients.filter);
+
   const highlightText = useCallback((text, searchText) => {
     if (!text || !searchText) return text;
     const parts = text.split(new RegExp(`(${searchText})`, "gi"));
@@ -25,7 +29,30 @@ export default function useFilter() {
   });
 
   const query = {
-    onSearch: "",
+    onSearch: useCallback(
+      (searchText, page = 1, applyFilters = false) => {
+        return searchClients({
+          search: searchText,
+          page,
+          ...(applyFilters ? filterObj : {}),
+        });
+      },
+      [filterObj]
+    ),
+
+    onSelect: useCallback(
+      (client) => {
+        dispatch(
+          setClientsFilter({
+            ...filterObj, // Preserve existing filters
+            search: client.CardName,
+            phone: client.Phone1,
+          })
+        );
+      },
+      [dispatch, filterObj]
+    ),
+
     renderItem: useCallback(
       (client) => {
         return (
@@ -40,7 +67,30 @@ export default function useFilter() {
   };
 
   const phone = {
-    onSearch: "",
+    onSearch: useCallback(
+      (searchText, page = 1, applyFilters = false) => {
+        return searchClients({
+          phone: searchText,
+          page,
+          ...(applyFilters ? filterObj : {}),
+        });
+      },
+      [filterObj]
+    ),
+
+    onSelect: useCallback(
+      (client) => {
+        dispatch(
+          setClientsFilter({
+            ...filterObj, // Preserve existing filters
+            search: client.CardName,
+            phone: client.Phone1,
+          })
+        );
+      },
+      [dispatch, filterObj]
+    ),
+
     renderItem: useCallback(
       (client) => {
         return (

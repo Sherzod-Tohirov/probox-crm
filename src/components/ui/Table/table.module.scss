@@ -4,8 +4,9 @@
 .base-table {
   position: relative;
   width: 100%;
-  min-height: 55dvh;
+  min-height: 55dvh;  
   font-size: 3rem;
+
   color: #3c3f47;
   font-style: normal;
   font-weight: 500;
@@ -62,7 +63,7 @@
     padding: 3rem;
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;
-  
+
     &.empty-table {
       text-align: center;
       font-size: 4rem;

@@ -12,7 +12,8 @@ import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
 import { useState } from "react";
 import useAlert from "@hooks/useAlert";
-
+import { useSelector } from "react-redux";
+import formatterCurrency from "@utils/formatterCurrency";
 const columns = [
   { key: "no", title: "No", width: "15%", icon: "" },
   { key: "date", title: "📅 Date", width: "15%", icon: "" },
@@ -35,6 +36,9 @@ const mockData = Array.from({ length: 50 }, (_, index) => ({
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
   const onClose = () => setPaymentModal(false);
+  const currentClient = useSelector(
+    (state) => state.page.clients.currentClient
+  );
   const { alert } = useAlert();
   return (
     <>
@@ -59,7 +63,7 @@ export default function ClientPage() {
           </Row>
         </Col>
         <Col fullWidth>
-          <ClientPageForm formId={"clientForm"} />
+          <ClientPageForm currentClient={currentClient} formId={"clientForm"} />
         </Col>
         <Col fullWidth>
           <Table columns={columns} data={mockData} />
@@ -68,13 +72,9 @@ export default function ClientPage() {
       <Footer>
         <Row direction={"row"} align={"center"} justify={"space-between"}>
           <Typography style={{ fontSize: "4rem" }} element={"span"}>
-            Итого: 1000$
+            Всего оплачено клиентом:{" "}
+            {formatterCurrency(currentClient["TotalPaidToDate"] || 0, "USD")}
           </Typography>
-          <Col>
-            <Typography element={"span"} style={{ fontSize: "4rem" }}>
-              Курс доллара : 13000 som
-            </Typography>
-          </Col>
           <Col>
             <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
               Оплатить

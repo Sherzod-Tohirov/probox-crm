@@ -9,7 +9,7 @@ const loadState = () => {
     phone: "998",
     startDate: today,
     endDate: endOfMonth,
-    status: "all",
+    paymentStatus: "all",
     executor: "",
   };
 
@@ -18,6 +18,7 @@ const loadState = () => {
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
     return {
       clients: [],
+      currentClient: parsedState.currentClient || {},
       filter: parsedState.filter || initialFilter,
       currentPage: parsedState.currentPage || 1,
       pageSize: parsedState.pageSize || 10,
@@ -26,6 +27,7 @@ const loadState = () => {
     console.log("Error loading state", error);
     return {
       clients: [],
+      currentClient: {},
       filter: initialFilter,
       currentPage: 1,
       pageSize: 10,
@@ -36,9 +38,14 @@ const loadState = () => {
 const saveState = (state) => {
   console.log(state, "state");
   try {
-    const { filter, currentPage, pageSize } = state;
+    const { filter, currentPage, pageSize, currentClient } = state;
     console.log("state page size: ", pageSize);
-    const serializedState = JSON.stringify({ filter, currentPage, pageSize });
+    const serializedState = JSON.stringify({
+      filter,
+      currentPage,
+      pageSize,
+      currentClient,
+    });
     localStorage.setItem("clientsPageState", serializedState);
   } catch (error) {
     console.log("Error saving state", error);
@@ -56,6 +63,10 @@ const clientsPageSlice = createSlice({
   reducers: {
     setClients(state, action) {
       state.clients = action.payload;
+    },
+    setCurrentCLient(state, action) {
+      state.currentClient = action.payload;
+      saveState(state);
     },
     setClientsFilter(state, action) {
       state.filter = action.payload;
@@ -78,5 +89,6 @@ export const {
   setClientsFilter,
   setClientsCurrentPage,
   setClientsPageSize,
+  setCurrentCLient,
 } = clientsPageSlice.actions;
 export default clientsPageSlice.reducer;

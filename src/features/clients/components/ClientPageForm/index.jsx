@@ -9,24 +9,27 @@ import { useCallback, useState } from "react";
 import ImagePreviewModal from "./ImagePreviewModal";
 import useClientPageForm from "../../hooks/useClientPageForm";
 import useAlert from "@hooks/useAlert";
-
-export default function ClientPageForm({ formId, ...props }) {
+import formatterCurrency from "@utils/formatterCurrency";
+import moment from "moment";
+import formatDate from "@utils/formatDate";
+export default function ClientPageForm({ formId, currentClient, ...props }) {
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
-
+  console.log(currentClient, "currentClient");
   const { register, handleSubmit, control, setValue } = useForm({
     defaultValues: {
-      name: "Maqsudov Nodir",
+      name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
       photo: [],
-      telephone: "+998 94 534 33 24",
-      code: "20470",
-      debtClient: "1800",
-      product: "iPhone 16 Pro max 256gb desert",
-      deadline: "12.03.2030",
-      imei: "345345345453455",
+      telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
+      code: currentClient?.["CardCode"] || "00000",
+      debtClient: formatterCurrency(currentClient?.["DocTotal"] || "0", "USD"),
+      product:
+        currentClient?.["Dscription"] || "iPhone 16 Pro max 256gb desert",
+      deadline: formatDate(currentClient["DueDate"]),
+      imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
 

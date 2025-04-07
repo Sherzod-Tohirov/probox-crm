@@ -19,7 +19,6 @@ import useAuth from "@hooks/useAuth";
 // });
 
 function App() {
-  
   const { AlertContainer } = useAlert();
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
@@ -41,11 +40,12 @@ function App() {
       </SidebarLayout>
       <PrimaryLayout>
         <Header />
-        <Row direction="row" flexGrow>
+        <Row direction="row" flexGrow style={{ height: "100%" }}>
           <Col
             flexGrow
             style={{
               width: isOpen ? "calc(100% - (356px + 32px))" : "100%",
+              minHeight: "calc(100vh - 83px)",
             }}>
             <DashboardLayout>
               <Outlet />
