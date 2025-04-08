@@ -10,7 +10,6 @@ import ImagePreviewModal from "./ImagePreviewModal";
 import useClientPageForm from "../../hooks/useClientPageForm";
 import useAlert from "@hooks/useAlert";
 import formatterCurrency from "@utils/formatterCurrency";
-import moment from "moment";
 import formatDate from "@utils/formatDate";
 export default function ClientPageForm({ formId, currentClient, ...props }) {
   const { sidebar } = useToggle(["sidebar", "messenger"]);

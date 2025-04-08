@@ -42,7 +42,7 @@ function Header() {
               </Button>
             </Col>
             <Col>
-              <Button icon={"avatar"} variant={"text"} iconColor={"primary"}>
+              <Button icon={"avatarFilled"} variant={"text"} iconColor={"primary"}>
                 {user.SlpName}
               </Button>
             </Col>

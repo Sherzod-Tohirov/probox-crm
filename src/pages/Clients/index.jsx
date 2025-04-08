@@ -7,7 +7,6 @@ import {
   Input,
   Pagination,
   Typography,
-  Status,
 } from "@components/ui";
 
 import Filter from "@features/clients/components/Filter";
@@ -21,8 +20,8 @@ import {
   setClientsCurrentPage,
 } from "@store/slices/clientsPageSlice";
 import useFetchClients from "@hooks/data/useFetchClients";
-import moment from "moment/moment";
-import { setCurrentCLient } from "../../store/slices/clientsPageSlice";
+import { setCurrentCLient } from "@store/slices/clientsPageSlice";
+import { clientsTableColumns } from "@utils/tableColumns";
 
 const tableSizeSelectOptions = [
   { value: 10, label: "10" },
@@ -30,58 +29,6 @@ const tableSizeSelectOptions = [
   { value: 50, label: "50" },
   { value: 100, label: "100" },
   { value: 1000, label: "1000" },
-];
-
-const columns = [
-  { key: "DocEntry", title: "Код документа", width: "15%" },
-  { key: "CardName", title: "Имя клиента" },
-  { key: "Dscription", title: "Товар" },
-  { key: "InsTotal", title: "Месячная оплата" },
-  {
-    key: "saleDate",
-    title: "Оплачено",
-    renderCell: (column) => {
-      return column.PaidToDate || "Unknown";
-    },
-  },
-  {
-    key: "status",
-    title: "Status",
-    renderCell: (column) => {
-      let status = "unpaid";
-
-      const statusCalc =
-        parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
-      if (statusCalc > 0 && statusCalc < column.InsTotal) status = "partial";
-      if (statusCalc === 0) status = "paid";
-
-      return <Status status={status} />;
-    },
-  },
-
-  {
-    key: "executor",
-    title: "Исполнитель",
-    renderCell: (column) => {
-      if (!column.SlpCode) return "Unknown";
-
-      const executors = useFetchExecutors();
-      const { user } = useAuth();
-      const executor = executors?.data?.find(
-        (executor) => executor.SlpCode === column.SlpCode
-      );
-      if (user.SlpCode === executor.SlpCode) return "You";
-      return executor.SlpName || "Unknown";
-    },
-  },
-  {
-    key: "term",
-    title: "Срок",
-    renderCell: (column) => {
-      if (!column.DueDate) return "Unknown";
-      return moment(column.DueDate).format("DD.MM.YYYY");
-    },
-  },
 ];
 
 export default function Clients() {
@@ -145,7 +92,7 @@ export default function Clients() {
         <Col style={{ width: "100%" }} flexGrow>
           <Table
             isLoading={isLoading}
-            columns={columns}
+            columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
           />

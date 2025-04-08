@@ -13,64 +13,68 @@ function Table({
 }) {
   console.log("data in Table", data);
   return (
-    <table
-      className={classNames(
-        styles["base-table"],
-        { [styles["loading"]]: isLoading },
-        className
-      )}
-      style={style}>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th
-              // Use combination of key and index for uniqueness
-              key={`header-${column.key}`}
-              style={{ width: column.width || "auto" }}>
-              <div className={styles["table-header-cell"]}>
-                {column.icon && iconsMap[column.icon]} {column.title}
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {isLoading ? (
-          <tr className={styles["loading-row"]}>
-            <td colSpan={columns.length} className={styles["empty-table"]}>
-              <ClipLoader color={"#94A3B8"} />
-            </td>
-          </tr>
-        ) : (
-          ""
+    <div className={styles["table-container"]}>
+      <table
+        className={classNames(
+          styles["base-table"],
+          { [styles["loading"]]: isLoading },
+          className
         )}
-        {!isLoading && data?.length > 0
-          ? data.map((row, rowIndex) => (
-              <tr
-                key={`row-${uuidv4()}`} // Ensure unique key for each row
-                onClick={() => onRowClick(row)}>
-                {columns.map((column, colIndex) => (
+        style={style}>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th
+                // Use combination of key and index for uniqueness
+                key={`header-${column.key}`}
+                style={{ width: column.width || "auto" }}>
+                <div className={styles["table-header-cell"]}>
+                  {column.icon && iconsMap[column.icon]} {column.title}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading ? (
+            <tr className={styles["loading-row"]}>
+              <td colSpan={columns.length} className={styles["empty-table"]}>
+                <ClipLoader color={"#94A3B8"} />
+              </td>
+            </tr>
+          ) : (
+            ""
+          )}
+          {!isLoading && data?.length > 0
+            ? data.map((row, rowIndex) => (
+                <tr
+                  key={`row-${uuidv4()}`} // Ensure unique key for each row
+                  onClick={() => onRowClick(row)}>
+                  {columns.map((column, colIndex) => (
+                    <td
+                      key={`cell-${row.id || row.IntrSerial || rowIndex}-${
+                        column.key || colIndex
+                      }`} // Ensure unique key for each cell
+                    >
+                      {column.renderCell
+                        ? column.renderCell(row)
+                        : row[column.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            : !isLoading && (
+                <tr>
                   <td
-                    key={`cell-${row.id || row.IntrSerial || rowIndex}-${
-                      column.key || colIndex
-                    }`} // Ensure unique key for each cell
-                  >
-                    {column.renderCell
-                      ? column.renderCell(row)
-                      : row[column.key]}
+                    colSpan={columns.length}
+                    className={styles["empty-table"]}>
+                    No data available
                   </td>
-                ))}
-              </tr>
-            ))
-          : !isLoading && (
-              <tr>
-                <td colSpan={columns.length} className={styles["empty-table"]}>
-                  No data available
-                </td>
-              </tr>
-            )}
-      </tbody>
-    </table>
+                </tr>
+              )}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
