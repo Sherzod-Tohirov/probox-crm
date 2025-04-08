@@ -48,7 +48,7 @@ const router = createBrowserRouter([
             errorElement: <Error />,
           },
           {
-            path: "/clients/:name",
+            path: "/clients/:id",
             element: (
               <Suspense fallback={<PageLoader />}>
                 <ClientPage />

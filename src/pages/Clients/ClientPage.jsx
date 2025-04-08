@@ -7,39 +7,36 @@ import {
   Table,
 } from "@components/ui";
 
+import { useParams } from "react-router-dom";
+import { useState } from "react";
+
 import Footer from "@components/Footer";
 import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
-import { useState } from "react";
+import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import useAlert from "@hooks/useAlert";
 import { useSelector } from "react-redux";
 import formatterCurrency from "@utils/formatterCurrency";
-const columns = [
-  { key: "no", title: "No", width: "15%", icon: "" },
-  { key: "date", title: "📅 Date", width: "15%", icon: "" },
-  { key: "payment", title: "💰 Payment", width: "15%", icon: "" },
-  { key: "paid", title: "✔ Paid", width: "10%", icon: "" },
-  { key: "accountDate", title: "📅 Date hisob", width: "15%", icon: "" },
-  { key: "account", title: "📅 Date hisob", width: "20%", icon: "" },
-  { key: "bill", title: "💳 Счет", width: "10%", icon: "" },
-];
+import { clientPageTableColumns } from "@utils/tableColumns";
 
-const mockData = Array.from({ length: 50 }, (_, index) => ({
-  no: index + 1,
-  date: "2024.12.01",
-  payment: "300.00 so'm",
-  paid: "300.00",
-  accountDate: "2024.11.01",
-  account: "Samarqand Darvoza kassa",
-  bill: "300.00",
-}));
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
+
+  const { alert } = useAlert();
+  const { id } = useParams();
+  const {
+    data: clientEntries,
+    isLoading,
+    error,
+  } = useFetchClientEntriesById(id);
+
   const onClose = () => setPaymentModal(false);
+
+  console.log(clientEntries, "clientEntries");
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
-  const { alert } = useAlert();
+
   return (
     <>
       <Row direction="column" gutter={6}>
@@ -66,7 +63,18 @@ export default function ClientPage() {
           <ClientPageForm currentClient={currentClient} formId={"clientForm"} />
         </Col>
         <Col fullWidth>
-          <Table columns={columns} data={mockData} />
+          <Table
+            columns={clientPageTableColumns}
+            isLoading={isLoading}
+            data={clientEntries}
+            getRowStyles={(row) => {
+              return {
+                ...(row["InstlmntID"] === currentClient["InstlmntID"]
+                  ? { backgroundColor: "rgba(0,0,0,0.1)" }
+                  : {}),
+              };
+            }}
+          />
         </Col>
       </Row>
       <Footer>

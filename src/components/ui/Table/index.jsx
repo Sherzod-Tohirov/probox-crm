@@ -9,6 +9,7 @@ function Table({
   className,
   style = {},
   isLoading = false,
+  getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
   console.log("data in Table", data);
@@ -49,7 +50,9 @@ function Table({
             ? data.map((row, rowIndex) => (
                 <tr
                   key={`row-${uuidv4()}`} // Ensure unique key for each row
-                  onClick={() => onRowClick(row)}>
+                  onClick={() => onRowClick(row)}
+                  style={getRowStyles(row)}
+                  >
                   {columns.map((column, colIndex) => (
                     <td
                       key={`cell-${row.id || row.IntrSerial || rowIndex}-${

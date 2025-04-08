@@ -1,8 +1,16 @@
 import { Status } from "@components/ui";
 import moment from "moment";
 import formatterCurrency from "@utils/formatterCurrency";
+import formatDate from "@utils/formatDate";
+import { List, Box } from "@components/ui";
+
 export const clientsTableColumns = [
-  { key: "DocEntry", title: "Код документа", width: "12%", icon: "barCodeFilled" },
+  {
+    key: "DocEntry",
+    title: "Код документа",
+    width: "12%",
+    icon: "barCodeFilled",
+  },
   { key: "CardName", title: "Имя клиента", width: "22%", icon: "avatarFilled" },
   { key: "Dscription", title: "Товар", width: "15%", icon: "calendar" },
   {
@@ -65,6 +73,68 @@ export const clientsTableColumns = [
       return moment(column.DueDate).format("DD.MM.YYYY");
     },
     width: "8%",
+    icon: "calendar",
+  },
+];
+
+export const clientPageTableColumns = [
+  { key: "InstlmntID", title: "ID", width: "10%", icon: "barCodeFilled" },
+  {
+    key: "PaysList",
+    title: "Список платежей",
+    width: "15%",
+    renderCell: (column) => {
+      if (!column.PaysList) return "Unknown";
+      return (
+        <List
+          items={column.PaysList}
+          renderItem={(item) => {
+            return (
+              <Box
+                key={item.AcctName}
+                align="center"
+                justify="start"
+                style={{
+                  padding: "0.2rem",
+                }}>
+                {item.AcctName} - {formatterCurrency(item.SumApplied, "USD")}
+              </Box>
+            );
+          }}
+        />
+      );
+    },
+    icon: "calendarFact",
+  },
+
+  {
+    key: "InsTotal",
+    title: "Общая сумма",
+    width: "15%",
+    renderCell: (column) => {
+      if (!column.InsTotal) return "Unknown";
+      return formatterCurrency(column.InsTotal, "USD");
+    },
+    icon: "income",
+  },
+  {
+    key: "PaidToDate",
+    title: "Оплачено",
+    width: "10%",
+    renderCell: (column) => {
+      if (!column.PaidToDate) return "Unknown";
+      return formatterCurrency(column.PaidToDate, "USD");
+    },
+    icon: "income",
+  },
+  {
+    key: "DueDate",
+    title: "Срок",
+    width: "10%",
+    renderCell: (column) => {
+      if (!column.DueDate) return "Unknown";
+      return formatDate(column.DueDate);
+    },
     icon: "calendar",
   },
 ];

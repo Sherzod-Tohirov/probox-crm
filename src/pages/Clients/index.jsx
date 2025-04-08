@@ -15,13 +15,16 @@ import Footer from "@components/Footer";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   setClientsPageSize,
   setClientsCurrentPage,
 } from "@store/slices/clientsPageSlice";
+
 import useFetchClients from "@hooks/data/useFetchClients";
 import { setCurrentCLient } from "@store/slices/clientsPageSlice";
 import { clientsTableColumns } from "@utils/tableColumns";
+import formatDate from "@utils/formatDate";
 
 const tableSizeSelectOptions = [
   { value: 10, label: "10" },
@@ -57,7 +60,21 @@ export default function Clients() {
 
   const handleFilter = useCallback((filterData) => {
     console.log(filterData, "filterData");
-    setParams(() => ({ ...filterData }));
+    console.log(
+      formatDate(filterData.startDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+      "startDate"
+    );
+    console.log(
+      formatDate(filterData.endDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+      "endDate"
+    );
+    setParams(() => ({
+      search: filterData.search,
+      paymentStatus: filterData.paymentStatus,
+      phone: filterData.phone,
+      startDate: formatDate(filterData.startDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+      endDate: formatDate(filterData.endDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+    }));
     dispatch(setClientsCurrentPage(0));
   }, []);
 

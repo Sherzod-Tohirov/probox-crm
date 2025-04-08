@@ -118,7 +118,6 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   control={control}
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"+998 94 534 33 24"}
                   hasIcon={false}
                   {...register("telephone")}
                 />
@@ -147,8 +146,6 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"1800"}
-                  disabled={true}
                   {...register("debtClient")}
                 />
               </InputGroup>
@@ -160,7 +157,6 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"iPhone 16 Pro max 256gb desert"}
                   disabled={true}
                   {...register("product")}
                 />
@@ -187,7 +183,6 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"345345345453455"}
                   disabled={true}
                   {...register("imei")}
                 />
