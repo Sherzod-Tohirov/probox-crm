@@ -97,7 +97,12 @@ export const clientPageTableColumns = [
                 style={{
                   padding: "0.2rem",
                 }}>
-                {item.AcctName} - {formatterCurrency(item.SumApplied, "USD")}
+                {item.AcctName && item.SumApplied
+                  ? `${item.AcctName} - ${formatterCurrency(
+                      item.SumApplied,
+                      "USD"
+                    )}`
+                  : "-"}
               </Box>
             );
           }}
@@ -112,7 +117,7 @@ export const clientPageTableColumns = [
     title: "Общая сумма",
     width: "15%",
     renderCell: (column) => {
-      if (!column.InsTotal) return "Unknown";
+      if (!column.InsTotal) return "0$";
       return formatterCurrency(column.InsTotal, "USD");
     },
     icon: "income",

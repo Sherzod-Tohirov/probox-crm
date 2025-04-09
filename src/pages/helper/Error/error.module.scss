@@ -12,7 +12,7 @@
   font-size: 6rem;
   font-weight: 500;
   line-height: normal;
-  color: lighten(v.$danger-color, 20%);
+  color: rgba(v.$danger-color, 0.8);
 }
 
 .desc {

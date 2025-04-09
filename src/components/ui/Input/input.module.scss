@@ -68,7 +68,7 @@
   }
 
   &.disabled {
-    pointer-events: none !important;
+    pointer-events: none;
   }
   &.error {
     border-color: v.$danger-color !important;
@@ -128,7 +128,7 @@
   border-radius: 12px !important;
   background-color: "" !important;
   border: 1px solid transparent !important;
-  transition: min-width v.$transition-time v.$transition-type !important;
+  transition: all v.$transition-time v.$transition-type !important;
 
   &.small {
     width: 257px !important;

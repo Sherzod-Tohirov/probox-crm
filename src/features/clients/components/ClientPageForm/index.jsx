@@ -87,6 +87,8 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
+                  disabled={true}
+                  style={{ pointerEvents: "all" }}
                   {...register("name")}
                 />
               </InputGroup>
@@ -119,6 +121,8 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
                   hasIcon={false}
+                  disabled={true}
+                  style={{ cursor: "auto" }}
                   {...register("telephone")}
                 />
               </InputGroup>
@@ -131,6 +135,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
                   value={"20470"}
+                  disabled={true}
                   {...register("code")}
                 />
               </InputGroup>
@@ -146,6 +151,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
+                  disabled={true}
                   {...register("debtClient")}
                 />
               </InputGroup>

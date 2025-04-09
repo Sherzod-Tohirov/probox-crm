@@ -3,13 +3,13 @@ import useAuth from "@hooks/useAuth";
 import { useEffect } from "react";
 
 export default function Logout() {
-  const { setIsAuthenticated } = useAuth();
+  const { handleLogout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsAuthenticated(false);
+    handleLogout();
     navigate("/login");
-  }, [setIsAuthenticated, navigate]);
+  }, [navigate]);
 
   return null;
 }

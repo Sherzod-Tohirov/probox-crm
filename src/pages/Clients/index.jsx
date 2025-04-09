@@ -72,6 +72,7 @@ export default function Clients() {
       search: filterData.search,
       paymentStatus: filterData.paymentStatus,
       phone: filterData.phone,
+      slpCode: filterData.executor,
       startDate: formatDate(filterData.startDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
       endDate: formatDate(filterData.endDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
     }));
@@ -84,7 +85,7 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
 
-    if (data?.data.length > 0) {
+    if (data?.data.length >= 0) {
       setClientsDetails((p) => ({ ...p, data: data?.data }));
     }
 

@@ -30,7 +30,7 @@ export default function useAuth() {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    await logout();
+    // await logout();
     dispatch(logoutUser());
   }, []);
 

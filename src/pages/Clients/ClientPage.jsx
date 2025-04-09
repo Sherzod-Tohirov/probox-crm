@@ -21,7 +21,6 @@ import { clientPageTableColumns } from "@utils/tableColumns";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
-
   const { alert } = useAlert();
   const { id } = useParams();
   const {
