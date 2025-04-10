@@ -8,14 +8,38 @@ export default function useFilter() {
   const dispatch = useDispatch(); // Add dispatch
   const filterObj = useSelector((state) => state.page.clients.filter);
 
-  const highlightText = useCallback((text, searchText) => {
+  const highlightText = useCallback((text, searchText, type) => {
     if (!text || !searchText) return text;
-    const parts = text.split(new RegExp(`(${searchText})`, "gi"));
+
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const normalizePhone = (str) => str.replace(/^998/, "").toLowerCase();
+    const normalizedSearchText = searchText.toLowerCase();
+    const phoneSearchText = normalizePhone(searchText);
+
+    const regex =
+      type === "phone"
+        ? new RegExp(
+            `(${escapeRegex(searchText)}|${escapeRegex(phoneSearchText)})`,
+            "gi"
+          )
+        : new RegExp(`(${escapeRegex(searchText)})`, "gi");
+
+    const parts = text.split(regex);
+
+    const isHighlighted = (part) => {
+      const normalizedPart = part.toLowerCase();
+      return type === "phone"
+        ? normalizedPart === phoneSearchText ||
+            normalizedPart === normalizedSearchText
+        : normalizedPart === normalizedSearchText;
+    };
+
     return parts.map((part, index) => (
       <span
         key={index}
         style={
-          part.toLowerCase() === searchText.toLowerCase()
+          isHighlighted(part)
             ? {
                 display: "inline-flex",
                 backgroundColor: "orange",
@@ -26,7 +50,7 @@ export default function useFilter() {
         {part}
       </span>
     ));
-  });
+  }, []);
 
   const query = {
     onSearch: useCallback(
@@ -95,8 +119,14 @@ export default function useFilter() {
       (client) => {
         return (
           <Typography element="span">
-            {highlightText(client["CardName"], filterObj.phone)} -{" "}
-            {highlightText(client["Phone1"], filterObj.phone)}
+            {client["CardName"]} -{" "}
+            {highlightText(client["Phone1"], filterObj.phone, "phone")}
+            {client["Phone2"] && (
+              <span>
+                {" "}
+                / {highlightText(client["Phone2"], filterObj.phone, "phone")}
+              </span>
+            )}
           </Typography>
         );
       },

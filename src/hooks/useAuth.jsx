@@ -1,14 +1,11 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@services/authService";
 import { logoutUser, setUser } from "@store/slices/authSlice";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../services/authService";
-import useAlert from "./useAlert";
 
 export default function useAuth() {
   const dispatch = useDispatch();
-  const { alert } = useAlert();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const mutation = useMutation({

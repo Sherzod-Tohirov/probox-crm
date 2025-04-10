@@ -17,8 +17,8 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
-  console.log(currentClient, "currentClient");
-  const { register, handleSubmit, control, setValue } = useForm({
+  
+  const { register, handleSubmit, control } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
       photo: [],
@@ -134,7 +134,6 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="text"
                   variant={"filled"}
                   size={sidebar.isOpen ? "small" : ""}
-                  value={"20470"}
                   disabled={true}
                   {...register("code")}
                 />

@@ -1,34 +1,23 @@
 import classNames from "classnames";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { AnimatePresence, motion } from "framer-motion";
-import { Button, Col, Row, Typography, Box } from "@components/ui";
 
-import Message from "./Message";
+import { useCallback, useState } from "react";
+import { motion } from "framer-motion";
+import { Typography } from "@components/ui";
+
 import useToggle from "@hooks/useToggle";
-import MessageDate from "./MessageDate";
 
 import { mockMessages } from "../../../../mockData";
-import { groupBy } from "ramda";
+
 import { v4 as uuidv4 } from "uuid";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { messengerSchema } from "@utils/validationSchemas";
 
 import styles from "./messenger.module.scss";
 import moment from "moment";
+import MessageForm from "./MessageForm";
+import MessageRenderer from "./MessageRenderer";
 
 export default function Messenger() {
   const { isOpen } = useToggle("messenger");
-  const scrollRef = useRef(null);
   const [messages, setMessages] = useState(mockMessages);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isValid },
-  } = useForm({
-    resolver: yupResolver(messengerSchema),
-  });
 
   const handleSendMessage = useCallback((data) => {
     setMessages((prev) => {
@@ -44,13 +33,9 @@ export default function Messenger() {
         },
       ];
     });
-    reset();
   }, []);
 
-  // Scroll to bottom when new message is added
-  useEffect(() => {
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages]);
+  console.log(messages, "messages");
 
   return (
     <motion.div
@@ -68,58 +53,10 @@ export default function Messenger() {
         </Typography>
       </div>
       <div className={styles["messenger-body"]}>
-        <div className={styles["messenger-messages"]} ref={scrollRef}>
-          <AnimatePresence mode="sync">
-            {Object.entries(
-              groupBy((msg) => msg.timestamp.slice(0, 10), messages)
-            ).map(([date, messages], index) => {
-              return (
-                <Box dir="column" gap={2} key={index}>
-                  <MessageDate date={date} />
-                  {messages.map((message) => (
-                    <Message msg={message} />
-                  ))}
-                </Box>
-              );
-            })}
-          </AnimatePresence>
-        </div>
+        <MessageRenderer messages={messages} />
       </div>
       <div className={styles["messenger-footer"]}>
-        <form
-          className={styles["text-input-form"]}
-          onSubmit={handleSubmit(handleSendMessage)}>
-          <textarea
-            className={styles["text-input"]}
-            placeholder="Type here..."
-            {...register("msgText")}></textarea>
-          <Row direction="row" align="center" justify="space-between">
-            <Col>
-              <Button
-                type={"button"}
-                icon={"addCircle"}
-                variant={"text"}
-                color={"primary"}
-                iconColor={"primary"}
-              />
-            </Col>
-            <Col>
-              <Button
-                className={classNames(styles["send-btn"], {
-                  [styles["invalid"]]: !isValid,
-                })}
-                style={{ fontWeight: 600 }}
-                icon={"send"}
-                variant={"text"}
-                iconPosition="right"
-                iconColor={"primary"}
-                color={"primary"}
-                type={"submit"}>
-                Send
-              </Button>
-            </Col>
-          </Row>
-        </form>
+        <MessageForm onSubmit={handleSendMessage} />
       </div>
     </motion.div>
   );
