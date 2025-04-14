@@ -40,6 +40,11 @@
   &.select {
     appearance: none;
     color: v.$filter-input-placeholder-color !important;
+    
+  }
+
+  &.select.filled {
+    color: v.$filter-input-color !important;
   }
 
   &.file[type="file"] {

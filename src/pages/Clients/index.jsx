@@ -23,8 +23,12 @@ import {
 
 import useFetchClients from "@hooks/data/useFetchClients";
 import { setCurrentCLient } from "@store/slices/clientsPageSlice";
-import { clientsTableColumns } from "@utils/tableColumns";
-import formatDate from "@utils/formatDate";
+import useTableColumns from "@hooks/useTableColumns";
+import useAuth from "@hooks/useAuth";
+import useAlert from "@hooks/useAlert";
+import hasRole from "@utils/hasRole";
+import { distributeClients } from "@services/clientsService";
+import formatDate from "../../utils/formatDate";
 
 const tableSizeSelectOptions = [
   { value: 10, label: "10" },
@@ -42,14 +46,22 @@ export default function Clients() {
     total: 0,
     data: [],
   });
+
+  const [distributionState, setDistributionState] = useState({
+    isSuccess: false,
+    isLoading: false,
+  });
+  const { alert } = useAlert();
+  const { user } = useAuth();
   const [params, setParams] = useState({});
-  console.log(clientsDetails, "clientsDetails");
-  const { currentPage, pageSize } = useSelector((state) => state.page.clients);
+  const { currentPage, pageSize, filter } = useSelector(
+    (state) => state.page.clients
+  );
   const { data, isLoading } = useFetchClients({
     page: currentPage + 1,
     params,
   });
-
+  const { clientsTableColumns } = useTableColumns();
   const handleRowClick = useCallback(
     (row) => {
       navigate(`/clients/${row.DocEntry}`);
@@ -59,28 +71,44 @@ export default function Clients() {
   );
 
   const handleFilter = useCallback((filterData) => {
-    console.log(filterData, "filterData");
-    console.log(
-      formatDate(filterData.startDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-      "startDate"
-    );
-    console.log(
-      formatDate(filterData.endDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-      "endDate"
-    );
     setParams(() => ({
       search: filterData.search,
       paymentStatus: filterData.paymentStatus,
       phone: filterData.phone,
-      slpCode: filterData.executor,
-      startDate: formatDate(filterData.startDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-      endDate: formatDate(filterData.endDate, "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+      slpCode: filterData.slpCode,
+      startDate: filterData.startDate,
+      endDate: filterData.endDate,
     }));
+
     dispatch(setClientsCurrentPage(0));
+  }, []);
+
+  const handleDistributeClients = useCallback(async () => {
+    setDistributionState((p) => ({ ...p, isLoading: true }));
+    try {
+      const response = await distributeClients({
+        startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+        endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+      });
+
+      console.log(response, "put");
+      if (response?.message === "success") {
+        alert("Распределение успешно завершено!");
+      }
+
+      if (response) {
+        setDistributionState((p) => ({ ...p, isSuccess: true }));
+      }
+    } catch (error) {
+      console.log(error, "Error while distributing clients. ");
+    } finally {
+      setDistributionState((p) => ({ ...p, isLoading: false }));
+    }
   }, []);
 
   useEffect(() => {
     console.log("dataaaaa", data);
+
     if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
@@ -95,6 +123,7 @@ export default function Clients() {
   }, [data]);
 
   useEffect(() => {
+    console.log("working...");
     dispatch(setClientsCurrentPage(0));
   }, [pageSize]);
 
@@ -155,9 +184,16 @@ export default function Clients() {
               }
             />
           </Col>
-          <Col>
-            <Button variant={"filled"}>Распределение должников</Button>
-          </Col>
+          {hasRole(user, ["Manager"]) ? (
+            <Col>
+              <Button
+                variant={"filled"}
+                onClick={handleDistributeClients}
+                isLoading={distributionState.isLoading}>
+                Распределение должников
+              </Button>
+            </Col>
+          ) : null}
         </Row>
       </Footer>
     </>

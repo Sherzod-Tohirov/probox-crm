@@ -17,17 +17,21 @@ import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import useAlert from "@hooks/useAlert";
 import { useSelector } from "react-redux";
 import formatterCurrency from "@utils/formatterCurrency";
-import { clientPageTableColumns } from "@utils/tableColumns";
+import useFetchCurrency from "@hooks/data/useFetchCurrency";
+import useTableColumns from "@hooks/useTableColumns";
+import * as _ from "lodash";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
   const { alert } = useAlert();
   const { id } = useParams();
+  const { clientPageTableColumns } = useTableColumns();
   const {
     data: clientEntries,
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
+  const { data: currency } = useFetchCurrency();
 
   const onClose = () => setPaymentModal(false);
 
@@ -35,6 +39,13 @@ export default function ClientPage() {
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
+
+  if (error) {
+    alert({
+      type: "error",
+      message: error.message,
+    });
+  }
 
   return (
     <>
@@ -83,9 +94,13 @@ export default function ClientPage() {
             {formatterCurrency(currentClient["TotalPaidToDate"] || 0, "USD")}
           </Typography>
           <Col>
-            <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
-              Оплатить
-            </Button>
+            {_.get(currency, "Rate", 0) > 0 ? (
+              <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
+                Оплатить
+              </Button>
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
         <ClientPaymentModal

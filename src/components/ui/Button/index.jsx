@@ -43,29 +43,27 @@ function Button({
       disabled={isLoading}
       {...props}>
       {isLoading ? (
-        <Box
-          className={styles["loading-wrapper"]}
-          gap={2}
-          align="center"
-          justify="center">
+        <div className={styles["loading-wrapper"]}>
           <OrbitProgress style={{ fontSize: "1rem" }} color="currentColor" />
-        </Box>
-      ) : (
-        <Box
-          className={classNames(styles[iconPosition])}
-          gap={2}
-          align="center"
-          justify="center">
-          {icon ? (
-            <Typography element="span" className={styles["icon-text"]}>
-              {iconsMap[icon]}
-            </Typography>
-          ) : (
-            ""
-          )}
-          {children}
-        </Box>
-      )}
+        </div>
+      ) : null}
+      <Box
+        className={classNames(
+          styles[iconPosition],
+          isLoading && styles["hide"]
+        )}
+        gap={2}
+        align="center"
+        justify="center">
+        {icon ? (
+          <Typography element="span" className={styles["icon-text"]}>
+            {iconsMap[icon]}
+          </Typography>
+        ) : (
+          ""
+        )}
+        {children}
+      </Box>
     </motion.button>
   );
 }

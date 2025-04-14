@@ -2,7 +2,7 @@
 @use "@styles/variables" as v;
 
 .form {
-  @include m.flex(center, start);
+  @include m.flex(center, start, 12px, column);
   width: 100%;
 }
 

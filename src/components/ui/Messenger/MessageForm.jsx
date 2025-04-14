@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./messenger.module.scss";
 import { Button, Col, Row } from "@components/ui";
 import classNames from "classnames";
+import Box from "../Box";
 const MessageForm = ({ onSubmit }) => {
   const {
     register,
@@ -26,13 +27,24 @@ const MessageForm = ({ onSubmit }) => {
         {...register("msgText")}></textarea>
       <Row direction="row" align="center" justify="space-between">
         <Col>
-          <Button
-            type={"button"}
-            icon={"addCircle"}
-            variant={"text"}
-            color={"primary"}
-            iconColor={"primary"}
-          />
+          <Box>
+            <label htmlFor="msgPhoto" className={styles["file-input-label"]}>
+              <Button
+                type={"button"}
+                icon={"addCircle"}
+                variant={"text"}
+                color={"primary"}
+                iconColor={"primary"}
+              />
+            </label>
+            <input
+              id={"msgPhoto"}
+              {...register("msgPhoto")}
+              className={styles["file-input"]}
+              type="file"
+              accept="image/*"
+            />
+          </Box>
         </Col>
         <Col>
           <Button

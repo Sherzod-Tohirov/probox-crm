@@ -3,11 +3,14 @@ import { Typography } from "@components/ui";
 import { useSelector, useDispatch } from "react-redux"; // Add useDispatch
 import { searchClients } from "@services/clientsService";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-
+import { applyDefaultParams } from "@hooks/utils";
 export default function useFilter() {
   const dispatch = useDispatch(); // Add dispatch
   const filterObj = useSelector((state) => state.page.clients.filter);
-
+  const mutatedFilterObj = {
+    ...filterObj,
+  };
+  applyDefaultParams(mutatedFilterObj); // Ensure params have default values
   const highlightText = useCallback((text, searchText, type) => {
     if (!text || !searchText) return text;
 
@@ -58,7 +61,7 @@ export default function useFilter() {
         return searchClients({
           search: searchText,
           page,
-          ...(applyFilters ? filterObj : {}),
+          ...(applyFilters ? mutatedFilterObj : {}),
         });
       },
       [filterObj]
@@ -96,7 +99,7 @@ export default function useFilter() {
         return searchClients({
           phone: searchText,
           page,
-          ...(applyFilters ? filterObj : {}),
+          ...(applyFilters ? mutatedFilterObj : {}),
         });
       },
       [filterObj]

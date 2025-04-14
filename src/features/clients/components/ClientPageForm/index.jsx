@@ -1,23 +1,33 @@
+import { images } from "../../../../../mockData";
+
 import { Col, Input, Row } from "@components/ui";
 import { useForm } from "react-hook-form";
 import styles from "./clientPageForm.module.scss";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
 import useToggle from "@hooks/useToggle";
-import { images } from "../../../../../mockData";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ImagePreviewModal from "./ImagePreviewModal";
 import useClientPageForm from "../../hooks/useClientPageForm";
 import useAlert from "@hooks/useAlert";
+import useAuth from "@hooks/useAuth";
 import formatterCurrency from "@utils/formatterCurrency";
 import formatDate from "@utils/formatDate";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import hasRole from "@utils/hasRole";
+import selectOptionsCreator from "@utils/selectOptionsCreator";
+
 export default function ClientPageForm({ formId, currentClient, ...props }) {
+
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
   
+  const { data: executors } = useFetchExecutors();
+  const { user } = useAuth();
+
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
@@ -49,6 +59,24 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
     });
     setCopyProductImages((prev) => [...prev, ...newImages]);
   }, []);
+
+  const executorsOptions = useMemo(
+    () =>
+      selectOptionsCreator(executors?.data, {
+        label: "SlpName",
+        value: "SlpCode",
+      }),
+    [executors?.data]
+  );
+
+  const defaultExecutor = useMemo(
+    () =>
+      executors?.data?.find(
+        (executor) =>
+          Number(executor.SlpCode) === Number(currentClient?.SlpCode)
+      )?.SlpCode,
+    [currentClient, executors] || executorsOptions?.[0]?.value
+  );
 
   return (
     <form
@@ -90,6 +118,20 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   disabled={true}
                   style={{ pointerEvents: "all" }}
                   {...register("name")}
+                />
+              </InputGroup>
+            </Col>
+            <Col>
+              <InputGroup>
+                <Label icon="avatarFilled">Executor</Label>
+                <Input
+                  type="select"
+                  variant={"filled"}
+                  options={executorsOptions}
+                  defaultValue={defaultExecutor}
+                  size={sidebar.isOpen ? "small" : ""}
+                  disabled={!hasRole(user, ["Manager"])}
+                  {...register("executor")}
                 />
               </InputGroup>
             </Col>

@@ -37,8 +37,9 @@ export default function Filter({ onFilter }) {
   const { user } = useAuth();
   const { query, phone } = useFilter();
   const { data: executors } = useFetchExecutors();
+  console.log(executors, "executors2");
   const watchedFields = useWatchFilterFields(watch);
-  
+
   const executorsOptions = useMemo(() => {
     const allOption = [{ value: "", label: "All" }];
     const executorOption =
@@ -150,7 +151,7 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Executor"}
             type={"select"}
-            {...register("executor")}
+            {...register("slpCode")}
             defaultValue={defaultExecutor}
             options={executorsOptions}
           />
