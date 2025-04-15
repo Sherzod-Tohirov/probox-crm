@@ -4,9 +4,9 @@ import styles from "./status.module.scss";
 export default function Status({ status, ...props }) {
   const lowerCaseStatus = String(status).toLowerCase();
   const statusText = {
-    paid: "Paid",
-    partial: "Partial",
-    unpaid: "Unpaid",
+    paid: "To'langan",
+    partial: "Qisman",
+    unpaid: "To'lanmagan",
   };
   return (
     <span

@@ -6,8 +6,8 @@ export default function Pagination({ pageCount, onPageChange, activePage }) {
   console.log("activePage", activePage);
   return (
     <ReactPaginate
-      previousLabel={"Prev"}
-      nextLabel={"Next"}
+      previousLabel={"Oldingi"}
+      nextLabel={"Keyingi"}
       breakLabel={"..."}
       breakClassName={styles["page"]}
       pageCount={pageCount || 10}

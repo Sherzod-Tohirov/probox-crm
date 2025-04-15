@@ -27,6 +27,7 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
   // Update ref when searchText changes
   useEffect(() => {
     searchTextRef.current = searchText;
+    setIsLoading(true);
   }, [searchText]);
 
   // Initial search effect
@@ -41,7 +42,7 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
         // Only update if searchText hasn't changed during fetch
         if (currentSearchText === searchTextRef.current) {
           setData(res?.data || []);
-          setDataDetails((prev) => ({
+          setDataDetails(() => ({
             page: res?.totalPages > 1 ? 2 : 1,
             totalPages: res?.totalPages || 0,
             total: res?.total || 0,

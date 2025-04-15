@@ -64,7 +64,7 @@ const clientsPageSlice = createSlice({
     setClients(state, action) {
       state.clients = action.payload;
     },
-    setCurrentCLient(state, action) {
+    setCurrentClient(state, action) {
       state.currentClient = action.payload;
       saveState(state);
     },
@@ -107,6 +107,6 @@ export const {
   setClientsFilter,
   setClientsCurrentPage,
   setClientsPageSize,
-  setCurrentCLient,
+  setCurrentClient,
 } = clientsPageSlice.actions;
 export default clientsPageSlice.reducer;

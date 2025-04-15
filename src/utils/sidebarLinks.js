@@ -1,36 +1,36 @@
 const sidebarLinks = [
   {
-    title: "Dashboard",
+    title: "Asosiy",
     icon: "dashboard",
     path: "/dashboard",
   },
   {
-    title: "Clients",
+    title: "Mijozlar",
     icon: "clients",
     path: "/clients",
   },
   {
-    title: "Calendar",
+    title: "Kalendar",
     icon: "calendar",
     path: "/calendar",
   },
   {
-    title: "Statistics",
+    title: "Statistika",
     icon: "presentationChart",
     path: "/statistics",
   },
   {
-    title: "Products",
+    title: "Mahsulotlar",
     icon: "products",
     path: "/products",
   },
   {
-    title: "Leads",
+    title: "Leadlar",
     icon: "leads",
     path: "/leads",
   },
   {
-    title: "Logout",
+    title: "Chiqish",
     icon: "logoutFilled",
     path: "/logout",
     color: "danger",

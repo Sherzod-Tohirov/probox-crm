@@ -7,7 +7,7 @@ const selectOptionsCreator = (data = [], keys = {}) => {
   }));
 
   if (keys?.includeAll) {
-    options.unshift({ label: "All", value: "" });
+    options.unshift({ label: "Hammasi", value: "" });
   }
 
   if (keys?.includeEmpty) {

@@ -3,8 +3,8 @@
 
 .status {
   @include m.flex-center;
-  width: 58px;
-  padding: 4px 12px;
+  width: 82px;
+  padding: 6px 12px;
   border-radius: 32px;
   font-size: 3rem;
   font-weight: 500;
@@ -17,7 +17,7 @@
   }
 
   &.partial {
-    color: v.$info-color;
+    color: rgba(v.$info-color, 0.8);
     background: rgba(v.$info-color, 0.1);
   }
 

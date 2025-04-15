@@ -1,15 +1,21 @@
 import styles from "./filter.module.scss";
+
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+
 import useWatchFilterFields from "@features/clients/hooks/useWatchFilterFields";
 import useFilter from "@features/clients/hooks/useFilter";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
+
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useAuth from "@hooks/useAuth";
-import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useCallback, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
+
 import formatPhoneNumber from "@utils/formatPhoneNumber";
 
 export default function Filter({ onFilter }) {
@@ -31,7 +37,6 @@ export default function Filter({ onFilter }) {
     search: false,
     phone: false,
   });
-
   const dispatch = useDispatch(); // Add dispatch
   const filterObj = useSelector((state) => state.page.clients.filter);
   const { user } = useAuth();
@@ -39,7 +44,15 @@ export default function Filter({ onFilter }) {
   const { data: executors } = useFetchExecutors();
   console.log(executors, "executors2");
   const watchedFields = useWatchFilterFields(watch);
-
+  const statusOptions = useMemo(
+    () => [
+      { value: "all", label: "Hammasi" },
+      { value: "paid", label: "To'langan" },
+      { value: "partial", label: "Qisman to'langan" },
+      { value: "unpaid", label: "To'lanmagan" },
+    ],
+    []
+  );
   const executorsOptions = useMemo(() => {
     const allOption = [{ value: "", label: "All" }];
     const executorOption =
@@ -84,9 +97,9 @@ export default function Filter({ onFilter }) {
       <Row direction={"row"} gutter={6.25}>
         <Col gutter={4}>
           <Input
-            style={{ width: "240px" }}
+            style={{ width: "300px" }}
             variant={"outlined"}
-            label={"IMEI | Name"}
+            label={"IMEI | FIO"}
             type={"text"}
             placeholder={"4567890449494 | Azam Toshev"}
             searchText={watchedFields.search}
@@ -103,7 +116,7 @@ export default function Filter({ onFilter }) {
           />
           <Input
             variant={"outlined"}
-            label={"Phone number"}
+            label={"Telefon raqami"}
             type={"tel"}
             searchable={toggleSearchFields.phone}
             searchText={watchedFields.phone}
@@ -120,15 +133,19 @@ export default function Filter({ onFilter }) {
           />
           <Input
             id={"Hello World"}
+            style={{ width: "150px" }}
             variant={"outlined"}
-            label={"Start date"}
+            label={"Boshlanish vaqti"}
+            canClickIcon={false}
             type={"date"}
             control={control}
             {...register("startDate")}
           />
           <Input
+            style={{ width: "150px" }}
             variant={"outlined"}
-            label={"End date"}
+            label={"Tugash vaqti"}
+            canClickIcon={false}
             type={"date"}
             datePickerOptions={{ minDate: watch("startDate") }}
             error={errors?.endDate?.message}
@@ -136,20 +153,19 @@ export default function Filter({ onFilter }) {
             {...register("endDate")}
           />
           <Input
+            style={{ width: "170px" }}
+            canClickIcon={false}
             variant={"outlined"}
-            label={"Status"}
+            label={"Holati"}
             type={"select"}
             {...register("paymentStatus")}
-            options={[
-              { value: "all", label: "All" },
-              { value: "paid", label: "Paid" },
-              { value: "partial", label: "Partially paid" },
-              { value: "unpaid", label: "Not paid" },
-            ]}
+            options={statusOptions}
           />
           <Input
+            style={{ width: "130px" }}
+            canClickIcon={false}
             variant={"outlined"}
-            label={"Executor"}
+            label={"Mas'ul ijrochi"}
             type={"select"}
             {...register("slpCode")}
             defaultValue={defaultExecutor}
@@ -161,7 +177,7 @@ export default function Filter({ onFilter }) {
             className={styles["filter-btn"]}
             icon={"search"}
             variant={"filled"}>
-            Поиск
+            Qidiruv
           </Button>
         </Col>
       </Row>
