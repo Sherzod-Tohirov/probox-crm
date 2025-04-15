@@ -1,11 +1,14 @@
-import classNames from "classnames";
+import { OrbitProgress } from "react-loading-indicators";
+import { motion } from "framer-motion";
 import { memo } from "react";
+
 import styles from "./button.module.scss";
 import iconsMap from "@utils/iconsMap";
+import classNames from "classnames";
+
 import Typography from "../Typography";
-import { OrbitProgress } from "react-loading-indicators";
 import Box from "../Box";
-import { motion } from "framer-motion";
+
 function Button({
   children,
   className,

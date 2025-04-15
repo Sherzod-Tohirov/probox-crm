@@ -3,18 +3,23 @@ import styles from "./table.module.scss";
 import iconsMap from "@utils/iconsMap";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid";
+
 function Table({
   columns = [],
   data = [],
   className,
   style = {},
+  containerStyle = {},
+  containerClass,
   isLoading = false,
   getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
   console.log("data in Table", data);
   return (
-    <div className={styles["table-container"]}>
+    <div
+      style={containerStyle}
+      className={classNames(styles["table-container"], containerClass)}>
       <table
         className={classNames(
           styles["base-table"],
@@ -51,8 +56,7 @@ function Table({
                 <tr
                   key={`row-${uuidv4()}`} // Ensure unique key for each row
                   onClick={() => onRowClick(row)}
-                  style={getRowStyles(row)}
-                  >
+                  style={getRowStyles(row)}>
                   {columns.map((column, colIndex) => (
                     <td
                       key={`cell-${row.id || row.IntrSerial || rowIndex}-${

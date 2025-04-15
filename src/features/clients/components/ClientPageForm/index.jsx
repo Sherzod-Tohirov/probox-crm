@@ -18,13 +18,12 @@ import hasRole from "@utils/hasRole";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 
 export default function ClientPageForm({ formId, currentClient, ...props }) {
-
   const { sidebar } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
   const { alert } = useAlert();
-  
+
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
 
@@ -65,6 +64,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       selectOptionsCreator(executors?.data, {
         label: "SlpName",
         value: "SlpCode",
+        includeEmpty: true,
       }),
     [executors?.data]
   );

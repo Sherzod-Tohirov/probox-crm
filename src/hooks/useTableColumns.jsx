@@ -67,18 +67,18 @@ const useTableColumns = () => {
         title: "Исполнитель",
         renderCell: (column) => {
           console.log("column in table columns", column);
-          if (!column.SlpCode) return "Unknown";
+          if (!column.SlpCode) return "-";
 
-          if (!executors?.data) return "Unknown";
+          if (!executors?.data) return "-";
 
           const executor = executors.data.find(
             (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
           );
           console.log("found executor", executor);
-          if (!executor) return "Unknown";
+          if (!executor) return "-";
 
           if (user.SlpCode === executor?.SlpCode) return "You";
-          return executor.SlpName || "Unknwown";
+          return executor.SlpName || "-";
         },
         width: "12%",
         icon: "calendarFact",
