@@ -11,7 +11,7 @@
   will-change: width;
 
   &.open {
-    width: clamp(240px, 240px, 240px) !important;
+    width: clamp(200px, 220px, 220px) !important;
     padding: 6rem;
   }
 }

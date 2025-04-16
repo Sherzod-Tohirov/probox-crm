@@ -3,7 +3,8 @@ import styles from "./breadcrumb.module.scss";
 import { useCallback } from "react";
 import List from "../List";
 import classNames from "classnames";
-import iconsMap from "../../../utils/iconsMap";
+import iconsMap from "@utils/iconsMap";
+import { URL_PATH_LANG_MAP } from "../../../utils/constants";
 
 export default function Breadcrumb() {
   const { pathname } = useLocation();
@@ -11,8 +12,10 @@ export default function Breadcrumb() {
   const generateBreadcrumb = useCallback((pathname) => {
     const pathArray = pathname.split("/").filter((path) => path !== "");
     return pathArray.map((path, index) => {
+      console.log("path: ", path);
       const fullPath = `/${pathArray.slice(0, index + 1).join("/")}`;
       const label =
+        URL_PATH_LANG_MAP[path] ||
         path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, " ");
       return {
         path: fullPath,
@@ -32,7 +35,7 @@ export default function Breadcrumb() {
           { [styles["last-link"]]: breadcrumb.isLastPath }
         )}
         to={breadcrumb.path}>
-        {breadcrumb.label} {breadcrumb.isMainPath ? " page " : ""}
+        {breadcrumb.label} {breadcrumb.isMainPath ? " sahifasi " : ""}
         {!breadcrumb.isLastPath ? iconsMap["arrowRight"] : ""}
       </Link>
     );

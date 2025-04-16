@@ -62,7 +62,7 @@ export default function ClientPage() {
                     type={"submit"}
                     form={"clientForm"}
                     variant={"filled"}>
-                    Сохранить
+                    Saqlash
                   </Button>
                 </Col>
               </Row>
@@ -90,13 +90,13 @@ export default function ClientPage() {
       <Footer>
         <Row direction={"row"} align={"center"} justify={"space-between"}>
           <Typography style={{ fontSize: "4rem" }} element={"span"}>
-            Всего оплачено клиентом:{" "}
+            Mijoz tomonidan jami to'langan summa:{" "}
             {formatterCurrency(currentClient["TotalPaidToDate"] || 0, "USD")}
           </Typography>
           <Col>
             {_.get(currency, "Rate", 0) > 0 ? (
               <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
-                Оплатить
+                To'lov qo'shish
               </Button>
             ) : (
               ""

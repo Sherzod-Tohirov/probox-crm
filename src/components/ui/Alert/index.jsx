@@ -54,7 +54,7 @@ export default function Alert({
         <Row gutter={2} className={styles["alert-content"]}>
           <Col>
             <Typography className={styles["alert-title"]} element="strong">
-              Alert
+              Xabar
             </Typography>
           </Col>
           <Col>

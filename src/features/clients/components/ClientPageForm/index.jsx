@@ -18,7 +18,7 @@ import hasRole from "@utils/hasRole";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 
 export default function ClientPageForm({ formId, currentClient, ...props }) {
-  const { sidebar } = useToggle(["sidebar", "messenger"]);
+  const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
@@ -110,11 +110,11 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
           <Row gutter={1}>
             <Col>
               <InputGroup>
-                <Label icon="avatarFilled">Name</Label>
+                <Label icon="avatarFilled">FIO</Label>
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={true}
                   style={{ pointerEvents: "all" }}
                   {...register("name")}
@@ -123,13 +123,14 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="avatarFilled">Executor</Label>
+                <Label icon="avatarFilled">Ijrochi</Label>
                 <Input
                   type="select"
                   variant={"filled"}
                   options={executorsOptions}
+                  canClickIcon={false}
                   defaultValue={defaultExecutor}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={!hasRole(user, ["Manager"])}
                   {...register("executor")}
                 />
@@ -138,7 +139,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             <Col>
               <InputGroup>
                 <Label icon="photo" htmlFor={"photo"}>
-                  Photo
+                  Rasm
                 </Label>
                 <Input
                   id={"photo"}
@@ -146,7 +147,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   images={selectedProductImages}
                   accept="image/*"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   className={styles.fileInput}
                   onClick={handleImageInputClick}
                   onChange={handleImageChange}
@@ -156,12 +157,12 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="telephoneFilled">Telephone</Label>
+                <Label icon="telephoneFilled">Telefon raqami</Label>
                 <Input
                   type="tel"
                   control={control}
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   hasIcon={false}
                   disabled={true}
                   style={{ cursor: "auto" }}
@@ -171,11 +172,11 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="barCodeFilled">Code</Label>
+                <Label icon="barCodeFilled">Mijoz kodi</Label>
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={true}
                   {...register("code")}
                 />
@@ -187,11 +188,11 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
           <Row gutter={1}>
             <Col>
               <InputGroup>
-                <Label icon="expense">Debt client</Label>
+                <Label icon="expense">Jami qarzdorlik</Label>
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={true}
                   {...register("debtClient")}
                 />
@@ -199,11 +200,11 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="products">Product</Label>
+                <Label icon="products">Mahsulot nomi</Label>
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={true}
                   {...register("product")}
                 />
@@ -211,11 +212,11 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="calendar">Deadline</Label>
+                <Label icon="calendar">To'lov muddati</Label>
                 <Input
                   type="date"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   control={control}
                   hasIcon={false}
                   disabled={true}
@@ -229,7 +230,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={sidebar.isOpen ? "small" : ""}
+                  size={messenger.isOpen ? "small" : "longer"}
                   disabled={true}
                   {...register("imei")}
                 />

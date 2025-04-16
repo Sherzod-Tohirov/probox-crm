@@ -17,16 +17,15 @@ import ClientsFooter from "./ClientsFooter";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { currentPage, filter } = useSelector((state) => state.page.clients);
+
   const [clientsDetails, setClientsDetails] = useState({
     totalPages: 0,
     total: 0,
     data: [],
   });
 
-  const [params, setParams] = useState({});
-  const { currentPage, pageSize, filter } = useSelector(
-    (state) => state.page.clients
-  );
+  const [params, setParams] = useState({ ...filter });
 
   const { data, isLoading } = useFetchClients({
     page: currentPage + 1,
@@ -70,10 +69,6 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, total: data?.total }));
     }
   }, [data]);
-
-  useEffect(() => {
-    dispatch(setClientsCurrentPage(0));
-  }, [pageSize]);
 
   return (
     <>

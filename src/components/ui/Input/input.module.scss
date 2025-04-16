@@ -37,10 +37,13 @@
     min-width: 257px !important;
   }
 
+  &.filled.longer {
+    min-width: 400px !important;
+  }
+
   &.select {
     appearance: none;
     color: v.$filter-input-placeholder-color !important;
-    
   }
 
   &.select.filled {
@@ -137,6 +140,10 @@
 
   &.small {
     width: 257px !important;
+  }
+
+  &.longer {
+    width: 400px !important;
   }
 }
 

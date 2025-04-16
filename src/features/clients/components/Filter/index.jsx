@@ -15,8 +15,8 @@ import useAuth from "@hooks/useAuth";
 
 import { useCallback, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-
 import formatPhoneNumber from "@utils/formatPhoneNumber";
+import selectOptionsCreator from "@utils/selectOptionsCreator";
 
 export default function Filter({ onFilter }) {
   const filterState = useSelector((state) => state.page.clients.filter);
@@ -54,13 +54,11 @@ export default function Filter({ onFilter }) {
     []
   );
   const executorsOptions = useMemo(() => {
-    const allOption = [{ value: "", label: "All" }];
-    const executorOption =
-      executors?.data.map((executor) => ({
-        value: executor.SlpCode,
-        label: executor.SlpName,
-      })) || [];
-    return [...allOption, ...executorOption];
+    return selectOptionsCreator(executors?.data, {
+      label: "SlpName",
+      value: "SlpCode",
+      includeAll: true,
+    });
   }, [executors?.data]);
   console.log(executorsOptions, "executoropiotns");
   const defaultExecutor = useMemo(

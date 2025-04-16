@@ -15,20 +15,20 @@ const useTableColumns = () => {
     () => [
       {
         key: "DocEntry",
-        title: "Код документа",
+        title: "Hujjat kodi",
         width: "12%",
         icon: "barCodeFilled",
       },
       {
         key: "CardName",
-        title: "Имя клиента",
+        title: "FIO",
         width: "22%",
         icon: "avatarFilled",
       },
-      { key: "Dscription", title: "Товар", width: "15%", icon: "calendar" },
+      { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
       {
         key: "InsTotal",
-        title: "Месячная оплата",
+        title: "Oylik to'lov",
         renderCell: (column) => {
           return formatterCurrency(column.InsTotal, "USD") || "Unknown";
         },
@@ -37,7 +37,7 @@ const useTableColumns = () => {
       },
       {
         key: "PaidToDate",
-        title: "Оплачено",
+        title: "To'landi",
         renderCell: (column) => {
           return formatterCurrency(column.PaidToDate, "USD") || "Unknown";
         },
@@ -46,7 +46,7 @@ const useTableColumns = () => {
       },
       {
         key: "status",
-        title: "Status",
+        title: "Holati",
         renderCell: (column) => {
           let status = "unpaid";
 
@@ -64,7 +64,7 @@ const useTableColumns = () => {
 
       {
         key: "executor",
-        title: "Исполнитель",
+        title: "Ijrochi",
         renderCell: (column) => {
           console.log("column in table columns", column);
           if (!column.SlpCode) return "-";
@@ -85,7 +85,7 @@ const useTableColumns = () => {
       },
       {
         key: "term",
-        title: "Срок",
+        title: "Muddati",
         renderCell: (column) => {
           if (!column.DueDate) return "Unknown";
           return moment(column.DueDate).format("DD.MM.YYYY");
@@ -99,10 +99,10 @@ const useTableColumns = () => {
 
   const clientPageTableColumns = useMemo(
     () => [
-      { key: "InstlmntID", title: "ID", width: "10%", icon: "barCodeFilled" },
+      { key: "InstlmntID", title: "ID", width: "1%", icon: "barCodeFilled" },
       {
         key: "PaysList",
-        title: "Список платежей",
+        title: "To'lovlar ro'yhati",
         width: "15%",
         renderCell: (column) => {
           if (!column.PaysList) return "Unknown";
@@ -135,7 +135,7 @@ const useTableColumns = () => {
 
       {
         key: "InsTotal",
-        title: "Общая сумма",
+        title: "Jami summa",
         width: "15%",
         renderCell: (column) => {
           if (!column.InsTotal) return "0$";
@@ -145,7 +145,7 @@ const useTableColumns = () => {
       },
       {
         key: "PaidToDate",
-        title: "Оплачено",
+        title: "To'landi",
         width: "10%",
         renderCell: (column) => {
           if (!column.PaidToDate) return "0$";
@@ -155,7 +155,7 @@ const useTableColumns = () => {
       },
       {
         key: "DueDate",
-        title: "Срок",
+        title: "Muddati",
         width: "10%",
         renderCell: (column) => {
           if (!column.DueDate) return "Unknown";

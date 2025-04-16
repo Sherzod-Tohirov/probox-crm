@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import styles from "./navigation.module.scss";
 import Breadcrumb from "../Breadcrumb";
 import Divider from "../Divider";
-import iconsMap from "../../../utils/iconsMap";
 
 export default function Navigation() {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ export default function Navigation() {
         variant={"text"}
         onClick={() => navigate(-1)}
         icon={"arrowLeft"}>
-        Back
+        Ortga
       </Button>
       <Divider color="secondary" height={"12px"} />
       <Breadcrumb />

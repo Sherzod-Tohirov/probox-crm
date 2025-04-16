@@ -51,7 +51,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
 
       console.log(response, "put");
       if (response?.message === "success") {
-        alert("Распределение успешно завершено!");
+        alert("Mijozlar muvaffaqiyatli taqsimlandi!");
       }
 
       if (response) {
@@ -75,9 +75,10 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 type={"select"}
                 options={tableSizeSelectOptions}
                 defaultValue={Number(pageSize)}
-                onChange={(e) =>
-                  dispatch(setClientsPageSize(Number(e.target.value)))
-                }
+                onChange={(e) => {
+                  dispatch(setClientsPageSize(Number(e.target.value)));
+                  dispatch(setClientsCurrentPage(0));
+                }}
                 canClickIcon={false}
                 width={"clamp(69px, 10vw, 100px)"}
               />
@@ -89,7 +90,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 {(currentPage + 1) * pageSize > data?.total
                   ? data.total
                   : currentPage * pageSize + pageSize}{" "}
-                of {clientsDetails.total}
+                gacha {clientsDetails.total}ta dan
               </Typography>
             </Col>
           </Row>
