@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
 import moment from "moment";
+import _ from "lodash";
 
 const useWatchFilterFields = (watch) => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const useWatchFilterFields = (watch) => {
     dispatch(
       setClientsFilter({
         ...watchedFields,
+        paymentStatus: _.map(watchedFields.paymentStatus, "value").join(","),
       })
     );
   }, [search, phone, startDate, endDate, paymentStatus, slpCode]);

@@ -99,7 +99,18 @@ const useTableColumns = () => {
 
   const clientPageTableColumns = useMemo(
     () => [
-      { key: "InstlmntID", title: "ID", width: "1%", icon: "barCodeFilled" },
+      {
+        key: "InstlmntID",
+        title: "ID",
+        width: "1%",
+        icon: "barCodeFilled",
+        cellStyle: {
+          textAlign: "center",
+          border: "2px solid rgba(0,0,0,0.05)",
+          borderTopLeftRadius: "10px",
+          borderBottomLeftRadius: "10px",
+        },
+      },
       {
         key: "PaysList",
         title: "To'lovlar ro'yhati",

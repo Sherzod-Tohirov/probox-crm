@@ -27,7 +27,6 @@ export default function Login() {
     return <Navigate to="/" />;
   }
 
-
   return (
     <div className={styles.login}>
       <motion.div className={styles["login-wrapper"]}>
@@ -43,7 +42,7 @@ export default function Login() {
                 exit={{ opacity: 0 }}
                 key="errorText">
                 {loginState?.error?.response?.data?.message ||
-                  "Invalid username or password !"}
+                  "Login yoki parol xato !"}
               </motion.span>
             )}
           </AnimatePresence>
@@ -57,7 +56,7 @@ export default function Login() {
               <Input
                 type="text"
                 id="login"
-                placeholder="Login (test user: admin)"
+                placeholder="Login (admin)"
                 variant="filled"
                 icon="avatar"
                 error={errors.login?.message}
@@ -69,7 +68,7 @@ export default function Login() {
               <Input
                 type={showPassword ? "text" : "password"}
                 id="password"
-                placeholder="Password (test password: 1234)"
+                placeholder="Parol (1234)"
                 variant="filled"
                 icon={showPassword ? "eyeClosed" : "eye"}
                 onIconClick={() => setShowPassword((p) => !p)}
@@ -85,7 +84,7 @@ export default function Login() {
                 type="submit"
                 className={styles.button}
                 disabled={r.isEmpty(errors) ? false : true}>
-                Login
+                Kirish
               </Button>
             </Col>
           </Row>

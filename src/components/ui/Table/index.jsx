@@ -56,9 +56,10 @@ function Table({
                 <tr
                   key={`row-${uuidv4()}`} // Ensure unique key for each row
                   onClick={() => onRowClick(row)}
-                  style={getRowStyles(row)}>
+                  style={{ ...getRowStyles(row) }}>
                   {columns.map((column, colIndex) => (
                     <td
+                      style={{ ...(column?.cellStyle ? column.cellStyle : {}) }}
                       key={`cell-${row.id || row.IntrSerial || rowIndex}-${
                         column.key || colIndex
                       }`} // Ensure unique key for each cell

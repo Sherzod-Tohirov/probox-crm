@@ -13,7 +13,7 @@ import {
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import ClientsFooter from "./ClientsFooter";
-
+import _ from "lodash";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export default function Clients() {
   const handleFilter = useCallback((filterData) => {
     setParams(() => ({
       search: filterData.search,
-      paymentStatus: filterData.paymentStatus,
+      paymentStatus: _.map(filterData.paymentStatus, "value").join(","),
       phone: filterData.phone,
       slpCode: filterData.slpCode,
       startDate: filterData.startDate,

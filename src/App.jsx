@@ -15,9 +15,9 @@ import { isMessengerRoute } from "@utils/routesConfig";
 import useAuth from "@hooks/useAuth";
 import { scan } from "react-scan/dist/index";
 
-scan({
-  enabled: true,
-});
+// scan({
+//   enabled: true,
+// });
 
 function App() {
   const { AlertContainer } = useAlert();

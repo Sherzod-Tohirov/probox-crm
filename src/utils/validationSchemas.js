@@ -1,23 +1,23 @@
 import * as yup from "yup";
 
 export const loginSchema = yup.object().shape({
-  login: yup.string().required("Login is required"),
-  password: yup.string().required("Password is required"),
+  login: yup.string().required("Login kiritish majburiy"),
+  password: yup.string().required("Parol kiritish majburiy"),
 });
 
 export const clientPageFormSchema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  photo: yup.string().required("Photo is required"),
-  telephone: yup.string().required("Telephone is required"),
-  code: yup.string().required("Code is required"),
-  debtClient: yup.string().required("Debt client is required"),
-  product: yup.string().required("Product is required"),
-  deadline: yup.string().datetime().required("Deadline is required"),
-  imei: yup.string().required("IMEI is required"),
+  name: yup.string().required("Ism majburiy"),
+  photo: yup.string().required("Rasm majburiy"),
+  telephone: yup.string().required("Telefon raqami majburiy"),
+  code: yup.string().required("Kod majburiy"),
+  debtClient: yup.string().required("Qarzdorlik majburiy"),
+  product: yup.string().required("Mahsulot majburiy"),
+  deadline: yup.string().datetime().required("Muddat majburiy"),
+  imei: yup.string().required("IMEI majburiy"),
 });
 
 export const messengerSchema = yup.object().shape({
-  msgText: yup.string().required("Text is required !"),
+  msgText: yup.string().required("Matn kiritish majburiy"),
 });
 
 export const filterClientFormSchema = yup.object().shape({

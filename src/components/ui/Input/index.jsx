@@ -15,6 +15,7 @@ import "react-phone-input-2/lib/style.css";
 import { AnimatePresence, motion } from "framer-motion";
 import SearchField from "./SearchField";
 import formatPhoneNumber from "@utils/formatPhoneNumber";
+import MultipleSelect from "./MultipleSelect";
 
 const inputIcons = {
   email: "email",
@@ -41,6 +42,7 @@ const Input = forwardRef(
       size = "",
       searchText,
       searchable = false,
+      multipleSelect = false,
       onSearch = () => {},
       onSearchSelect = () => {},
       onIconClick,
@@ -120,7 +122,22 @@ const Input = forwardRef(
             )}
           />
         ),
-        select: (
+        select: multipleSelect ? (
+          <Controller
+            name={props.name}
+            {...(props.control ? { control: props.control } : {})}
+            render={({ field }) => {
+              return (
+                <MultipleSelect
+                  style={commonProps.style}
+                  field={field}
+                  options={options}
+                  {...props}
+                />
+              );
+            }}
+          />
+        ) : (
           <select {...commonProps} {...props}>
             {options.map((option) => (
               <option key={option.value} value={option.value}>

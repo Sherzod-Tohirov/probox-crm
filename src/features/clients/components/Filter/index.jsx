@@ -17,6 +17,8 @@ import { useCallback, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
 import formatPhoneNumber from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
+import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
+import { statusOptions } from "@utils/options";
 
 export default function Filter({ onFilter }) {
   const filterState = useSelector((state) => state.page.clients.filter);
@@ -28,7 +30,13 @@ export default function Filter({ onFilter }) {
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: filterState,
+    defaultValues: {
+      ...filterState,
+      paymentStatus: getSelectOptionsFromKeys(
+        statusOptions,
+        filterState.paymentStatus
+      ),
+    },
     resolver: yupResolver(filterClientFormSchema),
     mode: "all",
   });
@@ -44,15 +52,7 @@ export default function Filter({ onFilter }) {
   const { data: executors } = useFetchExecutors();
   console.log(executors, "executors2");
   const watchedFields = useWatchFilterFields(watch);
-  const statusOptions = useMemo(
-    () => [
-      { value: "all", label: "Hammasi" },
-      { value: "paid", label: "To'langan" },
-      { value: "partial", label: "Qisman to'langan" },
-      { value: "unpaid", label: "To'lanmagan" },
-    ],
-    []
-  );
+
   const executorsOptions = useMemo(() => {
     return selectOptionsCreator(executors?.data, {
       label: "SlpName",
@@ -99,7 +99,7 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"IMEI | FIO"}
             type={"text"}
-            placeholder={"4567890449494 | Azam Toshev"}
+            placeholder={"4567890449494 | Ismi Sharif"}
             searchText={watchedFields.search}
             onFocus={() =>
               setToggleSearchFields((prev) => ({ ...prev, search: true }))
@@ -130,8 +130,8 @@ export default function Filter({ onFilter }) {
             name={"phone"}
           />
           <Input
-            id={"Hello World"}
-            style={{ width: "150px" }}
+            id={"startDate"}
+            style={{ width: "140px" }}
             variant={"outlined"}
             label={"Boshlanish vaqti"}
             canClickIcon={false}
@@ -140,7 +140,7 @@ export default function Filter({ onFilter }) {
             {...register("startDate")}
           />
           <Input
-            style={{ width: "150px" }}
+            style={{ width: "140px" }}
             variant={"outlined"}
             label={"Tugash vaqti"}
             canClickIcon={false}
@@ -151,13 +151,15 @@ export default function Filter({ onFilter }) {
             {...register("endDate")}
           />
           <Input
-            style={{ width: "170px" }}
+            style={{ minWidth: "170px" }}
             canClickIcon={false}
             variant={"outlined"}
             label={"Holati"}
             type={"select"}
             {...register("paymentStatus")}
+            control={control}
             options={statusOptions}
+            multipleSelect={true}
           />
           <Input
             style={{ width: "130px" }}

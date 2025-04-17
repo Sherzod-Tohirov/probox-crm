@@ -27,7 +27,6 @@
 //   // height: 100%;
 // }
 
-
 button {
   will-change: transform;
   backface-visibility: hidden;
@@ -152,4 +151,12 @@ button {
 
 .infinite-scroll-component__outerdiv {
   width: 100% !important;
+}
+
+// React select styles
+
+.react-select__control {
+  & * {
+    font-family: "Inter Tight", Arial, Helvetica, sans-serif;
+  }
 }
