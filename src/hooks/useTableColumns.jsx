@@ -106,7 +106,7 @@ const useTableColumns = () => {
         icon: "barCodeFilled",
         cellStyle: {
           textAlign: "center",
-          border: "2px solid rgba(0,0,0,0.05)",
+          outline: "1px solid rgba(0,0,0,0.05)",
           borderTopLeftRadius: "10px",
           borderBottomLeftRadius: "10px",
         },
