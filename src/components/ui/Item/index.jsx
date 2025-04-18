@@ -1,9 +1,11 @@
+import { motion } from "framer-motion";
 import { memo } from "react";
+
 const Item = ({ children, className, ...props }) => {
   return (
-    <li className={className} {...props}>
+    <motion.li className={className} {...props}>
       {children}
-    </li>
+    </motion.li>
   );
 };
 

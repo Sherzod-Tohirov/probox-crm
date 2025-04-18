@@ -95,7 +95,7 @@ export default function Filter({ onFilter }) {
       <Row direction={"row"} gutter={6.25}>
         <Col gutter={4}>
           <Input
-            style={{ width: "300px" }}
+            style={{ width: "280px" }}
             variant={"outlined"}
             label={"IMEI | FIO"}
             type={"text"}
@@ -131,7 +131,7 @@ export default function Filter({ onFilter }) {
           />
           <Input
             id={"startDate"}
-            style={{ width: "140px" }}
+            style={{ width: "130px" }}
             variant={"outlined"}
             label={"Boshlanish vaqti"}
             canClickIcon={false}
@@ -140,7 +140,7 @@ export default function Filter({ onFilter }) {
             {...register("startDate")}
           />
           <Input
-            style={{ width: "140px" }}
+            style={{ width: "130px" }}
             variant={"outlined"}
             label={"Tugash vaqti"}
             canClickIcon={false}
@@ -151,7 +151,7 @@ export default function Filter({ onFilter }) {
             {...register("endDate")}
           />
           <Input
-            style={{ minWidth: "170px" }}
+            style={{ minWidth: "230px" }}
             canClickIcon={false}
             variant={"outlined"}
             label={"Holati"}

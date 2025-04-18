@@ -16,13 +16,13 @@ const useTableColumns = () => {
       {
         key: "DocEntry",
         title: "Hujjat kodi",
-        width: "12%",
+        width: "10%",
         icon: "barCodeFilled",
       },
       {
         key: "CardName",
         title: "FIO",
-        width: "22%",
+        width: "28%",
         icon: "avatarFilled",
       },
       { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
@@ -32,7 +32,7 @@ const useTableColumns = () => {
         renderCell: (column) => {
           return formatterCurrency(column.InsTotal, "USD") || "Unknown";
         },
-        width: "12%",
+        width: "10%",
         icon: "income",
       },
       {
@@ -120,6 +120,7 @@ const useTableColumns = () => {
           return (
             <List
               items={column.PaysList}
+              isCollapsible={true}
               renderItem={(item) => {
                 return (
                   <Box

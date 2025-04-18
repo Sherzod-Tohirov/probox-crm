@@ -5,6 +5,10 @@
   position: relative;
   width: 100%;
   min-height: 60vh;
+
+  & * {
+    transition: all v.$transition-time v.$transition-type;
+  }
 }
 
 .base-table {
@@ -26,8 +30,7 @@
   }
 
   tr {
-    transition: background-color v.$transition-type v.$transition-time;
-
+    transition: all v.$transition-type v.$transition-time;
     &.loading-row {
       position: absolute;
       top: 50%;
