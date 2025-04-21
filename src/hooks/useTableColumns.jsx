@@ -17,6 +17,7 @@ const useTableColumns = () => {
         key: "DocEntry",
         title: "Hujjat kodi",
         width: "10%",
+        minWidth: "120px",
         icon: "barCodeFilled",
       },
       {
@@ -33,6 +34,7 @@ const useTableColumns = () => {
           return formatterCurrency(column.InsTotal, "USD") || "Unknown";
         },
         width: "10%",
+        minWidth: "120px",
         icon: "income",
       },
       {
@@ -119,11 +121,21 @@ const useTableColumns = () => {
           if (!column.PaysList) return "Unknown";
           return (
             <List
+              // layout
+              itemProps={
+                {
+                  // initial: { scale: 0 },
+                  // animate: { scale: 1 },
+                  // exit: { scale: 0 },
+                  // transition: { duration: 0.3, ease: "easeInOut", stiffness: 100000 },
+                }
+              }
               items={column.PaysList}
               isCollapsible={true}
               renderItem={(item) => {
                 return (
                   <Box
+                    // layout
                     key={item.AcctName}
                     align="center"
                     justify="start"

@@ -8,27 +8,34 @@ import PrimaryLayout from "@layouts/PrimaryLayout";
 import Header from "@components/Header";
 import useAlert from "@hooks/useAlert";
 import Messenger from "@components/ui/Messenger";
-import { Col, Row } from "@components/ui";
 import useToggle from "@hooks/useToggle";
 import { useEffect } from "react";
 import { isMessengerRoute } from "@utils/routesConfig";
 import useAuth from "@hooks/useAuth";
 import { scan } from "react-scan/dist/index";
+import { setGlobalAlert } from "./utils/globalAlert";
 
 // scan({
 //   enabled: true,
 // });
 
 function App() {
-  const { AlertContainer } = useAlert();
+  const { AlertContainer, alert } = useAlert();
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
   const { pathname } = useLocation();
-
+  
   useEffect(() => {
     // Toggle off messenger when route changes
     if (!isMessengerRoute(pathname) && isOpen) toggle();
   }, [pathname, toggle, isOpen]);
+
+  // Set the global alert handler once
+  useEffect(() => {
+    setGlobalAlert((message, options, onClose) => {
+      alert(message, options, onClose);
+    });
+  }, [alert]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -41,26 +48,10 @@ function App() {
       </SidebarLayout>
       <PrimaryLayout>
         <Header />
-        <Row direction="row" flexGrow style={{ height: "100%" }}>
-          <Col
-            flexGrow
-            style={{
-              width: isOpen ? "calc(100% - (356px + 32px))" : "100%",
-              minHeight: "calc(100vh - 83px)",
-            }}>
-            <DashboardLayout>
-              <Outlet />
-            </DashboardLayout>
-          </Col>
-          <Col
-            style={{
-              position: "sticky",
-              top: "83px",
-              marginLeft: "auto",
-            }}>
-            <Messenger />
-          </Col>
-        </Row>
+        <DashboardLayout>
+          <Outlet />
+        </DashboardLayout>
+        <Messenger />
       </PrimaryLayout>
       <AlertContainer />
     </MainLayout>

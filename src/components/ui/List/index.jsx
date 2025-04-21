@@ -1,35 +1,56 @@
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import classNames from "classnames";
 import styles from "./list.module.scss";
 import Item from "../Item";
 import Box from "../Box";
 import iconsMap from "@utils/iconsMap";
 import { AnimatePresence, motion } from "framer-motion";
+
 function List({
   items,
   renderItem,
-  onSelect,
+  onSelect = () => {},
   isCollapsible = false,
-  gutter,
+  gutter = 0.5,
   className,
   direction = "column",
   itemClassName = "",
   style = {},
+  itemProps = {},
   ...props
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const listStyles = {
     display: "flex",
-    gap: `${gutter}rem`,
     flexDirection: direction,
+    gap: `${gutter}rem`,
     ...style,
   };
-  const [isExpanded, setIsExpanded] = useState(false);
+
+  const renderList = useCallback(
+    (items) =>
+      items.map((item, index) => (
+        <Item
+          key={index}
+          {...itemProps}
+          className={classNames(styles.item, itemClassName)}
+          onClick={() => onSelect(item)}>
+          {renderItem(item, index)}
+        </Item>
+      )),
+    [itemProps, itemClassName, onSelect, renderItem]
+  );
+
+  const visibleItems = !isCollapsible
+    ? items
+    : isExpanded
+    ? items
+    : items.slice(0, 1);
+
   return (
-    <Box dir="column" align={"start"}>
+    <Box dir="column" align="start">
       <motion.ul
-        initial={false}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, stiffness: 100 }}
         style={listStyles}
         className={classNames(
           styles.list,
@@ -40,22 +61,14 @@ function List({
               : styles["shrinked"]
             : ""
         )}
+        // layout
         {...props}>
-        <AnimatePresence>
-          {items.map((item, index) => (
-            <Item
-              className={itemClassName}
-              key={index}
-              onClick={() => onSelect(item)}>
-              {renderItem(item, index)}
-            </Item>
-          ))}
-        </AnimatePresence>
+        <AnimatePresence>{renderList(visibleItems)}</AnimatePresence>
       </motion.ul>
 
-      {isCollapsible && items?.length > 1 ? (
+      {isCollapsible && items?.length > 1 && (
         <>
-          {!isExpanded ? <span className={styles["dots"]}>...</span> : null}
+          {!isExpanded && <span className={styles["dots"]}>...</span>}
           <motion.button
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.05 }}
@@ -63,10 +76,9 @@ function List({
               type: "spring",
               stiffness: 400,
               damping: 20,
-              duration: 0.1,
             }}
             className={styles["toggle-button"]}
-            onClick={() => setIsExpanded((p) => !p)}>
+            onClick={() => setIsExpanded((prev) => !prev)}>
             {isExpanded ? (
               <>{iconsMap["arrowUp"]} Yopish</>
             ) : (
@@ -74,7 +86,7 @@ function List({
             )}
           </motion.button>
         </>
-      ) : null}
+      )}
     </Box>
   );
 }

@@ -71,3 +71,16 @@ export const distributeClients = async (params = {}) => {
     throw error.response || error;
   }
 };
+
+export const addClientPayment = async (data, params = {}) => {
+  try {
+    const response = await api.post(`/IncomingPayments`, data, {
+      params: {
+        ...params,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

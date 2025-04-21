@@ -8,7 +8,10 @@ import { useForm } from "react-hook-form";
 import { CURRENCY_MAP } from "@utils/constants";
 import { useSelector } from "react-redux";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-const ModalFooter = memo(({ onClose }) => {
+import { AnimatePresence } from "framer-motion";
+import { PAYMENT_ACCOUNTS } from "@utils/constants";
+
+const ModalFooter = memo(({ onClose, isLoading = false }) => {
   return (
     <Row direction="row" align="center" justify="center" gutter={4}>
       <Col flexGrow>
@@ -21,6 +24,8 @@ const ModalFooter = memo(({ onClose }) => {
           form={"payment_form"}
           fullWidth
           variant={"filled"}
+          isLoading={isLoading}
+          // onClick={onClose}
           type={"submit"}>
           Tasdiqlash
         </Button>
@@ -31,16 +36,17 @@ const ModalFooter = memo(({ onClose }) => {
 
 export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
   const [price, setPrice] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("usd");
   const { register, handleSubmit, control, reset, setValue, watch } = useForm({
     defaultValues: {
-      price: 0,
+      sum: 0,
       date: moment().format("DD.MM.YYYY"),
-      payment_type: "cash",
+      paymentType: "cash",
       account: "5040",
     },
   });
-  const paymentType = watch("payment_type");
+  const paymentType = watch("paymentType");
   const { data: currencyData } = useFetchCurrency();
   const currenctClient = useSelector(
     (state) => state.page.clients.currentClient
@@ -56,24 +62,19 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
     ],
     []
   );
-  const accountCodes = useMemo(() => ({
-    card: "5020",
-    visa: "5210",
-    terminal: "5710",
-  }));
 
   const handlePriceChange = useCallback((e) => {
     let value = e.target.value.replace(/[^0-9.,-]/g, ""); // Remove non-numeric characters
 
     if (value === "" || value === "." || value === "-") {
       setPrice(value); // Allow empty input, "." or "-" temporarily
-      setValue("price", value);
+      setValue("sum", value);
       return;
     }
 
     const numericValue = Number(value.replace(/,/g, "")); // Convert to number
     setPrice(numericValue);
-    setValue("price", numericValue); // Store the raw numeric value
+    setValue("sum", numericValue); // Store the raw numeric value
   });
 
   useEffect(() => {
@@ -86,7 +87,21 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
 
   const customOnApply = useCallback(
     (data) => {
-      onApply(data);
+      const extendedData = {
+        ...data,
+        currency,
+        cardCode: currenctClient["CardCode"],
+      };
+
+      const mutation = onApply(
+        paymentType === "cash"
+          ? extendedData
+          : {
+              ...extendedData,
+              account: PAYMENT_ACCOUNTS[extendedData.paymentType],
+            }
+      );
+      setIsLoading(mutation?.isPending);
       reset();
     },
     [setValue]
@@ -97,7 +112,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
       isOpen={isOpen}
       onClose={onClose}
       title={"To'lov qo'shish"}
-      footer={<ModalFooter onClose={onClose} />}>
+      footer={<ModalFooter onClose={onClose} isLoading={isLoading} />}>
       <form
         id={"payment_form"}
         className={styles["modal-form"]}
@@ -126,7 +141,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                   variant={"outlined"}
                   iconText={CURRENCY_MAP[currency]}
                   placeholder="Цена"
-                  name={"price"}
+                  name={"sum"}
                 />
               </Col>
             </Row>
@@ -168,7 +183,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                       icon={"walletFilled"}
                       value={"cash"}
                       defaultChecked
-                      {...register("payment_type")}
+                      {...register("paymentType")}
                     />
                   </Col>
                   <Col fullWidth>
@@ -177,7 +192,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                       label={"Karta"}
                       icon={"cardFilled"}
                       value={"card"}
-                      {...register("payment_type")}
+                      {...register("paymentType")}
                     />
                   </Col>
                 </Row>
@@ -191,7 +206,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                       label={"Visa"}
                       icon={"cardFilled"}
                       value={"visa"}
-                      {...register("payment_type")}
+                      {...register("paymentType")}
                     />
                   </Col>
                   <Col fullWidth>
@@ -199,8 +214,8 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
                       id={"payment_type_terminal"}
                       label={"Terminal"}
                       icon={"cardFilled"}
-                      value={"card"}
-                      {...register("payment_type")}
+                      value={"terminal"}
+                      {...register("paymentType")}
                     />
                   </Col>
                 </Row>
@@ -208,26 +223,38 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
             </Row>
           </Col>
         </Row>
-        {paymentType === "cash" ? (
-          <Row align="center" justify={"center"} gutter={4}>
-            <Col align="center" justify="center">
-              <Typography element={"span"} className={styles["modal-subtitle"]}>
-                Filialni tanlang
-              </Typography>
-            </Col>
-            <Col fullWidth>
-              <Input
-                size={"full"}
-                type={"select"}
-                variant={"outlined"}
-                canClickIcon={false}
-                options={branchOptions}
-                placeholder={"Filialni tanlang..."}
-                {...register("account")}
-              />
-            </Col>
-          </Row>
-        ) : null}
+        <AnimatePresence mode="popLayout">
+          {paymentType === "cash" ? (
+            <Row
+              align="center"
+              justify={"center"}
+              gutter={4}
+              animated={true}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}>
+              <Col align="center" justify="center">
+                <Typography
+                  element={"span"}
+                  className={styles["modal-subtitle"]}>
+                  Filialni tanlang
+                </Typography>
+              </Col>
+              <Col fullWidth>
+                <Input
+                  size={"full"}
+                  type={"select"}
+                  variant={"outlined"}
+                  canClickIcon={false}
+                  options={branchOptions}
+                  placeholder={"Filialni tanlang..."}
+                  {...register("account")}
+                />
+              </Col>
+            </Row>
+          ) : null}
+        </AnimatePresence>
       </form>
     </Modal>
   );

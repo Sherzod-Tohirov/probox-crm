@@ -50,9 +50,9 @@ export default function ImagePreviewModal({
                   className={classNames(styles["preview-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={index}
-                  src={image.img}
-                  alt={image.title}
+                  key={image}
+                  src={image}
+                  alt={image}
                 />
               ))
             ) : (
@@ -89,9 +89,9 @@ export default function ImagePreviewModal({
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={index}
-                  src={image.img}
-                  alt={image.title}
+                  key={image}
+                  src={image}
+                  alt={image}
                   layoutId={`image-${index}`}
                   onClick={() => setCurrentImage(index)}
                 />
@@ -112,7 +112,7 @@ export default function ImagePreviewModal({
           <label htmlFor={inputId} className={styles["upload-photo-label"]}>
             <Box dir="column" align="center" gap={1}>
               <Typography element="span">{iconsMap["addCircle"]}</Typography>
-              <Typography element="span">Загрузить фото</Typography>
+              <Typography element="span">Rasm yuklash</Typography>
             </Box>
           </label>
         </div>

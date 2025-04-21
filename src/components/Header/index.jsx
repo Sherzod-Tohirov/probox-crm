@@ -52,7 +52,7 @@ function Header() {
             {isMessengerRoute(pathname) ? (
               <Col>
                 <Button
-                  icon={messenger.isOpen ? "toggleOpen" : "toggleClose"}
+                  icon={"toggleClose"}
                   variant={"text"}
                   onClick={messenger.toggle}
                 />

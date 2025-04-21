@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import styles from "./clientPageForm.module.scss";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
-import useToggle from "@hooks/useToggle";
 import { useCallback, useMemo, useState } from "react";
 import ImagePreviewModal from "./ImagePreviewModal";
 import useClientPageForm from "../../hooks/useClientPageForm";
@@ -16,9 +15,9 @@ import formatDate from "@utils/formatDate";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import hasRole from "@utils/hasRole";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
+import { API_CLIENT_IMAGES } from "@utils/apiUtils";
 
 export default function ClientPageForm({ formId, currentClient, ...props }) {
-  const { sidebar, messenger } = useToggle(["sidebar", "messenger"]);
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState(images);
   const [copyPorductImages, setCopyProductImages] = useState(images);
@@ -26,7 +25,8 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
 
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
-
+  const clientImagesWithAPI =
+    currentClient?.Images?.map((img) => API_CLIENT_IMAGES + img?.image) || [];
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
@@ -36,7 +36,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       debtClient: formatterCurrency(currentClient?.["DocTotal"] || "0", "USD"),
       product:
         currentClient?.["Dscription"] || "iPhone 16 Pro max 256gb desert",
-      deadline: formatDate(currentClient["DueDate"]),
+      deadline: formatDate(currentClient?.["DueDate"]),
       imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
@@ -77,7 +77,8 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       )?.SlpCode,
     [currentClient, executors] || executorsOptions?.[0]?.value
   );
-
+ console.log(clientImagesWithAPI, "images");
+ console.log(API_CLIENT_IMAGES, "images");
   return (
     <form
       className={styles.form}
@@ -86,7 +87,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       {...props}>
       <ImagePreviewModal
         inputId={"photo"}
-        images={copyPorductImages}
+        images={clientImagesWithAPI}
         isOpen={imgPreviewModal}
         onRemoveImage={(index) => {
           setCopyProductImages((prev) => {
@@ -114,7 +115,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={true}
                   style={{ pointerEvents: "all" }}
                   {...register("name")}
@@ -130,7 +131,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   options={executorsOptions}
                   canClickIcon={false}
                   defaultValue={defaultExecutor}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={!hasRole(user, ["Manager"])}
                   {...register("executor")}
                 />
@@ -144,14 +145,14 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   id={"photo"}
                   type="file"
-                  images={selectedProductImages}
+                  images={clientImagesWithAPI}
                   accept="image/*"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   className={styles.fileInput}
                   onClick={handleImageInputClick}
                   onChange={handleImageChange}
-                  name={"photo"}
+                  name={"images"}
                 />
               </InputGroup>
             </Col>
@@ -162,7 +163,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="tel"
                   control={control}
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   hasIcon={false}
                   disabled={true}
                   style={{ cursor: "auto" }}
@@ -176,7 +177,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={true}
                   {...register("code")}
                 />
@@ -192,7 +193,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={true}
                   {...register("debtClient")}
                 />
@@ -204,7 +205,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={true}
                   {...register("product")}
                 />
@@ -216,7 +217,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="date"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   control={control}
                   hasIcon={false}
                   disabled={true}
@@ -230,7 +231,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                 <Input
                   type="text"
                   variant={"filled"}
-                  size={messenger.isOpen ? "small" : "longer"}
+                  size={"longer"}
                   disabled={true}
                   {...register("imei")}
                 />

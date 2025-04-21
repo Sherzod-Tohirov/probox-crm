@@ -6,11 +6,11 @@ export default function Pagination({ pageCount, onPageChange, activePage }) {
   console.log("activePage", activePage);
   return (
     <ReactPaginate
-      previousLabel={"Oldingi"}
-      nextLabel={"Keyingi"}
+      previousLabel={pageCount > 0 && "Oldingi"}
+      nextLabel={pageCount > 0 && "Keyingi"}
       breakLabel={"..."}
       breakClassName={styles["page"]}
-      pageCount={pageCount || 10}
+      pageCount={pageCount || 0}
       onPageChange={onPageChange}
       forcePage={activePage || 0}
       marginPagesDisplayed={1}

@@ -7,6 +7,7 @@ import iconsMap from "@utils/iconsMap";
 import { useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
+import { listAnimationHeight } from "@utils/animationUtils";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
@@ -54,7 +55,15 @@ export default function Sidebar() {
             </Typography>
           </Col>
           <Col>
-            <List gutter={1} items={sidebarLinks} renderItem={renderLinks} />
+            <List
+              gutter={1}
+              items={sidebarLinks}
+              itemProps={{
+                animated: true,
+                ...listAnimationHeight,
+              }}
+              renderItem={renderLinks}
+            />
           </Col>
         </Row>
       </Col>

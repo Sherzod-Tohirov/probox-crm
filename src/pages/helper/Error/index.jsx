@@ -17,7 +17,7 @@ export default function Error({
         </Col>
         <Col>
           <p className={styles.desc}>
-            <strong>Message: </strong> {error.message}
+            <strong>Xabar: </strong> {error.message}
           </p>
         </Col>
         <Col style={{ marginTop: "18px" }}>

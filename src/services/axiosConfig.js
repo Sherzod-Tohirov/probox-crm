@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "@store/store.js";
 import { logoutUser } from "@store/slices/authSlice.js";
+import { alert } from "../utils/globalAlert";
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const api = axios.create({
@@ -22,8 +23,9 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("interceptor error", error);
-    console.log(error.response?.status === 401, "401 error");
+    alert(error?.response?.data?.message || "Server bilan xatolik yuz berdi!", {
+      type: "error",
+    });
     if (error.response?.status === 401) {
       store.dispatch(logoutUser());
       window.location.href = "/login";

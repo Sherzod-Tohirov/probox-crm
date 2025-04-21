@@ -7,12 +7,11 @@
   list-style: none;
   transition: all v.$transition-time v.$transition-type;
 
-  &.expanded {
-    height: max-content;
-  }
+  // &.expanded {
+  //   overflow: auto;
+  // }
 
   &.shrinked {
-    height: 20px;
     overflow: hidden;
   }
 }

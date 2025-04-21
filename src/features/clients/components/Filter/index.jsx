@@ -21,6 +21,7 @@ import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
 
 export default function Filter({ onFilter }) {
+  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const filterState = useSelector((state) => state.page.clients.filter);
   const {
     register,
@@ -156,10 +157,10 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Holati"}
             type={"select"}
-            {...register("paymentStatus")}
             control={control}
             options={statusOptions}
             multipleSelect={true}
+            {...register("paymentStatus")}
           />
           <Input
             style={{ width: "130px" }}
@@ -176,6 +177,7 @@ export default function Filter({ onFilter }) {
           <Button
             className={styles["filter-btn"]}
             icon={"search"}
+            onClick={() => setIsStatusMenuOpen(false)}
             variant={"filled"}>
             Qidiruv
           </Button>

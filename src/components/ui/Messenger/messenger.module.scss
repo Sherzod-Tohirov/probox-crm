@@ -2,10 +2,12 @@
 @use "@styles/mixins" as m;
 
 .messenger {
-  position: relative;
+  position: fixed;
+  top: 0;
+  right: 0;
+  min-height: 0;
   font-family: "Open Sans", sans-serif;
   @include m.flex-direction(column);
-  min-height: 100dvh;
   width: 356px;
   height: 100%;
   padding-left: 24px;
@@ -16,7 +18,7 @@
   // Remove overflow: auto from parent container
   display: flex;
   flex-direction: column;
-
+  z-index: 1000;
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -31,10 +33,7 @@
   }
 
   &-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding-top: 13px;
+    padding-top: 6.5rem;
     padding-bottom: 13px;
     backdrop-filter: blur(5px);
   }
@@ -42,16 +41,14 @@
   &-body {
     @include m.flex(start, start, 4rem, column);
     flex: 1;
-    padding-bottom: 80px;
-
+    min-height: 0;
     .messenger-messages {
       @include m.flex(start, start, 4rem, column);
       width: 100%;
-      max-height: 62vh;
       flex: 1;
       padding: 10px;
       padding-right: 15px;
-      overflow-y: scroll;
+      overflow-y: auto;
       &::-webkit-scrollbar {
         width: 8px;
       }
@@ -73,12 +70,9 @@
   }
 
   &-footer {
-    position: sticky;
     padding-top: 12px;
     padding-bottom: 24px;
-    bottom: 0; // Change from 63px to 0
     backdrop-filter: blur(5px);
-    z-index: 100; // Add z-index to keep footer above content
   }
 }
 
@@ -214,4 +208,9 @@
 
 .file-input {
   display: none;
+}
+
+.toggle-button {
+  position: absolute;
+  right: 0;
 }

@@ -1,6 +1,7 @@
 import styles from "./row.module.scss";
 import { memo } from "react";
 import classNames from "classnames";
+import { motion } from "framer-motion";
 
 // Row Component
 function Row({
@@ -13,6 +14,8 @@ function Row({
   wrap,
   className,
   style,
+  animated = false,
+  ...props
 }) {
   const rowStyle = {
     display: "flex",
@@ -26,10 +29,15 @@ function Row({
     ...style,
   };
 
+  const Component = animated ? motion.div : "div";
+
   return (
-    <div className={classNames(styles.row, className)} style={rowStyle}>
+    <Component
+      className={classNames(styles.row, className)}
+      style={rowStyle}
+      {...props}>
       {children}
-    </div>
+    </Component>
   );
 }
 

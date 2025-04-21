@@ -12,7 +12,7 @@ const selectOptionsCreator = (data = [], keys = {}) => {
 
   if (keys?.includeEmpty) {
     options.unshift({
-      label: "",
+      label: "-",
       value: "",
     });
   }

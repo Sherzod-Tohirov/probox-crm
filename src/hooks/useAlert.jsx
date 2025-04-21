@@ -5,14 +5,14 @@ import { useCallback } from "react";
 import { Alert } from "@components/ui";
 
 export default function useAlert() {
-  const alert = useCallback((message, options = {}) => {
+  const alert = useCallback((message, options = {}, onClose = () => {}) => {
     return toast(
       <Alert
         message={message}
         onClose={() => {
-          typeof options.onClose === "function" &&
-            options.onClose &&
-            options.onClose();
+          typeof options.onClose === "function" && options.onClose();
+          console.log(onClose, "fn");
+          onClose();
         }}
         {...options}
       />,

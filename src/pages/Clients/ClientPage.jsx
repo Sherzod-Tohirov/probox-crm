@@ -7,18 +7,22 @@ import {
   Table,
 } from "@components/ui";
 
-import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import Footer from "@components/Footer";
+
+import usePaymentModal from "@features/clients/hooks/usePaymentModal";
 import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
-import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
+
 import useAlert from "@hooks/useAlert";
-import { useSelector } from "react-redux";
+import useTableColumns from "@hooks/useTableColumns";
 import formatterCurrency from "@utils/formatterCurrency";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useTableColumns from "@hooks/useTableColumns";
+import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
+
 import * as _ from "lodash";
 
 export default function ClientPage() {
@@ -26,16 +30,17 @@ export default function ClientPage() {
   const { alert } = useAlert();
   const { id } = useParams();
   const { clientPageTableColumns } = useTableColumns();
+  const { onApplyPayment } = usePaymentModal();
   const {
     data: clientEntries,
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
+
   const { data: currency } = useFetchCurrency();
 
-  const onClose = () => setPaymentModal(false);
-
   console.log(clientEntries, "clientEntries");
+
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
@@ -105,12 +110,8 @@ export default function ClientPage() {
         </Row>
         <ClientPaymentModal
           isOpen={paymentModal}
-          onClose={onClose}
-          onApply={(data) => {
-            alert("Платеж прошел успешно.");
-            onClose();
-            console.log(data, "data");
-          }}
+          onClose={() => setPaymentModal(false)}
+          onApply={onApplyPayment}
         />
       </Footer>
     </>

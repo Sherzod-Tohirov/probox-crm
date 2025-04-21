@@ -14,6 +14,7 @@ import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import ClientsFooter from "./ClientsFooter";
 import _ from "lodash";
+
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ export default function Clients() {
   );
 
   const handleFilter = useCallback((filterData) => {
+    dispatch(setClientsCurrentPage(0));
     setParams(() => ({
       search: filterData.search,
       paymentStatus: _.map(filterData.paymentStatus, "value").join(","),
@@ -50,8 +52,6 @@ export default function Clients() {
       startDate: filterData.startDate,
       endDate: filterData.endDate,
     }));
-
-    dispatch(setClientsCurrentPage(0));
   }, []);
 
   useEffect(() => {

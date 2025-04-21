@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
 import styles from "./box.module.scss";
 import classNames from "classnames";
+import { motion } from "framer-motion";
 
 function Box({
   children,
@@ -71,7 +72,7 @@ function Box({
       marginRight,
     ]
   );
-  const Component = component || "div";
+  const Component = component || motion.div;
   return (
     <Component
       style={boxStyle}

@@ -1,22 +1,17 @@
-import classNames from "classnames";
-
-import { useCallback, useState } from "react";
-import { motion } from "framer-motion";
-import { Typography } from "@components/ui";
-
-import useToggle from "@hooks/useToggle";
-
-import { mockMessages } from "../../../../mockData";
-
-import { v4 as uuidv4 } from "uuid";
-
-import styles from "./messenger.module.scss";
 import moment from "moment";
+import classNames from "classnames";
+import { motion } from "framer-motion";
+import { useCallback, useState } from "react";
+import { Typography, Button, Row, Col } from "@components/ui";
+import { v4 as uuidv4 } from "uuid";
+import useToggle from "@hooks/useToggle";
+import styles from "./messenger.module.scss";
 import MessageForm from "./MessageForm";
 import MessageRenderer from "./MessageRenderer";
+import { mockMessages } from "../../../../mockData";
 
 export default function Messenger() {
-  const { isOpen } = useToggle("messenger");
+  const { isOpen, toggle } = useToggle("messenger");
   const [messages, setMessages] = useState(mockMessages);
 
   const handleSendMessage = useCallback((data) => {
@@ -48,6 +43,11 @@ export default function Messenger() {
       transition={{ type: "spring", stiffness: 100, damping: 16 }}
       className={classNames(styles.messenger)}>
       <div className={styles["messenger-header"]}>
+        <Button
+          className={styles["toggle-button"]}
+          variant={"text"}
+          icon={"toggleOpen"}
+          onClick={toggle}></Button>
         <Typography element="h2" className={styles.title}>
           Messenger
         </Typography>

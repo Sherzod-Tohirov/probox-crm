@@ -33,7 +33,10 @@ function Table({
               <th
                 // Use combination of key and index for uniqueness
                 key={`header-${column.key}`}
-                style={{ width: column.width || "auto" }}>
+                style={{
+                  width: column.width || "auto",
+                  minWidth: column.minWidth || "initial",
+                }}>
                 <div className={styles["table-header-cell"]}>
                   {column.icon && iconsMap[column.icon]} {column.title}
                 </div>
