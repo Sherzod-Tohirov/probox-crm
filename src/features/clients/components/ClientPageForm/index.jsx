@@ -1,33 +1,47 @@
-import { images } from "../../../../../mockData";
-
 import { Col, Input, Row } from "@components/ui";
 import { useForm } from "react-hook-form";
 import styles from "./clientPageForm.module.scss";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ImagePreviewModal from "./ImagePreviewModal";
-import useClientPageForm from "../../hooks/useClientPageForm";
 import useAlert from "@hooks/useAlert";
 import useAuth from "@hooks/useAuth";
 import formatterCurrency from "@utils/formatterCurrency";
 import formatDate from "@utils/formatDate";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useMutateClientImages from "@hooks/data/useMutateClientImages";
 import hasRole from "@utils/hasRole";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import { API_CLIENT_IMAGES } from "@utils/apiUtils";
-
-export default function ClientPageForm({ formId, currentClient, ...props }) {
+import { v4 as uuidv4 } from "uuid";
+export default function ClientPageForm({
+  formId,
+  onSubmit,
+  currentClient,
+  setIsSaveButtonDisabled,
+  ...props
+}) {
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
-  const [selectedProductImages, setSelectedProductImages] = useState(images);
-  const [copyPorductImages, setCopyProductImages] = useState(images);
-  const { alert } = useAlert();
+  const [softDeletedImageIds, setSoftDeletedImageIds] = useState([]);
+  const [uploadedImage, setUploadedImage] = useState([]);
 
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
+
+  const updateMutation = useMutateClientImages("update");
+  const deleteMutation = useMutateClientImages("delete");
+
   const clientImagesWithAPI =
-    currentClient?.Images?.map((img) => API_CLIENT_IMAGES + img?.image) || [];
-  const { register, handleSubmit, control } = useForm({
+    currentClient?.Images?.map((img) => ({
+      id: img._id,
+      image: API_CLIENT_IMAGES + img?.image,
+      type: "server",
+    })) || [];
+
+  const [allImages, setAllImages] = useState([...clientImagesWithAPI]);
+
+  const { register, handleSubmit, control, watch } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
       photo: [],
@@ -40,8 +54,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
-
-  const { onSubmit } = useClientPageForm();
+  const executor = watch("executor");
 
   const handleImageInputClick = useCallback(() => {
     setImgPreviewModal(true);
@@ -51,13 +64,49 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => {
       return {
-        img: URL.createObjectURL(file),
-        title: file.name,
+        id: uuidv4(),
+        image: URL.createObjectURL(file),
         file,
+        type: "upload",
       };
     });
-    setCopyProductImages((prev) => [...prev, ...newImages]);
+
+    setUploadedImage((prev) => [...prev, ...newImages]);
   }, []);
+
+  const handleImageUpload = useCallback(() => {
+    const commonPayload = {
+      docEntry: currentClient?.["DocEntry"],
+      installmentId: currentClient?.["InstlmntID"],
+    };
+
+    const formDataImages = new FormData();
+    uploadedImage.forEach((img) => {
+      formDataImages.append("files", img.file);
+    });
+    const updatePayload = {
+      ...commonPayload,
+      data: formDataImages,
+    };
+    updateMutation.mutate(updatePayload);
+
+    if (softDeletedImageIds.length > 0) {
+      softDeletedImageIds.forEach(async (id) => {
+        const deletePayload = {
+          ...commonPayload,
+          id,
+        };
+        await deleteMutation.mutate(deletePayload);
+      });
+    }
+
+    if (!updateMutation.isError) {
+      setUploadedImage([]);
+    }
+
+    setSoftDeletedImageIds([]);
+    setImgPreviewModal(false);
+  }, [uploadedImage]);
 
   const executorsOptions = useMemo(
     () =>
@@ -74,11 +123,20 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       executors?.data?.find(
         (executor) =>
           Number(executor.SlpCode) === Number(currentClient?.SlpCode)
-      )?.SlpCode,
-    [currentClient, executors] || executorsOptions?.[0]?.value
+      )?.SlpCode || executorsOptions?.[0]?.value,
+    [currentClient, executors]
   );
- console.log(clientImagesWithAPI, "images");
- console.log(API_CLIENT_IMAGES, "images");
+
+  useEffect(() => {
+    setAllImages((prev) => [...prev, ...uploadedImage]);
+  }, [uploadedImage]);
+
+  useEffect(() => {
+    if ((executor || "") !== defaultExecutor) {
+      setIsSaveButtonDisabled(false);
+    }
+  }, [executor]);
+  console.log(allImages, "all");
   return (
     <form
       className={styles.form}
@@ -87,10 +145,22 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
       {...props}>
       <ImagePreviewModal
         inputId={"photo"}
-        images={clientImagesWithAPI}
+        images={allImages}
         isOpen={imgPreviewModal}
-        onRemoveImage={(index) => {
-          setCopyProductImages((prev) => {
+        isLoading={updateMutation.isPending || deleteMutation.isPending}
+        isDisabled={uploadedImage.length === 0 || softDeletedImageIds.length === 0}
+        onRemoveImage={(img, index) => {
+          setAllImages((prev) => {
+            if (img.type === "server") {
+              setSoftDeletedImageIds((p) => [...p, img.id]);
+            }
+
+            if (img.type === "upload") {
+              setUploadedImage((p) =>
+                p.filter((prevImg) => prevImg.id !== img.id)
+              );
+            }
+
             const newImages = [...prev];
             newImages.splice(index, 1);
             return newImages;
@@ -98,13 +168,10 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
         }}
         onClose={() => {
           setImgPreviewModal(false);
-          setCopyProductImages(() => [...selectedProductImages]);
+          setUploadedImage([]);
+          setSoftDeletedImageIds([]);
         }}
-        onApply={() => {
-          alert("Images saved");
-          setSelectedProductImages(() => [...copyPorductImages]);
-          setImgPreviewModal(false);
-        }}
+        onApply={handleImageUpload}
       />
       <Row direction={"row"} gutter={6}>
         <Col>
@@ -147,6 +214,7 @@ export default function ClientPageForm({ formId, currentClient, ...props }) {
                   type="file"
                   images={clientImagesWithAPI}
                   accept="image/*"
+                  multiple={true}
                   variant={"filled"}
                   size={"longer"}
                   className={styles.fileInput}

@@ -4,8 +4,12 @@ import { Slide, toast, ToastContainer } from "react-toastify";
 import { useCallback } from "react";
 import { Alert } from "@components/ui";
 
+let lastMessage = null;
+
 export default function useAlert() {
   const alert = useCallback((message, options = {}, onClose = () => {}) => {
+    if (lastMessage === message) return;
+    lastMessage = message;
     return toast(
       <Alert
         message={message}
@@ -13,6 +17,7 @@ export default function useAlert() {
           typeof options.onClose === "function" && options.onClose();
           console.log(onClose, "fn");
           onClose();
+          lastMessage = null;
         }}
         {...options}
       />,

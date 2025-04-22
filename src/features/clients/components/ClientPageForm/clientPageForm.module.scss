@@ -125,7 +125,7 @@
 .no-image {
   @include m.flex-center;
   width: 550px;
-  height: 220px;
+  height: 220px !important;
   border-radius: 12px;
   background-color: v.$fourth-bg;
   border-radius: 12px;

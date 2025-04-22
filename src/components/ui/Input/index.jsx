@@ -158,11 +158,11 @@ const Input = forwardRef(
             <label htmlFor={props.id || uniqueId} {...commonProps} {...props}>
               <Row direction="row" align="center" gutter={1} wrap={true}>
                 {images.map((image) => (
-                  <Col key={image}>
+                  <Col key={image?.image || image}>
                     <img
                       className={styles["file-image"]}
-                      src={image}
-                      alt={"Client image url:" + image}
+                      src={image?.image || image}
+                      alt={"Client image url:" + image?.image || image}
                     />
                   </Col>
                 ))}

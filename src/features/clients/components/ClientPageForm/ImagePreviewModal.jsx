@@ -5,18 +5,24 @@ import classNames from "classnames";
 import { memo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const PreviewModalFooter = memo(({ onCancel, onApply }) => {
-  return (
-    <Box dir="row" justify="end" gap={4}>
-      <Button fullWidth color="danger" onClick={onCancel}>
-        Закрыть
-      </Button>
-      <Button fullWidth onClick={onApply}>
-        Сохранить
-      </Button>
-    </Box>
-  );
-});
+const PreviewModalFooter = memo(
+  ({ onCancel, onApply, isLoading, isDisabled }) => {
+    return (
+      <Box dir="row" justify="end" gap={4}>
+        <Button fullWidth color="danger" onClick={onCancel}>
+          Bekor qilish
+        </Button>
+        <Button
+          fullWidth
+          onClick={onApply}
+          isLoading={isLoading}
+          disabled={isDisabled}>
+          Saqlash
+        </Button>
+      </Box>
+    );
+  }
+);
 
 export default function ImagePreviewModal({
   images = [],
@@ -24,12 +30,14 @@ export default function ImagePreviewModal({
   isOpen,
   onClose,
   onApply,
+  isLoading,
+  isDisabled = false,
   onRemoveImage,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
   return (
     <Modal
-      title="Изображения продукта"
+      title="Mijozga tegishli rasmlar"
       isOpen={isOpen}
       onClose={onClose}
       footer={
@@ -38,6 +46,8 @@ export default function ImagePreviewModal({
             onClose();
             setCurrentImage(0);
           }}
+          isLoading={isLoading}
+          isDisabled={isDisabled}
           onApply={onApply}
         />
       }>
@@ -45,14 +55,14 @@ export default function ImagePreviewModal({
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
             {images.length ? (
-              images.map((image, index) => (
+              images.map((img, index) => (
                 <img
                   className={classNames(styles["preview-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={image}
-                  src={image}
-                  alt={image}
+                  key={img?.image}
+                  src={img?.image}
+                  alt={img?.image}
                 />
               ))
             ) : (
@@ -62,7 +72,7 @@ export default function ImagePreviewModal({
                 gap={2}
                 className={styles["no-image"]}>
                 <Typography element={"p"} className={styles["no-image-text"]}>
-                  No images yet
+                  Hozircha rasmlar yo'q
                 </Typography>
               </Box>
             )}
@@ -70,7 +80,7 @@ export default function ImagePreviewModal({
         </div>
         <div className={styles["image-indicator"]}>
           <AnimatePresence mode="popLayout">
-            {images.map((image, index) => (
+            {images.map((img, index) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -89,16 +99,16 @@ export default function ImagePreviewModal({
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={image}
-                  src={image}
-                  alt={image}
+                  key={img?.image}
+                  src={img?.image}
+                  alt={img?.image}
                   layoutId={`image-${index}`}
                   onClick={() => setCurrentImage(index)}
                 />
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
-                    onRemoveImage(index);
+                    onRemoveImage(img, index);
                     if (index === currentImage) {
                       setCurrentImage(0);
                     }

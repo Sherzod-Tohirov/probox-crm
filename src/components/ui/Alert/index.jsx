@@ -5,6 +5,8 @@ import Typography from "../Typography";
 import iconsMap from "@utils/iconsMap";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+
+
 export default function Alert({
   message,
   type = "success",

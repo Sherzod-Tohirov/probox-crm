@@ -1,9 +1,9 @@
 import { Col, Row, Navigation, Table } from "@components/ui";
-
 import Filter from "@features/clients/components/Filter";
+
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import {
   setClientsCurrentPage,

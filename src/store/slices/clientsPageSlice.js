@@ -20,7 +20,7 @@ const loadState = () => {
       clients: [],
       currentClient: parsedState.currentClient || {},
       filter: parsedState.filter || initialFilter,
-      currentPage: parsedState.currentPage || 1,
+      currentPage: parsedState.currentPage || 0,
       pageSize: parsedState.pageSize || 10,
     };
   } catch (error) {
@@ -29,7 +29,7 @@ const loadState = () => {
       clients: [],
       currentClient: {},
       filter: initialFilter,
-      currentPage: 1,
+      currentPage: 0,
       pageSize: 10,
     };
   }

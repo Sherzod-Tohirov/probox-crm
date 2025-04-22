@@ -84,3 +84,46 @@ export const addClientPayment = async (data, params = {}) => {
     throw error.response?.data || error;
   }
 };
+
+export const updateClientImages = async (payload = {}, params = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error("Installment id and doc entry are required !");
+    const response = await api.put(
+      `/invoice/upload/${payload.docEntry}/${payload.installmentId}`,
+      payload.data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          ...params,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteClientImages = async (payload = {}, params = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error("Installment id and doc entry are required !");
+
+    const response = await api.delete(
+      `/invoice/upload/${payload.docEntry}/${payload.installmentId}/${payload.id}`,
+      {
+        params: {
+          ...params,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

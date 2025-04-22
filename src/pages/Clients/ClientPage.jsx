@@ -7,7 +7,7 @@ import {
   Table,
 } from "@components/ui";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -27,6 +27,7 @@ import * as _ from "lodash";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
+  const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
   const { alert } = useAlert();
   const { id } = useParams();
   const { clientPageTableColumns } = useTableColumns();
@@ -52,6 +53,10 @@ export default function ClientPage() {
     });
   }
 
+  const handleClientPageSubmit = useCallback(() => {
+
+  }, []);
+
   return (
     <>
       <Row direction="column" gutter={6}>
@@ -64,6 +69,7 @@ export default function ClientPage() {
                 </Col>
                 <Col>
                   <Button
+                    disabled={isSaveButtonDisabled}
                     type={"submit"}
                     form={"clientForm"}
                     variant={"filled"}>
@@ -75,7 +81,12 @@ export default function ClientPage() {
           </Row>
         </Col>
         <Col fullWidth>
-          <ClientPageForm currentClient={currentClient} formId={"clientForm"} />
+          <ClientPageForm
+            setIsSaveButtonDisabled={setIsSaveButtonDisabled}
+            onSubmit={handleClientPageSubmit}
+            currentClient={currentClient}
+            formId={"clientForm"}
+          />
         </Col>
         <Col fullWidth>
           <Table
