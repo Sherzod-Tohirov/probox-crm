@@ -19,7 +19,6 @@ api.interceptors.request.use(function (config) {
 
 api.interceptors.response.use(
   (response) => {
-    console.log("interceptor", response);
     return response;
   },
   (error) => {

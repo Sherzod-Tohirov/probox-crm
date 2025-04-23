@@ -21,6 +21,7 @@ import useAlert from "@hooks/useAlert";
 import useTableColumns from "@hooks/useTableColumns";
 import formatterCurrency from "@utils/formatterCurrency";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
+import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
 import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 
 import * as _ from "lodash";
@@ -32,6 +33,8 @@ export default function ClientPage() {
   const { id } = useParams();
   const { clientPageTableColumns } = useTableColumns();
   const { onApplyPayment } = usePaymentModal();
+  const updateMutation = useMutateClientPageForm();
+
   const {
     data: clientEntries,
     isLoading,
@@ -39,8 +42,6 @@ export default function ClientPage() {
   } = useFetchClientEntriesById(id);
 
   const { data: currency } = useFetchCurrency();
-
-  console.log(clientEntries, "clientEntries");
 
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
@@ -53,8 +54,14 @@ export default function ClientPage() {
     });
   }
 
-  const handleClientPageSubmit = useCallback(() => {
-
+  const handleClientPageSubmit = useCallback(async (data) => {
+    const payload = {
+      docEntry: currentClient?.["DocEntry"],
+      installmentId: currentClient?.["InstlmntID"],
+      data: { slpCode: data?.executor, DueDate: currentClient?.["DueDate"] },
+    };
+    await updateMutation.mutateAsync(payload);
+    setIsSaveButtonDisabled(true);
   }, []);
 
   return (
@@ -70,6 +77,7 @@ export default function ClientPage() {
                 <Col>
                   <Button
                     disabled={isSaveButtonDisabled}
+                    isLoading={updateMutation.isPending}
                     type={"submit"}
                     form={"clientForm"}
                     variant={"filled"}>

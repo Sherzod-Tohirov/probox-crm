@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 const selectOptionsCreator = (data = [], keys = {}) => {
   if (!Array.isArray(data) || !data) return [];
   if (!keys.label || !keys.value) return [];
@@ -14,6 +16,9 @@ const selectOptionsCreator = (data = [], keys = {}) => {
     options.unshift({
       label: "-",
       value: "",
+      ...(_.has(keys, "isEmptySelectable")
+        ? { isNotSelectable: !keys.isEmptySelectable }
+        : {}),
     });
   }
 

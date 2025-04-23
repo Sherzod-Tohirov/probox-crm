@@ -15,7 +15,6 @@ function Table({
   getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
-  console.log("data in Table", data);
   return (
     <div
       style={containerStyle}

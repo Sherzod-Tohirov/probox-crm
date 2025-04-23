@@ -106,7 +106,6 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
     },
     [setValue]
   );
-  console.log(currency, "ccc");
   return (
     <Modal
       isOpen={isOpen}

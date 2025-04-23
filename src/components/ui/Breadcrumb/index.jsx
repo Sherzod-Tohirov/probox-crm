@@ -12,7 +12,6 @@ export default function Breadcrumb() {
   const generateBreadcrumb = useCallback((pathname) => {
     const pathArray = pathname.split("/").filter((path) => path !== "");
     return pathArray.map((path, index) => {
-      console.log("path: ", path);
       const fullPath = `/${pathArray.slice(0, index + 1).join("/")}`;
       const label =
         URL_PATH_LANG_MAP[path] ||

@@ -2,7 +2,6 @@ import moment from "moment";
 import api from "./axiosConfig";
 
 export const getClients = async (params = {}) => {
-  console.log("GetClients", params);
   try {
     const response = await api.get("/invoice", {
       params: {
@@ -11,7 +10,6 @@ export const getClients = async (params = {}) => {
         ...params,
       },
     });
-    console.log(response, "responseClients");
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -43,7 +41,7 @@ export const searchClients = async (params = {}) => {
         ...params,
       },
     });
-    console.log(response, "response");
+    response, "response";
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -65,7 +63,6 @@ export const distributeClients = async (params = {}) => {
         },
       }
     );
-    console.log(response, "response put");
     return response.data;
   } catch (error) {
     throw error.response || error;
@@ -79,6 +76,25 @@ export const addClientPayment = async (data, params = {}) => {
         ...params,
       },
     });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const updateClientExecutor = async (payload = {}, params = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error("Installment id and doc entry are required !");
+    const response = await api.put(
+      `/invoice/executor/${payload.docEntry}/${payload.installmentId}`,
+      payload.data,
+      {
+        params: {
+          ...params,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

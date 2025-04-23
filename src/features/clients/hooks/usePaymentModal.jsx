@@ -12,8 +12,6 @@ export default function usePaymentModal() {
         PaymentInvoices: [],
         DocCurrency: data.currency,
       };
-      console.log(data, "data in usePaymentModal");
-      console.log(mutation, "mutation in usePaymentModal");
       //  mutation.mutate(normalizedData);
     } catch (error) {
       console.log(error);

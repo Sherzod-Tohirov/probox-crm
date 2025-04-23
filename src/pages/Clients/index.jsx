@@ -55,8 +55,6 @@ export default function Clients() {
   }, []);
 
   useEffect(() => {
-    console.log("dataaaaa", data);
-
     if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }

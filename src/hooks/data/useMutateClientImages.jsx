@@ -39,11 +39,10 @@ const useMutateClientImages = (action) => {
     return useMutation({
       mutationFn: deleteClientImages,
       onError: (error) => {
-        console.log("Error while adding payment in: ", error);
+        console.log("Error while deleting images: ", error);
         alert("Rasmlarni o'chirishda xatolik yuz berdi !", { type: "error" });
       },
       onSuccess: (response) => {
-        if (!response?.data) return;
         alert("Rasmlar muvaffaqiyatli o'chirildi !");
       },
     });

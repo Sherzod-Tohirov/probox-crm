@@ -30,8 +30,6 @@ export default function Messenger() {
     });
   }, []);
 
-  console.log(messages, "messages");
-
   return (
     <motion.div
       initial={{ x: "0", display: "none" }}

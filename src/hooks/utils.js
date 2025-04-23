@@ -19,5 +19,4 @@ export const applyDefaultParams = (params) => {
     else params.endDate = moment().endOf("month").format("YYYY.MM.DD");
   }
   if (!params.page) params.page = 1;
-  console.log(params, "params in applyDefa");
 };

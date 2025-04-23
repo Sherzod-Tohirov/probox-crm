@@ -60,7 +60,7 @@ export default function ImagePreviewModal({
                   className={classNames(styles["preview-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={img?.image}
+                  key={img?.id}
                   src={img?.image}
                   alt={img?.image}
                 />
@@ -94,12 +94,12 @@ export default function ImagePreviewModal({
                   damping: 30,
                 }}
                 className={styles["indicator-img-wrapper"]}
-                key={index}>
+                key={img?.id}>
                 <motion.img
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
                   })}
-                  key={img?.image}
+                  key={img?.id}
                   src={img?.image}
                   alt={img?.image}
                   layoutId={`image-${index}`}

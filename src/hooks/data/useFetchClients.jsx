@@ -17,7 +17,7 @@ export default function useFetchClients(options = {}) {
   const { data, error, isLoading, isError, refetch } = useQuery({
     queryKey: ["clients", queryParams],
     queryFn: () => getClients(queryParams),
-    enabled: options.enabled !== false,
+    enabled: true,
     ...options.queryOptions,
   });
 

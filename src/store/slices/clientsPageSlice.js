@@ -39,7 +39,6 @@ const saveState = (state) => {
   console.log(state, "state");
   try {
     const { filter, currentPage, pageSize, currentClient } = state;
-    console.log("state page size: ", pageSize);
     const serializedState = JSON.stringify({
       filter,
       currentPage,

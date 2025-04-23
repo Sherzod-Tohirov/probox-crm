@@ -15,7 +15,6 @@ export default function useAlert() {
         message={message}
         onClose={() => {
           typeof options.onClose === "function" && options.onClose();
-          console.log(onClose, "fn");
           onClose();
           lastMessage = null;
         }}

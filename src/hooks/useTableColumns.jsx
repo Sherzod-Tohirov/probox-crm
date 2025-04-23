@@ -10,7 +10,6 @@ import { useMemo } from "react";
 const useTableColumns = () => {
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
-  console.log("executors in table columns", executors);
   const clientsTableColumns = useMemo(
     () => [
       {
@@ -24,6 +23,7 @@ const useTableColumns = () => {
         key: "CardName",
         title: "FIO",
         width: "28%",
+        minWidth: "200px",
         icon: "avatarFilled",
       },
       { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
@@ -71,9 +71,9 @@ const useTableColumns = () => {
           console.log("column in table columns", column);
           if (!column.SlpCode) return "-";
 
-          if (!executors?.data) return "-";
+          if (!executors) return "-";
 
-          const executor = executors.data.find(
+          const executor = executors.find(
             (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
           );
           console.log("found executor", executor);

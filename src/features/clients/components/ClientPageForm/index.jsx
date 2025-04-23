@@ -1,20 +1,26 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Input, Row } from "@components/ui";
 import { useForm } from "react-hook-form";
-import styles from "./clientPageForm.module.scss";
+
+import ImagePreviewModal from "./ImagePreviewModal";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import ImagePreviewModal from "./ImagePreviewModal";
-import useAlert from "@hooks/useAlert";
+
 import useAuth from "@hooks/useAuth";
-import formatterCurrency from "@utils/formatterCurrency";
-import formatDate from "@utils/formatDate";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useMutateClientImages from "@hooks/data/useMutateClientImages";
-import hasRole from "@utils/hasRole";
+
+import styles from "./clientPageForm.module.scss";
+
 import selectOptionsCreator from "@utils/selectOptionsCreator";
+import formatterCurrency from "@utils/formatterCurrency";
 import { API_CLIENT_IMAGES } from "@utils/apiUtils";
+import formatDate from "@utils/formatDate";
+import hasRole from "@utils/hasRole";
 import { v4 as uuidv4 } from "uuid";
+import { useDispatch } from "react-redux";
+import { setCurrentClient } from "@store/slices/clientsPageSlice";
+
 export default function ClientPageForm({
   formId,
   onSubmit,
@@ -25,12 +31,13 @@ export default function ClientPageForm({
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [softDeletedImageIds, setSoftDeletedImageIds] = useState([]);
   const [uploadedImage, setUploadedImage] = useState([]);
-
+  const [isImgSaveButtonDisabled, setImgSaveButtonDisabled] = useState(true);
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
 
   const updateMutation = useMutateClientImages("update");
   const deleteMutation = useMutateClientImages("delete");
+  const dispatch = useDispatch();
 
   const clientImagesWithAPI =
     currentClient?.Images?.map((img) => ({
@@ -41,9 +48,21 @@ export default function ClientPageForm({
 
   const [allImages, setAllImages] = useState([...clientImagesWithAPI]);
 
-  const { register, handleSubmit, control, watch } = useForm({
+  const executorsOptions = useMemo(
+    () =>
+      selectOptionsCreator(executors, {
+        label: "SlpName",
+        value: "SlpCode",
+        includeEmpty: true,
+        isEmptySelectable: false,
+      }),
+    [executors]
+  );
+
+  const { register, handleSubmit, control, watch, setValue } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
+      executor: executorsOptions?.[0]?.value,
       photo: [],
       telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
       code: currentClient?.["CardCode"] || "00000",
@@ -74,69 +93,82 @@ export default function ClientPageForm({
     setUploadedImage((prev) => [...prev, ...newImages]);
   }, []);
 
-  const handleImageUpload = useCallback(() => {
+  const handleImageUpload = useCallback(async () => {
+    console.log(softDeletedImageIds, "soft deleted");
     const commonPayload = {
       docEntry: currentClient?.["DocEntry"],
       installmentId: currentClient?.["InstlmntID"],
     };
 
-    const formDataImages = new FormData();
-    uploadedImage.forEach((img) => {
-      formDataImages.append("files", img.file);
-    });
-    const updatePayload = {
-      ...commonPayload,
-      data: formDataImages,
-    };
-    updateMutation.mutate(updatePayload);
-
-    if (softDeletedImageIds.length > 0) {
-      softDeletedImageIds.forEach(async (id) => {
-        const deletePayload = {
+    try {
+      if (uploadedImage.length > 0) {
+        const formDataImages = new FormData();
+        uploadedImage.forEach((img) => {
+          formDataImages.append("files", img.file);
+        });
+        const updatePayload = {
           ...commonPayload,
-          id,
+          data: formDataImages,
         };
-        await deleteMutation.mutate(deletePayload);
-      });
+        await updateMutation.mutateAsync(updatePayload);
+        if (!updateMutation.isError) {
+          setUploadedImage([]);
+        }
+      }
+      console.log(softDeletedImageIds, "soft deleted");
+      if (softDeletedImageIds.length > 0) {
+        await Promise.all(
+          softDeletedImageIds.map((id) => {
+            const deletePayload = {
+              ...commonPayload,
+              id,
+            };
+            return deleteMutation.mutateAsync(deletePayload);
+          })
+        );
+        const filteredImages = currentClient?.["Images"].filter(
+          (img) => !softDeletedImageIds.includes(img._id)
+        );
+        dispatch(
+          setCurrentClient({ ...currentClient, Images: filteredImages })
+        );
+        setSoftDeletedImageIds([]);
+      }
+    } catch (error) {
+      console.log("Update/Delete Images error: ", error);
+    } finally {
+      setImgPreviewModal(false);
     }
-
-    if (!updateMutation.isError) {
-      setUploadedImage([]);
-    }
-
-    setSoftDeletedImageIds([]);
-    setImgPreviewModal(false);
-  }, [uploadedImage]);
-
-  const executorsOptions = useMemo(
-    () =>
-      selectOptionsCreator(executors?.data, {
-        label: "SlpName",
-        value: "SlpCode",
-        includeEmpty: true,
-      }),
-    [executors?.data]
-  );
-
-  const defaultExecutor = useMemo(
-    () =>
-      executors?.data?.find(
-        (executor) =>
-          Number(executor.SlpCode) === Number(currentClient?.SlpCode)
-      )?.SlpCode || executorsOptions?.[0]?.value,
-    [currentClient, executors]
-  );
+  }, [uploadedImage, softDeletedImageIds, currentClient]);
 
   useEffect(() => {
-    setAllImages((prev) => [...prev, ...uploadedImage]);
+    setAllImages((prev) => {
+      const filteredImages = uploadedImage.filter((img) =>
+        prev.every((allImg) => allImg.id !== img.id)
+      );
+      return [...prev, ...filteredImages];
+    });
+    if (uploadedImage.length > 0) setImgSaveButtonDisabled(false);
   }, [uploadedImage]);
 
   useEffect(() => {
-    if ((executor || "") !== defaultExecutor) {
+    console.log(executor, "executor");
+    console.log(currentClient, "currenctCLient");
+    console.log(executor != currentClient?.SlpCode);
+    if (executor && executor != currentClient?.SlpCode) {
       setIsSaveButtonDisabled(false);
     }
-  }, [executor]);
-  console.log(allImages, "all");
+  }, [executor, currentClient]);
+
+  useEffect(() => {
+    const foundExecutor = executors?.find(
+      (executor) => Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
+    );
+    if (foundExecutor) {
+      setValue("executor", foundExecutor.SlpCode);
+    }
+  }, [executors]);
+
   return (
     <form
       className={styles.form}
@@ -148,25 +180,25 @@ export default function ClientPageForm({
         images={allImages}
         isOpen={imgPreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
-        isDisabled={uploadedImage.length === 0 || softDeletedImageIds.length === 0}
+        isDisabled={isImgSaveButtonDisabled}
         onRemoveImage={(img, index) => {
+          setImgSaveButtonDisabled(false);
+          if (img.type === "server") {
+            setSoftDeletedImageIds((p) => [...p, img.id]);
+          }
+          if (img.type === "upload") {
+            setUploadedImage((p) =>
+              p.filter((prevImg) => prevImg.id !== img.id)
+            );
+          }
           setAllImages((prev) => {
-            if (img.type === "server") {
-              setSoftDeletedImageIds((p) => [...p, img.id]);
-            }
-
-            if (img.type === "upload") {
-              setUploadedImage((p) =>
-                p.filter((prevImg) => prevImg.id !== img.id)
-              );
-            }
-
             const newImages = [...prev];
             newImages.splice(index, 1);
             return newImages;
           });
         }}
         onClose={() => {
+          setAllImages([...clientImagesWithAPI]);
           setImgPreviewModal(false);
           setUploadedImage([]);
           setSoftDeletedImageIds([]);
@@ -197,7 +229,6 @@ export default function ClientPageForm({
                   variant={"filled"}
                   options={executorsOptions}
                   canClickIcon={false}
-                  defaultValue={defaultExecutor}
                   size={"longer"}
                   disabled={!hasRole(user, ["Manager"])}
                   {...register("executor")}

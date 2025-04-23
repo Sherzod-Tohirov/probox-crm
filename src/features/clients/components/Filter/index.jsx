@@ -51,7 +51,6 @@ export default function Filter({ onFilter }) {
   const { user } = useAuth();
   const { query, phone } = useFilter();
   const { data: executors } = useFetchExecutors();
-  console.log(executors, "executors2");
   const watchedFields = useWatchFilterFields(watch);
 
   const executorsOptions = useMemo(() => {
@@ -61,7 +60,6 @@ export default function Filter({ onFilter }) {
       includeAll: true,
     });
   }, [executors?.data]);
-  console.log(executorsOptions, "executoropiotns");
   const defaultExecutor = useMemo(
     () =>
       executors?.data?.find((executor) => executor.SlpCode === user?.SlpCode)
@@ -121,7 +119,6 @@ export default function Filter({ onFilter }) {
             searchText={watchedFields.phone}
             onSearch={phone.onSearch}
             onFocus={() => {
-              console.log("Phone focused ");
               setToggleSearchFields((prev) => ({ ...prev, phone: true }));
             }}
             onSearchSelect={handleSearchSelect}

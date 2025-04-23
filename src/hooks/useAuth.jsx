@@ -22,7 +22,6 @@ export default function useAuth() {
     },
   });
   const handleLogin = useCallback(async (credentials) => {
-    console.log(credentials, "credentials");
     mutation.mutate(credentials);
   }, []);
 

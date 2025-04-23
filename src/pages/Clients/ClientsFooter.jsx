@@ -19,12 +19,10 @@ import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
 import useAlert from "@hooks/useAlert";
+import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
 
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
-  const [distributionState, setDistributionState] = useState({
-    isSuccess: false,
-    isLoading: false,
-  });
+  const distributeMutation = useMutateDistributeClients();
 
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
@@ -32,7 +30,6 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
 
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const { alert } = useAlert();
 
   const tableSizeSelectOptions = useMemo(() => [
     { value: 10, label: "10" },
@@ -42,25 +39,14 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
     { value: 1000, label: "1000" },
   ]);
   const handleDistributeClients = useCallback(async () => {
-    setDistributionState((p) => ({ ...p, isLoading: true }));
     try {
-      const response = await distributeClients({
+      const payload = {
         startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
         endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
-      });
-
-      console.log(response, "put");
-      if (response?.message === "success") {
-        alert("Mijozlar muvaffaqiyatli taqsimlandi!");
-      }
-
-      if (response) {
-        setDistributionState((p) => ({ ...p, isSuccess: true }));
-      }
+      };
+      distributeMutation.mutate(payload);
     } catch (error) {
       console.log(error, "Error while distributing clients. ");
-    } finally {
-      setDistributionState((p) => ({ ...p, isLoading: false }));
     }
   }, []);
 
@@ -109,7 +95,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
             <Button
               variant={"filled"}
               onClick={handleDistributeClients}
-              isLoading={distributionState.isLoading}>
+              isLoading={distributeMutation.isPending}>
               Mijozlarni taqsimlash
             </Button>
           </Col>

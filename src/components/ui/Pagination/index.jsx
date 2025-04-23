@@ -3,7 +3,6 @@ import styles from "./pagination.module.scss";
 import classNames from "classnames/bind";
 
 export default function Pagination({ pageCount, onPageChange, activePage }) {
-  console.log("activePage", activePage);
   return (
     <ReactPaginate
       previousLabel={pageCount > 0 && "Oldingi"}

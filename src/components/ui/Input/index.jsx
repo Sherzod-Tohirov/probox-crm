@@ -54,7 +54,6 @@ const Input = forwardRef(
     },
     ref
   ) => {
-    if (type === "select") console.log(props, "props");
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -140,7 +139,7 @@ const Input = forwardRef(
         ) : (
           <select {...commonProps} {...props}>
             {options.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option disabled={option.isNotSelectable} key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -157,15 +156,19 @@ const Input = forwardRef(
             />
             <label htmlFor={props.id || uniqueId} {...commonProps} {...props}>
               <Row direction="row" align="center" gutter={1} wrap={true}>
-                {images.map((image) => (
-                  <Col key={image?.image || image}>
-                    <img
-                      className={styles["file-image"]}
-                      src={image?.image || image}
-                      alt={"Client image url:" + image?.image || image}
-                    />
-                  </Col>
-                ))}
+                {images.length > 0 ? (
+                  images.map((image) => (
+                    <Col key={image?.image || image}>
+                      <img
+                        className={styles["file-image"]}
+                        src={image?.image || image}
+                        alt={"Client image url:" + image?.image || image}
+                      />
+                    </Col>
+                  ))
+                ) : (
+                  <Col>Rasmlar yo'q</Col>
+                )}
               </Row>
             </label>
           </Box>
