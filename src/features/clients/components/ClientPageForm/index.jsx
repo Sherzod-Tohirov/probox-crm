@@ -17,17 +17,17 @@ import formatterCurrency from "@utils/formatterCurrency";
 import { API_CLIENT_IMAGES } from "@utils/apiUtils";
 import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
-import { v4 as uuidv4 } from "uuid";
 import { useDispatch } from "react-redux";
-import { setCurrentClient } from "@store/slices/clientsPageSlice";
+import { v4 as uuidv4 } from "uuid";
+import { store } from "@store/store";
 
 export default function ClientPageForm({
   formId,
   onSubmit,
-  currentClient,
   setIsSaveButtonDisabled,
   ...props
 }) {
+  const currentClient = store.getState().page.clients.currentClient;
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [softDeletedImageIds, setSoftDeletedImageIds] = useState([]);
   const [uploadedImage, setUploadedImage] = useState([]);
@@ -37,16 +37,23 @@ export default function ClientPageForm({
 
   const updateMutation = useMutateClientImages("update");
   const deleteMutation = useMutateClientImages("delete");
+
   const dispatch = useDispatch();
 
-  const clientImagesWithAPI =
-    currentClient?.Images?.map((img) => ({
-      id: img._id,
-      image: API_CLIENT_IMAGES + img?.image,
-      type: "server",
-    })) || [];
+  const clientImagesWithAPI = useMemo(
+    () =>
+      currentClient?.Images?.map(
+        (img) =>
+          ({
+            id: img._id,
+            image: API_CLIENT_IMAGES + img?.image,
+            type: "server",
+          } || [])
+      ),
+    [currentClient]
+  );
 
-  const [allImages, setAllImages] = useState([...clientImagesWithAPI]);
+  const [allImages, setAllImages] = useState([]);
 
   const executorsOptions = useMemo(
     () =>
@@ -58,7 +65,10 @@ export default function ClientPageForm({
       }),
     [executors]
   );
-
+  console.log(allImages, "all images");
+  console.log(softDeletedImageIds, "soft delete images");
+  console.log(uploadedImage, "uploaded images");
+  console.log("currentClient: ", currentClient);
   const { register, handleSubmit, control, watch, setValue } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
@@ -94,7 +104,6 @@ export default function ClientPageForm({
   }, []);
 
   const handleImageUpload = useCallback(async () => {
-    console.log(softDeletedImageIds, "soft deleted");
     const commonPayload = {
       docEntry: currentClient?.["DocEntry"],
       installmentId: currentClient?.["InstlmntID"],
@@ -113,9 +122,9 @@ export default function ClientPageForm({
         await updateMutation.mutateAsync(updatePayload);
         if (!updateMutation.isError) {
           setUploadedImage([]);
+          console.log(clientImagesWithAPI, "api images");
         }
       }
-      console.log(softDeletedImageIds, "soft deleted");
       if (softDeletedImageIds.length > 0) {
         await Promise.all(
           softDeletedImageIds.map((id) => {
@@ -125,12 +134,6 @@ export default function ClientPageForm({
             };
             return deleteMutation.mutateAsync(deletePayload);
           })
-        );
-        const filteredImages = currentClient?.["Images"].filter(
-          (img) => !softDeletedImageIds.includes(img._id)
-        );
-        dispatch(
-          setCurrentClient({ ...currentClient, Images: filteredImages })
         );
         setSoftDeletedImageIds([]);
       }
@@ -152,9 +155,6 @@ export default function ClientPageForm({
   }, [uploadedImage]);
 
   useEffect(() => {
-    console.log(executor, "executor");
-    console.log(currentClient, "currenctCLient");
-    console.log(executor != currentClient?.SlpCode);
     if (executor && executor != currentClient?.SlpCode) {
       setIsSaveButtonDisabled(false);
     }
@@ -169,6 +169,18 @@ export default function ClientPageForm({
     }
   }, [executors]);
 
+  useEffect(() => {
+    const imagesWithApi = currentClient?.Images?.map(
+      (img) =>
+        ({
+          id: img._id,
+          image: API_CLIENT_IMAGES + img?.image,
+          type: "server",
+        } || [])
+    );
+    setAllImages(() => imagesWithApi);
+  }, [currentClient]);
+
   return (
     <form
       className={styles.form}
@@ -182,26 +194,27 @@ export default function ClientPageForm({
         isLoading={updateMutation.isPending || deleteMutation.isPending}
         isDisabled={isImgSaveButtonDisabled}
         onRemoveImage={(img, index) => {
+          console.log("Remove image working...");
           setImgSaveButtonDisabled(false);
           if (img.type === "server") {
+            console.log("removed img server: ", img);
             setSoftDeletedImageIds((p) => [...p, img.id]);
           }
           if (img.type === "upload") {
+            console.log("removed img upload: ", img);
             setUploadedImage((p) =>
               p.filter((prevImg) => prevImg.id !== img.id)
             );
           }
-          setAllImages((prev) => {
-            const newImages = [...prev];
-            newImages.splice(index, 1);
-            return newImages;
-          });
+          setAllImages((prev) =>
+            prev.filter((imgItem) => imgItem.id !== img.id)
+          );
         }}
         onClose={() => {
           setAllImages([...clientImagesWithAPI]);
           setImgPreviewModal(false);
-          setUploadedImage([]);
-          setSoftDeletedImageIds([]);
+          // setUploadedImage([]);
+          // setSoftDeletedImageIds([]);
         }}
         onApply={handleImageUpload}
       />
@@ -245,7 +258,7 @@ export default function ClientPageForm({
                   type="file"
                   images={clientImagesWithAPI}
                   accept="image/*"
-                  multiple={true}
+                  multiple
                   variant={"filled"}
                   size={"longer"}
                   className={styles.fileInput}

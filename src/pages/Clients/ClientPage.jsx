@@ -92,7 +92,6 @@ export default function ClientPage() {
           <ClientPageForm
             setIsSaveButtonDisabled={setIsSaveButtonDisabled}
             onSubmit={handleClientPageSubmit}
-            currentClient={currentClient}
             formId={"clientForm"}
           />
         </Col>

@@ -4,6 +4,7 @@ import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { memo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Skeleton from "react-loading-skeleton";
 
 const PreviewModalFooter = memo(
   ({ onCancel, onApply, isLoading, isDisabled }) => {
@@ -35,6 +36,8 @@ export default function ImagePreviewModal({
   onRemoveImage,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
+  const [loadedImages, setLoadedImages] = useState({});
+  console.log(loadedImages, "loaded");
   return (
     <Modal
       title="Mijozga tegishli rasmlar"
@@ -63,6 +66,9 @@ export default function ImagePreviewModal({
                   key={img?.id}
                   src={img?.image}
                   alt={img?.image}
+                  onLoad={() =>
+                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
+                  }
                 />
               ))
             ) : (

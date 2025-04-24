@@ -68,9 +68,7 @@ const useTableColumns = () => {
         key: "executor",
         title: "Ijrochi",
         renderCell: (column) => {
-          console.log("column in table columns", column);
           if (!column.SlpCode) return "-";
-
           if (!executors) return "-";
 
           const executor = executors.find(
@@ -79,7 +77,7 @@ const useTableColumns = () => {
           console.log("found executor", executor);
           if (!executor) return "-";
 
-          if (user.SlpCode === executor?.SlpCode) return "You";
+          if (user.SlpCode === executor?.SlpCode) return "Siz";
           return executor.SlpName || "-";
         },
         width: "12%",
@@ -96,7 +94,7 @@ const useTableColumns = () => {
         icon: "calendar",
       },
     ],
-    [executors?.data, user.SlpCode]
+    [executors, user.SlpCode]
   );
 
   const clientPageTableColumns = useMemo(

@@ -7,6 +7,9 @@ import {
 import useAlert from "@hooks/useAlert";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
+import { store } from "@store/store";
+import _ from "lodash";
+let timeout = null;
 const useMutateClientImages = (action) => {
   const { alert } = useAlert();
   const dispatch = useDispatch();
@@ -30,7 +33,7 @@ const useMutateClientImages = (action) => {
             })
           );
         }
-        alert("Rasmlar muvaffaqiyatli yuklandi !");
+        alert("Rasm muvaffaqiyatli yuklandi !");
       },
     });
   }
@@ -43,7 +46,21 @@ const useMutateClientImages = (action) => {
         alert("Rasmlarni o'chirishda xatolik yuz berdi !", { type: "error" });
       },
       onSuccess: (response) => {
-        alert("Rasmlar muvaffaqiyatli o'chirildi !");
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(
+          () => alert("Rasm muvaffaqiyatli o'chirildi !"),
+          200
+        );
+
+        const latestResponse = store.getState().page.clients.currentClient;
+        if (response && _.has(response, "imageId")) {
+          const filteredImages = latestResponse?.["Images"].filter(
+            (img) => img._id !== response["imageId"]
+          );
+          dispatch(
+            setCurrentClient({ ...latestResponse, Images: filteredImages })
+          );
+        }
       },
     });
   }

@@ -17,6 +17,7 @@ function List({
   itemClassName = "",
   style = {},
   itemProps = {},
+  animated = false,
   ...props
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -47,10 +48,10 @@ function List({
     : isExpanded
     ? items
     : items.slice(0, 1);
-
+  const ListComponent = animated ? motion.ul : "ul";
   return (
     <Box dir="column" align="start">
-      <motion.ul
+      <ListComponent
         style={listStyles}
         className={classNames(
           styles.list,
@@ -61,10 +62,9 @@ function List({
               : styles["shrinked"]
             : ""
         )}
-        // layout
         {...props}>
         <AnimatePresence>{renderList(visibleItems)}</AnimatePresence>
-      </motion.ul>
+      </ListComponent>
 
       {isCollapsible && items?.length > 1 && (
         <>

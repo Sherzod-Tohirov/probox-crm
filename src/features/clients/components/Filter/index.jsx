@@ -54,15 +54,15 @@ export default function Filter({ onFilter }) {
   const watchedFields = useWatchFilterFields(watch);
 
   const executorsOptions = useMemo(() => {
-    return selectOptionsCreator(executors?.data, {
+    return selectOptionsCreator(executors, {
       label: "SlpName",
       value: "SlpCode",
       includeAll: true,
     });
-  }, [executors?.data]);
+  }, [executors]);
   const defaultExecutor = useMemo(
     () =>
-      executors?.data?.find((executor) => executor.SlpCode === user?.SlpCode)
+      executors?.find((executor) => executor.SlpCode === user?.SlpCode)
         ?.SlpCode,
     [user?.SlpCode] || executorsOptions?.[0]?.value
   );
