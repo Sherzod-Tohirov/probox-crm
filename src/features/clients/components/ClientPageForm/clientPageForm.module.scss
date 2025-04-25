@@ -56,13 +56,6 @@
   overflow-y: auto;
   flex-wrap: wrap;
   max-height: 30dvh;
-  & .indicator-img-wrapper {
-    position: relative;
-    &:hover .indicator-img-close {
-      display: flex;
-    }
-  }
-
   .indicator-img {
     width: 100px;
     height: 65px;
@@ -71,14 +64,20 @@
     cursor: pointer;
     will-change: opacity;
     transition: opacity v.$transition-time v.$transition-type;
-    opacity: 0.6;
+    opacity: 0.6 !important;
 
     &.active {
-      opacity: 1;
+      opacity: 1 !important;
     }
 
     &:hover {
       opacity: 1;
+    }
+  }
+  & .indicator-img-wrapper {
+    position: relative;
+    &:hover .indicator-img-close {
+      display: flex;
     }
   }
 

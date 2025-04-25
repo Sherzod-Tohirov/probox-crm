@@ -43,7 +43,9 @@ const useMutateClientImages = (action) => {
       mutationFn: deleteClientImages,
       onError: (error) => {
         console.log("Error while deleting images: ", error);
-        alert("Rasmlarni o'chirishda xatolik yuz berdi !", { type: "error" });
+        alert("Rasmlarni o'chirishda xatolik yuz berdi !", {
+          type: "error",
+        });
       },
       onSuccess: (response) => {
         if (timeout) clearTimeout(timeout);

@@ -7,6 +7,7 @@ import InputGroup from "./InputGroup";
 import Label from "./Label";
 
 import useAuth from "@hooks/useAuth";
+import useAlert from "@hooks/useAlert";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useMutateClientImages from "@hooks/data/useMutateClientImages";
 
@@ -16,9 +17,8 @@ import selectOptionsCreator from "@utils/selectOptionsCreator";
 import formatterCurrency from "@utils/formatterCurrency";
 import { API_CLIENT_IMAGES } from "@utils/apiUtils";
 import formatDate from "@utils/formatDate";
-import hasRole from "@utils/hasRole";
-import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import hasRole from "@utils/hasRole";
 import { store } from "@store/store";
 
 export default function ClientPageForm({
@@ -34,11 +34,9 @@ export default function ClientPageForm({
   const [isImgSaveButtonDisabled, setImgSaveButtonDisabled] = useState(true);
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
-
+  const { alert } = useAlert();
   const updateMutation = useMutateClientImages("update");
   const deleteMutation = useMutateClientImages("delete");
-
-  const dispatch = useDispatch();
 
   const clientImagesWithAPI = useMemo(
     () =>
@@ -89,18 +87,36 @@ export default function ClientPageForm({
     setImgPreviewModal(true);
   }, []);
 
+  const allowedTypes = [
+    "image/png",
+    "image/jpg",
+    "image/jpeg",
+    "image/svg+xml",
+  ];
+  const allowedExtensions = ["png", "jpg", "jpeg", "svg"];
+
   const handleImageChange = useCallback((e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => {
-      return {
+    const validFiles = files.filter((file) => {
+      const ext = file.name.split(".").pop().toLowerCase();
+      return (
+        allowedTypes.includes(file.type) && allowedExtensions.includes(ext)
+      );
+    });
+    // Show error or ignore invalid files
+    if (validFiles.length !== files.length) {
+      alert("Faqat png, jpg, jpeg, svg fayllarni yuklang!", { type: "info" });
+    }
+    // Continue with validFiles
+    setUploadedImage((prev) => [
+      ...prev,
+      ...validFiles.map((file) => ({
         id: uuidv4(),
         image: URL.createObjectURL(file),
         file,
         type: "upload",
-      };
-    });
-
-    setUploadedImage((prev) => [...prev, ...newImages]);
+      })),
+    ]);
   }, []);
 
   const handleImageUpload = useCallback(async () => {
@@ -193,15 +209,12 @@ export default function ClientPageForm({
         isOpen={imgPreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
         isDisabled={isImgSaveButtonDisabled}
-        onRemoveImage={(img, index) => {
-          console.log("Remove image working...");
+        onRemoveImage={(img) => {
           setImgSaveButtonDisabled(false);
           if (img.type === "server") {
-            console.log("removed img server: ", img);
             setSoftDeletedImageIds((p) => [...p, img.id]);
           }
           if (img.type === "upload") {
-            console.log("removed img upload: ", img);
             setUploadedImage((p) =>
               p.filter((prevImg) => prevImg.id !== img.id)
             );
@@ -213,8 +226,7 @@ export default function ClientPageForm({
         onClose={() => {
           setAllImages([...clientImagesWithAPI]);
           setImgPreviewModal(false);
-          // setUploadedImage([]);
-          // setSoftDeletedImageIds([]);
+          setUploadedImage([]);
         }}
         onApply={handleImageUpload}
       />
@@ -257,7 +269,7 @@ export default function ClientPageForm({
                   id={"photo"}
                   type="file"
                   images={clientImagesWithAPI}
-                  accept="image/*"
+                  accept="image/png,image/jpg,image/jpeg,image/svg+xml"
                   multiple
                   variant={"filled"}
                   size={"longer"}

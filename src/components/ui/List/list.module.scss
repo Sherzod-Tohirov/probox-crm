@@ -4,14 +4,17 @@
 .list {
   margin: 0;
   padding: 0;
+  overflow: hidden;
   list-style: none;
-  transition: all v.$transition-time v.$transition-type;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // &.expanded {
-  //   overflow: auto;
-  // }
+  &.expanded {
+    max-height: max-content;
+    overflow: auto;
+  }
 
   &.shrinked {
+    max-height: 18px;
     overflow: hidden;
   }
 }

@@ -171,7 +171,7 @@ const Input = forwardRef(
                           {!loadedImages[key] && (
                             <Skeleton
                               count={1}
-                              style={{ background: "rgba(0,0,0,0.4s)" }}
+                              style={{ background: "rgba(0,0,0,0.4)" }}
                               className={styles["file-image"]}
                             />
                           )}
@@ -340,4 +340,4 @@ const Input = forwardRef(
 
 Input.displayName = "Input";
 
-export default memo(Input);
+export default Input;

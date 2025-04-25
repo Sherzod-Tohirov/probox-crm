@@ -18,7 +18,7 @@
   // Remove overflow: auto from parent container
   display: flex;
   flex-direction: column;
-  z-index: 1000;
+  z-index: 10000;
   &::-webkit-scrollbar {
     width: 10px;
   }

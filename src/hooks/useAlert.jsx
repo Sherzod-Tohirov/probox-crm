@@ -3,20 +3,16 @@ import styles from "@styles/modules/hook.module.scss";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useCallback } from "react";
 import { Alert } from "@components/ui";
-
-let lastMessage = null;
+import AlertManager from "@components/ui/Alert/AlertManager";
 
 export default function useAlert() {
   const alert = useCallback((message, options = {}, onClose = () => {}) => {
-    if (lastMessage === message) return;
-    lastMessage = message;
-    return toast(
+    return AlertManager.show(
       <Alert
         message={message}
         onClose={() => {
           typeof options.onClose === "function" && options.onClose();
           onClose();
-          lastMessage = null;
         }}
         {...options}
       />,

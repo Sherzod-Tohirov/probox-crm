@@ -37,7 +37,6 @@ export default function ImagePreviewModal({
 }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [loadedImages, setLoadedImages] = useState({});
-  console.log(loadedImages, "loaded");
   return (
     <Modal
       title="Mijozga tegishli rasmlar"
@@ -57,43 +56,48 @@ export default function ImagePreviewModal({
       <div className={styles["image-preview-container"]}>
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
-            {images.length ? (
-              images.map((img, index) => {
-                return (
-                  <AnimatePresence>
-                    {!loadedImages[img?.id] && (
-                      <Skeleton
-                        count={1}
-                        style={{ background: "rgba(0,0,0,0.2)" }}
-                        className={styles["file-image"]}
+            <AnimatePresence>
+              {images.length ? (
+                images.map((img, index) => {
+                  return (
+                    <>
+                      {!loadedImages[img?.id] && (
+                        <Skeleton
+                          count={1}
+                          style={{ background: "rgba(0,0,0,0.4s)" }}
+                          className={styles["file-image"]}
+                        />
+                      )}
+                      <motion.img
+                        className={classNames(styles["preview-img"], {
+                          [styles["active"]]: currentImage === index,
+                          [styles["hidden"]]: loadedImages[img?.id],
+                        })}
+                        key={img?.id}
+                        src={img?.image}
+                        alt={img?.image}
+                        onLoad={() =>
+                          setLoadedImages((prev) => ({
+                            ...prev,
+                            [img.id]: true,
+                          }))
+                        }
                       />
-                    )}
-                    <motion.img
-                      className={classNames(styles["preview-img"], {
-                        [styles["active"]]: currentImage === index,
-                        [styles["hidden"]]: !loadedImages[img?.id],
-                      })}
-                      key={img?.id}
-                      src={img?.image}
-                      alt={img?.image}
-                      onLoad={() =>
-                        setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
-                      }
-                    />
-                  </AnimatePresence>
-                );
-              })
-            ) : (
-              <Box
-                dir="column"
-                align="center"
-                gap={2}
-                className={styles["no-image"]}>
-                <Typography element={"p"} className={styles["no-image-text"]}>
-                  Hozircha rasmlar yo'q
-                </Typography>
-              </Box>
-            )}
+                    </>
+                  );
+                })
+              ) : (
+                <Box
+                  dir="column"
+                  align="center"
+                  gap={2}
+                  className={styles["no-image"]}>
+                  <Typography element={"p"} className={styles["no-image-text"]}>
+                    Hozircha rasmlar yo'q
+                  </Typography>
+                </Box>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <div className={styles["image-indicator"]}>
@@ -116,7 +120,7 @@ export default function ImagePreviewModal({
                 {!loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
-                    style={{ background: "rgba(0,0,0,0.2)" }}
+                    style={{ background: "rgba(0,0,0,0)" }}
                     className={styles["indicator-img"]}
                   />
                 )}

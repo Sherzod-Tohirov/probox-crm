@@ -43,28 +43,30 @@ function List({
     [itemProps, itemClassName, onSelect, renderItem]
   );
 
-  const visibleItems = !isCollapsible
-    ? items
-    : isExpanded
-    ? items
-    : items.slice(0, 1);
+  // const visibleItems = !isCollapsible
+  //   ? items
+  //   : isExpanded
+  //   ? items
+  //   : items.slice(0, 1);
   const ListComponent = animated ? motion.ul : "ul";
   return (
     <Box dir="column" align="start">
-      <ListComponent
-        style={listStyles}
-        className={classNames(
-          styles.list,
-          className,
-          isCollapsible
-            ? isExpanded
-              ? styles["expanded"]
-              : styles["shrinked"]
-            : ""
-        )}
-        {...props}>
-        <AnimatePresence>{renderList(visibleItems)}</AnimatePresence>
-      </ListComponent>
+      <motion.div className={classNames(styles.listWrapper)}>
+        <ListComponent
+          style={listStyles}
+          className={classNames(
+            styles.list,
+            isCollapsible
+              ? isExpanded
+                ? styles["expanded"]
+                : styles["shrinked"]
+              : null,
+            className
+          )}
+          {...props}>
+          <AnimatePresence initial={false}>{renderList(items)}</AnimatePresence>
+        </ListComponent>
+      </motion.div>
 
       {isCollapsible && items?.length > 1 && (
         <>
