@@ -1,4 +1,5 @@
 import "@assets/styles/globals.scss";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import SidebarLayout from "@layouts/SidebarLayout";
 import Sidebar from "@components/Sidebar";
@@ -24,7 +25,7 @@ function App() {
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
   const { pathname } = useLocation();
-  
+
   useEffect(() => {
     // Toggle off messenger when route changes
     if (!isMessengerRoute(pathname) && isOpen) toggle();

@@ -58,19 +58,31 @@ export default function ImagePreviewModal({
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
             {images.length ? (
-              images.map((img, index) => (
-                <img
-                  className={classNames(styles["preview-img"], {
-                    [styles["active"]]: currentImage === index,
-                  })}
-                  key={img?.id}
-                  src={img?.image}
-                  alt={img?.image}
-                  onLoad={() =>
-                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
-                  }
-                />
-              ))
+              images.map((img, index) => {
+                return (
+                  <AnimatePresence>
+                    {!loadedImages[img?.id] && (
+                      <Skeleton
+                        count={1}
+                        style={{ background: "rgba(0,0,0,0.2)" }}
+                        className={styles["file-image"]}
+                      />
+                    )}
+                    <motion.img
+                      className={classNames(styles["preview-img"], {
+                        [styles["active"]]: currentImage === index,
+                        [styles["hidden"]]: !loadedImages[img?.id],
+                      })}
+                      key={img?.id}
+                      src={img?.image}
+                      alt={img?.image}
+                      onLoad={() =>
+                        setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
+                      }
+                    />
+                  </AnimatePresence>
+                );
+              })
             ) : (
               <Box
                 dir="column"
@@ -101,13 +113,24 @@ export default function ImagePreviewModal({
                 }}
                 className={styles["indicator-img-wrapper"]}
                 key={img?.id}>
+                {!loadedImages[img?.id] && (
+                  <Skeleton
+                    count={1}
+                    style={{ background: "rgba(0,0,0,0.2)" }}
+                    className={styles["indicator-img"]}
+                  />
+                )}
                 <motion.img
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
+                    [styles["hidden"]]: !loadedImages[img?.id],
                   })}
                   key={img?.id}
                   src={img?.image}
                   alt={img?.image}
+                  onLoad={() =>
+                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
+                  }
                   layoutId={`image-${index}`}
                   onClick={() => setCurrentImage(index)}
                 />

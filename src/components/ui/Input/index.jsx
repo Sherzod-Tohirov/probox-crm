@@ -1,4 +1,4 @@
-import { memo, forwardRef, useMemo } from "react";
+import { memo, forwardRef, useMemo, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SearchField from "./SearchField";
 import formatPhoneNumber from "@utils/formatPhoneNumber";
 import MultipleSelect from "./MultipleSelect";
+import Skeleton from "react-loading-skeleton";
 
 const inputIcons = {
   email: "email",
@@ -54,6 +55,8 @@ const Input = forwardRef(
     },
     ref
   ) => {
+    const [loadedImages, setLoadedImages] = useState({});
+
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -139,7 +142,10 @@ const Input = forwardRef(
         ) : (
           <select {...commonProps} {...props}>
             {options.map((option) => (
-              <option disabled={option.isNotSelectable} key={option.value} value={option.value}>
+              <option
+                disabled={option.isNotSelectable}
+                key={option.value}
+                value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -157,15 +163,39 @@ const Input = forwardRef(
             <label htmlFor={props.id || uniqueId} {...commonProps} {...props}>
               <Row direction="row" align="center" gutter={1} wrap={true}>
                 {images.length > 0 ? (
-                  images.map((image) => (
-                    <Col key={image?.image || image}>
-                      <img
-                        className={styles["file-image"]}
-                        src={image?.image || image}
-                        alt={"Client image url:" + image?.image || image}
-                      />
-                    </Col>
-                  ))
+                  images.map((image) => {
+                    const key = image?.id || image?.image || image;
+                    return (
+                      <AnimatePresence>
+                        <Col key={key} style={{ position: "relative" }}>
+                          {!loadedImages[key] && (
+                            <Skeleton
+                              count={1}
+                              style={{ background: "rgba(0,0,0,0.4s)" }}
+                              className={styles["file-image"]}
+                            />
+                          )}
+
+                          <motion.img
+                            className={classNames(styles["file-image"], {
+                              [styles["hidden"]]: !loadedImages[key],
+                            })}
+                            src={image?.image || image}
+                            alt={"Client image url:" + (image?.image || image)}
+                            onLoad={() =>
+                              setLoadedImages((p) => ({
+                                ...p,
+                                [key]: true,
+                              }))
+                            }
+                            style={
+                              !loadedImages[key] ? { visibility: "hidden" } : {}
+                            }
+                          />
+                        </Col>
+                      </AnimatePresence>
+                    );
+                  })
                 ) : (
                   <Col>Rasmlar yo'q</Col>
                 )}
