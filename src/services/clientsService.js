@@ -71,7 +71,7 @@ export const distributeClients = async (params = {}) => {
 
 export const addClientPayment = async (data, params = {}) => {
   try {
-    const response = await api.post(`/IncomingPayments`, data, {
+    const response = await api.post(`/incomingPayment`, data, {
       params: {
         ...params,
       },

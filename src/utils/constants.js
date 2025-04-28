@@ -1,6 +1,6 @@
 export const CURRENCY_MAP = {
-  usd: "$",
-  uzs: "UZS",
+  USD: "$",
+  UZS: "UZS",
 };
 
 export const PAYMENT_ACCOUNTS = {

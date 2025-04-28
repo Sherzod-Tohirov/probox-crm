@@ -8,7 +8,6 @@
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
   transition: all v.$transition-time v.$transition-type;
-
   &-success {
     background-color: v.$success-bg;
     color: v.$success-color;

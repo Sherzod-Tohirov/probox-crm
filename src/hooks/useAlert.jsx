@@ -42,6 +42,7 @@ export default function useAlert() {
         draggable
         pauseOnHover
         theme="light"
+        style={{ zIndex: 9999999 }}
       />
     );
   };

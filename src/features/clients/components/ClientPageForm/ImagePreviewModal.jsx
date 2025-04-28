@@ -63,6 +63,7 @@ export default function ImagePreviewModal({
                     <>
                       {!loadedImages[img?.id] && (
                         <Skeleton
+                          key={img?.id}
                           count={1}
                           style={{ background: "rgba(0,0,0,0.4s)" }}
                           className={styles["file-image"]}

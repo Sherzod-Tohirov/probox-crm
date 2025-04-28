@@ -171,7 +171,7 @@ const Input = forwardRef(
                           {!loadedImages[key] && (
                             <Skeleton
                               count={1}
-                              style={{ background: "rgba(0,0,0,0.4)" }}
+                              style={{ background: "rgba(0,0,0,0.2)" }}
                               className={styles["file-image"]}
                             />
                           )}

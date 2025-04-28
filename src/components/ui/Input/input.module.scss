@@ -58,10 +58,15 @@
     min-height: 43px;
     max-height: 68px;
     overflow: auto;
+
+    & span {
+      display: flex;
+    }
   }
 
   &.date {
     color: v.$filter-input-placeholder-color !important;
+    cursor: pointer;
   }
 
   &.filled.date {
@@ -182,8 +187,12 @@
 }
 
 .error-text {
-  max-width: 165px;
+  position: absolute;
+  bottom: -50%;
+  max-width: 100%;
+  display: flex;
   margin-top: 4px;
+  white-space: nowrap;
   font-size: 3rem;
   font-style: normal;
   font-weight: 500;

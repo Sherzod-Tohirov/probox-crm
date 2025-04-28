@@ -116,7 +116,7 @@ const useTableColumns = () => {
         title: "To'lovlar ro'yhati",
         width: "15%",
         renderCell: (column) => {
-          if (!column.PaysList) return "Unknown";
+          if (!column.PaysList) return "-";
           return (
             <List
               // layout
@@ -180,7 +180,9 @@ const useTableColumns = () => {
         title: "Muddati",
         width: "10%",
         renderCell: (column) => {
-          if (!column.DueDate) return "Unknown";
+          if (!column.DueDate) return "-";
+          if (moment(column.DueDate, "DD.MM.YYYY", true).isValid())
+            return column.DueDate;
           return formatDate(column.DueDate);
         },
         icon: "calendar",

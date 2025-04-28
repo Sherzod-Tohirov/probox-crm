@@ -27,7 +27,7 @@
 
 .image-preview {
   width: 550px;
-  @include m.flex(center, start, 1rem);
+  @include m.flex(center, center, 0);
   overflow: hidden;
   transition: all 0.3s ease;
 
@@ -39,9 +39,9 @@
 }
 
 .preview-img {
+  width: 100%;
   display: none;
   flex-shrink: 0;
-  width: 550px;
   height: 220px;
   border-radius: 12px;
   object-fit: cover;

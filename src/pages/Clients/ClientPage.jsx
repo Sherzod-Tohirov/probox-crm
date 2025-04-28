@@ -7,17 +7,17 @@ import {
   Table,
 } from "@components/ui";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import Footer from "@components/Footer";
 
-import usePaymentModal from "@features/clients/hooks/usePaymentModal";
 import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
 
 import useAlert from "@hooks/useAlert";
+import formatDueDate from "@utils/formatDueDate";
 import useTableColumns from "@hooks/useTableColumns";
 import formatterCurrency from "@utils/formatterCurrency";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
@@ -32,7 +32,6 @@ export default function ClientPage() {
   const { alert } = useAlert();
   const { id } = useParams();
   const { clientPageTableColumns } = useTableColumns();
-  const { onApplyPayment } = usePaymentModal();
   const updateMutation = useMutateClientPageForm();
 
   const {
@@ -40,13 +39,42 @@ export default function ClientPage() {
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
-
-  const { data: currency } = useFetchCurrency();
-
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
 
+  const [modifiedClientEntries, setModifiedClientEntries] = useState(
+    clientEntries || []
+  );
+
+  useEffect(() => {
+    if (clientEntries) {
+      if (clientEntries.length < currentClient["Installmnt"]) {
+        let monthCounter = 0;
+        const additionalEntries = [];
+        for (
+          let i = clientEntries.length + 1;
+          i <= currentClient["Installmnt"];
+          i++
+        ) {
+          const emptyObject = {
+            DueDate: formatDueDate(currentClient["DueDate"], monthCounter),
+            InstlmntID: i,
+            PaidToDate: 0,
+            InsTotal: currentClient["InsTotal"],
+            PaysList: null,
+          };
+          additionalEntries.push(emptyObject);
+          monthCounter++;
+        }
+        setModifiedClientEntries([...clientEntries, ...additionalEntries]);
+      }
+    }
+  }, [clientEntries]);
+
+  const { data: currency } = useFetchCurrency();
+
+  console.log(clientEntries, "clientEntries");
   if (error) {
     alert({
       type: "error",
@@ -99,7 +127,7 @@ export default function ClientPage() {
           <Table
             columns={clientPageTableColumns}
             isLoading={isLoading}
-            data={clientEntries}
+            data={modifiedClientEntries}
             getRowStyles={(row) => {
               return {
                 ...(row["InstlmntID"] === currentClient["InstlmntID"]
@@ -129,7 +157,6 @@ export default function ClientPage() {
         <ClientPaymentModal
           isOpen={paymentModal}
           onClose={() => setPaymentModal(false)}
-          onApply={onApplyPayment}
         />
       </Footer>
     </>

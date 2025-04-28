@@ -51,7 +51,7 @@ export default function Login() {
           className={styles.form}
           autoComplete="off"
           onSubmit={handleSubmit(handleLogin)}>
-          <Row gutter={4}>
+          <Row gutter={6}>
             <Col>
               <Input
                 type="text"
@@ -77,7 +77,7 @@ export default function Login() {
                 {...register("password")}
               />
             </Col>
-            <Col fullWidth>
+            <Col fullWidth style={{ marginTop: "4px" }}>
               <Button
                 fullWidth
                 isLoading={loginState.isPending}

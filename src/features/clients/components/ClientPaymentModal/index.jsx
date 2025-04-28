@@ -1,17 +1,19 @@
-import { Modal, Input, Typography, Row, Col, Button } from "@components/ui";
-import styles from "./clientPaymentModal.module.scss";
-import formatterCurrency from "@utils/formatterCurrency";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import RadioInput from "./RadioInput";
 import moment from "moment/moment";
-import { useForm } from "react-hook-form";
-import { CURRENCY_MAP } from "@utils/constants";
-import { useSelector } from "react-redux";
-import useFetchCurrency from "@hooks/data/useFetchCurrency";
+import styles from "./clientPaymentModal.module.scss";
 import { AnimatePresence } from "framer-motion";
-import { PAYMENT_ACCOUNTS } from "@utils/constants";
+import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 
-const ModalFooter = memo(({ onClose, isLoading = false }) => {
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Modal, Input, Typography, Row, Col, Button } from "@components/ui";
+import RadioInput from "./RadioInput";
+import useFetchCurrency from "@hooks/data/useFetchCurrency";
+import formatterCurrency from "@utils/formatterCurrency";
+import { CURRENCY_MAP } from "@utils/constants";
+import { PAYMENT_ACCOUNTS } from "@utils/constants";
+import useMutateClientPaymentModal from "@hooks/data/useMutateClientPayment";
+
+const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => {
   return (
     <Row direction="row" align="center" justify="center" gutter={4}>
       <Col flexGrow>
@@ -21,11 +23,11 @@ const ModalFooter = memo(({ onClose, isLoading = false }) => {
       </Col>
       <Col flexGrow>
         <Button
-          form={"payment_form"}
           fullWidth
+          form={"payment_form"}
           variant={"filled"}
           isLoading={isLoading}
-          // onClick={onClose}
+          disabled={!isValid}
           type={"submit"}>
           Tasdiqlash
         </Button>
@@ -34,10 +36,14 @@ const ModalFooter = memo(({ onClose, isLoading = false }) => {
   );
 });
 
-export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
-  const [price, setPrice] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currency, setCurrency] = useState("usd");
+const ERROR_MESSAGES = {
+  required: "Bu maydonni to'ldirish shart",
+  sumNull: "Summa 0 dan katta bo'lishi kerak",
+  sumNegative: "Summa manfiy bo'lmasligi kerak",
+  sumNotGreaterThanInsTotal: "Summa oylik to'lovdan katta bo'lmasligi kerak!",
+};
+
+export default function ClientPaymentModal({ isOpen, onClose }) {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm({
     defaultValues: {
       sum: 0,
@@ -46,8 +52,25 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
       account: "5040",
     },
   });
+  const mutation = useMutateClientPaymentModal({
+    onSuccess: () => {
+      onClose();
+      reset();
+    },
+  });
+  const [hasError, setHasError] = useState({
+    sum: false,
+    date: false,
+    paymentType: false,
+    account: false,
+  });
+  const [isValid, setIsValid] = useState(true);
   const paymentType = watch("paymentType");
+  const sum = watch("sum");
   const { data: currencyData } = useFetchCurrency();
+  const [currency, setCurrency] = useState(
+    paymentType === "cash" || paymentType === "visa" ? "USD" : "UZS"
+  );
   const currenctClient = useSelector(
     (state) => state.page.clients.currentClient
   );
@@ -55,10 +78,7 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
   const branchOptions = useMemo(
     () => [
       { value: "5040", label: "Qoratosh" },
-      {
-        value: "5010",
-        label: "Sag'bon",
-      },
+      { value: "5010", label: "Sag'bon" },
     ],
     []
   );
@@ -67,55 +87,78 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
     let value = e.target.value.replace(/[^0-9.,-]/g, ""); // Remove non-numeric characters
 
     if (value === "" || value === "." || value === "-") {
-      setPrice(value); // Allow empty input, "." or "-" temporarily
       setValue("sum", value);
       return;
     }
 
     const numericValue = Number(value.replace(/,/g, "")); // Convert to number
-    setPrice(numericValue);
     setValue("sum", numericValue); // Store the raw numeric value
   });
 
   useEffect(() => {
-    if (paymentType === "cash") {
-      setCurrency("usd");
+    if (paymentType === "cash" || paymentType === "visa") {
+      setCurrency("USD");
     } else {
-      setCurrency("uzs");
+      setCurrency("UZS");
     }
   }, [paymentType]);
 
-  const customOnApply = useCallback(
-    (data) => {
-      const extendedData = {
-        ...data,
-        currency,
-        cardCode: currenctClient["CardCode"],
-      };
+  useEffect(() => {
+    let currenctClientSum = currenctClient["InsTotal"];
+    if (!(paymentType === "cash" || paymentType === "visa")) {
+      currenctClientSum = currenctClient["InsTotal"] * currencyData?.["Rate"];
+    }
+    if (sum > currenctClientSum) {
+      setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
+      setIsValid(false);
+    } else {
+      setHasError((prev) => ({ ...prev, sum: false }));
+      setIsValid(true);
+    }
+  }, [sum, paymentType, currencyData, currenctClient]);
 
-      const mutation = onApply(
-        paymentType === "cash"
-          ? extendedData
-          : {
-              ...extendedData,
-              account: PAYMENT_ACCOUNTS[extendedData.paymentType],
-            }
-      );
-      setIsLoading(mutation?.isPending);
-      reset();
+  const onPaymentApply = useCallback(
+    (data) => {
+      console.log(data, "data");
+      const normalizedData = {
+        CardCode: currenctClient["CardCode"],
+        CashSum: data.sum,
+        CashAccount:
+          paymentType === "cash"
+            ? data.account
+            : PAYMENT_ACCOUNTS[data.paymentType],
+        BankChargeAmount: 0,
+        PaymentInvoices: [
+          {
+            SumApplied: data.sum,
+            InstallmentId: currenctClient["InstlmntID"],
+            DocEntry: currenctClient["DocEntry"],
+          },
+        ],
+        DocCurrency: currency,
+      };
+      console.log(normalizedData, "normalizedData");
+      mutation.mutate(normalizedData);
+      console.log(mutation, "mutation");
     },
-    [setValue]
+    [currenctClient, paymentType, currency, mutation]
   );
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={"To'lov qo'shish"}
-      footer={<ModalFooter onClose={onClose} isLoading={isLoading} />}>
+      footer={
+        <ModalFooter
+          isValid={isValid}
+          onClose={onClose}
+          isLoading={mutation.isPending}
+        />
+      }>
       <form
         id={"payment_form"}
         className={styles["modal-form"]}
-        onSubmit={handleSubmit(customOnApply)}>
+        onSubmit={handleSubmit(onPaymentApply)}>
         <Row direction="row" gutter={4}>
           <Col flexGrow>
             <Row gutter={1}>
@@ -128,10 +171,17 @@ export default function ClientPaymentModal({ isOpen, onClose, onApply }) {
               <Col fullWidth>
                 <Input
                   size="full"
+                  error={
+                    hasError.sum
+                      ? ERROR_MESSAGES[
+                          hasError.sum || "sumNotGreaterThanInsTotal"
+                        ]
+                      : ""
+                  }
                   value={
-                    price === ""
+                    sum === ""
                       ? ""
-                      : formatterCurrency(price, "UZS")
+                      : formatterCurrency(sum, "UZS")
                           .replace(/UZS|USD/, "")
                           .trim()
                   }
