@@ -1,4 +1,4 @@
-import { memo, forwardRef, useMemo, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
