@@ -1,21 +1,26 @@
 import "@assets/styles/globals.scss";
 import "react-loading-skeleton/dist/skeleton.css";
+
+import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 import SidebarLayout from "@layouts/SidebarLayout";
-import Sidebar from "@components/Sidebar";
 import MainLayout from "@layouts/MainLayout";
 import DashboardLayout from "@layouts/DashboardLayout";
 import PrimaryLayout from "@layouts/PrimaryLayout";
-import Header from "@components/Header";
-import useAlert from "@hooks/useAlert";
-import Messenger from "@components/ui/Messenger";
-import useToggle from "@hooks/useToggle";
-import { useEffect } from "react";
-import { isMessengerRoute } from "@utils/routesConfig";
-import useAuth from "@hooks/useAuth";
-import { scan } from "react-scan/dist/index";
-import { setGlobalAlert } from "./utils/globalAlert";
 
+import Messenger from "@components/ui/Messenger";
+import Sidebar from "@components/Sidebar";
+import Header from "@components/Header";
+
+import useAuth from "@hooks/useAuth";
+import useAlert from "@hooks/useAlert";
+import useToggle from "@hooks/useToggle";
+
+import { isMessengerRoute } from "@utils/routesConfig";
+import { setGlobalAlert } from "@utils/globalAlert";
+
+// import { scan } from "react-scan/dist/index";
 // scan({
 //   enabled: true,
 // });

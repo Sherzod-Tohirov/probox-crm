@@ -1,4 +1,5 @@
 import { Col, Row, Navigation, Table } from "@components/ui";
+import ClientsPageFooter from "@features/clients/components/ClientsPageFooter";
 import Filter from "@features/clients/components/Filter";
 
 import { useCallback, useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import {
 
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
-import ClientsFooter from "./ClientsFooter";
+
 import _ from "lodash";
 
 export default function Clients() {
@@ -34,6 +35,7 @@ export default function Clients() {
   });
 
   const { clientsTableColumns } = useTableColumns();
+
   const handleRowClick = useCallback(
     (row) => {
       navigate(`/clients/${row.DocEntry}`);
@@ -87,7 +89,7 @@ export default function Clients() {
         </Col>
         <Col style={{ width: "100%" }}></Col>
       </Row>
-      <ClientsFooter clientsDetails={clientsDetails} data={data} />
+      <ClientsPageFooter clientsDetails={clientsDetails} data={data} />
     </>
   );
 }

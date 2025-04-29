@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import {
   Col,
   Row,
@@ -14,11 +14,9 @@ import {
   setClientsCurrentPage,
   setClientsPageSize,
 } from "@store/slices/clientsPageSlice";
-import { distributeClients } from "@services/clientsService";
 import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
-import useAlert from "@hooks/useAlert";
 import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
 
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
