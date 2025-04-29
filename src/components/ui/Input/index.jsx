@@ -31,6 +31,7 @@ const Input = forwardRef(
     {
       id,
       style = {},
+      inputBoxStyle = {},
       className,
       width,
       type = "text",
@@ -39,6 +40,7 @@ const Input = forwardRef(
       iconText,
       label,
       options = [],
+      placeholderColor = "primary",
       images = [],
       size = "",
       searchText,
@@ -74,13 +76,13 @@ const Input = forwardRef(
           styles["input"],
           styles[variant],
           styles[type],
-          styles[size],
+          styles[`placeholder-${placeholderColor}`],
           styles[disabled ? "disabled" : ""],
           styles[error ? "error" : ""],
           className,
           { [styles.error]: error }
         ),
-      [variant, type, size, disabled, className, error]
+      [variant, type, disabled, className, error]
     );
 
     const commonProps = useMemo(
@@ -106,19 +108,18 @@ const Input = forwardRef(
                 {...commonProps}
                 options={{
                   enableTime: false,
-                  defaultDate:
-                    field.value ||
-                    props.defaultValue ||
-                    moment().format("d.m.y"),
+                  defaultDate: field.value || props.defaultValue || new Date(),
                   dateFormat: "d.m.Y", // Custom date format
-
-                  locale: {
-                    firstDayOfWeek: 1,
-                  },
-
-                  ...(props.datePickerOptions || {}), // Custom options
+                  locale: { firstDayOfWeek: 1 },
+                  ...(props.datePickerOptions || {}),
                 }}
-                onChange={(date) => field.onChange(date[0])}
+                onChange={(dateArr) => {
+                  // Format to dd.mm.yyyy before saving to form
+                  const formatted = dateArr[0]
+                    ? moment(dateArr[0]).format("DD.MM.YYYY")
+                    : "";
+                  field.onChange(formatted);
+                }}
                 {...omit(props, ["datePickerOptions"])}
               />
             )}
@@ -269,7 +270,7 @@ const Input = forwardRef(
           </Typography>
           <input
             type={type}
-            className={classNames(styles["input"], styles["search"])}
+            className={classNames(styles["input"], styles["search-variant"])}
             {...props}
           />
         </Box>
@@ -288,7 +289,15 @@ const Input = forwardRef(
 
         <Col fullWidth>
           <Box dir="column" pos={"relative"} gap={1}>
-            <Box pos="relative">
+            <Box
+              pos="relative"
+              style={inputBoxStyle}
+              className={classNames(
+                styles["input-box"],
+                styles[variant],
+                styles[type],
+                styles[size]
+              )}>
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography
@@ -337,7 +346,5 @@ const Input = forwardRef(
     );
   }
 );
-
-Input.displayName = "Input";
 
 export default Input;

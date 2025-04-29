@@ -69,23 +69,6 @@ const clientsPageSlice = createSlice({
     },
     setClientsFilter(state, action) {
       const payload = { ...action.payload };
-
-      // Helper to convert to "DD.MM.YYYY" if needed
-      const formatToSafeDate = (value) => {
-        const m = moment(value, "DD.MM.YYYY", true);
-        if (m.isValid()) return value; // Already in correct format
-        return moment(value).format("DD.MM.YYYY"); // Convert from Date, ISO, etc.
-      };
-
-      if (payload.startDate) {
-        payload.startDate = formatToSafeDate(payload.startDate);
-      }
-
-      if (payload.endDate) {
-        payload.endDate = formatToSafeDate(payload.endDate);
-      }
-
-      console.log(payload, "Filtered payload for Redux");
       state.filter = payload;
       saveState(state);
     },

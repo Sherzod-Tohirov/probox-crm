@@ -39,15 +39,7 @@ const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => (
 ));
 
 export default function ClientPaymentModal({ isOpen, onClose }) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    setValue,
-    watch,
-    formState: { errors, isValid },
-  } = useForm({
+  const { register, handleSubmit, control, reset, setValue, watch } = useForm({
     mode: "onChange",
     defaultValues: {
       sum: 0,
@@ -60,12 +52,18 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   const [currencyDate, setCurrencyDate] = useState(
     moment().format("YYYY.MM.DD")
   );
+  const [isValid, setIsValid] = useState(true);
+  const [hasError, setHasError] = useState({ sum: false });
   const queryClient = useQueryClient();
   const paymentType = watch("paymentType");
   const sum = watch("sum");
   const date = watch("date");
   const { data: currencyData, isLoading: isCurrencyLoading } = useFetchCurrency(
     { date: currencyDate }
+  );
+
+  const currenctClient = useSelector(
+    (state) => state.page.clients.currentClient
   );
 
   useEffect(() => {
@@ -76,9 +74,22 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
     }
   }, [date, queryClient]);
 
-  const currenctClient = useSelector(
-    (state) => state.page.clients.currentClient
-  );
+  useEffect(() => {
+    let currenctClientSum = Number(currenctClient["InsTotal"]);
+    if (!(paymentType === "cash" || paymentType === "visa")) {
+      currenctClientSum *= Number(currencyData?.["Rate"]);
+    }
+    console.log(currenctClientSum, "currenctClientSum");
+    console.log(sum, "sum");
+    console.log(currencyData, Number(currencyData?.["Rate"]));
+    if (sum > currenctClientSum) {
+      setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
+      setIsValid(false);
+    } else {
+      setHasError((prev) => ({ ...prev, sum: false }));
+      setIsValid(true);
+    }
+  }, [sum, paymentType, currencyData, currenctClient]);
 
   const branchOptions = useMemo(
     () => [
@@ -101,18 +112,19 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   });
 
   // Validation for sum
-  const validateSum = (value) => {
-    let currenctClientSum = currenctClient?.InsTotal || 0;
-    if (currency === "UZS" && currencyData?.Rate) {
-      currenctClientSum = currenctClientSum * currencyData.Rate;
-    }
-    if (Number(value) > currenctClientSum) {
-      return CLIENT_PAYMENT_ERROR_MESSAGES.sumNotGreaterThanInsTotal;
-    }
-    return true;
-  };
+  // const validateSum = (value) => {
+  //   let currenctClientSum = currenctClient?.InsTotal || 0;
+  //   if (currency === "UZS" && currencyData?.Rate) {
+  //     currenctClientSum = currenctClientSum * currencyData.Rate;
+  //   }
+  //   if (Number(value) > currenctClientSum) {
+  //     return CLIENT_PAYMENT_ERROR_MESSAGES.sumNotGreaterThanInsTotal;
+  //   }
+  //   return true;
+  // };
 
   const handlePriceChange = (e) => {
+    console.log("value");
     let value = e.target.value.replace(/[^0-9.,-]/g, "");
     if (value === "" || value === "." || value === "-") {
       setValue("sum", value);
@@ -171,7 +183,13 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
               <Col fullWidth>
                 <Input
                   size="full"
-                  error={errors.sum?.message}
+                  error={
+                    hasError.sum
+                      ? CLIENT_PAYMENT_ERROR_MESSAGES[
+                          hasError.sum || "sumNotGreaterThanInsTotal"
+                        ]
+                      : ""
+                  }
                   value={
                     sum === ""
                       ? ""
@@ -183,8 +201,9 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   type="text"
                   variant="outlined"
                   iconText={CURRENCY_MAP[currency]}
-                  placeholder="Цена"
-                  {...register("sum", { validate: validateSum })}
+                  placeholder="Miqdorni kiriting..."
+                  placeholderColor={"secondary"}
+                  name={"sum"}
                 />
               </Col>
             </Row>

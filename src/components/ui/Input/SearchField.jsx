@@ -125,7 +125,7 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
       ) : (
         <Box height={"100%"} align={"center"} justify={"center"}>
           <Typography element="span" className={styles["search-field-empty"]}>
-            No results found
+            Hech narsa topilmadi.
           </Typography>
         </Box>
       )}

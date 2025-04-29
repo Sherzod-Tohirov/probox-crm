@@ -22,7 +22,7 @@ const useTableColumns = () => {
       {
         key: "CardName",
         title: "FIO",
-        width: "28%",
+        width: "27%",
         minWidth: "200px",
         icon: "avatarFilled",
       },

@@ -65,8 +65,8 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, data: data?.data }));
     }
 
-    if (data?.total && clientsDetails.total !== data?.total) {
-      setClientsDetails((p) => ({ ...p, total: data?.total }));
+    if (clientsDetails.total !== data?.total) {
+      setClientsDetails((p) => ({ ...p, total: data?.total || 0 }));
     }
   }, [data]);
 
@@ -76,7 +76,7 @@ export default function Clients() {
         <Col>
           <Navigation />
         </Col>
-        <Col>
+        <Col fullWidth>
           <Filter onFilter={handleFilter} />
         </Col>
         <Col style={{ width: "100%" }} flexGrow>

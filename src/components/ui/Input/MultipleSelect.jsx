@@ -49,8 +49,13 @@ const MultipleSelect = ({ field, options = [], ...props }) => {
       {...props}
       styles={{
         control: (baseStyles, state) => ({
+          width: "100%",
           ...baseStyles,
           ...(props.style || {}),
+        }),
+        container: (baseStyles) => ({
+          ...baseStyles,
+          width: "100%",
         }),
       }}
       classNamePrefix="react-select"

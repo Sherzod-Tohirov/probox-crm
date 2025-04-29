@@ -64,12 +64,12 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                   dispatch(setClientsCurrentPage(0));
                 }}
                 canClickIcon={false}
-                width={"clamp(69px, 10vw, 100px)"}
+                width={"100px"}
               />
             </Col>
             <Col>
               <Typography variant={"primary"} element="span">
-                {currentPage * pageSize + 1}
+                {clientsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
                 {"-"}
                 {(currentPage + 1) * pageSize > data?.total
                   ? data.total

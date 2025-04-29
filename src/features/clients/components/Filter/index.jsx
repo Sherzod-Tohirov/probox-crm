@@ -92,13 +92,15 @@ export default function Filter({ onFilter }) {
       onSubmit={handleSubmit(onFilter)}
       autoComplete="off">
       <Row direction={"row"} gutter={6.25}>
-        <Col gutter={4}>
+        <Col gutter={4} flexGrow>
           <Input
-            style={{ width: "280px" }}
+            style={{ minWidth: "230px" }}
+            size={"full-grow"}
             variant={"outlined"}
             label={"IMEI | FIO"}
-            type={"text"}
+            type={"search"}
             placeholder={"4567890449494 | Ismi Sharif"}
+            placeholderColor={"secondary"}
             searchText={watchedFields.search}
             onFocus={() =>
               setToggleSearchFields((prev) => ({ ...prev, search: true }))
@@ -108,11 +110,11 @@ export default function Filter({ onFilter }) {
             renderSearchItem={query.renderItem}
             searchable={toggleSearchFields.search}
             control={control}
-            icon={"avatar"}
             {...register("search")}
           />
           <Input
             variant={"outlined"}
+            size={"full-grow"}
             label={"Telefon raqami"}
             type={"tel"}
             searchable={toggleSearchFields.phone}
@@ -127,9 +129,10 @@ export default function Filter({ onFilter }) {
             control={control}
             name={"phone"}
           />
+
           <Input
             id={"startDate"}
-            style={{ width: "130px" }}
+            size={"full-grow"}
             variant={"outlined"}
             label={"Boshlanish vaqti"}
             canClickIcon={false}
@@ -138,7 +141,7 @@ export default function Filter({ onFilter }) {
             {...register("startDate")}
           />
           <Input
-            style={{ width: "130px" }}
+            size={"full-grow"}
             variant={"outlined"}
             label={"Tugash vaqti"}
             canClickIcon={false}
@@ -149,7 +152,7 @@ export default function Filter({ onFilter }) {
             {...register("endDate")}
           />
           <Input
-            style={{ minWidth: "230px" }}
+            size={"full-grow"}
             canClickIcon={false}
             variant={"outlined"}
             label={"Holati"}
@@ -160,7 +163,7 @@ export default function Filter({ onFilter }) {
             {...register("paymentStatus")}
           />
           <Input
-            style={{ width: "130px" }}
+            size={"full-grow"}
             canClickIcon={false}
             variant={"outlined"}
             label={"Mas'ul ijrochi"}

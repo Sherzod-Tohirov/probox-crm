@@ -2,7 +2,8 @@
 @use "@styles/variables.scss" as v;
 
 .input {
-  width: 41rem;
+  width: 100%;
+  min-height: 35px;
   color: v.$filter-input-color !important;
   border: 1px solid transparent;
 
@@ -10,8 +11,19 @@
     color: v.$filter-input-placeholder-color;
   }
 
+  &.placeholder-primary {
+    &::placeholder {
+      color: v.$filter-input-placeholder-color !important;
+    }
+  }
+
+  &.placeholder-secondary {
+    &::placeholder {
+      color: v.$filter-input-placeholder-color-secondary !important;
+    }
+  }
+
   &.outlined {
-    width: 165px;
     padding: 8px 30px 8px 12px;
     border-radius: 6px;
     border: v.$primary-border-width v.$primary-border-type
@@ -20,7 +32,6 @@
   }
 
   &.filled {
-    min-width: 310px;
     padding: 11px 32px 11px 12px;
     background: v.$primary-input-bg;
     font-size: 3.5rem;
@@ -31,14 +42,6 @@
     border-radius: 12px;
     background-color: "";
     transition: min-width v.$transition-time v.$transition-type;
-  }
-
-  &.filled.small {
-    min-width: 257px !important;
-  }
-
-  &.filled.longer {
-    min-width: 400px !important;
   }
 
   &.select {
@@ -73,13 +76,6 @@
     color: inherit !important;
   }
 
-  &.full {
-    width: 100%;
-    flex-grow: 1;
-    padding: 12px !important;
-    font-size: 4rem;
-  }
-
   &.disabled {
     pointer-events: none;
   }
@@ -96,10 +92,11 @@
 
 .input-wrapper {
   @include m.flex(center, start, 2rem);
+  width: 100%;
   flex-direction: column !important;
 }
 
-.search {
+.search-variant {
   width: 50rem;
   padding: 0.5rem 1rem;
   border: none;
@@ -120,7 +117,7 @@
 }
 
 .input-tel-outlined {
-  width: 165px !important;
+  width: 100% !important;
   padding: 8px 30px 8px 12px !important;
   border-radius: 6px !important;
   border: v.$primary-border-width v.$primary-border-type
@@ -128,8 +125,42 @@
   background: v.$filter-input-bg !important;
 }
 
+.input-box {
+  &.tel {
+    width: 310px;
+  }
+  &.filled {
+    width: 310px;
+  }
+  &.outlined {
+    width: fit-content;
+  }
+  &.small {
+    width: 257px;
+  }
+  &.longer {
+    width: 400px ;
+  }
+  &.full {
+    width: 100%;
+    flex-grow: 1;
+
+    & input,
+    select {
+      width: 100%;
+      padding: 12px !important;
+      font-size: 4rem !important;
+    }
+  }
+
+  &.full-grow {
+    width: 100% !important;
+    flex-grow: 1 !important;
+  }
+}
+
 .input-tel-filled {
-  width: 310px !important;
+  width: 100% !important;
   height: auto !important;
   padding: 11px 12px !important;
   background: v.$primary-input-bg !important;
@@ -142,14 +173,6 @@
   background-color: "" !important;
   border: 1px solid transparent !important;
   transition: all v.$transition-time v.$transition-type !important;
-
-  &.small {
-    width: 257px !important;
-  }
-
-  &.longer {
-    width: 400px !important;
-  }
 }
 
 .icon {
@@ -160,7 +183,7 @@
   transform: translate(0, -50%);
   font-size: 3.8rem;
   z-index: 1000;
-  color: v.$filter-input-placeholder-color;
+  color: v.$filter-input-placeholder-color-secondary;
   & svg {
     width: 16px;
     height: 16px;
@@ -266,9 +289,10 @@
 
 :global(.react-select__control) {
   min-height: auto !important;
-
+  height: 100%;
+  max-height: 35px !important;
   color: v.$filter-input-color !important;
-  width: 165px;
+  width: 100%;
   padding: 8px 30px 8px 12px !important;
   line-height: 14px !important;
   border-radius: 6px !important;
