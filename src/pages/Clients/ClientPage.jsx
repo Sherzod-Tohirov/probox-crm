@@ -7,7 +7,7 @@ import {
   Table,
 } from "@components/ui";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -47,7 +47,7 @@ export default function ClientPage() {
     clientEntries || []
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (clientEntries) {
       if (clientEntries.length < currentClient["Installmnt"]) {
         let monthCounter = 0;
@@ -68,13 +68,15 @@ export default function ClientPage() {
           monthCounter++;
         }
         setModifiedClientEntries([...clientEntries, ...additionalEntries]);
+      } else {
+        setModifiedClientEntries(clientEntries);
       }
     }
   }, [clientEntries]);
 
   const { data: currency } = useFetchCurrency();
 
-  console.log(clientEntries, "clientEntries");
+  console.log(modifiedClientEntries, "modifiedclientEntries");
   if (error) {
     alert({
       type: "error",

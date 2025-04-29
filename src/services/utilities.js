@@ -1,8 +1,8 @@
 import api from "./axiosConfig";
 
-export const fetchData = async (apiUrl, apiName = "data") => {
+export const fetchData = async (apiUrl, apiName = "data", params = {}) => {
   try {
-    const response = await api.get(apiUrl);
+    const response = await api.get(apiUrl, { params });
     return response.data;
   } catch (error) {
     console.log(`Error while fetching ${apiName}: `, error);

@@ -1,50 +1,54 @@
-import moment from "moment/moment";
+import moment from "moment";
 import styles from "./clientPaymentModal.module.scss";
 import { AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Modal, Input, Typography, Row, Col, Button } from "@components/ui";
 import RadioInput from "./RadioInput";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import formatterCurrency from "@utils/formatterCurrency";
-import { CURRENCY_MAP } from "@utils/constants";
-import { PAYMENT_ACCOUNTS } from "@utils/constants";
+import {
+  CURRENCY_MAP,
+  PAYMENT_ACCOUNTS,
+  CLIENT_PAYMENT_ERROR_MESSAGES,
+} from "@utils/constants";
 import useMutateClientPaymentModal from "@hooks/data/useMutateClientPayment";
+import { useQueryClient } from "@tanstack/react-query";
+import { ClipLoader } from "react-spinners";
 
-const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => {
-  return (
-    <Row direction="row" align="center" justify="center" gutter={4}>
-      <Col flexGrow>
-        <Button fullWidth variant={"filled"} color={"danger"} onClick={onClose}>
-          Bekor qilish
-        </Button>
-      </Col>
-      <Col flexGrow>
-        <Button
-          fullWidth
-          form={"payment_form"}
-          variant={"filled"}
-          isLoading={isLoading}
-          disabled={!isValid}
-          type={"submit"}>
-          Tasdiqlash
-        </Button>
-      </Col>
-    </Row>
-  );
-});
-
-const ERROR_MESSAGES = {
-  required: "Bu maydonni to'ldirish shart",
-  sumNull: "Summa 0 dan katta bo'lishi kerak",
-  sumNegative: "Summa manfiy bo'lmasligi kerak",
-  sumNotGreaterThanInsTotal: "Summa oylik to'lovdan katta bo'lmasligi kerak!",
-};
+const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => (
+  <Row direction="row" align="center" justify="center" gutter={4}>
+    <Col flexGrow>
+      <Button fullWidth variant="filled" color="danger" onClick={onClose}>
+        Bekor qilish
+      </Button>
+    </Col>
+    <Col flexGrow>
+      <Button
+        fullWidth
+        form="payment_form"
+        variant="filled"
+        isLoading={isLoading}
+        disabled={!isValid}
+        type="submit">
+        Tasdiqlash
+      </Button>
+    </Col>
+  </Row>
+));
 
 export default function ClientPaymentModal({ isOpen, onClose }) {
-  const { register, handleSubmit, control, reset, setValue, watch } = useForm({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    watch,
+    formState: { errors, isValid },
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
       sum: 0,
       date: moment().format("DD.MM.YYYY"),
@@ -52,25 +56,26 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
       account: "5040",
     },
   });
-  const mutation = useMutateClientPaymentModal({
-    onSuccess: () => {
-      onClose();
-      reset();
-    },
-  });
-  const [hasError, setHasError] = useState({
-    sum: false,
-    date: false,
-    paymentType: false,
-    account: false,
-  });
-  const [isValid, setIsValid] = useState(true);
+
+  const [currencyDate, setCurrencyDate] = useState(
+    moment().format("YYYY.MM.DD")
+  );
+  const queryClient = useQueryClient();
   const paymentType = watch("paymentType");
   const sum = watch("sum");
-  const { data: currencyData } = useFetchCurrency();
-  const [currency, setCurrency] = useState(
-    paymentType === "cash" || paymentType === "visa" ? "USD" : "UZS"
+  const date = watch("date");
+  const { data: currencyData, isLoading: isCurrencyLoading } = useFetchCurrency(
+    { date: currencyDate }
   );
+
+  useEffect(() => {
+    const formattedDate = moment(date, "DD.MM.YYYY").format("YYYY.MM.DD");
+    if (!moment(formattedDate).isSame(currencyDate)) {
+      setCurrencyDate(formattedDate);
+      queryClient.invalidateQueries({ queryKey: ["currency", formattedDate] });
+    }
+  }, [date, queryClient]);
+
   const currenctClient = useSelector(
     (state) => state.page.clients.currentClient
   );
@@ -83,71 +88,66 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
     []
   );
 
-  const handlePriceChange = useCallback((e) => {
-    let value = e.target.value.replace(/[^0-9.,-]/g, ""); // Remove non-numeric characters
+  const currency = useMemo(
+    () => (paymentType === "cash" || paymentType === "visa" ? "USD" : "UZS"),
+    [paymentType]
+  );
 
+  const mutation = useMutateClientPaymentModal({
+    onSuccess: () => {
+      onClose();
+      reset();
+    },
+  });
+
+  // Validation for sum
+  const validateSum = (value) => {
+    let currenctClientSum = currenctClient?.InsTotal || 0;
+    if (currency === "UZS" && currencyData?.Rate) {
+      currenctClientSum = currenctClientSum * currencyData.Rate;
+    }
+    if (Number(value) > currenctClientSum) {
+      return CLIENT_PAYMENT_ERROR_MESSAGES.sumNotGreaterThanInsTotal;
+    }
+    return true;
+  };
+
+  const handlePriceChange = (e) => {
+    let value = e.target.value.replace(/[^0-9.,-]/g, "");
     if (value === "" || value === "." || value === "-") {
       setValue("sum", value);
       return;
     }
+    const numericValue = Number(value.replace(/,/g, ""));
+    setValue("sum", numericValue);
+  };
 
-    const numericValue = Number(value.replace(/,/g, "")); // Convert to number
-    setValue("sum", numericValue); // Store the raw numeric value
-  });
+  const onPaymentApply = (data) => {
+    const normalizedData = {
+      CardCode: currenctClient?.CardCode,
+      CashSum: data.sum,
+      CashAccount:
+        paymentType === "cash"
+          ? data.account
+          : PAYMENT_ACCOUNTS[data.paymentType],
+      BankChargeAmount: 0,
+      PaymentInvoices: [
+        {
+          SumApplied: data.sum,
+          InstallmentId: currenctClient?.InstlmntID,
+          DocEntry: currenctClient?.DocEntry,
+        },
+      ],
+      DocCurrency: currency,
+    };
+    mutation.mutate(normalizedData);
+  };
 
-  useEffect(() => {
-    if (paymentType === "cash" || paymentType === "visa") {
-      setCurrency("USD");
-    } else {
-      setCurrency("UZS");
-    }
-  }, [paymentType]);
-
-  useEffect(() => {
-    let currenctClientSum = currenctClient["InsTotal"];
-    if (!(paymentType === "cash" || paymentType === "visa")) {
-      currenctClientSum = currenctClient["InsTotal"] * currencyData?.["Rate"];
-    }
-    if (sum > currenctClientSum) {
-      setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
-      setIsValid(false);
-    } else {
-      setHasError((prev) => ({ ...prev, sum: false }));
-      setIsValid(true);
-    }
-  }, [sum, paymentType, currencyData, currenctClient]);
-
-  const onPaymentApply = useCallback(
-    (data) => {
-      console.log(data, "data");
-      const normalizedData = {
-        CardCode: currenctClient["CardCode"],
-        CashSum: data.sum,
-        CashAccount:
-          paymentType === "cash"
-            ? data.account
-            : PAYMENT_ACCOUNTS[data.paymentType],
-        BankChargeAmount: 0,
-        PaymentInvoices: [
-          {
-            SumApplied: data.sum,
-            InstallmentId: currenctClient["InstlmntID"],
-            DocEntry: currenctClient["DocEntry"],
-          },
-        ],
-        DocCurrency: currency,
-      };
-      console.log(normalizedData, "normalizedData");
-      mutation.mutate(normalizedData);
-      console.log(mutation, "mutation");
-    },
-    [currenctClient, paymentType, currency, mutation]
-  );
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={"To'lov qo'shish"}
+      title="To'lov qo'shish"
       footer={
         <ModalFooter
           isValid={isValid}
@@ -156,7 +156,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
         />
       }>
       <form
-        id={"payment_form"}
+        id="payment_form"
         className={styles["modal-form"]}
         onSubmit={handleSubmit(onPaymentApply)}>
         <Row direction="row" gutter={4}>
@@ -165,19 +165,13 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
               <Col>
                 <Typography element="span" className={styles["modal-text"]}>
                   <strong>Oylik to'lov:</strong>{" "}
-                  {formatterCurrency(currenctClient?.["InsTotal"] || 0, "usd")}
+                  {formatterCurrency(currenctClient?.InsTotal || 0, "usd")}
                 </Typography>
               </Col>
               <Col fullWidth>
                 <Input
                   size="full"
-                  error={
-                    hasError.sum
-                      ? ERROR_MESSAGES[
-                          hasError.sum || "sumNotGreaterThanInsTotal"
-                        ]
-                      : ""
-                  }
+                  error={errors.sum?.message}
                   value={
                     sum === ""
                       ? ""
@@ -187,10 +181,10 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   }
                   onChange={handlePriceChange}
                   type="text"
-                  variant={"outlined"}
+                  variant="outlined"
                   iconText={CURRENCY_MAP[currency]}
                   placeholder="Цена"
-                  name={"sum"}
+                  {...register("sum", { validate: validateSum })}
                 />
               </Col>
             </Row>
@@ -200,7 +194,11 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
               <Col>
                 <Typography element="span" className={styles["modal-text"]}>
                   <strong> Kurs:</strong>{" "}
-                  {formatterCurrency(currencyData?.["Rate"] || 0)}
+                  {isCurrencyLoading ? (
+                    <ClipLoader size={12} />
+                  ) : (
+                    formatterCurrency(currencyData?.Rate || 0)
+                  )}
                 </Typography>
               </Col>
               <Col fullWidth>
@@ -208,39 +206,42 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   size="full"
                   type="date"
                   control={control}
-                  variant={"outlined"}
+                  variant="outlined"
+                  datePickerOptions={{
+                    maxDate: "today",
+                  }}
                   {...register("date")}
                 />
               </Col>
             </Row>
           </Col>
         </Row>
-        <Row align="center" justify={"center"} gutter={4}>
+        <Row align="center" justify="center" gutter={4}>
           <Col align="center" justify="center">
-            <Typography element={"span"} className={styles["modal-subtitle"]}>
+            <Typography element="span" className={styles["modal-subtitle"]}>
               To'lov turi
             </Typography>
           </Col>
           <Col fullWidth>
-            <Row direction={"row"} gutter={4}>
+            <Row direction="row" gutter={4}>
               <Col flexGrow>
                 <Row gutter={2}>
                   <Col fullWidth>
                     <RadioInput
-                      id={"payment_type_cash"}
-                      label={"Naqd pul"}
-                      icon={"walletFilled"}
-                      value={"cash"}
+                      id="payment_type_cash"
+                      label="Naqd pul"
+                      icon="walletFilled"
+                      value="cash"
                       defaultChecked
                       {...register("paymentType")}
                     />
                   </Col>
                   <Col fullWidth>
                     <RadioInput
-                      id={"payment_type_card"}
-                      label={"Karta"}
-                      icon={"cardFilled"}
-                      value={"card"}
+                      id="payment_type_card"
+                      label="Karta"
+                      icon="cardFilled"
+                      value="card"
                       {...register("paymentType")}
                     />
                   </Col>
@@ -248,22 +249,21 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
               </Col>
               <Col flexGrow>
                 <Row gutter={2}>
-                  {" "}
                   <Col fullWidth>
                     <RadioInput
-                      id={"payment_type_visa"}
-                      label={"Visa"}
-                      icon={"cardFilled"}
-                      value={"visa"}
+                      id="payment_type_visa"
+                      label="Visa"
+                      icon="cardFilled"
+                      value="visa"
                       {...register("paymentType")}
                     />
                   </Col>
                   <Col fullWidth>
                     <RadioInput
-                      id={"payment_type_terminal"}
-                      label={"Terminal"}
-                      icon={"cardFilled"}
-                      value={"terminal"}
+                      id="payment_type_terminal"
+                      label="Terminal"
+                      icon="cardFilled"
+                      value="terminal"
                       {...register("paymentType")}
                     />
                   </Col>
@@ -273,36 +273,34 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
           </Col>
         </Row>
         <AnimatePresence mode="popLayout">
-          {paymentType === "cash" ? (
+          {paymentType === "cash" && (
             <Row
               align="center"
-              justify={"center"}
+              justify="center"
               gutter={4}
-              animated={true}
+              animated
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}>
               <Col align="center" justify="center">
-                <Typography
-                  element={"span"}
-                  className={styles["modal-subtitle"]}>
+                <Typography element="span" className={styles["modal-subtitle"]}>
                   Filialni tanlang
                 </Typography>
               </Col>
               <Col fullWidth>
                 <Input
-                  size={"full"}
-                  type={"select"}
-                  variant={"outlined"}
+                  size="full"
+                  type="select"
+                  variant="outlined"
                   canClickIcon={false}
                   options={branchOptions}
-                  placeholder={"Filialni tanlang..."}
+                  placeholder="Filialni tanlang..."
                   {...register("account")}
                 />
               </Col>
             </Row>
-          ) : null}
+          )}
         </AnimatePresence>
       </form>
     </Modal>

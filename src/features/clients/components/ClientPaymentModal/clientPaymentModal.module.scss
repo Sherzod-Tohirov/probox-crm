@@ -6,6 +6,7 @@
 }
 
 .modal-text {
+  @include m.flex(center, center, 6px);
   font-size: 4rem;
   font-weight: 500;
   line-height: 150%;

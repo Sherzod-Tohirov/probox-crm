@@ -78,7 +78,7 @@ function Table({
                   <td
                     colSpan={columns.length}
                     className={styles["empty-table"]}>
-                    No data available
+                    Ma'lumot mavjud emas.
                   </td>
                 </tr>
               )}

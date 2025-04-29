@@ -1,6 +1,7 @@
+import moment from "moment";
 import { fetchData } from "./utilities";
 
-export const getCurrency = async () => {
-  const response = await fetchData("/rate", "rates");
+export const getCurrency = async (params = {}) => {
+  const response = await fetchData("/rate", "rates", params);
   return response;
 };

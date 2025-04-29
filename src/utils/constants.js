@@ -19,3 +19,10 @@ export const URL_PATH_LANG_MAP = {
   calendar: "Kalendar",
   statistics: "Statistika",
 };
+
+export const CLIENT_PAYMENT_ERROR_MESSAGES = {
+  required: "Bu maydonni to'ldirish shart",
+  sumNull: "Summa 0 dan katta bo'lishi kerak",
+  sumNegative: "Summa manfiy bo'lmasligi kerak",
+  sumNotGreaterThanInsTotal: "Summa oylik to'lovdan katta bo'lmasligi kerak!",
+};
