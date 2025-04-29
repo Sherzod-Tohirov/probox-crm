@@ -50,7 +50,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
 
   return (
     <Footer>
-      <Row direction={"row"} justify={"space-between"}>
+      <Row direction={"row"} justify={"space-between"} gutter={5}>
         <Col>
           <Row direction={"row"} align={"center"} gutter={3}>
             <Col>

@@ -27,20 +27,17 @@ const useWatchFilterFields = (watch) => {
   };
 
   useEffect(() => {
-    const startDateFormatted = moment(startDate, "DD.MM.YYYY").format(
-      "YYYY.MM.DD"
-    );
-    const endDateFormatted = moment(endDate, "DD.MM.YYYY").format("YYYY.MM.DD");
-    const startDateValid = moment(startDate).isValid()
-      ? startDateFormatted
-      : moment().startOf("month").format("YYYY.MM.DD");
-    const endDateValid = moment(endDate).isValid()
-      ? endDateFormatted
-      : moment().endOf("month").format("YYYY.MM.DD");
+    const startDateValid = moment(startDate, "DD.MM.YYYY").isValid()
+      ? startDate
+      : moment().startOf("month").format("DD.MM.YYYY");
+
+    const endDateValid = moment(endDate, "DD.MM.YYYY").isValid()
+      ? endDate
+      : moment().endOf("month").format("DD.MM.YYYY");
 
     dispatch(
       setClientsFilter({
-        ...omit(filterState, ["startDate", "endDate"]), // Remove startDate and endDate from filterState
+        ...omit(watchedFields, ["startDate", "endDate"]), // Remove startDate and endDate from filterState
         startDate: startDateValid,
         endDate: endDateValid,
         paymentStatus: _.map(watchedFields.paymentStatus, "value").join(","),
