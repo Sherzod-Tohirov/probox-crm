@@ -57,6 +57,7 @@ export default function Login() {
                 type="text"
                 id="login"
                 placeholder="Login (admin)"
+                placeholderColor="secondary"
                 variant="filled"
                 icon="avatar"
                 error={errors.login?.message}
@@ -69,6 +70,7 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Parol (1234)"
+                placeholderColor="secondary"
                 variant="filled"
                 icon={showPassword ? "eyeClosed" : "eye"}
                 onIconClick={() => setShowPassword((p) => !p)}
