@@ -63,10 +63,7 @@ export default function ClientPageForm({
       }),
     [executors]
   );
-  console.log(allImages, "all images");
-  console.log(softDeletedImageIds, "soft delete images");
-  console.log(uploadedImage, "uploaded images");
-  console.log("currentClient: ", currentClient);
+
   const { register, handleSubmit, control, watch, setValue } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
@@ -138,7 +135,6 @@ export default function ClientPageForm({
         await updateMutation.mutateAsync(updatePayload);
         if (!updateMutation.isError) {
           setUploadedImage([]);
-          console.log(clientImagesWithAPI, "api images");
         }
       }
       if (softDeletedImageIds.length > 0) {

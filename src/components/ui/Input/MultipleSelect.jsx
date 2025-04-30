@@ -57,6 +57,14 @@ const MultipleSelect = ({ field, options = [], ...props }) => {
           ...baseStyles,
           width: "100%",
         }),
+        multiValue: (baseStyles) => ({
+          ...baseStyles,
+          top: "0",
+          backgroundColor: "transparent",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+          padding: "2px 4px",
+        }),
       }}
       classNamePrefix="react-select"
       isMulti

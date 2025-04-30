@@ -6,7 +6,6 @@ export const setGlobalAlert = (fn = () => {}) => {
 };
 
 export const alert = (message, options) => {
-  console.log("lastmessage", lastMessage);
   if (lastMessage === message) return;
   lastMessage = message;
   if (alertHandler && typeof alertHandler === "function")

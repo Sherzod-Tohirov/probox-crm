@@ -11,9 +11,7 @@ export default function useFetchClients(options = {}) {
     limit: options.limit || pageSize,
     ...options.params,
   };
-  console.log(queryParams, "queryParams");
   applyDefaultParams(queryParams); // Ensure params have default values
-  console.log(queryParams, "queryParamsAfterDefaultParams");
   const { data, error, isLoading, isError, refetch } = useQuery({
     queryKey: ["clients", queryParams],
     queryFn: () => getClients(queryParams),

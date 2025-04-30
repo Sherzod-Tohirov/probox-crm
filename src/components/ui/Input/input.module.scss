@@ -139,7 +139,7 @@
     width: 257px;
   }
   &.longer {
-    width: 400px ;
+    width: 400px;
   }
   &.full {
     width: 100%;
@@ -293,6 +293,7 @@
   max-height: 35px !important;
   color: v.$filter-input-color !important;
   width: 100%;
+  max-width: 100%;
   padding: 8px 30px 8px 12px !important;
   line-height: 14px !important;
   border-radius: 6px !important;
@@ -323,9 +324,11 @@
 }
 
 :global(.react-select__value-container) {
+  position: absolute !important;
   margin: 0 !important;
   overflow: scroll;
   padding: 0 !important;
+  padding-right: 25% !important;
   line-height: 100% !important;
   font-size: 13px;
   color: v.$filter-input-placeholder-color !important;
@@ -335,6 +338,10 @@
   padding: 0 !important;
 
   & svg {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    right: 18% !important;
     width: 16px !important;
     height: 16px !important;
   }

@@ -79,9 +79,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
     if (!(paymentType === "cash" || paymentType === "visa")) {
       currenctClientSum *= Number(currencyData?.["Rate"]);
     }
-    console.log(currenctClientSum, "currenctClientSum");
-    console.log(sum, "sum");
-    console.log(currencyData, Number(currencyData?.["Rate"]));
+    
     if (sum > currenctClientSum) {
       setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
       setIsValid(false);
@@ -124,7 +122,6 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   // };
 
   const handlePriceChange = (e) => {
-    console.log("value");
     let value = e.target.value.replace(/[^0-9.,-]/g, "");
     if (value === "" || value === "." || value === "-") {
       setValue("sum", value);

@@ -76,7 +76,6 @@ export default function ClientPage() {
 
   const { data: currency } = useFetchCurrency();
 
-  console.log(modifiedClientEntries, "modifiedclientEntries");
   if (error) {
     alert({
       type: "error",

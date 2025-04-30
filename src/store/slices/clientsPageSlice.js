@@ -36,7 +36,6 @@ const loadState = () => {
 };
 
 const saveState = (state) => {
-  console.log(state, "state");
   try {
     const { filter, currentPage, pageSize, currentClient } = state;
     const serializedState = JSON.stringify({
@@ -77,7 +76,6 @@ const clientsPageSlice = createSlice({
       saveState(state);
     },
     setClientsPageSize(state, action) {
-      console.log(action, "action");
       state.pageSize = action.payload;
       saveState(state);
     },

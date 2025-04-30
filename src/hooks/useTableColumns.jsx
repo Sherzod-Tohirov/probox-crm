@@ -74,7 +74,6 @@ const useTableColumns = () => {
           const executor = executors.find(
             (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
           );
-          console.log("found executor", executor);
           if (!executor) return "-";
 
           if (user.SlpCode === executor?.SlpCode) return "Siz";

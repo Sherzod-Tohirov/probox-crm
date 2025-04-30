@@ -19,6 +19,7 @@ import formatPhoneNumber from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
+import { max } from "lodash";
 
 export default function Filter({ onFilter }) {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);

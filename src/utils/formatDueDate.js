@@ -7,14 +7,12 @@ const formatDueDate = (dueDate, monthCounter) => {
   const trimmedDueDate = dueDate.slice(0, 23);
 
   const parsedDate = moment(trimmedDueDate, "YYYY-MM-DD HH:mm:ss.SSS");
- console.log(parsedDate, "parsedDate");
   if (!parsedDate.isValid()) {
     return "-"; // fallback if the date is corrupted
   }
 
   // Add months (even if 0, it works fine) and format
   const finalDate = parsedDate.add(monthCounter, "months").format("DD.MM.YYYY");
-    console.log(finalDate, "finalDate");
   return finalDate !== "Invalid date" ? finalDate : "-"; // handle invalid date case
 };
 
