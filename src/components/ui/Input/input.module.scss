@@ -3,7 +3,6 @@
 
 .input {
   width: 100%;
-  min-height: 35px;
   color: v.$filter-input-color !important;
   border: 1px solid transparent;
 
@@ -24,6 +23,7 @@
   }
 
   &.outlined {
+    min-height: 35px;
     padding: 8px 30px 8px 12px;
     border-radius: 6px;
     border: v.$primary-border-width v.$primary-border-type
