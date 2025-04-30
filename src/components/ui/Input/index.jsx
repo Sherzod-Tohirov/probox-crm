@@ -53,6 +53,8 @@ const Input = forwardRef(
       disabled = false,
       hasIcon = true,
       error = null,
+      renderSearchItem = () => {},
+      onClick = () => {},
       ...props
     },
     ref
@@ -92,6 +94,7 @@ const Input = forwardRef(
         className: classes,
         disabled,
         ref,
+        onClick,
       }),
       [inputStyle, classes, disabled, ref, id, uniqueId]
     );
@@ -135,6 +138,7 @@ const Input = forwardRef(
                   style={commonProps.style}
                   field={field}
                   options={options}
+                  onClick={commonProps.onClick}
                   {...props}
                 />
               );
@@ -317,7 +321,7 @@ const Input = forwardRef(
             <AnimatePresence mode="popLayout">
               {searchable && searchText?.length && searchText !== "998" ? (
                 <SearchField
-                  renderItem={props.renderSearchItem}
+                  renderItem={renderSearchItem}
                   onSearch={onSearch}
                   searchText={searchText}
                   onSelect={onSearchSelect}

@@ -47,6 +47,7 @@ const MultipleSelect = ({ field, options = [], ...props }) => {
     <Select
       {...field}
       {...props}
+      openMenuOnClick={true}
       styles={{
         control: (baseStyles, state) => ({
           width: "100%",

@@ -57,7 +57,7 @@ function Table({
             ? data.map((row, rowIndex) => (
                 <tr
                   key={`row-${uuidv4()}`} // Ensure unique key for each row
-                  onClick={() => onRowClick(row)}
+                  onDoubleClick={() => onRowClick(row)}
                   style={{ ...getRowStyles(row) }}>
                   {columns.map((column, colIndex) => (
                     <td

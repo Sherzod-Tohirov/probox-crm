@@ -19,10 +19,11 @@ import formatPhoneNumber from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
-import { max } from "lodash";
+import _ from "lodash";
 
 export default function Filter({ onFilter }) {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+  const [shouldPaymentStatusMenu, setShouldPaymentStatusMenu] = useState(false);
   const filterState = useSelector((state) => state.page.clients.filter);
   const {
     register,
@@ -61,12 +62,16 @@ export default function Filter({ onFilter }) {
       includeAll: true,
     });
   }, [executors]);
-  const defaultExecutor = useMemo(
-    () =>
-      executors?.find((executor) => executor.SlpCode === user?.SlpCode)
-        ?.SlpCode,
-    [user?.SlpCode] || executorsOptions?.[0]?.value
-  );
+  const defaultExecutor = useMemo(() => {
+    const foundExecutor = executors?.find(
+      (executor) => Number(executor.SlpCode) === Number(filterObj?.slpCode)
+    );
+    console.log("foundExecutor:", foundExecutor);
+    if (foundExecutor && _.has(foundExecutor, "SlpCode")) {
+      return foundExecutor.SlpCode;
+    }
+    return executorsOptions?.[0]?.value || "";
+  }, [filterObj?.slpCode, executors]);
 
   const handleSearchSelect = useCallback((client) => {
     const formattedPhone = formatPhoneNumber(client.Phone1);
@@ -86,7 +91,17 @@ export default function Filter({ onFilter }) {
       phone: false,
     }));
   }, []);
-
+  const handleSearchInputChange = useCallback(
+    (event) => {
+      console.log(watchedFields.search, "search");
+      const isMouseClick = event.type === "click";
+      console.log(isMouseClick);
+      if (isMouseClick && watchedFields.search === "") {
+        setValue("phone", "998");
+      }
+    },
+    [setValue, watchedFields.search]
+  );
   return (
     <form
       className={styles["filter-form"]}
@@ -103,9 +118,10 @@ export default function Filter({ onFilter }) {
             placeholder={"4567890449494 | Ismi Sharif"}
             placeholderColor={"secondary"}
             searchText={watchedFields.search}
-            onFocus={() =>
-              setToggleSearchFields((prev) => ({ ...prev, search: true }))
-            }
+            onFocus={() => {
+              setToggleSearchFields((prev) => ({ ...prev, search: true }));
+            }}
+            onClick={handleSearchInputChange}
             onSearch={query.onSearch}
             onSearchSelect={handleSearchSelect}
             renderSearchItem={query.renderItem}
@@ -161,6 +177,13 @@ export default function Filter({ onFilter }) {
             control={control}
             options={statusOptions}
             multipleSelect={true}
+            onFocus={() => {
+              setIsStatusMenuOpen(false);
+              setShouldPaymentStatusMenu(false);
+            }}
+            {...(shouldPaymentStatusMenu
+              ? { menuIsOpen: isStatusMenuOpen }
+              : {})}
             {...register("paymentStatus")}
           />
           <Input
@@ -170,7 +193,7 @@ export default function Filter({ onFilter }) {
             label={"Mas'ul ijrochi"}
             type={"select"}
             {...register("slpCode")}
-            defaultValue={defaultExecutor}
+            value={defaultExecutor}
             options={executorsOptions}
           />
         </Col>
@@ -178,7 +201,10 @@ export default function Filter({ onFilter }) {
           <Button
             className={styles["filter-btn"]}
             icon={"search"}
-            onClick={() => setIsStatusMenuOpen(false)}
+            onClick={() => {
+              setIsStatusMenuOpen(false);
+              setShouldPaymentStatusMenu(true);
+            }}
             variant={"filled"}>
             Qidiruv
           </Button>
