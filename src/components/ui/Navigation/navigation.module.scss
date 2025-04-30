@@ -3,7 +3,6 @@
 
 .navigation {
   @include m.flex(center, start, 3rem);
-
   &-back-btn {
     font-size: 3.5rem !important;
     font-weight: 500;

@@ -1,12 +1,12 @@
 import moment from "moment";
 import styles from "./messenger.module.scss";
 
-export default function MessageDate({ date = new Date() }) {
+export default function MessageDate({ date = new Date(), format = true }) {
   return (
     <time
-      dateTime={moment(date).format("DD-MM-YYYY")}
+      dateTime={format ? moment(date).format("YYYY-MM-DD") : date}
       className={styles["message-date"]}>
-      {moment(date).format("DD-MM-YYYY")}
+      {format ? moment(date).format("DD-MM-YYYY") : date}
     </time>
   );
 }

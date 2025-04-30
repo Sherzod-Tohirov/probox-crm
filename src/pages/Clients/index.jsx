@@ -13,14 +13,13 @@ import {
 
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
-
 import _ from "lodash";
+
 
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentPage, filter } = useSelector((state) => state.page.clients);
-
   const [clientsDetails, setClientsDetails] = useState({
     totalPages: 0,
     total: 0,

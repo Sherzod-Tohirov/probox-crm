@@ -13,13 +13,14 @@ import { filterClientFormSchema } from "@utils/validationSchemas";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useAuth from "@hooks/useAuth";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
 import formatPhoneNumber from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
 import _ from "lodash";
+import moment from "moment";
 
 export default function Filter({ onFilter }) {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
@@ -102,6 +103,17 @@ export default function Filter({ onFilter }) {
     },
     [setValue, watchedFields.search]
   );
+  useEffect(() => {
+    if (watchedFields.startDate) {
+      const start = moment(watchedFields.startDate, "DD.MM.YYYY");
+      let newEndDate = start.clone().endOf("month");
+      if (newEndDate.date() !== start.date()) {
+        newEndDate = newEndDate.endOf("month");
+      }
+      setValue("endDate", newEndDate.format("DD.MM.YYYY"));
+    }
+  }, [watchedFields.startDate, setValue]);
+  
   return (
     <form
       className={styles["filter-form"]}
@@ -162,7 +174,7 @@ export default function Filter({ onFilter }) {
             label={"Tugash vaqti"}
             canClickIcon={false}
             type={"date"}
-            datePickerOptions={{ minDate: watch("startDate") }}
+            datePickerOptions={{ minDate: watchedFields.startDate }}
             error={errors?.endDate?.message}
             control={control}
             {...register("endDate")}

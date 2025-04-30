@@ -9,7 +9,6 @@ import MainLayout from "@layouts/MainLayout";
 import DashboardLayout from "@layouts/DashboardLayout";
 import PrimaryLayout from "@layouts/PrimaryLayout";
 
-import Messenger from "@components/ui/Messenger";
 import Sidebar from "@components/Sidebar";
 import Header from "@components/Header";
 
@@ -30,7 +29,7 @@ function App() {
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
   const { pathname } = useLocation();
-
+  console.log(isOpen, "isOpenAPp");
   useEffect(() => {
     // Toggle off messenger when route changes
     if (!isMessengerRoute(pathname) && isOpen) toggle();
@@ -57,7 +56,6 @@ function App() {
         <DashboardLayout>
           <Outlet />
         </DashboardLayout>
-        <Messenger />
       </PrimaryLayout>
       <AlertContainer />
     </MainLayout>

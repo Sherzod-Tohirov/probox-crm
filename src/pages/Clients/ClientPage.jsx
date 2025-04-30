@@ -12,36 +12,49 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import Footer from "@components/Footer";
+import Messenger from "@components/ui/Messenger";
 
 import ClientPageForm from "@features/clients/components/ClientPageForm";
 import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
 
 import useAlert from "@hooks/useAlert";
+import useAuth from "@hooks/useAuth";
+import useToggle from "@hooks/useToggle";
 import formatDueDate from "@utils/formatDueDate";
+import hasRole from "@utils/hasRole";
 import useTableColumns from "@hooks/useTableColumns";
 import formatterCurrency from "@utils/formatterCurrency";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
 import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
-
+import useFetchMessages from "@hooks/data/useFetchMessages";
 import * as _ from "lodash";
+import useMutateMessages from "@hooks/data/useMutateMessages";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
+  const { isOpen } = useToggle("messenger");
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
   const { alert } = useAlert();
+  const { user } = useAuth();
   const { id } = useParams();
   const { clientPageTableColumns } = useTableColumns();
+  const currentClient = useSelector(
+    (state) => state.page.clients.currentClient
+  );
   const updateMutation = useMutateClientPageForm();
-
+  const { data: messages, isLoading: isMessagesLoading } = useFetchMessages({
+    docEntry: currentClient?.["DocEntry"],
+    installmentId: currentClient?.["InstlmntID"],
+    enabled: isOpen,
+  });
+  console.log(isMessagesLoading, "isLoadingMeessssee");
   const {
     data: clientEntries,
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
-  const currentClient = useSelector(
-    (state) => state.page.clients.currentClient
-  );
+  const postMessageMutation = useMutateMessages("post");
 
   const [modifiedClientEntries, setModifiedClientEntries] = useState(
     clientEntries || []
@@ -92,6 +105,14 @@ export default function ClientPage() {
     await updateMutation.mutateAsync(payload);
     setIsSaveButtonDisabled(true);
   }, []);
+
+  const handleSendMessage = useCallback(
+    async (data) => {
+      const payload = { Comments: data.msgText };
+      await postMessageMutation.mutateAsync(payload);
+    },
+    [currentClient]
+  );
 
   return (
     <>
@@ -147,12 +168,14 @@ export default function ClientPage() {
           </Typography>
           <Col>
             {_.get(currency, "Rate", 0) > 0 ? (
-              <Button variant={"filled"} onClick={() => setPaymentModal(true)}>
-                To'lov qo'shish
-              </Button>
-            ) : (
-              ""
-            )}
+              hasRole(user, ["Manager", "Cashier"]) ? (
+                <Button
+                  variant={"filled"}
+                  onClick={() => setPaymentModal(true)}>
+                  To'lov qo'shish
+                </Button>
+              ) : null
+            ) : null}
           </Col>
         </Row>
         <ClientPaymentModal
@@ -160,6 +183,11 @@ export default function ClientPage() {
           onClose={() => setPaymentModal(false)}
         />
       </Footer>
+      <Messenger
+        messages={messages}
+        isLoading={isMessagesLoading}
+        onSendMessage={handleSendMessage}
+      />
     </>
   );
 }

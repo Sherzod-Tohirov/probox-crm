@@ -79,7 +79,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
     if (!(paymentType === "cash" || paymentType === "visa")) {
       currenctClientSum *= Number(currencyData?.["Rate"]);
     }
-    
+
     if (sum > currenctClientSum) {
       setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
       setIsValid(false);
@@ -132,9 +132,17 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   };
 
   const onPaymentApply = (data) => {
+    console.log(data, "paymentData");
+    const formattedDate = moment(data.date, "DD.MM.YYYY").format("YYYY-MM-DD");
     const normalizedData = {
       CardCode: currenctClient?.CardCode,
       CashSum: data.sum,
+      DocDate: formattedDate,
+      ...(data.paymentType !== "cash" && data.paymentType !== "visa"
+        ? {
+            DocRate: currencyData?.Rate,
+          }
+        : {}),
       CashAccount:
         paymentType === "cash"
           ? data.account
@@ -149,6 +157,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
       ],
       DocCurrency: currency,
     };
+    console.log(normalizedData, "normalizedData");
     mutation.mutate(normalizedData);
   };
 

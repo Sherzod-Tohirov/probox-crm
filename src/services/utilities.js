@@ -20,3 +20,23 @@ export const postData = async (apiUrl, data) => {
     throw error;
   }
 };
+
+export const putData = async (apiUrl, data) => {
+  try {
+    const response = await api.put(apiUrl, data);
+    return response.data;
+  } catch (error) {
+    console.log(`Error while putting data to ${apiUrl}: `, error);
+    throw error;
+  }
+};
+
+export const deleteData = async (apiUrl) => {
+  try {
+    const response = await api.delete(apiUrl);
+    return response.data;
+  } catch (error) {
+    console.log(`Error while deleting data from ${apiUrl}: `, error);
+    throw error;
+  }
+};
