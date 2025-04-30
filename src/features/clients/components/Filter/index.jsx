@@ -121,7 +121,6 @@ export default function Filter({ onFilter }) {
             onFocus={() => {
               setToggleSearchFields((prev) => ({ ...prev, search: true }));
             }}
-            onClick={handleSearchInputChange}
             onSearch={query.onSearch}
             onSearchSelect={handleSearchSelect}
             renderSearchItem={query.renderItem}
