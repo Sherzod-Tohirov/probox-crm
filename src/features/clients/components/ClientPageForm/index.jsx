@@ -35,7 +35,7 @@ export default function ClientPageForm({
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
   const { alert } = useAlert();
-  
+
   const updateMutation = useMutateClientImages("update");
   const deleteMutation = useMutateClientImages("delete");
 
@@ -72,7 +72,7 @@ export default function ClientPageForm({
       photo: [],
       telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
       code: currentClient?.["CardCode"] || "00000",
-      debtClient: formatterCurrency(currentClient?.["DocTotal"] || "0", "USD"),
+      debtClient: formatterCurrency(currentClient?.["MaxDocTotal"] || "0", "USD"),
       product:
         currentClient?.["Dscription"] || "iPhone 16 Pro max 256gb desert",
       deadline: formatDate(currentClient?.["DueDate"]),

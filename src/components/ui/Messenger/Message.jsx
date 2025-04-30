@@ -39,7 +39,7 @@ export default function Message({ msg }) {
             )}
           </Typography>
           <Typography element="span" className={styles["message-author"]}>
-            {foundExecutor?.["SlpName"] || "Boshqa"}
+            {foundExecutor?.["SlpName"] || "Noma'lum shaxs"}
           </Typography>
         </Box>
       </Col>

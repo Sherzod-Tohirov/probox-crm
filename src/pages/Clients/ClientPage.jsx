@@ -164,7 +164,7 @@ export default function ClientPage() {
         <Row direction={"row"} align={"center"} justify={"space-between"}>
           <Typography style={{ fontSize: "4rem" }} element={"span"}>
             Mijoz tomonidan jami to'langan summa:{" "}
-            {formatterCurrency(currentClient["TotalPaidToDate"] || 0, "USD")}
+            {formatterCurrency(currentClient["MaxTotalPaidToDate"] || 0, "USD")}
           </Typography>
           <Col>
             {_.get(currency, "Rate", 0) > 0 ? (
