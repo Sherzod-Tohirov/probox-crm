@@ -3,6 +3,7 @@ import styles from "./table.module.scss";
 import iconsMap from "@utils/iconsMap";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid";
+import { useRef } from "react";
 
 function Table({
   columns = [],
@@ -15,6 +16,25 @@ function Table({
   getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
+  const pressTimeRef = useRef(0);
+  const allowRowClickRef = useRef(true);
+
+  const handleMouseDown = () => {
+    pressTimeRef.current = Date.now();
+    allowRowClickRef.current = true;
+  };
+
+  const handleMouseUp = () => {
+    const pressDuration = Date.now() - pressTimeRef.current;
+    allowRowClickRef.current = pressDuration < 400; // Disable row click if pressed for more than 200ms
+  };
+
+  const handleRowClick = (row) => {
+    if (allowRowClickRef.current) {
+      onRowClick(row);
+    }
+  };
+
   return (
     <div
       style={containerStyle}
@@ -57,7 +77,11 @@ function Table({
             ? data.map((row, rowIndex) => (
                 <tr
                   key={`row-${uuidv4()}`} // Ensure unique key for each row
-                  onDoubleClick={() => onRowClick(row)}
+                  onClick={() => handleRowClick(row)}
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={handleMouseUp}
+                  onTouchStart={handleMouseDown}
+                  onTouchEnd={handleMouseUp}
                   style={{ ...getRowStyles(row) }}>
                   {columns.map((column, colIndex) => (
                     <td
