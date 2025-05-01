@@ -30,6 +30,7 @@ import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import useFetchMessages from "@hooks/data/useFetchMessages";
 import * as _ from "lodash";
 import useMutateMessages from "@hooks/data/useMutateMessages";
+import formatDate from "../../utils/formatDate";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -96,15 +97,27 @@ export default function ClientPage() {
     });
   }
 
-  const handleClientPageSubmit = useCallback(async (data) => {
-    const payload = {
-      docEntry: currentClient?.["DocEntry"],
-      installmentId: currentClient?.["InstlmntID"],
-      data: { slpCode: data?.executor, DueDate: currentClient?.["DueDate"] },
-    };
-    await updateMutation.mutateAsync(payload);
-    setIsSaveButtonDisabled(true);
-  }, []);
+  const handleClientPageSubmit = useCallback(
+    async (data) => {
+      const formattedAgreementDate = formatDate(
+        data?.agreementDate,
+        "DD.MM.YYYY",
+        "YYYY.MM.DD"
+      );
+      const payload = {
+        docEntry: currentClient?.["DocEntry"],
+        installmentId: currentClient?.["InstlmntID"],
+        data: {
+          slpCode: data?.executor,
+          DueDate: currentClient?.["DueDate"],
+          newDueDate: formattedAgreementDate || currentClient?.["DueDate"],
+        },
+      };
+      await updateMutation.mutateAsync(payload);
+      setIsSaveButtonDisabled(true);
+    },
+    [currentClient, updateMutation]
+  );
 
   const handleSendMessage = useCallback(
     async (data) => {
@@ -147,6 +160,7 @@ export default function ClientPage() {
         </Col>
         <Col fullWidth>
           <Table
+            style={{ fontSize: "3.7rem" }}
             columns={clientPageTableColumns}
             isLoading={isLoading}
             data={modifiedClientEntries}

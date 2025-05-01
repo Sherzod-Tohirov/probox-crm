@@ -20,6 +20,7 @@ import formatDate from "@utils/formatDate";
 import { v4 as uuidv4 } from "uuid";
 import hasRole from "@utils/hasRole";
 import { store } from "@store/store";
+import moment from "moment";
 
 export default function ClientPageForm({
   formId,
@@ -72,14 +73,20 @@ export default function ClientPageForm({
       photo: [],
       telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
       code: currentClient?.["CardCode"] || "00000",
-      debtClient: formatterCurrency(currentClient?.["MaxDocTotal"] || "0", "USD"),
+      debtClient: formatterCurrency(
+        currentClient?.["MaxDocTotal"] || "0",
+        "USD"
+      ),
+      passportSeries: currentClient?.["Cellular"] || "Mavjud emas",
       product:
         currentClient?.["Dscription"] || "iPhone 16 Pro max 256gb desert",
       deadline: formatDate(currentClient?.["DueDate"]),
+      agreementDate: formatDate(currentClient?.["NewDueDate"]) || "",
       imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
   const executor = watch("executor");
+  const agreementDate = watch("agreementDate");
 
   const handleImageInputClick = useCallback(() => {
     setImgPreviewModal(true);
@@ -171,7 +178,10 @@ export default function ClientPageForm({
     if (executor && executor != currentClient?.SlpCode) {
       setIsSaveButtonDisabled(false);
     }
-  }, [executor, currentClient]);
+    if (agreementDate && agreementDate != currentClient?.DueDate) {
+      setIsSaveButtonDisabled(false);
+    }
+  }, [executor, agreementDate, currentClient]);
 
   useEffect(() => {
     const foundExecutor = executors?.find(
@@ -304,6 +314,18 @@ export default function ClientPageForm({
                 />
               </InputGroup>
             </Col>
+            <Col>
+              <InputGroup>
+                <Label icon="barCodeFilled">Passport seriyasi</Label>
+                <Input
+                  type="text"
+                  variant={"filled"}
+                  size={"longer"}
+                  disabled={true}
+                  {...register("passportSeries")}
+                />
+              </InputGroup>
+            </Col>
           </Row>
         </Col>
         <Col>
@@ -343,6 +365,22 @@ export default function ClientPageForm({
                   hasIcon={false}
                   disabled={true}
                   {...register("deadline")}
+                />
+              </InputGroup>
+            </Col>
+            <Col>
+              <InputGroup>
+                <Label icon="calendar">Kelishilgan sana</Label>
+                <Input
+                  type="date"
+                  variant={"filled"}
+                  size={"longer"}
+                  control={control}
+                  hasIcon={false}
+                  datePickerOptions={{
+                    minDate: moment().format("DD.MM.YYYY"),
+                  }}
+                  {...register("agreementDate")}
                 />
               </InputGroup>
             </Col>

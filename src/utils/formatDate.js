@@ -5,7 +5,7 @@ const formatDate = (
   inputFormat = "YYYY-MM-DD HH:mm:ss.SSSSSSSSS",
   outputFormat = "DD.MM.YYYY"
 ) => {
-  if (!dateString) return "00.00.0000";
+  if (!dateString) return "";
   return moment(dateString, inputFormat).format(outputFormat);
 };
 

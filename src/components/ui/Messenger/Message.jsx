@@ -1,17 +1,62 @@
 import iconsMap from "@utils/iconsMap";
 import styles from "./messenger.module.scss";
 import moment from "moment";
-import Col from "../Col";
-import Row from "../Row";
-import Typography from "../Typography";
-import Box from "../Box";
-import { motion } from "framer-motion";
+import { Col, Button, Typography, Box } from "@components/ui";
+import { AnimatePresence, motion } from "framer-motion";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
-export default function Message({ msg }) {
+import classNames from "classnames";
+import { useState } from "react";
+const Menu = ({ msg, showMenu, onEditMessage, onDeleteMessage }) => {
+  const handleEditMessage = () => {
+    onEditMessage(msg);
+  };
+  const handleDeleteMessage = () => {
+    onDeleteMessage(msg);
+  };
+  console.log(showMenu, "showMenu");
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className={classNames(
+          styles["message-text-menu"],
+          showMenu && styles["message-text-menu-open"]
+        )}>
+        <ul className={styles["message-text-menu-list"]}>
+          <li className={styles["message-text-menu-list-item"]}>
+            <Button
+              onClick={handleEditMessage}
+              variant={"text"}
+              icon={"edit"}
+              className={styles["message-menu-btn"]}></Button>
+          </li>
+          <li className={styles["message-text-menu-list-item"]}>
+            <Button
+              onClick={handleDeleteMessage}
+              variant={"text"}
+              icon={"delete"}
+              className={styles["message-menu-btn"]}></Button>
+          </li>
+        </ul>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default function Message({ msg, onEditMessage, onDeleteMessage }) {
   const { data: executors } = useFetchExecutors();
+  const [showMenu, setShowMenu] = useState(false);
   const foundExecutor = executors?.find(
     (executor) => executor?.["SlpCode"] === msg?.["SlpCode"]
   );
+
+  const handleMenuClick = (e) => {
+    setShowMenu((prev) => !prev);
+    e.stopPropagation();
+  };
+
   return (
     <motion.div
       className={styles.message}
@@ -20,14 +65,25 @@ export default function Message({ msg }) {
       exit={{ scale: 0, y: -20 }}
       transition={{ damping: 20, type: "spring", duration: 0.05 }}>
       <Col>
-        <Box dir="column" className={styles["message-text"]}>
+        <div dir="column" className={styles["message-text"]}>
+          <Menu
+            msg={msg}
+            showMenu={showMenu}
+            onEditMessage={onEditMessage}
+            onDeleteMessage={onDeleteMessage}
+          />
+          <Button
+            onClick={handleMenuClick}
+            variant={"text"}
+            icon={"menuDots"}
+            className={styles["message-menu-btn"]}></Button>
           <p>{msg?.["Comments"]}</p>
           <time
             className={styles["message-time"]}
             dateTime={moment(msg.timestamp).format("HH:mm")}>
             {moment(msg.timestamp).format("HH:mm")}
           </time>
-        </Box>
+        </div>
       </Col>
       <Col>
         <Box dir="row" gap={1} align="center">

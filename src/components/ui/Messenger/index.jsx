@@ -1,9 +1,6 @@
-import moment from "moment";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import { useCallback, useState } from "react";
 import { Typography, Button } from "@components/ui";
-import { v4 as uuidv4 } from "uuid";
 import useToggle from "@hooks/useToggle";
 import styles from "./messenger.module.scss";
 import MessageForm from "./MessageForm";
@@ -14,6 +11,8 @@ export default function Messenger({
   messages = [],
   isLoading = false,
   onSendMessage,
+  onEditMessage,
+  onDeleteMessage,
 }) {
   const { isOpen, toggle } = useToggle("messenger");
   console.log(messages, "messages");
@@ -42,7 +41,11 @@ export default function Messenger({
         {isLoading ? (
           <ClipLoader color={"black"} size={22} />
         ) : (
-          <MessageRenderer messages={messages} />
+          <MessageRenderer
+            onEditMessage={onEditMessage}
+            onDeleteMessage={onDeleteMessage}
+            messages={messages}
+          />
         )}
       </div>
       <div className={styles["messenger-footer"]}>

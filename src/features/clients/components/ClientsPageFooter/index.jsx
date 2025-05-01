@@ -2,6 +2,7 @@ import { memo, useCallback, useMemo } from "react";
 import {
   Col,
   Row,
+  Box,
   Button,
   Input,
   Pagination,
@@ -18,14 +19,22 @@ import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
 import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
-
+import useFetchStatistics from "@hooks/data/useFetchStatistics";
+import formatterCurrency from "@utils/formatterCurrency";
+import { ClipLoader } from "react-spinners";
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const distributeMutation = useMutateDistributeClients();
-
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
   );
 
+  const { data: statisticsData, isLoading: isStatisticsLoading } =
+    useFetchStatistics({
+      startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+      endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+      slpCode: filter.slpCode,
+    });
+  console.log(statisticsData, "statisticsData");
   const dispatch = useDispatch();
   const { user } = useAuth();
 
@@ -88,6 +97,30 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
             }
           />
         </Col>
+        {/* <Col>
+          <Box gap={2} dir="column" align={"start"} justify={"center"}>
+            {isStatisticsLoading ? (
+              <ClipLoader color={"black"} size={20} />
+            ) : (
+              <>
+                <Typography variant={"primary"} element="span">
+                  To'liq summa:{" "}
+                  {formatterCurrency(statisticsData?.["InsTotal"], "USD")}
+                </Typography>
+                <Typography variant={"primary"} element="span">
+                  Qoplandi:{" "}
+                  {formatterCurrency(statisticsData?.["PaidToDate"], "USD")}{" "}
+                  {`(${parseFloat(
+                    Number(
+                      statisticsData?.["PaidToDate"] /
+                        statisticsData?.["InsTotal"]
+                    ) * 100 || 0
+                  ).toFixed(2)}%)`}
+                </Typography>
+              </>
+            )}
+          </Box>
+        </Col> */}
         {hasRole(user, ["Manager"]) ? (
           <Col>
             <Button

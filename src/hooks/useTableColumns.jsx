@@ -33,7 +33,7 @@ const useTableColumns = () => {
         renderCell: (column) => {
           return formatterCurrency(column.InsTotal, "USD") || "Unknown";
         },
-        width: "10%",
+        width: "6%",
         minWidth: "120px",
         icon: "income",
       },
@@ -43,7 +43,7 @@ const useTableColumns = () => {
         renderCell: (column) => {
           return formatterCurrency(column.PaidToDate, "USD") || "Unknown";
         },
-        width: "10%",
+        width: "6%",
         icon: "income",
       },
       {
@@ -79,7 +79,7 @@ const useTableColumns = () => {
           if (user.SlpCode === executor?.SlpCode) return "Siz";
           return executor.SlpName || "-";
         },
-        width: "12%",
+        width: "8%",
         icon: "calendarFact",
       },
       {
@@ -90,6 +90,18 @@ const useTableColumns = () => {
           return moment(column.DueDate).format("DD.MM.YYYY");
         },
         width: "8%",
+        icon: "calendar",
+      },
+      {
+        key: "NewDueDate",
+        title: "Kelishilgan sana",
+        width: "15%",
+        renderCell: (column) => {
+          if (!column.NewDueDate) return "-";
+          if (moment(column.NewDueDate, "DD.MM.YYYY", true).isValid())
+            return column.NewDueDate;
+          return formatDate(column.NewDueDate);
+        },
         icon: "calendar",
       },
     ],
@@ -113,7 +125,7 @@ const useTableColumns = () => {
       {
         key: "PaysList",
         title: "To'lovlar ro'yhati",
-        width: "15%",
+        width: "18%",
         renderCell: (column) => {
           if (!column.PaysList) return "-";
           return (
@@ -140,10 +152,9 @@ const useTableColumns = () => {
                       padding: "0.2rem",
                     }}>
                     {item.AcctName && item.SumApplied
-                      ? `${item.AcctName} - ${formatterCurrency(
-                          item.SumApplied,
-                          "USD"
-                        )}`
+                      ? `Sanasi: ${formatDate(item.DocDate)} => ${
+                          item.AcctName
+                        } - ${formatterCurrency(item.SumApplied, "USD")}`
                       : "-"}
                   </Box>
                 );
@@ -157,7 +168,7 @@ const useTableColumns = () => {
       {
         key: "InsTotal",
         title: "Jami summa",
-        width: "15%",
+        width: "7%",
         renderCell: (column) => {
           if (!column.InsTotal) return "0$";
           return formatterCurrency(column.InsTotal, "USD");
@@ -167,7 +178,7 @@ const useTableColumns = () => {
       {
         key: "PaidToDate",
         title: "To'landi",
-        width: "10%",
+        width: "7%",
         renderCell: (column) => {
           if (!column.PaidToDate) return "0$";
           return formatterCurrency(column.PaidToDate, "USD");
@@ -183,6 +194,50 @@ const useTableColumns = () => {
           if (moment(column.DueDate, "DD.MM.YYYY", true).isValid())
             return column.DueDate;
           return formatDate(column.DueDate);
+        },
+        icon: "calendar",
+      },
+      {
+        key: "DueDate",
+        title: "To'lovdagi kechikish",
+        width: "10%",
+        renderCell: (column) => {
+          if (!column.DueDate) return "-";
+          const payslist = column.PaysList || [];
+          const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
+          if (!lastPaymentDate) return "-";
+          const diff = moment(lastPaymentDate).diff(
+            moment(column.DueDate),
+            "days"
+          );
+          const isAllPaid = payslist.reduce((acc, list) => {
+            return acc + (Number(list.SumApplied) || 0);
+          }, 0);
+
+          if (isAllPaid < column.InsTotal) {
+            return (
+              <span
+                style={{
+                  color: diff <= 0 ? "#027243" : "#d51629",
+                }}>{`To'liq emas`}</span>
+            );
+          }
+
+          if (diff <= 0) {
+            return (
+              <span style={{ color: "#027243" }}>
+                {diff < 0
+                  ? `${Math.abs(diff)}-kun oldin to'landi`
+                  : "O'z vaqtida to'landi"}
+              </span>
+            );
+          }
+          return (
+            <span
+              style={{
+                color: "#d51629",
+              }}>{`${diff}-kun kechikib to'landi`}</span>
+          );
         },
         icon: "calendar",
       },

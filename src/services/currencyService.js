@@ -1,4 +1,3 @@
-import moment from "moment";
 import { fetchData } from "./utilities";
 
 export const getCurrency = async (params = {}) => {

@@ -56,7 +56,7 @@ export default function Login() {
               <Input
                 type="text"
                 id="login"
-                placeholder="Login (admin)"
+                placeholder="Login"
                 placeholderColor="secondary"
                 variant="filled"
                 icon="avatar"
@@ -69,7 +69,7 @@ export default function Login() {
               <Input
                 type={showPassword ? "text" : "password"}
                 id="password"
-                placeholder="Parol (1234)"
+                placeholder="Parol"
                 placeholderColor="secondary"
                 variant="filled"
                 icon={showPassword ? "eyeClosed" : "eye"}

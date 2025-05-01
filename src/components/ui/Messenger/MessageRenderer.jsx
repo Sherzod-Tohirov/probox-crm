@@ -7,7 +7,7 @@ import { Box } from "@components/ui";
 import { AnimatePresence } from "framer-motion";
 import _ from "lodash";
 import moment from "moment";
-const MessageRenderer = ({ messages = [] }) => {
+const MessageRenderer = ({ messages = [], onEditMessage, onDeleteMessage }) => {
   console.log(messages, "messagesRenderer");
   const scrollRef = useRef(null);
   // Scroll to bottom when new message is added
@@ -43,7 +43,12 @@ const MessageRenderer = ({ messages = [] }) => {
             <Box dir="column" gap={2} key={index}>
               <MessageDate date={date} format={false} />
               {messages.map((message) => (
-                <Message msg={message} key={message?.["_id"]} />
+                <Message
+                  msg={message}
+                  key={message?.["_id"]}
+                  onEditMessage={onEditMessage}
+                  onDeleteMessage={onDeleteMessage}
+                />
               ))}
             </Box>
           );
