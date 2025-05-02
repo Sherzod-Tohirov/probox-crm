@@ -13,7 +13,6 @@ const Menu = ({ msg, showMenu, onEditMessage, onDeleteMessage }) => {
   const handleDeleteMessage = () => {
     onDeleteMessage(msg);
   };
-  console.log(showMenu, "showMenu");
   return (
     <AnimatePresence>
       <motion.div
@@ -51,7 +50,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage }) {
   const foundExecutor = executors?.find(
     (executor) => executor?.["SlpCode"] === msg?.["SlpCode"]
   );
-
+  const MessageTimestamp = moment(msg?.["DocDate"]).local().format("HH:mm");
   const handleMenuClick = (e) => {
     setShowMenu((prev) => !prev);
     e.stopPropagation();
@@ -65,6 +64,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage }) {
       exit={{ scale: 0, y: -20 }}
       transition={{ damping: 20, type: "spring", duration: 0.05 }}>
       <Col>
+        {console.log(msg, "msg")}
         <div dir="column" className={styles["message-text"]}>
           <Menu
             msg={msg}
@@ -78,10 +78,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage }) {
             icon={"menuDots"}
             className={styles["message-menu-btn"]}></Button> */}
           <p>{msg?.["Comments"]}</p>
-          <time
-            className={styles["message-time"]}
-            dateTime={moment(msg.timestamp).format("HH:mm")}>
-            {moment(msg.timestamp).format("HH:mm")}
+          <time className={styles["message-time"]} dateTime={MessageTimestamp}>
+            {MessageTimestamp}
           </time>
         </div>
       </Col>

@@ -15,16 +15,27 @@ const useTableColumns = () => {
       {
         key: "DocEntry",
         title: "Hujjat kodi",
-        width: "10%",
-        minWidth: "120px",
+        width: "5%",
+        minWidth: "116px",
         icon: "barCodeFilled",
       },
       {
         key: "CardName",
         title: "FIO",
-        width: "27%",
+        width: "25%",
         minWidth: "200px",
         icon: "avatarFilled",
+      },
+      {
+        key: "Phone1",
+        title: "Telefon",
+        renderCell: (column) => {
+          if (!column?.["Phone1"]) return "-";
+          return column["Phone1"];
+        },
+        width: "8%",
+        minWidth: "100px",
+        icon: "telephoneFilled",
       },
       { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
       {
@@ -33,7 +44,7 @@ const useTableColumns = () => {
         renderCell: (column) => {
           return formatterCurrency(column.InsTotal, "USD") || "Unknown";
         },
-        width: "6%",
+        width: "4%",
         minWidth: "120px",
         icon: "income",
       },
@@ -43,7 +54,7 @@ const useTableColumns = () => {
         renderCell: (column) => {
           return formatterCurrency(column.PaidToDate, "USD") || "Unknown";
         },
-        width: "6%",
+        width: "4%",
         icon: "income",
       },
       {

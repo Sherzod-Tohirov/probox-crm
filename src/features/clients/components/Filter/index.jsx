@@ -67,7 +67,6 @@ export default function Filter({ onFilter }) {
     const foundExecutor = executors?.find(
       (executor) => Number(executor.SlpCode) === Number(filterObj?.slpCode)
     );
-    console.log("foundExecutor:", foundExecutor);
     if (foundExecutor && _.has(foundExecutor, "SlpCode")) {
       return foundExecutor.SlpCode;
     }
@@ -94,9 +93,7 @@ export default function Filter({ onFilter }) {
   }, []);
   const handleSearchInputChange = useCallback(
     (event) => {
-      console.log(watchedFields.search, "search");
       const isMouseClick = event.type === "click";
-      console.log(isMouseClick);
       if (isMouseClick && watchedFields.search === "") {
         setValue("phone", "998");
       }
@@ -104,16 +101,35 @@ export default function Filter({ onFilter }) {
     [setValue, watchedFields.search]
   );
   useEffect(() => {
-    if (watchedFields.startDate) {
-      const start = moment(watchedFields.startDate, "DD.MM.YYYY");
-      let newEndDate = start.clone().endOf("month");
-      if (newEndDate.date() !== start.date()) {
+    const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
+    const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
+
+    const isSameMonth = startDate.isSame(endDate, "month");
+    if (watchedFields.startDate && !isSameMonth) {
+      let newEndDate = startDate.clone().endOf("month");
+      if (newEndDate.date() !== startDate.date()) {
         newEndDate = newEndDate.endOf("month");
       }
       setValue("endDate", newEndDate.format("DD.MM.YYYY"));
     }
   }, [watchedFields.startDate, setValue]);
-  
+
+  useEffect(() => {
+    console.log(watchedFields, filterObj, "obj");
+    if (watchedFields.slpCode !== filterObj.slpCode) {
+      dispatch(
+        setClientsFilter({
+          ...filterObj,
+          search: "",
+          phone: "998",
+          slpCode: watchedFields.slpCode,
+        })
+      );
+      setValue("search", "");
+      setValue("phone", "998");
+    }
+  }, [watchedFields.slpCode]);
+
   return (
     <form
       className={styles["filter-form"]}

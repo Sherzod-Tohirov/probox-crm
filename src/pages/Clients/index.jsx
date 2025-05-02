@@ -2,7 +2,7 @@ import { Col, Row, Navigation, Table } from "@components/ui";
 import ClientsPageFooter from "@features/clients/components/ClientsPageFooter";
 import Filter from "@features/clients/components/Filter";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,6 @@ import {
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import _ from "lodash";
-
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -37,6 +36,8 @@ export default function Clients() {
 
   const handleRowClick = useCallback(
     (row) => {
+      const scrollY = window.scrollY;
+      sessionStorage.setItem("scrollPositionClients", scrollY);
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
     },
@@ -66,6 +67,16 @@ export default function Clients() {
 
     if (clientsDetails.total !== data?.total) {
       setClientsDetails((p) => ({ ...p, total: data?.total || 0 }));
+    }
+  }, [data]);
+
+  useLayoutEffect(() => {
+    if (data && data.data && data.data.length > 0) {
+      const scrollY = sessionStorage.getItem("scrollPositionClients");
+      if (scrollY) {
+        window.scrollTo(0, scrollY);
+        sessionStorage.removeItem("scrollPositionClients");
+      }
     }
   }, [data]);
 

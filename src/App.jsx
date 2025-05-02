@@ -29,7 +29,6 @@ function App() {
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle("messenger");
   const { pathname } = useLocation();
-  console.log(isOpen, "isOpenAPp");
   useEffect(() => {
     // Toggle off messenger when route changes
     if (!isMessengerRoute(pathname) && isOpen) toggle();

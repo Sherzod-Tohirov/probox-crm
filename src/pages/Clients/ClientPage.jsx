@@ -201,8 +201,12 @@ export default function ClientPage() {
       <Footer>
         <Row direction={"row"} align={"center"} justify={"space-between"}>
           <Typography style={{ fontSize: "4rem" }} element={"span"}>
-            Mijoz tomonidan jami to'langan summa:{" "}
-            {formatterCurrency(currentClient["MaxTotalPaidToDate"] || 0, "USD")}
+            Qolgan qarzdorlik summasi:{" "}
+            {formatterCurrency(
+              Number(currentClient["MaxDocTotal"]) -
+                Number(currentClient["MaxTotalPaidToDate"]) || 0,
+              "USD"
+            )}
           </Typography>
           <Col>
             {_.get(currency, "Rate", 0) > 0 ? (

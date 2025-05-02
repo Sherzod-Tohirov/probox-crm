@@ -132,7 +132,6 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   };
 
   const onPaymentApply = (data) => {
-    console.log(data, "paymentData");
     const formattedDate = moment(data.date, "DD.MM.YYYY").format("YYYY-MM-DD");
     const normalizedData = {
       CardCode: currenctClient?.CardCode,
@@ -157,7 +156,6 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
       ],
       DocCurrency: currency,
     };
-    console.log(normalizedData, "normalizedData");
     mutation.mutate(normalizedData);
   };
 

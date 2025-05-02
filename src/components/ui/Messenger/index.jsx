@@ -19,8 +19,6 @@ export const Messenger = (
   ref
 ) => {
   const { isOpen, toggle } = useToggle("messenger");
-  console.log(messages, "messages");
-  console.log(isOpen, "isOpen");
   return (
     <motion.div
       ref={ref}

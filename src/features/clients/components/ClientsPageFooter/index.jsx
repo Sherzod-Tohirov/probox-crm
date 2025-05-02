@@ -35,7 +35,6 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
       endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
       slpCode: filter.slpCode,
     });
-  console.log(statisticsData, "statisticsData");
   const dispatch = useDispatch();
   const { user } = useAuth();
 
@@ -81,7 +80,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 )}
               </Typography>
               <Typography
-                classname={styles["statistics-text"]}
+                className={styles["statistics-text"]}
                 variant={"primary"}
                 element="span">
                 <strong> Qoplandi:</strong>{" "}
