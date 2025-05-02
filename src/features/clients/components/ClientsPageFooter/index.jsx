@@ -22,6 +22,7 @@ import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
 import useFetchStatistics from "@hooks/data/useFetchStatistics";
 import formatterCurrency from "@utils/formatterCurrency";
 import { ClipLoader } from "react-spinners";
+import styles from "./style.module.scss";
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { currentPage, pageSize, filter } = useSelector(
@@ -56,81 +57,105 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
       console.log(error, "Error while distributing clients. ");
     }
   }, []);
-
+  const percentageValue = useMemo(() => {
+    return parseFloat(
+      Number(statisticsData?.["SumApplied"] / statisticsData?.["InsTotal"]) *
+        100 || 0
+    ).toFixed(2);
+  }, [statisticsData]);
   return (
     <Footer>
-      <Row direction={"row"} justify={"space-between"} gutter={5}>
+      <Row direction={"column"} justify={"space-between"} gutter={5}>
         <Col>
-          <Row direction={"row"} align={"center"} gutter={3}>
+          <Box gap={2} dir="column" align={"start"} justify={"center"}>
+            <>
+              <Typography
+                className={styles["statistics-text"]}
+                variant={"primary"}
+                element="span">
+                <strong> To'liq summa:</strong>{" "}
+                {isStatisticsLoading ? (
+                  <ClipLoader color={"grey"} size={12} />
+                ) : (
+                  formatterCurrency(statisticsData?.["InsTotal"], "USD")
+                )}
+              </Typography>
+              <Typography
+                classname={styles["statistics-text"]}
+                variant={"primary"}
+                element="span">
+                <strong> Qoplandi:</strong>{" "}
+                {isStatisticsLoading ? (
+                  <ClipLoader color={"grey"} size={12} />
+                ) : (
+                  <span style={{ color: "green" }}>
+                    {formatterCurrency(statisticsData?.["SumApplied"], "USD")}
+                  </span>
+                )}{" "}
+                <span style={{ color: percentageValue > 50 ? "green" : "red" }}>
+                  {`(${percentageValue}%)`}
+                </span>
+              </Typography>
+            </>
+          </Box>
+        </Col>
+        <Col fullWidth>
+          <Row direction={"row"} align={"center"} justify={"space-between"}>
             <Col>
-              <Input
-                variant={"outlined"}
-                type={"select"}
-                options={tableSizeSelectOptions}
-                defaultValue={Number(pageSize)}
-                onChange={(e) => {
-                  dispatch(setClientsPageSize(Number(e.target.value)));
-                  dispatch(setClientsCurrentPage(0));
-                }}
-                canClickIcon={false}
-                width={"100px"}
+              <Row
+                direction={"row"}
+                align={"center"}
+                justify={"space-between"}
+                gutter={3}>
+                <Col>
+                  <Input
+                    variant={"outlined"}
+                    type={"select"}
+                    options={tableSizeSelectOptions}
+                    defaultValue={Number(pageSize)}
+                    onChange={(e) => {
+                      dispatch(setClientsPageSize(Number(e.target.value)));
+                      dispatch(setClientsCurrentPage(0));
+                    }}
+                    canClickIcon={false}
+                    width={"100px"}
+                  />
+                </Col>
+                <Col>
+                  <Typography variant={"primary"} element="span">
+                    {clientsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
+                    {"-"}
+                    {(currentPage + 1) * pageSize > data?.total
+                      ? data.total
+                      : currentPage * pageSize + pageSize}{" "}
+                    gacha {clientsDetails.total}ta dan
+                  </Typography>
+                </Col>
+              </Row>
+            </Col>
+
+            <Col>
+              <Pagination
+                pageCount={clientsDetails.totalPages}
+                activePage={currentPage}
+                onPageChange={(page) =>
+                  dispatch(setClientsCurrentPage(page.selected))
+                }
               />
             </Col>
-            <Col>
-              <Typography variant={"primary"} element="span">
-                {clientsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
-                {"-"}
-                {(currentPage + 1) * pageSize > data?.total
-                  ? data.total
-                  : currentPage * pageSize + pageSize}{" "}
-                gacha {clientsDetails.total}ta dan
-              </Typography>
-            </Col>
+
+            {hasRole(user, ["Manager"]) ? (
+              <Col>
+                <Button
+                  variant={"filled"}
+                  onClick={handleDistributeClients}
+                  isLoading={distributeMutation.isPending}>
+                  Mijozlarni taqsimlash
+                </Button>
+              </Col>
+            ) : null}
           </Row>
         </Col>
-        <Col>
-          <Pagination
-            pageCount={clientsDetails.totalPages}
-            activePage={currentPage}
-            onPageChange={(page) =>
-              dispatch(setClientsCurrentPage(page.selected))
-            }
-          />
-        </Col>
-        {/* <Col>
-          <Box gap={2} dir="column" align={"start"} justify={"center"}>
-            {isStatisticsLoading ? (
-              <ClipLoader color={"black"} size={20} />
-            ) : (
-              <>
-                <Typography variant={"primary"} element="span">
-                  To'liq summa:{" "}
-                  {formatterCurrency(statisticsData?.["InsTotal"], "USD")}
-                </Typography>
-                <Typography variant={"primary"} element="span">
-                  Qoplandi:{" "}
-                  {formatterCurrency(statisticsData?.["PaidToDate"], "USD")}{" "}
-                  {`(${parseFloat(
-                    Number(
-                      statisticsData?.["PaidToDate"] /
-                        statisticsData?.["InsTotal"]
-                    ) * 100 || 0
-                  ).toFixed(2)}%)`}
-                </Typography>
-              </>
-            )}
-          </Box>
-        </Col> */}
-        {hasRole(user, ["Manager"]) ? (
-          <Col>
-            <Button
-              variant={"filled"}
-              onClick={handleDistributeClients}
-              isLoading={distributeMutation.isPending}>
-              Mijozlarni taqsimlash
-            </Button>
-          </Col>
-        ) : null}
       </Row>
     </Footer>
   );

@@ -1,0 +1,5 @@
+@use "@styles/mixins" as m;
+
+.statistics-text {
+  @include m.flex(center, center, 2rem);
+}

@@ -72,11 +72,11 @@ export default function Message({ msg, onEditMessage, onDeleteMessage }) {
             onEditMessage={onEditMessage}
             onDeleteMessage={onDeleteMessage}
           />
-          <Button
+          {/* <Button
             onClick={handleMenuClick}
             variant={"text"}
             icon={"menuDots"}
-            className={styles["message-menu-btn"]}></Button>
+            className={styles["message-menu-btn"]}></Button> */}
           <p>{msg?.["Comments"]}</p>
           <time
             className={styles["message-time"]}
