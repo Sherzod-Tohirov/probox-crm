@@ -7,7 +7,7 @@ import {
   Table,
 } from "@components/ui";
 
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -32,14 +32,17 @@ import * as _ from "lodash";
 import useMutateMessages from "@hooks/data/useMutateMessages";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
 import formatDate from "@utils/formatDate";
+import moment from "moment";
+import useClickOutside from "../../hooks/helper/useClickOutside";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
-  const { isOpen } = useToggle("messenger");
+  const { isOpen, toggle } = useToggle("messenger");
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
   const { alert } = useAlert();
   const { user } = useAuth();
   const { id } = useParams();
+  const messengerRef = useRef(null);
   const dispatch = useDispatch();
   const { clientPageTableColumns } = useTableColumns();
   const currentClient = useSelector(
@@ -62,6 +65,8 @@ export default function ClientPage() {
   const [modifiedClientEntries, setModifiedClientEntries] = useState(
     clientEntries || []
   );
+  // Handle outside click
+  useClickOutside(messengerRef, toggle, isOpen);
 
   useLayoutEffect(() => {
     if (clientEntries) {
@@ -106,13 +111,20 @@ export default function ClientPage() {
         "DD.MM.YYYY",
         "YYYY.MM.DD"
       );
+      const formattedDueDate = moment(currentClient["DueDate"]).format(
+        "YYYY.MM.DD"
+      );
+
+      console.log(Boolean(formattedAgreementDate), "formatted date");
       const payload = {
         docEntry: currentClient?.["DocEntry"],
         installmentId: currentClient?.["InstlmntID"],
         data: {
           slpCode: data?.executor,
-          DueDate: currentClient?.["DueDate"],
-          newDueDate: formattedAgreementDate || currentClient?.["DueDate"],
+          DueDate: formattedDueDate,
+          ...(formattedAgreementDate
+            ? { newDueDate: formattedAgreementDate }
+            : {}),
         },
       };
       try {
@@ -210,6 +222,7 @@ export default function ClientPage() {
         />
       </Footer>
       <Messenger
+        ref={messengerRef}
         messages={messages}
         isLoading={isMessagesLoading}
         onSendMessage={handleSendMessage}

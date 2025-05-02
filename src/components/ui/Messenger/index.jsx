@@ -6,19 +6,25 @@ import styles from "./messenger.module.scss";
 import MessageForm from "./MessageForm";
 import MessageRenderer from "./MessageRenderer";
 import { ClipLoader } from "react-spinners";
+import { forwardRef } from "react";
 
-export default function Messenger({
-  messages = [],
-  isLoading = false,
-  onSendMessage,
-  onEditMessage,
-  onDeleteMessage,
-}) {
+export const Messenger = (
+  {
+    messages = [],
+    isLoading = false,
+    onSendMessage,
+    onEditMessage,
+    onDeleteMessage,
+  },
+  ref
+) => {
   const { isOpen, toggle } = useToggle("messenger");
   console.log(messages, "messages");
   console.log(isOpen, "isOpen");
   return (
     <motion.div
+      ref={ref}
+      id={"messenger"}
       initial={{ x: "0", display: "none" }}
       animate={{
         x: isOpen ? "0" : "100%",
@@ -53,4 +59,6 @@ export default function Messenger({
       </div>
     </motion.div>
   );
-}
+};
+
+export default forwardRef(Messenger);
