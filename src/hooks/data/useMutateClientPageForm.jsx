@@ -16,6 +16,7 @@ const useMutateClientPageForm = () => {
       console.log("Error while updating client executor: ", error);
     },
     onSuccess: (response) => {
+      console.log(response, "response from page form");
       if (response?.slpCode) {
         dispatch(
           setCurrentClient({

@@ -8,7 +8,7 @@ import {
 } from "@components/ui";
 
 import { useCallback, useLayoutEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import Footer from "@components/Footer";
@@ -30,7 +30,8 @@ import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import useFetchMessages from "@hooks/data/useFetchMessages";
 import * as _ from "lodash";
 import useMutateMessages from "@hooks/data/useMutateMessages";
-import formatDate from "../../utils/formatDate";
+import { setCurrentClient } from "@store/slices/clientsPageSlice";
+import formatDate from "@utils/formatDate";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -39,6 +40,7 @@ export default function ClientPage() {
   const { alert } = useAlert();
   const { user } = useAuth();
   const { id } = useParams();
+  const dispatch = useDispatch();
   const { clientPageTableColumns } = useTableColumns();
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
@@ -64,7 +66,7 @@ export default function ClientPage() {
   useLayoutEffect(() => {
     if (clientEntries) {
       if (clientEntries.length < currentClient["Installmnt"]) {
-        let monthCounter = 0;
+        let monthCounter = 1;
         const additionalEntries = [];
         for (
           let i = clientEntries.length + 1;
@@ -113,7 +115,17 @@ export default function ClientPage() {
           newDueDate: formattedAgreementDate || currentClient?.["DueDate"],
         },
       };
-      await updateMutation.mutateAsync(payload);
+      try {
+        await updateMutation.mutateAsync(payload);
+        dispatch(
+          setCurrentClient({
+            ...currentClient,
+            NewDueDate: formattedAgreementDate || currentClient?.["DueDate"],
+          })
+        );
+      } catch (error) {
+        console.log(error);
+      }
       setIsSaveButtonDisabled(true);
     },
     [currentClient, updateMutation]

@@ -219,12 +219,7 @@ const useTableColumns = () => {
           }, 0);
 
           if (isAllPaid < column.InsTotal) {
-            return (
-              <span
-                style={{
-                  color: diff <= 0 ? "#027243" : "#d51629",
-                }}>{`To'liq emas`}</span>
-            );
+            return <span>{`To'liq emas`}</span>;
           }
 
           if (diff <= 0) {
