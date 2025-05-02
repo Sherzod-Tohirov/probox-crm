@@ -203,7 +203,11 @@ const useTableColumns = () => {
         width: "10%",
         renderCell: (column) => {
           if (!column.DueDate) return "-";
-          const payslist = column.PaysList || [];
+
+          const payslist = (column.PaysList || []).sort((a, b) => {
+            return moment(a.DocDate).diff(moment(b.DocDate), "days");
+          });
+
           const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
           if (!lastPaymentDate) return "-";
           const diff = moment(lastPaymentDate).diff(
