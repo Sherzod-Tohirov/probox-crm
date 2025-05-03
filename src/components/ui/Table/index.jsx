@@ -51,7 +51,7 @@ function Table({
             {columns.map((column) => (
               <th
                 // Use combination of key and index for uniqueness
-                key={`header-${column.key}`}
+                key={`header-${column.key}-${uuidv4()}`}
                 style={{
                   width: column.width || "auto",
                   minWidth: column.minWidth || "initial",
@@ -88,7 +88,7 @@ function Table({
                       style={{ ...(column?.cellStyle ? column.cellStyle : {}) }}
                       key={`cell-${row.id || row.IntrSerial || rowIndex}-${
                         column.key || colIndex
-                      }`} // Ensure unique key for each cell
+                      }-${uuidv4()}`} // Ensure unique key for each cell
                     >
                       {column.renderCell
                         ? column.renderCell(row)

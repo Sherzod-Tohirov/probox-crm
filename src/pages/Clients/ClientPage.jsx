@@ -65,13 +65,17 @@ export default function ClientPage() {
   const [modifiedClientEntries, setModifiedClientEntries] = useState(
     clientEntries || []
   );
-  // Handle outside click
-  useClickOutside(messengerRef, toggle, isOpen);
 
+  // Handle outside click to close messenger
+  useClickOutside(messengerRef, toggle, isOpen);
+  console.log(clientEntries, "cliententries");
   useLayoutEffect(() => {
     if (clientEntries) {
       if (clientEntries.length < currentClient["Installmnt"]) {
-        let monthCounter = 1;
+        const lastEntry = clientEntries[clientEntries.length - 1];
+        const now = moment();
+        const isThisMonth = moment(lastEntry?.["DueDate"]).isSame(now, "month");
+        let monthCounter = isThisMonth ? 1 : 0;
         const additionalEntries = [];
         for (
           let i = clientEntries.length + 1;
@@ -115,7 +119,6 @@ export default function ClientPage() {
         "YYYY.MM.DD"
       );
 
-      console.log(Boolean(formattedAgreementDate), "formatted date");
       const payload = {
         docEntry: currentClient?.["DocEntry"],
         installmentId: currentClient?.["InstlmntID"],
