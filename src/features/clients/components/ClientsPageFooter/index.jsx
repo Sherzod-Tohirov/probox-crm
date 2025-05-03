@@ -76,7 +76,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 {isStatisticsLoading ? (
                   <ClipLoader color={"grey"} size={12} />
                 ) : (
-                  formatterCurrency(statisticsData?.["InsTotal"], "USD")
+                  formatterCurrency(statisticsData?.["InsTotal"] || 0, "USD")
                 )}
               </Typography>
               <Typography
@@ -88,7 +88,10 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                   <ClipLoader color={"grey"} size={12} />
                 ) : (
                   <span style={{ color: "green" }}>
-                    {formatterCurrency(statisticsData?.["SumApplied"], "USD")}
+                    {formatterCurrency(
+                      statisticsData?.["SumApplied"] || 0,
+                      "USD"
+                    )}
                   </span>
                 )}{" "}
                 <span style={{ color: percentageValue > 50 ? "green" : "red" }}>
