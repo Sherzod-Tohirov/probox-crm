@@ -95,6 +95,10 @@
   font-size: 3.7rem;
   font-weight: 600;
   line-height: 143%;
+
+  &.small {
+    font-size: 3.2rem;
+  }
 }
 
 .text-input-form {
@@ -141,10 +145,25 @@
   }
 }
 
+.text-input-form.small {
+  height: 90px;
+  padding: 8px;
+  padding-top: 2px;
+
+  .text-input {
+    height: 54px;
+  }
+
+  // .send-btn {
+  //   font-size: 3.5rem !important;
+  // }
+}
+
 .message {
   @include m.flex(start, start, 1rem, column);
   will-change: transform;
   transform-origin: bottom left;
+
   &-text {
     position: relative;
     min-width: 100px;
@@ -170,7 +189,6 @@
       align-items: center;
       opacity: 0;
       transition: all v.$transition-time v.$transition-type;
-
       &-menu-open {
         display: flex;
         opacity: 1;
@@ -223,16 +241,27 @@
   }
 }
 
+.message.small {
+  .message-text {
+    min-width: 120px;
+    font-size: 3rem;
+  }
+}
+
 .message-date {
   @include m.flex(center, center, 1rem);
   width: 100%;
   padding: 4px 8px;
-  color: v.$secondary-color;
   font-size: 3.2rem;
   font-style: normal;
   font-weight: 500;
   line-height: 17px;
   border-radius: 10px;
+  color: v.$secondary-color;
+
+  &.small {
+    font-size: 2.8rem;
+  }
 }
 
 .send-btn {
@@ -241,7 +270,6 @@
     pointer-events: none;
     opacity: 0.7;
     color: v.$secondary-color !important;
-
     & svg {
       color: v.$secondary-color;
     }
@@ -255,4 +283,60 @@
 .toggle-button {
   position: absolute;
   right: 0;
+}
+
+.messenger-modal {
+  padding-left: 14px;
+  padding-right: 14px;
+  width: 260px;
+  height: 380px;
+  min-height: 0;
+  border-radius: 10px;
+  background-color: v.$secondary-bg;
+  overflow: auto;
+  z-index: 99999999;
+  // overflow: hidden;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+
+  &-header {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    backdrop-filter: blur(5px);
+    border-bottom: v.$primary-border-width v.$primary-border-type
+      v.$primary-border-color;
+  }
+
+  &-body {
+    position: relative;
+    @include m.flex(start, start, 1rem, column);
+    flex: 1;
+    min-height: 0;
+    border-radius: 10px;
+    .messenger-messages {
+      width: 100%;
+      //   @include m.flex(start, start, 0, column);
+      //   flex: 1;
+      //   overflow-y: auto;
+      //   &::-webkit-scrollbar {
+      //     width: 6px;
+      //   }
+
+      //   &::-webkit-scrollbar-thumb {
+      //     background-color: v.$button-bg;
+      //     border-radius: 6px;
+      //   }
+
+      //   &::-webkit-scrollbar-track {
+      //     background-color: v.$secondary-bg;
+      //   }
+    }
+  }
+
+  &-footer {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    backdrop-filter: blur(5px);
+    border-top: v.$primary-border-width v.$primary-border-type
+      v.$primary-border-color;
+  }
 }

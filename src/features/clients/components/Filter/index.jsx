@@ -15,7 +15,7 @@ import useAuth from "@hooks/useAuth";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-import {formatPhoneNumber} from "@utils/formatPhoneNumber";
+import { formatPhoneNumber } from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
@@ -94,7 +94,7 @@ export default function Filter({ onFilter }) {
   const handleSearchInputChange = useCallback(
     (event) => {
       const isMouseClick = event.type === "click";
-      if (isMouseClick && watchedFields.search === "") {
+      if (isMouseClick && event.target.value === "") {
         setValue("phone", "998");
       }
     },
@@ -149,6 +149,7 @@ export default function Filter({ onFilter }) {
             onFocus={() => {
               setToggleSearchFields((prev) => ({ ...prev, search: true }));
             }}
+            onClick={handleSearchInputChange}
             onSearch={query.onSearch}
             onSearchSelect={handleSearchSelect}
             renderSearchItem={query.renderItem}

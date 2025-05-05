@@ -3,7 +3,7 @@
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 1111;
+  z-index: 99999;
   padding: 6.5rem 6rem;
   border-bottom: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;

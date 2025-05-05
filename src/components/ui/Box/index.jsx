@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 function Box({
   children,
   dir = "row",
-  align,
-  justify,
+  align = "start",
+  justify = "start",
   gap = 0,
   pos = "static",
   height = "auto",
@@ -75,7 +75,7 @@ function Box({
   const Component = component || motion.div;
   return (
     <Component
-      style={boxStyle}
+      style={{ ...boxStyle }}
       className={classNames(styles.box, className)}
       {...props}>
       {children}

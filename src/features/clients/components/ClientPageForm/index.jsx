@@ -175,10 +175,14 @@ export default function ClientPageForm({
   }, [uploadedImage]);
 
   useEffect(() => {
+    const formattedNewDueDate = moment(currentClient?.["NewDueDate"]).format(
+      "DD.MM.YYYY"
+    );
+
     if (executor && executor != currentClient?.SlpCode) {
       setIsSaveButtonDisabled(false);
     }
-    if (agreementDate && agreementDate != currentClient?.DueDate) {
+    if (agreementDate && agreementDate !== formattedNewDueDate) {
       setIsSaveButtonDisabled(false);
     }
   }, [executor, agreementDate, currentClient]);

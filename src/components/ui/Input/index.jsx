@@ -14,7 +14,7 @@ import "flatpickr/dist/themes/airbnb.css";
 import "react-phone-input-2/lib/style.css";
 import { AnimatePresence, motion } from "framer-motion";
 import SearchField from "./SearchField";
-import {formatPhoneNumber} from "@utils/formatPhoneNumber";
+import { formatPhoneNumber } from "@utils/formatPhoneNumber";
 import MultipleSelect from "./MultipleSelect";
 import Skeleton from "react-loading-skeleton";
 

@@ -1,29 +1,88 @@
-import { Status } from "@components/ui";
 import moment from "moment";
+import { useMemo, useState, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import MessengerModal from "@components/ui/Messenger/MessengerModal";
+import { Button, Status, List, Box } from "@components/ui";
+
+import useAuth from "@hooks/useAuth";
+import useFetchCurrency from "@hooks/data/useFetchCurrency";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
+
+import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
 import formatterCurrency from "@utils/formatterCurrency";
 import formatDate from "@utils/formatDate";
-import { List, Box } from "@components/ui";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
-import useAuth from "@hooks/useAuth";
-import { useMemo } from "react";
-import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
+
+const CommentsCell = ({ column }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const enterTimer = useRef(null);
+  const leaveTimer = useRef(null);
+
+  const handleMouseEnter = () => {
+    clearTimeout(leaveTimer.current); // Cancel pending close
+    enterTimer.current = setTimeout(() => {
+      setShowModal(true);
+    }, 200); // Delay open
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(enterTimer.current); // Cancel pending open
+    leaveTimer.current = setTimeout(() => {
+      setShowModal(false);
+    }, 300); // Delay close
+  };
+
+  const wrapperStyles = useMemo(
+    () => ({
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999,
+    }),
+    []
+  );
+
+  return (
+    <motion.div
+      style={wrapperStyles}
+      id="messenger-modal"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
+      <Button icon="messenger" variant="text" />
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.1 }}
+            style={{
+              position: "absolute",
+              top: "calc(-250%)",
+              left: "-320%",
+              transform: "translateX(-50%)",
+              pointerEvents: "auto", // Ensure mouse events bubble through
+            }}>
+            <MessengerModal messages={column?.["Comments"] || []} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
 
 const useTableColumns = () => {
   const { data: executors } = useFetchExecutors();
+  const { data: currency } = useFetchCurrency();
   const { user } = useAuth();
   const clientsTableColumns = useMemo(
     () => [
       {
-        key: "DocEntry",
-        title: "Hujjat kodi",
-        width: "5%",
-        minWidth: "116px",
-        icon: "barCodeFilled",
-      },
-      {
         key: "CardName",
         title: "FIO",
-        width: "25%",
+        width: "24%",
         minWidth: "200px",
         icon: "avatarFilled",
       },
@@ -41,11 +100,19 @@ const useTableColumns = () => {
       { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
       {
         key: "InsTotal",
-        title: "Oylik to'lov",
+        title: "To'lov",
         renderCell: (column) => {
-          return formatterCurrency(column.InsTotal, "USD") || "Unknown";
+          const SUM = column.InsTotal * currency?.["Rate"];
+          return (
+            (
+              <>
+                {formatterCurrency(column.InsTotal, "USD")}{" "}
+                {`(${formatterCurrency(SUM || 0, "UZS")})`}
+              </>
+            ) || "Unknown"
+          );
         },
-        width: "4%",
+        width: "14%",
         minWidth: "120px",
         icon: "income",
       },
@@ -53,9 +120,17 @@ const useTableColumns = () => {
         key: "PaidToDate",
         title: "To'landi",
         renderCell: (column) => {
-          return formatterCurrency(column.PaidToDate, "USD") || "Unknown";
+          const SUM = column.PaidToDate * currency?.["Rate"];
+          return (
+            (
+              <>
+                {formatterCurrency(column.PaidToDate, "USD")}{" "}
+                {`(${formatterCurrency(SUM || 0, "UZS")})`}
+              </>
+            ) || "Unknown"
+          );
         },
-        width: "4%",
+        width: "14%",
         icon: "income",
       },
       {
@@ -72,7 +147,7 @@ const useTableColumns = () => {
 
           return <Status status={status} />;
         },
-        width: "8%",
+        width: "6%",
         icon: "calendarFact",
       },
 
@@ -95,18 +170,26 @@ const useTableColumns = () => {
         icon: "calendarFact",
       },
       {
+        key: "comments",
+        width: "3%",
+        title: "Xabarlar",
+        renderCell: (column) => <CommentsCell column={column} />,
+        width: "2%",
+        icon: "messengerFilled",
+      },
+      {
         key: "term",
         title: "Muddati",
         renderCell: (column) => {
           if (!column.DueDate) return "Unknown";
           return moment(column.DueDate).format("DD.MM.YYYY");
         },
-        width: "8%",
+        width: "6%",
         icon: "calendar",
       },
       {
         key: "NewDueDate",
-        title: "Kelishilgan sana",
+        title: "Kelishildi",
         width: "15%",
         renderCell: (column) => {
           if (!column.NewDueDate) return "-";

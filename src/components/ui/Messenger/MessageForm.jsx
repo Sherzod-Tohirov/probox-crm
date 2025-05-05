@@ -5,7 +5,7 @@ import styles from "./messenger.module.scss";
 import { Button, Col, Row } from "@components/ui";
 import classNames from "classnames";
 import Box from "../Box";
-const MessageForm = ({ onSubmit }) => {
+const MessageForm = ({ onSubmit, size = "" }) => {
   const {
     register,
     handleSubmit,
@@ -16,7 +16,7 @@ const MessageForm = ({ onSubmit }) => {
   });
   return (
     <form
-      className={styles["text-input-form"]}
+      className={classNames(styles["text-input-form"], styles[size])}
       onSubmit={handleSubmit((data) => {
         onSubmit(data);
         reset();

@@ -44,7 +44,7 @@ const Menu = ({ msg, showMenu, onEditMessage, onDeleteMessage }) => {
   );
 };
 
-export default function Message({ msg, onEditMessage, onDeleteMessage }) {
+export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();
   const [showMenu, setShowMenu] = useState(false);
   const foundExecutor = executors?.find(
@@ -58,14 +58,14 @@ export default function Message({ msg, onEditMessage, onDeleteMessage }) {
 
   return (
     <motion.div
-      className={styles.message}
+      className={classNames(styles.message, styles[size])}
       initial={{ scale: 0, y: 20 }}
       animate={{ scale: 1, y: 0 }}
       exit={{ scale: 0, y: -20 }}
-      transition={{ damping: 20, type: "spring", duration: 0.05 }}>
+      transition={{ damping: 10, type: "tween", duration: 0.2 }}>
       <Col>
         {console.log(msg, "msg")}
-        <div dir="column" className={styles["message-text"]}>
+        <div className={styles["message-text"]}>
           <Menu
             msg={msg}
             showMenu={showMenu}

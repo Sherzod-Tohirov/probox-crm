@@ -43,7 +43,13 @@ import {
   Logout,
   LogoutFilled,
 } from "@assets/images/icons/Icons";
-import { Eye, EyeClosed, MenuDots } from "../assets/images/icons/Icons";
+import {
+  Eye,
+  EyeClosed,
+  MenuDots,
+  Messenger,
+  MessengerFilled,
+} from "../assets/images/icons/Icons";
 
 const iconsMap = {
   dashboard: <Dashboard />,
@@ -92,6 +98,8 @@ const iconsMap = {
   eye: <Eye />,
   eyeClosed: <EyeClosed />,
   menuDots: <MenuDots />,
+  messenger: <Messenger />,
+  messengerFilled: <MessengerFilled />,
 };
 
 export default iconsMap;

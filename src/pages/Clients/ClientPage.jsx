@@ -69,6 +69,7 @@ export default function ClientPage() {
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
   console.log(clientEntries, "cliententries");
+  console.log(isSaveButtonDisabled, "button disabled save");
   useLayoutEffect(() => {
     if (clientEntries) {
       if (clientEntries.length < currentClient["Installmnt"]) {
@@ -138,10 +139,10 @@ export default function ClientPage() {
             NewDueDate: formattedAgreementDate || currentClient?.["DueDate"],
           })
         );
+        setIsSaveButtonDisabled(true);
       } catch (error) {
         console.log(error);
       }
-      setIsSaveButtonDisabled(true);
     },
     [currentClient, updateMutation]
   );

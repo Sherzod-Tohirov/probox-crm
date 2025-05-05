@@ -2,13 +2,7 @@ import { Col, Row, Navigation, Table } from "@components/ui";
 import ClientsPageFooter from "@features/clients/components/ClientsPageFooter";
 import Filter from "@features/clients/components/Filter";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useRef,
-} from "react";
+import { useCallback, useLayoutEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 

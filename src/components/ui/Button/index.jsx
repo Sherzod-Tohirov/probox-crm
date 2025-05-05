@@ -1,6 +1,6 @@
 import { OrbitProgress } from "react-loading-indicators";
 import { motion } from "framer-motion";
-import { memo } from "react";
+import { forwardRef, memo } from "react";
 
 import styles from "./button.module.scss";
 import iconsMap from "@utils/iconsMap";
@@ -9,21 +9,25 @@ import classNames from "classnames";
 import Typography from "../Typography";
 import Box from "../Box";
 
-function Button({
-  children,
-  className,
-  variant = "filled",
-  color,
-  icon,
-  iconPosition = "left",
-  iconColor,
-  isLoading = false,
-  fullWidth = false,
-  disabled = false,
-  ...props
-}) {
+function Button(
+  {
+    children,
+    className,
+    variant = "filled",
+    color,
+    icon,
+    iconPosition = "left",
+    iconColor,
+    isLoading = false,
+    fullWidth = false,
+    disabled = false,
+    ...props
+  },
+  ref
+) {
   return (
     <motion.button
+      ref={ref}
       className={classNames(
         className,
         styles["btn"],
@@ -71,4 +75,4 @@ function Button({
   );
 }
 
-export default memo(Button);
+export default memo(forwardRef(Button));
