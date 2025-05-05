@@ -23,7 +23,7 @@ const MessageForm = ({ onSubmit }) => {
       })}>
       <textarea
         className={styles["text-input"]}
-        placeholder="Type here..."
+        placeholder="Xabar yozish..."
         {...register("msgText")}></textarea>
       <Row direction="row" align="center" justify="space-between">
         <Col>
@@ -51,14 +51,14 @@ const MessageForm = ({ onSubmit }) => {
             className={classNames(styles["send-btn"], {
               [styles["invalid"]]: !isValid,
             })}
-            style={{ fontWeight: 600 }}
+            style={{ fontWeight: 500 }}
             icon={"send"}
             variant={"text"}
             iconPosition="right"
             iconColor={"primary"}
             color={"primary"}
             type={"submit"}>
-            Send
+            Yuborish
           </Button>
         </Col>
       </Row>

@@ -15,7 +15,7 @@ import useAuth from "@hooks/useAuth";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-import formatPhoneNumber from "@utils/formatPhoneNumber";
+import {formatPhoneNumber} from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";

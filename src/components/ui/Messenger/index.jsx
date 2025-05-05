@@ -38,12 +38,14 @@ export const Messenger = (
           icon={"toggleOpen"}
           onClick={toggle}></Button>
         <Typography element="h2" className={styles.title}>
-          Messenger
+          Xabarnoma
         </Typography>
       </div>
       <div className={styles["messenger-body"]}>
         {isLoading ? (
-          <ClipLoader color={"black"} size={22} />
+          <div className={styles["messenger-body-loader-wrapper"]}>
+            <ClipLoader color={"black"} size={28} />
+          </div>
         ) : (
           <MessageRenderer
             onEditMessage={onEditMessage}

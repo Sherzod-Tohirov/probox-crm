@@ -2,7 +2,13 @@ import { Col, Row, Navigation, Table } from "@components/ui";
 import ClientsPageFooter from "@features/clients/components/ClientsPageFooter";
 import Filter from "@features/clients/components/Filter";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +24,9 @@ import _ from "lodash";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { currentPage, filter } = useSelector((state) => state.page.clients);
+  const { currentPage, filter, currentClient } = useSelector(
+    (state) => state.page.clients
+  );
   const [clientsDetails, setClientsDetails] = useState({
     totalPages: 0,
     total: 0,
@@ -33,6 +41,8 @@ export default function Clients() {
   });
 
   const { clientsTableColumns } = useTableColumns();
+
+  const hasRestoredScroll = useRef(false);
 
   const handleRowClick = useCallback(
     (row) => {
@@ -56,7 +66,7 @@ export default function Clients() {
     }));
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
@@ -71,12 +81,20 @@ export default function Clients() {
   }, [data]);
 
   useLayoutEffect(() => {
-    if (data && data.data && data.data.length > 0) {
-      const scrollY = sessionStorage.getItem("scrollPositionClients");
-      if (scrollY) {
-        window.scrollTo(0, scrollY);
-        sessionStorage.removeItem("scrollPositionClients");
-      }
+    if (
+      data &&
+      data.data &&
+      data.data.length > 0 &&
+      !hasRestoredScroll.current
+    ) {
+      requestAnimationFrame(() => {
+        const savedY = sessionStorage.getItem("scrollPositionClients");
+        if (savedY && !isNaN(parseInt(savedY))) {
+          window.scrollTo(0, parseInt(savedY));
+          sessionStorage.removeItem("scrollPositionClients");
+          hasRestoredScroll.current = true;
+        }
+      });
     }
   }, [data]);
 
@@ -84,17 +102,24 @@ export default function Clients() {
     <>
       <Row gutter={6} style={{ width: "100%", height: "100%" }}>
         <Col>
-          <Navigation />
+          <Navigation fallbackBackPath={"/clients"} />
         </Col>
         <Col fullWidth>
           <Filter onFilter={handleFilter} />
         </Col>
-        <Col style={{ width: "100%" }} flexGrow>
+        <Col fullWidth>
           <Table
             isLoading={isLoading}
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
+            getRowStyles={(row) => {
+              if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
+                return {
+                  backgroundColor: "rgba(0,0,0,0.05)",
+                };
+              }
+            }}
           />
         </Col>
         <Col style={{ width: "100%" }}></Col>

@@ -162,7 +162,7 @@ export default function ClientPage() {
             <Col fullWidth>
               <Row direction="row" align="center" justify="space-between">
                 <Col>
-                  <Navigation />
+                  <Navigation fallbackBackPath={"/clients"} />
                 </Col>
                 <Col>
                   <Button

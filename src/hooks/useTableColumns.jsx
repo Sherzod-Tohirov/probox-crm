@@ -6,6 +6,7 @@ import { List, Box } from "@components/ui";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useAuth from "@hooks/useAuth";
 import { useMemo } from "react";
+import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
 
 const useTableColumns = () => {
   const { data: executors } = useFetchExecutors();
@@ -31,7 +32,7 @@ const useTableColumns = () => {
         title: "Telefon",
         renderCell: (column) => {
           if (!column?.["Phone1"]) return "-";
-          return column["Phone1"];
+          return formatToReadablePhoneNumber(column["Phone1"]);
         },
         width: "8%",
         minWidth: "100px",
