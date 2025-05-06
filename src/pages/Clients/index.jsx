@@ -14,7 +14,7 @@ import {
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import _ from "lodash";
-
+import styles from "./style.module.scss";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -95,14 +95,19 @@ export default function Clients() {
   return (
     <>
       <Row gutter={6} style={{ width: "100%", height: "100%" }}>
-        <Col>
-          <Navigation fallbackBackPath={"/clients"} />
-        </Col>
-        <Col fullWidth>
-          <Filter onFilter={handleFilter} />
+        <Col className={styles["sticky-column"]} fullWidth>
+          <Row gutter={6}>
+            <Col>
+              <Navigation fallbackBackPath={"/clients"} />
+            </Col>
+            <Col fullWidth>
+              <Filter onFilter={handleFilter} />
+            </Col>
+          </Row>
         </Col>
         <Col fullWidth>
           <Table
+            style={{ marginTop: "-24px" }}
             isLoading={isLoading}
             columns={clientsTableColumns}
             data={clientsDetails.data}

@@ -91,6 +91,7 @@ export default function ImagePreviewModal({
                 <Box
                   dir="column"
                   align="center"
+                  justify="center"
                   gap={2}
                   className={styles["no-image"]}>
                   <Typography element={"p"} className={styles["no-image-text"]}>

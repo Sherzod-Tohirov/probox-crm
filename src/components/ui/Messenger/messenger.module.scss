@@ -46,8 +46,8 @@
     @include m.flex(start, start, 4rem, column);
     flex: 1;
     min-height: 0;
-
     border-radius: 10px;
+
     .messenger-messages {
       @include m.flex(start, start, 4rem, column);
       width: 100%;
@@ -243,8 +243,10 @@
 
 .message.small {
   .message-text {
-    min-width: 120px;
-    font-size: 3rem;
+    min-width: 100px;
+    padding-right: 12px;
+    font-size: 3.7rem;
+    font-weight: 800;
   }
 }
 
@@ -260,7 +262,7 @@
   color: v.$secondary-color;
 
   &.small {
-    font-size: 2.8rem;
+    font-size: 3rem;
   }
 }
 
@@ -286,22 +288,25 @@
 }
 
 .messenger-modal {
-  padding-left: 14px;
-  padding-right: 14px;
+  @include m.flex(stretch, stretch, 0, column);
+  padding-left: 8px;
+  padding-right: 8px;
   width: 260px;
-  height: 380px;
+  height: 400px;
   min-height: 0;
   border-radius: 10px;
   background-color: v.$secondary-bg;
-  overflow: auto;
   z-index: 99999999;
   // overflow: hidden;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
 
   &-header {
+    position: sticky;
+    top: 0;
+    z-index: 99999;
+    background-color: #fff;
     padding-top: 20px;
     padding-bottom: 10px;
-    backdrop-filter: blur(5px);
     border-bottom: v.$primary-border-width v.$primary-border-type
       v.$primary-border-color;
   }
@@ -311,31 +316,40 @@
     @include m.flex(start, start, 1rem, column);
     flex: 1;
     min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    overflow: auto;
     border-radius: 10px;
+
     .messenger-messages {
       width: 100%;
-      //   @include m.flex(start, start, 0, column);
-      //   flex: 1;
-      //   overflow-y: auto;
-      //   &::-webkit-scrollbar {
-      //     width: 6px;
-      //   }
+      @include m.flex(start, start, 0, column);
+      flex: 1;
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
 
-      //   &::-webkit-scrollbar-thumb {
-      //     background-color: v.$button-bg;
-      //     border-radius: 6px;
-      //   }
+      &::-webkit-scrollbar-thumb {
+        background-color: v.$button-bg;
+        border-radius: 6px;
+      }
 
-      //   &::-webkit-scrollbar-track {
-      //     background-color: v.$secondary-bg;
-      //   }
+      &::-webkit-scrollbar-track {
+        background-color: v.$secondary-bg;
+      }
+    }
+    .messenger-message {
+      width: 100%;
     }
   }
 
   &-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 99999;
     padding-top: 8px;
     padding-bottom: 8px;
-    backdrop-filter: blur(5px);
+    background-color: #fff;
     border-top: v.$primary-border-width v.$primary-border-type
       v.$primary-border-color;
   }

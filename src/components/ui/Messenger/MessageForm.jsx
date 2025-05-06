@@ -2,9 +2,8 @@ import { useForm } from "react-hook-form";
 import { messengerSchema } from "@utils/validationSchemas";
 import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./messenger.module.scss";
-import { Button, Col, Row } from "@components/ui";
+import { Button, Col, Row, Box } from "@components/ui";
 import classNames from "classnames";
-import Box from "../Box";
 const MessageForm = ({ onSubmit, size = "" }) => {
   const {
     register,
@@ -18,6 +17,7 @@ const MessageForm = ({ onSubmit, size = "" }) => {
     <form
       className={classNames(styles["text-input-form"], styles[size])}
       onSubmit={handleSubmit((data) => {
+        console.log("handlesubmit working: ", data);
         onSubmit(data);
         reset();
       })}>

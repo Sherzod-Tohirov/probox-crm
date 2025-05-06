@@ -1,3 +1,6 @@
+import moment from "moment";
+import * as _ from "lodash";
+
 import {
   Col,
   Navigation,
@@ -28,27 +31,27 @@ import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
 import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import useFetchMessages from "@hooks/data/useFetchMessages";
-import * as _ from "lodash";
-import useMutateMessages from "@hooks/data/useMutateMessages";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
 import formatDate from "@utils/formatDate";
-import moment from "moment";
-import useClickOutside from "../../hooks/helper/useClickOutside";
+import useClickOutside from "@hooks/helper/useClickOutside";
+import useMessengerActions from "@hooks/useMessengerActions";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
-  const { isOpen, toggle } = useToggle("messenger");
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
-  const { alert } = useAlert();
   const { user } = useAuth();
   const { id } = useParams();
-  const messengerRef = useRef(null);
+  const { alert } = useAlert();
   const dispatch = useDispatch();
+  const messengerRef = useRef(null);
+  const updateMutation = useMutateClientPageForm();
+  const { isOpen, toggle } = useToggle("messenger");
   const { clientPageTableColumns } = useTableColumns();
+  const { send: handleSendMessage } = useMessengerActions();
+
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
-  const updateMutation = useMutateClientPageForm();
   const { data: messages, isLoading: isMessagesLoading } = useFetchMessages({
     docEntry: currentClient?.["DocEntry"],
     installmentId: currentClient?.["InstlmntID"],
@@ -60,7 +63,6 @@ export default function ClientPage() {
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
-  const postMessageMutation = useMutateMessages("post");
 
   const [modifiedClientEntries, setModifiedClientEntries] = useState(
     clientEntries || []
@@ -145,14 +147,6 @@ export default function ClientPage() {
       }
     },
     [currentClient, updateMutation]
-  );
-
-  const handleSendMessage = useCallback(
-    async (data) => {
-      const payload = { Comments: data.msgText };
-      await postMessageMutation.mutateAsync(payload);
-    },
-    [currentClient]
   );
 
   return (

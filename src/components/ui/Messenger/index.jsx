@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { motion } from "framer-motion";
+import styles from "./messenger.module.scss";
 import { Typography, Button } from "@components/ui";
 import useToggle from "@hooks/useToggle";
-import styles from "./messenger.module.scss";
 import MessageForm from "./MessageForm";
 import MessageRenderer from "./MessageRenderer";
 import { ClipLoader } from "react-spinners";

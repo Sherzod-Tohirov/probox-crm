@@ -26,6 +26,7 @@ export default function Filter({ onFilter }) {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [shouldPaymentStatusMenu, setShouldPaymentStatusMenu] = useState(false);
   const filterState = useSelector((state) => state.page.clients.filter);
+
   const {
     register,
     handleSubmit,
@@ -49,12 +50,13 @@ export default function Filter({ onFilter }) {
     search: false,
     phone: false,
   });
-  const dispatch = useDispatch(); // Add dispatch
+
   const filterObj = useSelector((state) => state.page.clients.filter);
-  const { user } = useAuth();
-  const { query, phone } = useFilter();
-  const { data: executors } = useFetchExecutors();
   const watchedFields = useWatchFilterFields(watch);
+  const { data: executors } = useFetchExecutors();
+  const { query, phone } = useFilter();
+  const dispatch = useDispatch(); // Add dispatch
+  const { user } = useAuth();
 
   const executorsOptions = useMemo(() => {
     return selectOptionsCreator(executors, {
@@ -63,6 +65,7 @@ export default function Filter({ onFilter }) {
       includeAll: true,
     });
   }, [executors]);
+
   const defaultExecutor = useMemo(() => {
     const foundExecutor = executors?.find(
       (executor) => Number(executor.SlpCode) === Number(filterObj?.slpCode)
@@ -91,15 +94,7 @@ export default function Filter({ onFilter }) {
       phone: false,
     }));
   }, []);
-  const handleSearchInputChange = useCallback(
-    (event) => {
-      const isMouseClick = event.type === "click";
-      if (isMouseClick && event.target.value === "") {
-        setValue("phone", "998");
-      }
-    },
-    [setValue, watchedFields.search]
-  );
+
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
     const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
@@ -130,6 +125,12 @@ export default function Filter({ onFilter }) {
     }
   }, [watchedFields.slpCode]);
 
+  useEffect(() => {
+    if (!watchedFields.search) {
+      setValue("phone", "998");
+    }
+  }, [watchedFields.search]);
+
   return (
     <form
       className={styles["filter-form"]}
@@ -149,7 +150,6 @@ export default function Filter({ onFilter }) {
             onFocus={() => {
               setToggleSearchFields((prev) => ({ ...prev, search: true }));
             }}
-            onClick={handleSearchInputChange}
             onSearch={query.onSearch}
             onSearchSelect={handleSearchSelect}
             renderSearchItem={query.renderItem}
@@ -158,13 +158,13 @@ export default function Filter({ onFilter }) {
             {...register("search")}
           />
           <Input
-            variant={"outlined"}
-            size={"full-grow"}
-            label={"Telefon raqami"}
             type={"tel"}
-            searchable={toggleSearchFields.phone}
-            searchText={watchedFields.phone}
+            size={"full-grow"}
+            variant={"outlined"}
+            label={"Telefon raqami"}
             onSearch={phone.onSearch}
+            searchText={watchedFields.phone}
+            searchable={toggleSearchFields.phone}
             onFocus={() => {
               setToggleSearchFields((prev) => ({ ...prev, phone: true }));
             }}
@@ -174,7 +174,6 @@ export default function Filter({ onFilter }) {
             control={control}
             name={"phone"}
           />
-
           <Input
             id={"startDate"}
             size={"full-grow"}

@@ -58,30 +58,30 @@ export const Wallet = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="25"
-      height="24"
+      width={25}
+      height={24}
       viewBox="0 0 25 24"
       fill="none">
       <path
         d="M13.042 9H7.04199"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22.042 10.9699V13.03C22.042 13.58 21.602 14.0299 21.042 14.0499H19.0819C18.0019 14.0499 17.012 13.2599 16.922 12.1799C16.862 11.5499 17.1019 10.9599 17.5219 10.5499C17.8919 10.1699 18.4019 9.94995 18.9619 9.94995H21.042C21.602 9.96995 22.042 10.4199 22.042 10.9699Z"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M17.522 10.55C17.102 10.96 16.862 11.55 16.922 12.18C17.012 13.26 18.002 14.05 19.082 14.05H21.042V15.5C21.042 18.5 19.042 20.5 16.042 20.5H7.04199C4.04199 20.5 2.04199 18.5 2.04199 15.5V8.5C2.04199 5.78 3.68199 3.88 6.23199 3.56C6.49199 3.52 6.76199 3.5 7.04199 3.5H16.042C16.302 3.5 16.552 3.50999 16.792 3.54999C19.372 3.84999 21.042 5.76 21.042 8.5V9.95001H18.962C18.402 9.95001 17.892 10.17 17.522 10.55Z"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -1274,25 +1274,25 @@ export const Messenger = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={24}
+      height={24}
       viewBox="0 0 24 24"
       fill="none">
       <path
         d="M5.7 18.4V22L9 20.1C9.9 20.4 10.9 20.5 12 20.5C17.5 20.5 22 16.4 22 11.2C22 6.1 17.5 2 12 2C6.5 2 2 6.1 2 11.3C2 14.2 3.4 16.7 5.7 18.4Z"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M11.3 9.19995L7.5 13.7L11.2 12.8L12.7 13.7L16.5 9.19995L13 10.1L11.3 9.19995Z"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

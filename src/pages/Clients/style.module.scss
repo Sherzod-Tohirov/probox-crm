@@ -1,0 +1,17 @@
+.sticky-column {
+  position: sticky;
+  top: 107px;
+  z-index: 99999;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  background-color: #fff;
+
+  &::before {
+    position: absolute;
+    top: -25px;
+    width: 100%;
+    height: 25px;
+    background-color: #fff;
+    content: "";
+  }
+}

@@ -281,6 +281,7 @@
 
 .infinite-loader {
   @include m.flex-center;
+  width: 100%;
   padding: 4px;
 }
 
