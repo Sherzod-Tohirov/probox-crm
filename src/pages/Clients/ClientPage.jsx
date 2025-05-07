@@ -78,7 +78,9 @@ export default function ClientPage() {
         const lastEntry = clientEntries[clientEntries.length - 1];
         const now = moment();
         const isThisMonth = moment(lastEntry?.["DueDate"]).isSame(now, "month");
-        let monthCounter = isThisMonth ? 1 : 0;
+        const isThisYear = moment(lastEntry?.["DueDate"]).isSame(now, "year");
+        console.log(isThisMonth, "is this month");
+        let monthCounter = isThisYear ? (isThisMonth ? 1 : 0) : 1;
         const additionalEntries = [];
         for (
           let i = clientEntries.length + 1;
@@ -86,7 +88,7 @@ export default function ClientPage() {
           i++
         ) {
           const emptyObject = {
-            DueDate: formatDueDate(currentClient["DueDate"], monthCounter),
+            DueDate: formatDueDate(lastEntry["DueDate"], monthCounter),
             InstlmntID: i,
             PaidToDate: 0,
             InsTotal: currentClient["InsTotal"],
