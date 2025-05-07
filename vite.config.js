@@ -14,6 +14,11 @@ dotenv.config();
 export default defineConfig({
   plugins: [react()],
   base: "/",
+  build: {
+    rollupOptions: {
+      external: ["@floating-ui/react", "@floating-ui/react-dom"],
+    },
+  },
   server: {
     port: process.env.PORT || 3000,
   },
