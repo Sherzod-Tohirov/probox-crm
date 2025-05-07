@@ -64,45 +64,9 @@ export default function ClientPage() {
     error,
   } = useFetchClientEntriesById(id);
 
-  const [modifiedClientEntries, setModifiedClientEntries] = useState(
-    clientEntries || []
-  );
 
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
-  console.log(clientEntries, "cliententries");
-  console.log(isSaveButtonDisabled, "button disabled save");
-  useLayoutEffect(() => {
-    if (clientEntries) {
-      if (clientEntries.length < currentClient["Installmnt"]) {
-        const lastEntry = clientEntries[clientEntries.length - 1];
-        const now = moment();
-        const isThisMonth = moment(lastEntry?.["DueDate"]).isSame(now, "month");
-        const isThisYear = moment(lastEntry?.["DueDate"]).isSame(now, "year");
-        console.log(isThisMonth, "is this month");
-        let monthCounter = isThisYear ? (isThisMonth ? 1 : 0) : 1;
-        const additionalEntries = [];
-        for (
-          let i = clientEntries.length + 1;
-          i <= currentClient["Installmnt"];
-          i++
-        ) {
-          const emptyObject = {
-            DueDate: formatDueDate(lastEntry["DueDate"], monthCounter),
-            InstlmntID: i,
-            PaidToDate: 0,
-            InsTotal: currentClient["InsTotal"],
-            PaysList: null,
-          };
-          additionalEntries.push(emptyObject);
-          monthCounter++;
-        }
-        setModifiedClientEntries([...clientEntries, ...additionalEntries]);
-      } else {
-        setModifiedClientEntries(clientEntries);
-      }
-    }
-  }, [clientEntries]);
 
   const { data: currency } = useFetchCurrency();
 
@@ -187,7 +151,7 @@ export default function ClientPage() {
             style={{ fontSize: "3.7rem" }}
             columns={clientPageTableColumns}
             isLoading={isLoading}
-            data={modifiedClientEntries}
+            data={clientEntries}
             getRowStyles={(row) => {
               return {
                 ...(row["InstlmntID"] === currentClient["InstlmntID"]
