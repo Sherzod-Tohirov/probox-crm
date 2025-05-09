@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { Button } from "@components/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import MessengerModal from "@components/ui/Messenger/MessengerModal";
@@ -27,10 +27,9 @@ const MessengerCell = ({ column }) => {
     installmentId: currentClient?.["InstlmntID"],
   });
 
-  const { send } = useMessengerActions();
-
-  const { x, y, reference, floating, strategy, refs, update } = useFloating({
-    placement: "left",
+  const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
+  const { x, y, strategy, refs, update } = useFloating({
+    placement: "top-end",
     middleware: [
       offset(10), // spacing from the button
       flip(), // flip to opposite side if not enough space
@@ -38,7 +37,6 @@ const MessengerCell = ({ column }) => {
     ],
     whileElementsMounted: autoUpdate,
   });
-  console.log(x, y, "x", "y");
   // Sync floating when modal opens
   useEffect(() => {
     if (showModal) update();
@@ -79,14 +77,16 @@ const MessengerCell = ({ column }) => {
               transition={{ duration: 0.2 }}
               style={{
                 position: strategy,
-                top: y ?? 0,
-                left: x - 10 ?? 0,
+                top: y ? y - 5 : 0,
+                left: x ? x - 5 : 0,
                 zIndex: 999999,
                 pointerEvents: "auto",
               }}>
               <MessengerModal
                 messages={messages || []}
-                onSendMessage={send}
+                onEditMessage={editMessage}
+                onDeleteMessage={deleteMessage}
+                onSendMessage={sendMessage}
                 isLoading={isLoading}
               />
             </motion.div>

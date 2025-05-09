@@ -1,88 +1,112 @@
-import iconsMap from "@utils/iconsMap";
-import styles from "./messenger.module.scss";
-import moment from "moment";
-import { Col, Button, Typography, Box } from "@components/ui";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import {
+  useFloating,
+  shift,
+  offset,
+  flip,
+  autoUpdate,
+} from "@floating-ui/react-dom";
+import moment from "moment";
 import classNames from "classnames";
-import { useState } from "react";
-const Menu = ({ msg, showMenu, onEditMessage, onDeleteMessage }) => {
-  const handleEditMessage = () => {
-    onEditMessage(msg);
-  };
-  const handleDeleteMessage = () => {
-    onDeleteMessage(msg);
-  };
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        className={classNames(
-          styles["message-text-menu"],
-          showMenu && styles["message-text-menu-open"]
-        )}>
-        <ul className={styles["message-text-menu-list"]}>
-          <li className={styles["message-text-menu-list-item"]}>
-            <Button
-              onClick={handleEditMessage}
-              variant={"text"}
-              icon={"edit"}
-              className={styles["message-menu-btn"]}></Button>
-          </li>
-          <li className={styles["message-text-menu-list-item"]}>
-            <Button
-              onClick={handleDeleteMessage}
-              variant={"text"}
-              icon={"delete"}
-              className={styles["message-menu-btn"]}></Button>
-          </li>
-        </ul>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+
+import styles from "./messenger.module.scss";
+import iconsMap from "@utils/iconsMap";
+import { Col, Button, Typography, Box } from "@components/ui";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();
   const [showMenu, setShowMenu] = useState(false);
-  const foundExecutor = executors?.find(
-    (executor) => executor?.["SlpCode"] === msg?.["SlpCode"]
-  );
-  const MessageTimestamp = moment(msg?.["DocDate"]).local().format("HH:mm");
-  const handleMenuClick = (e) => {
-    setShowMenu((prev) => !prev);
-    e.stopPropagation();
+  const [editMode, setEditMode] = useState(false);
+  const [editText, setEditText] = useState(msg?.["Comments"]);
+
+  const { x, y, strategy, update, refs } = useFloating({
+    placement: "top-end",
+    middleware: [offset(0), shift()],
+  });
+
+  useEffect(() => {
+    if (!refs.reference.current || !refs.floating.current) return;
+    return autoUpdate(refs.reference.current, refs.floating.current, update);
+  }, [refs.reference, refs.floating, update]);
+
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    setShowMenu(true);
+    update();
   };
+
+  const handleEditSubmit = () => {
+    setEditMode(false);
+    try {
+      if (editText === "") {
+        onDeleteMessage(msg?._id);
+        return;
+      }
+      if (
+        editText !== msg?.["Comments"] &&
+        typeof onEditMessage === "function"
+      ) {
+        onEditMessage(msg?._id, { Comments: editText });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleClickOutside = (e) => {
+    if (
+      refs.floating.current &&
+      !refs.floating.current.contains(e.target) &&
+      !refs.reference.current.contains(e.target)
+    ) {
+      setShowMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showMenu]);
+
+  const executor = executors?.find((e) => e?.["SlpCode"] === msg?.["SlpCode"]);
+  const timestamp = moment(msg?.["DocDate"]).local().format("HH:mm");
 
   return (
     <motion.div
+      ref={refs.setReference}
+      onContextMenu={handleContextMenu}
       className={classNames(styles.message, styles[size])}
       initial={{ scale: 0, y: 20 }}
       animate={{ scale: 1, y: 0 }}
       exit={{ scale: 0, y: -20 }}
       transition={{ damping: 10, type: "tween", duration: 0.2 }}>
       <Col>
-        {console.log(msg, "msg")}
         <div className={styles["message-text"]}>
-          <Menu
-            msg={msg}
-            showMenu={showMenu}
-            onEditMessage={onEditMessage}
-            onDeleteMessage={onDeleteMessage}
-          />
-          {/* <Button
-            onClick={handleMenuClick}
-            variant={"text"}
-            icon={"menuDots"}
-            className={styles["message-menu-btn"]}></Button> */}
-          <p>{msg?.["Comments"]}</p>
-          <time className={styles["message-time"]} dateTime={MessageTimestamp}>
-            {MessageTimestamp}
+          {editMode ? (
+            <textarea
+              className={styles["message-edit-input"]}
+              value={editText}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleEditSubmit();
+              }}
+              onChange={(e) => setEditText(e.target.value)}
+              autoFocus
+            />
+          ) : (
+            <p>{msg?.["Comments"]}</p>
+          )}
+          <time className={styles["message-time"]} dateTime={timestamp}>
+            {timestamp}
           </time>
         </div>
       </Col>
+
       <Col>
         <Box dir="row" gap={1} align="center">
           <Typography element="span" className={styles["message-avatar-icon"]}>
@@ -93,10 +117,61 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             )}
           </Typography>
           <Typography element="span" className={styles["message-author"]}>
-            {foundExecutor?.["SlpName"] || "Noma'lum shaxs"}
+            {executor?.["SlpName"] || "Noma'lum shaxs"}
           </Typography>
         </Box>
       </Col>
+
+      <AnimatePresence>
+        {showMenu && (
+          <motion.div
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: !isNaN(y) ? y + 25 : 0,
+              left: !isNaN(x) ? x : 0,
+              zIndex: 99999,
+            }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className={styles["message-text-menu"]}>
+            <ul className={styles["message-text-menu-list"]}>
+              <li className={styles["message-text-menu-list-item"]}>
+                <Button
+                  onClick={() => {
+                    setShowMenu(false);
+                    setEditMode(true);
+                  }}
+                  variant="text"
+                  icon="pencil"
+                  className={classNames(
+                    styles["message-text-menu-btn"],
+                    styles["edit"]
+                  )}>
+                  tahrirlash
+                </Button>
+              </li>
+              <li className={styles["message-text-menu-list-item"]}>
+                <Button
+                  onClick={() => {
+                    setShowMenu(false);
+                    console.log(msg?._id, "id deleting");
+                    onDeleteMessage(msg?._id);
+                  }}
+                  variant="text"
+                  icon="close"
+                  className={classNames(
+                    styles["message-text-menu-btn"],
+                    styles["delete"]
+                  )}>
+                  o'chirish
+                </Button>
+              </li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

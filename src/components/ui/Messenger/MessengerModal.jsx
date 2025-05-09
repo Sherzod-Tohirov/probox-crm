@@ -11,6 +11,8 @@ import { ClipLoader } from "react-spinners";
 const MessengerModal = ({
   messages = [],
   onSendMessage,
+  onEditMessage,
+  onDeleteMessage,
   isLoading = false,
 }) => {
   const [showSendForm, setShowSendForm] = useState(false);
@@ -35,7 +37,12 @@ const MessengerModal = ({
             <ClipLoader color={"black"} size={22} />
           </div>
         ) : (
-          <MessageRenderer messages={messages} size={"small"} />
+          <MessageRenderer
+            onDeleteMessage={onDeleteMessage}
+            onEditMessage={onEditMessage}
+            messages={messages}
+            size={"small"}
+          />
         )}
       </div>
       <AnimatePresence mode="sync">

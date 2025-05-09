@@ -10,7 +10,7 @@ import {
   Table,
 } from "@components/ui";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -23,7 +23,6 @@ import ClientPaymentModal from "@features/clients/components/ClientPaymentModal"
 import useAlert from "@hooks/useAlert";
 import useAuth from "@hooks/useAuth";
 import useToggle from "@hooks/useToggle";
-import formatDueDate from "@utils/formatDueDate";
 import hasRole from "@utils/hasRole";
 import useTableColumns from "@hooks/useTableColumns";
 import formatterCurrency from "@utils/formatterCurrency";
@@ -47,7 +46,7 @@ export default function ClientPage() {
   const updateMutation = useMutateClientPageForm();
   const { isOpen, toggle } = useToggle("messenger");
   const { clientPageTableColumns } = useTableColumns();
-  const { send: handleSendMessage } = useMessengerActions();
+  const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
 
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
@@ -63,7 +62,6 @@ export default function ClientPage() {
     isLoading,
     error,
   } = useFetchClientEntriesById(id);
-
 
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
@@ -193,7 +191,9 @@ export default function ClientPage() {
         ref={messengerRef}
         messages={messages}
         isLoading={isMessagesLoading}
-        onSendMessage={handleSendMessage}
+        onSendMessage={sendMessage}
+        onEditMessage={editMessage}
+        onDeleteMessage={deleteMessage}
       />
     </>
   );

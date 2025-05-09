@@ -3,8 +3,10 @@ import useMutateMessages from "@hooks/data/useMutateMessages";
 
 const useMessengerActions = () => {
   const postMessageMutation = useMutateMessages("post");
+  const deleteMessageMutation = useMutateMessages("delete");
+  const updateMessageMutation = useMutateMessages("update");
 
-  const send = useCallback(async (data) => {
+  const sendMessage = useCallback(async (data) => {
     try {
       const payload = { Comments: data.msgText };
       await postMessageMutation.mutateAsync(payload);
@@ -12,7 +14,24 @@ const useMessengerActions = () => {
       console.log(error);
     }
   }, []);
-  return { send };
+
+  const deleteMessage = useCallback(async (id) => {
+    console.log(id, "inside function deleteMessage");
+    try {
+      await deleteMessageMutation.mutateAsync(id);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const editMessage = useCallback(async (id, data) => {
+    try {
+      await updateMessageMutation.mutateAsync({ id, ...data });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  return { sendMessage, deleteMessage, editMessage };
 };
 
 export default useMessengerActions;

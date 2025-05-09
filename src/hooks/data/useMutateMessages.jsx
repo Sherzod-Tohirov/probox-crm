@@ -7,6 +7,16 @@ import {
   putMessage,
 } from "@services/messengerService";
 import { useQueryClient } from "@tanstack/react-query";
+
+const invalidateMessages = (queryClient, currentClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [
+      "messages",
+      currentClient?.["DocEntry"],
+      currentClient?.["InstlmntID"],
+    ],
+  });
+};
 const useMutateMessages = (action) => {
   const queryClient = useQueryClient();
   const currentClient = useSelector(
@@ -24,26 +34,33 @@ const useMutateMessages = (action) => {
         console.log("Error while posting message: ", error);
       },
       onSuccess: (response) => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            "messages",
-            currentClient?.["DocEntry"],
-            currentClient?.["InstlmntID"],
-          ],
-        });
+        invalidateMessages(queryClient, currentClient);
       },
     });
   }
 
   if (action === "update") {
     return useMutation({
-      mutationFn: (data) => putMessage(data.id, { Comments: data.Comments }),
+      mutationFn: (data) =>
+        putMessage(data.id ?? data._id, { Comments: data.Comments }),
+      onError: (error) => {
+        console.log("Error while updating message: ", error);
+      },
+      onSuccess: (response) => {
+        invalidateMessages(queryClient, currentClient);
+      },
     });
   }
 
   if (action === "delete") {
     return useMutation({
-      mutationFn: (data) => deleteMessage(data.id),
+      mutationFn: (id) => deleteMessage(id),
+      onError: (error) => {
+        console.log("Error while deleting message: ", error);
+      },
+      onSuccess: (response) => {
+        invalidateMessages(queryClient, currentClient);
+      },
     });
   }
 };

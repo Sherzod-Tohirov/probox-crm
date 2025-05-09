@@ -12,6 +12,7 @@
   height: 100%;
   padding-left: 24px;
   padding-right: 24px;
+  overflow-x: hidden;
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   // Remove overflow: auto from parent container
@@ -160,14 +161,15 @@
 }
 
 .message {
+  position: relative;
   @include m.flex(start, start, 1rem, column);
   will-change: transform;
   transform-origin: bottom left;
-
   &-text {
     position: relative;
     min-width: 100px;
     padding: 8px 20px 4px 16px;
+    @include m.flex(start, start, 0, column);
     color: v.$primary-color;
     font-size: 3.5rem;
     font-style: normal;
@@ -175,7 +177,7 @@
     line-height: 143%;
     border-radius: 24px 29px 29px 0px;
     background: #e6f0ff;
-
+    transition: all v.$transition-time v.$transition-type;
     &-menu {
       position: absolute;
       top: 0;
@@ -203,10 +205,35 @@
     }
   }
 
-  &-menu-btn {
-    position: absolute;
-    top: -2px;
-    right: 18px;
+  &-edit-input {
+    position: relative;
+    display: flex;
+    background-color: transparent;
+    width: 100%;
+    min-height: 50px;
+    max-height: 80px;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    color: v.$primary-color;
+    border: none;
+    outline: none;
+    resize: vertical;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: v.$button-bg;
+      border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+  }
+
+  &-edit-input:focus {
   }
 
   &-data {
@@ -291,19 +318,16 @@
   @include m.flex(stretch, stretch, 0, column);
   padding-left: 8px;
   padding-right: 8px;
+  z-index: 99999999;
   width: 260px;
   height: 400px;
   min-height: 0;
   border-radius: 10px;
-  background-color: v.$secondary-bg;
-  z-index: 99999999;
   // overflow: hidden;
+  background-color: v.$secondary-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
 
   &-header {
-    position: sticky;
-    top: 0;
-    z-index: 99999;
     background-color: #fff;
     padding-top: 20px;
     padding-bottom: 10px;
@@ -352,5 +376,61 @@
     background-color: #fff;
     border-top: v.$primary-border-width v.$primary-border-type
       v.$primary-border-color;
+  }
+}
+
+.message-text-menu {
+  @include m.flex(start, start, 8px);
+  width: 110px;
+  height: 62px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  opacity: 1;
+  z-index: 999999;
+
+  &-list {
+    @include m.flex(start, center, 1rem, column);
+    width: 95%;
+    min-height: 50%;
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  &-list-item {
+    position: relative;
+    @include m.flex(center, start, 1rem);
+    width: 100%;
+    font-size: 3.4rem;
+    color: v.$primary-color;
+
+    cursor: pointer;
+
+    & svg {
+      width: 18px !important;
+      height: 18px !important;
+    }
+  }
+
+  &-list-item:first-child {
+    border-bottom: 1px solid #e9ebf0;
+  }
+
+  &-btn {
+    font-weight: 600 !important;
+  }
+
+  &-btn.delete {
+    svg {
+      color: v.$danger-color;
+    }
+
+    color: v.$danger-color;
+  }
+  &-btn.edit {
+    svg {
+      color: v.$fourth-color;
+    }
+    color: v.$fourth-color;
   }
 }

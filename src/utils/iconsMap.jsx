@@ -44,11 +44,14 @@ import {
   LogoutFilled,
 } from "@assets/images/icons/Icons";
 import {
+  Edit,
+  EditFilled,
   Eye,
   EyeClosed,
   MenuDots,
   Messenger,
   MessengerFilled,
+  Pencil,
 } from "../assets/images/icons/Icons";
 
 const iconsMap = {
@@ -100,6 +103,9 @@ const iconsMap = {
   menuDots: <MenuDots />,
   messenger: <Messenger />,
   messengerFilled: <MessengerFilled />,
+  edit: <Edit />,
+  editFilled: <EditFilled />,
+  pencil: <Pencil />,
 };
 
 export default iconsMap;

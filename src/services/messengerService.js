@@ -47,7 +47,7 @@ export const putMessage = async (id, data, options = {}) => {
 
 export const deleteMessage = async (id, options = {}) => {
   try {
-    if (id) throw Error("Id is required !");
+    if (!id) throw Error("Id is required !");
     const response = await deleteData(`invoice/comments/${id}`);
     return response || [];
   } catch (error) {

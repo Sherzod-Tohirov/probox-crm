@@ -17,7 +17,6 @@ const MessageForm = ({ onSubmit, size = "" }) => {
     <form
       className={classNames(styles["text-input-form"], styles[size])}
       onSubmit={handleSubmit((data) => {
-        console.log("handlesubmit working: ", data);
         onSubmit(data);
         reset();
       })}>
