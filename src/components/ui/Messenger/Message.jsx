@@ -160,7 +160,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
                     onDeleteMessage(msg?._id);
                   }}
                   variant="text"
-                  icon="close"
+                  icon="deleteFilled"
                   className={classNames(
                     styles["message-text-menu-btn"],
                     styles["delete"]

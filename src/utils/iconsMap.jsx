@@ -44,6 +44,8 @@ import {
   LogoutFilled,
 } from "@assets/images/icons/Icons";
 import {
+  Delete,
+  DeleteFilled,
   Edit,
   EditFilled,
   Eye,
@@ -106,6 +108,8 @@ const iconsMap = {
   edit: <Edit />,
   editFilled: <EditFilled />,
   pencil: <Pencil />,
+  delete: <Delete />,
+  deleteFilled: <DeleteFilled />,
 };
 
 export default iconsMap;

@@ -8,5 +8,16 @@
 
 .filter-btn {
   margin-top: auto;
-  width: 132px !important;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  width: 110px !important;
+  svg {
+    color: #fff;
+  }
+  &.clear {
+    background-color: v.$danger-color !important;
+    svg {
+      color: #fff !important;
+    }
+  }
 }

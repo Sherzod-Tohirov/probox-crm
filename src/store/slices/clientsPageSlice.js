@@ -1,25 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
+import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
 
 const loadState = () => {
-  const today = moment().startOf("month").format("DD.MM.YYYY");
-  const endOfMonth = moment().endOf("month").format("DD.MM.YYYY");
-  const initialFilter = {
-    search: "",
-    phone: "998",
-    startDate: today,
-    endDate: endOfMonth,
-    paymentStatus: "all",
-    slpCode: "",
-  };
-
   try {
     const serializedState = localStorage.getItem("clientsPageState");
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
     return {
       clients: [],
       currentClient: parsedState.currentClient || {},
-      filter: parsedState.filter || initialFilter,
+      filter: parsedState.filter || initialClientsFilterState,
       currentPage: parsedState.currentPage || 0,
       pageSize: parsedState.pageSize || 10,
     };
@@ -67,7 +56,9 @@ const clientsPageSlice = createSlice({
       saveState(state);
     },
     setClientsFilter(state, action) {
-      const payload = { ...action.payload };
+      const payload = {
+        ...action.payload,
+      };
       state.filter = payload;
       saveState(state);
     },

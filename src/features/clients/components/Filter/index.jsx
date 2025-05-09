@@ -21,6 +21,8 @@ import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
 import _ from "lodash";
 import moment from "moment";
+import classNames from "classnames";
+import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
 
 export default function Filter({ onFilter }) {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
@@ -33,6 +35,7 @@ export default function Filter({ onFilter }) {
     control,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -225,16 +228,40 @@ export default function Filter({ onFilter }) {
           />
         </Col>
         <Col style={{ marginTop: "25px" }}>
-          <Button
-            className={styles["filter-btn"]}
-            icon={"search"}
-            onClick={() => {
-              setIsStatusMenuOpen(false);
-              setShouldPaymentStatusMenu(true);
-            }}
-            variant={"filled"}>
-            Qidiruv
-          </Button>
+          <Row direction="row" gutter={2}>
+            <Col>
+              <Button
+                className={classNames(styles["filter-btn"], styles["clear"])}
+                onClick={() => {
+                  setIsStatusMenuOpen(false);
+                  setShouldPaymentStatusMenu(true);
+                  dispatch(setClientsFilter(initialClientsFilterState));
+                  reset({
+                    ...initialClientsFilterState,
+                    paymentStatus: getSelectOptionsFromKeys(
+                      statusOptions,
+                      initialClientsFilterState.paymentStatus
+                    ),
+                  });
+                }}
+                icon={"delete"}
+                variant={"filled"}>
+                Tozalash
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                className={styles["filter-btn"]}
+                icon={"search"}
+                onClick={() => {
+                  setIsStatusMenuOpen(false);
+                  setShouldPaymentStatusMenu(true);
+                }}
+                variant={"filled"}>
+                Qidiruv
+              </Button>
+            </Col>
+          </Row>
         </Col>
       </Row>
     </form>
