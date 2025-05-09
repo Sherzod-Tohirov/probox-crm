@@ -98,6 +98,17 @@ export default function Filter({ onFilter }) {
     }));
   }, []);
 
+  const handleFilterClear = useCallback(() => {
+    dispatch(setClientsFilter(initialClientsFilterState));
+    reset({
+      ...initialClientsFilterState,
+      paymentStatus: getSelectOptionsFromKeys(
+        statusOptions,
+        initialClientsFilterState.paymentStatus
+      ),
+    });
+  }, [initialClientsFilterState, statusOptions]);
+
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
     const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
@@ -111,7 +122,7 @@ export default function Filter({ onFilter }) {
       setValue("endDate", newEndDate.format("DD.MM.YYYY"));
     }
   }, [watchedFields.startDate, setValue]);
-
+  console.log(shouldPaymentStatusMenu, "should");
   useEffect(() => {
     console.log(watchedFields, filterObj, "obj");
     if (watchedFields.slpCode !== filterObj.slpCode) {
@@ -204,6 +215,7 @@ export default function Filter({ onFilter }) {
             variant={"outlined"}
             label={"Holati"}
             type={"select"}
+            className={"paymentStatus"}
             control={control}
             options={statusOptions}
             multipleSelect={true}
@@ -232,18 +244,7 @@ export default function Filter({ onFilter }) {
             <Col>
               <Button
                 className={classNames(styles["filter-btn"], styles["clear"])}
-                onClick={() => {
-                  setIsStatusMenuOpen(false);
-                  setShouldPaymentStatusMenu(true);
-                  dispatch(setClientsFilter(initialClientsFilterState));
-                  reset({
-                    ...initialClientsFilterState,
-                    paymentStatus: getSelectOptionsFromKeys(
-                      statusOptions,
-                      initialClientsFilterState.paymentStatus
-                    ),
-                  });
-                }}
+                onClick={handleFilterClear}
                 icon={"delete"}
                 variant={"filled"}>
                 Tozalash
