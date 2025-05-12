@@ -1,3 +1,5 @@
+@use "@styles/variables" as v;
+
 .sticky-column {
   position: sticky;
   top: 107px;
@@ -14,4 +16,8 @@
     background-color: #fff;
     content: "";
   }
+}
+
+.screenshot-btn {
+  background-color: rgba(0, 0, 0, 0.863) !important;
 }

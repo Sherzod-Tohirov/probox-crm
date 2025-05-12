@@ -18,6 +18,13 @@ const useTableColumns = () => {
   const clientsTableColumns = useMemo(
     () => [
       {
+        key: "CardCode",
+        title: "ID",
+        width: "2%",
+        minWidth: "50px",
+        icon: "barCodeFilled",
+      },
+      {
         key: "CardName",
         title: "FIO",
         width: "24%",
@@ -35,7 +42,7 @@ const useTableColumns = () => {
         minWidth: "100px",
         icon: "telephoneFilled",
       },
-      { key: "Dscription", title: "Mahsulot", width: "15%", icon: "products" },
+      { key: "Dscription", title: "Mahsulot", width: "18%", icon: "products" },
       {
         key: "InsTotal",
         title: "To'lov",
@@ -94,31 +101,6 @@ const useTableColumns = () => {
       },
 
       {
-        key: "executor",
-        title: "Ijrochi",
-        renderCell: (column) => {
-          if (!column.SlpCode) return "-";
-          if (!executors) return "-";
-
-          const executor = executors.find(
-            (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
-          );
-          if (!executor) return "-";
-
-          if (user.SlpCode === executor?.SlpCode) return "Siz";
-          return executor.SlpName || "-";
-        },
-        width: "8%",
-        icon: "calendarFact",
-      },
-      {
-        key: "comments",
-        title: "Xabarlar",
-        width: "2%",
-        renderCell: (column) => <MessengerCell column={column} />,
-        icon: "messengerFilled",
-      },
-      {
         key: "term",
         title: "Muddati",
         renderCell: (column) => {
@@ -139,6 +121,32 @@ const useTableColumns = () => {
           return formatDate(column.NewDueDate);
         },
         icon: "calendar",
+      },
+
+      {
+        key: "comments",
+        title: "Xabarlar",
+        width: "2%",
+        renderCell: (column) => <MessengerCell column={column} />,
+        icon: "messengerFilled",
+      },
+      {
+        key: "executor",
+        title: "Ijrochi",
+        renderCell: (column) => {
+          if (!column.SlpCode) return "-";
+          if (!executors) return "-";
+
+          const executor = executors.find(
+            (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
+          );
+          if (!executor) return "-";
+
+          if (user.SlpCode === executor?.SlpCode) return "Siz";
+          return executor.SlpName || "-";
+        },
+        width: "8%",
+        icon: "calendarFact",
       },
     ],
     [executors, user.SlpCode]

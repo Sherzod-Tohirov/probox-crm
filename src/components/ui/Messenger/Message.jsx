@@ -37,8 +37,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     update();
   };
 
-  const handleEditSubmit = () => {
-    setEditMode(false);
+  const handleEditSubmit = async () => {
     try {
       if (editText === "") {
         onDeleteMessage(msg?._id);
@@ -52,6 +51,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setEditMode(false);
     }
   };
 
@@ -93,7 +94,10 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
               className={styles["message-edit-input"]}
               value={editText}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleEditSubmit();
+                if (e.key === "Enter") {
+                  if (e.shiftKey) return;
+                  handleEditSubmit();
+                }
               }}
               onChange={(e) => setEditText(e.target.value)}
               autoFocus

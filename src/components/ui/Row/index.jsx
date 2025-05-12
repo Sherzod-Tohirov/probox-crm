@@ -1,22 +1,25 @@
 import styles from "./row.module.scss";
-import { memo } from "react";
+import { forwardRef, memo } from "react";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 
 // Row Component
-function Row({
-  children,
-  gutter,
-  direction = "column",
-  justify = "start",
-  align = "start",
-  flexGrow = false,
-  wrap,
-  className,
-  style,
-  animated = false,
-  ...props
-}) {
+function Row(
+  {
+    children,
+    gutter,
+    direction = "column",
+    justify = "start",
+    align = "start",
+    flexGrow = false,
+    wrap,
+    className,
+    style,
+    animated = false,
+    ...props
+  },
+  ref
+) {
   const rowStyle = {
     display: "flex",
     flexGrow: flexGrow ? "1" : "0",
@@ -33,6 +36,7 @@ function Row({
 
   return (
     <Component
+      ref={ref}
       className={classNames(styles.row, className)}
       style={rowStyle}
       {...props}>
@@ -41,4 +45,4 @@ function Row({
   );
 }
 
-export default memo(Row);
+export default memo(forwardRef(Row));

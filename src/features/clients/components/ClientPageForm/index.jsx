@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Input, Row } from "@components/ui";
 import { useForm } from "react-hook-form";
 
@@ -22,7 +22,7 @@ import hasRole from "@utils/hasRole";
 import { store } from "@store/store";
 import moment from "moment";
 
-export default function ClientPageForm({
+function ClientPageForm({
   formId,
   onSubmit,
   setIsSaveButtonDisabled,
@@ -52,7 +52,10 @@ export default function ClientPageForm({
       ),
     [currentClient]
   );
-
+  console.log(
+    moment(currentClient?.["NewDueDate"]).format("DD.MM.YYYY") || "",
+    "format"
+  );
   const [allImages, setAllImages] = useState([]);
 
   const executorsOptions = useMemo(
@@ -68,10 +71,11 @@ export default function ClientPageForm({
 
   const { register, handleSubmit, control, watch, setValue } = useForm({
     defaultValues: {
-      name: currentClient?.["CardName"] || "Palonchiyev Palonchi",
+      name: currentClient?.["CardName"] || "Mavjud emas",
       executor: executorsOptions?.[0]?.value,
       photo: [],
       telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
+      additional_telephone: currentClient?.["Phone2"] || "Mavjud emas",
       code: currentClient?.["CardCode"] || "00000",
       debtClient: formatterCurrency(
         currentClient?.["MaxDocTotal"] || "0",
@@ -308,6 +312,21 @@ export default function ClientPageForm({
             </Col>
             <Col>
               <InputGroup>
+                <Label icon="telephoneFilled">Telefon raqami 2</Label>
+                <Input
+                  type="text"
+                  control={control}
+                  variant={"filled"}
+                  size={"longer"}
+                  hasIcon={false}
+                  disabled={true}
+                  style={{ cursor: "auto" }}
+                  {...register("additional_telephone")}
+                />
+              </InputGroup>
+            </Col>
+            <Col>
+              <InputGroup>
                 <Label icon="barCodeFilled">Mijoz kodi</Label>
                 <Input
                   type="text"
@@ -315,18 +334,6 @@ export default function ClientPageForm({
                   size={"longer"}
                   disabled={true}
                   {...register("code")}
-                />
-              </InputGroup>
-            </Col>
-            <Col>
-              <InputGroup>
-                <Label icon="barCodeFilled">Passport seriyasi</Label>
-                <Input
-                  type="text"
-                  variant={"filled"}
-                  size={"longer"}
-                  disabled={true}
-                  {...register("passportSeries")}
                 />
               </InputGroup>
             </Col>
@@ -381,9 +388,6 @@ export default function ClientPageForm({
                   size={"longer"}
                   control={control}
                   hasIcon={false}
-                  datePickerOptions={{
-                    minDate: moment().format("DD.MM.YYYY"),
-                  }}
                   {...register("agreementDate")}
                 />
               </InputGroup>
@@ -400,9 +404,23 @@ export default function ClientPageForm({
                 />
               </InputGroup>
             </Col>
+            <Col>
+              <InputGroup>
+                <Label icon="barCodeFilled">Passport seriyasi</Label>
+                <Input
+                  type="text"
+                  variant={"filled"}
+                  size={"longer"}
+                  disabled={true}
+                  {...register("passportSeries")}
+                />
+              </InputGroup>
+            </Col>
           </Row>
         </Col>
       </Row>
     </form>
   );
 }
+
+export default memo(ClientPageForm);

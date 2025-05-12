@@ -55,6 +55,7 @@ function Table({
                 style={{
                   width: column.width || "auto",
                   minWidth: column.minWidth || "initial",
+                  maxWidth: column.maxWidth || "initial",
                 }}>
                 <div className={styles["table-header-cell"]}>
                   {column.icon && iconsMap[column.icon]} {column.title}

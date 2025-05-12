@@ -1,19 +1,22 @@
-import { memo } from "react";
+import { forwardRef, memo } from "react";
 import styles from "./col.module.scss";
 import classNames from "classnames";
-function Col({
-  children,
-  span,
-  flexGrow = false,
-  align = "",
-  justify = "",
-  fullWidth = false,
-  fullHeight = false,
-  offset,
-  gutter,
-  className,
-  style,
-}) {
+function Col(
+  {
+    children,
+    span,
+    flexGrow = false,
+    align = "",
+    justify = "",
+    fullWidth = false,
+    fullHeight = false,
+    offset,
+    gutter,
+    className,
+    style,
+  },
+  ref
+) {
   const colStyle = {
     flex: span ? `0 0 ${(span / 12) * 100}%` : "0 0 auto",
     flexGrow: flexGrow ? 1 : 0,
@@ -28,10 +31,13 @@ function Col({
   };
 
   return (
-    <div className={classNames(styles.col, className)} style={colStyle}>
+    <div
+      ref={ref}
+      className={classNames(styles.col, className)}
+      style={colStyle}>
       {children}
     </div>
   );
 }
 
-export default memo(Col);
+export default memo(forwardRef(Col));
