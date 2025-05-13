@@ -10,6 +10,8 @@ import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
 import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
 import MessengerCell from "@features/clients/components/TableCellHelpers/MessengerCell";
+import AgreementDateCell from "@features/clients/components/TableCellHelpers/AgreementDateCell";
+import ExecutorCell from "../features/clients/components/TableCellHelpers/ExecutorCell";
 
 const useTableColumns = () => {
   const { data: executors } = useFetchExecutors();
@@ -114,12 +116,7 @@ const useTableColumns = () => {
         key: "NewDueDate",
         title: "Kelishildi",
         width: "15%",
-        renderCell: (column) => {
-          if (!column.NewDueDate) return "-";
-          if (moment(column.NewDueDate, "DD.MM.YYYY", true).isValid())
-            return column.NewDueDate;
-          return formatDate(column.NewDueDate);
-        },
+        renderCell: (column) => <AgreementDateCell column={column} />,
         icon: "calendar",
       },
 
@@ -133,20 +130,8 @@ const useTableColumns = () => {
       {
         key: "executor",
         title: "Ijrochi",
-        renderCell: (column) => {
-          if (!column.SlpCode) return "-";
-          if (!executors) return "-";
-
-          const executor = executors.find(
-            (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
-          );
-          if (!executor) return "-";
-
-          if (user.SlpCode === executor?.SlpCode) return "Siz";
-          return executor.SlpName || "-";
-        },
-        width: "8%",
-        icon: "calendarFact",
+        icon: "avatarFilled",
+        renderCell: (column) => <ExecutorCell column={column} />,
       },
     ],
     [executors, user.SlpCode]

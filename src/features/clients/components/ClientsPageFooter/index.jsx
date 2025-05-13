@@ -149,6 +149,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
             {hasRole(user, ["Manager"]) ? (
               <Col>
                 <Button
+                  disabled
                   variant={"filled"}
                   onClick={handleDistributeClients}
                   isLoading={distributeMutation.isPending}>
