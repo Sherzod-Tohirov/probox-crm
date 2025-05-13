@@ -127,6 +127,8 @@
 }
 
 .input-box {
+  position: relative;
+  width: 100%;
   &.tel {
     width: 310px;
   }

@@ -1,0 +1,56 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
+.modal {
+  @include m.flex(stretch, stretch, 0, column);
+  padding-left: 12px;
+  padding-right: 12px;
+  z-index: 99999999;
+  width: 260px;
+  height: 200px;
+  min-height: 0;
+  border-radius: 10px;
+  // overflow: hidden;
+  background-color: v.$secondary-bg;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
+  &-header {
+    @include m.flex-center;
+    padding: 7px;
+    border-bottom: v.$primary-border-width v.$primary-border-type
+      v.$primary-border-color;
+  }
+
+  &-body {
+    flex: 1;
+    padding: 15px 5px;
+  }
+
+  &-footer {
+    @include m.flex(center, center, 12px, row);
+    margin-top: auto;
+    padding: 10px;
+    border-top: v.$primary-border-width v.$primary-border-type
+      v.$primary-border-color;
+
+    button {
+      width: 110px !important;
+      font-size: 3rem !important;
+
+      &:first-child {
+        background-color: v.$danger-color;
+      }
+
+      &:nth-child(2) {
+        background-color: v.$success-color;
+      }
+    }
+  }
+
+  &-title {
+    font-size: 3rem;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+}

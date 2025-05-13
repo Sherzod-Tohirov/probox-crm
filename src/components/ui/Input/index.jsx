@@ -32,6 +32,7 @@ const Input = forwardRef(
       id,
       style = {},
       inputBoxStyle = {},
+      inputBoxClassName,
       className,
       width,
       type = "text",
@@ -292,7 +293,7 @@ const Input = forwardRef(
         )}
 
         <Col fullWidth>
-          <Box dir="column" pos={"relative"} gap={1}>
+          <Box dir="column" gap={1}>
             <Box
               pos="relative"
               style={inputBoxStyle}
@@ -300,7 +301,8 @@ const Input = forwardRef(
                 styles["input-box"],
                 styles[variant],
                 styles[type],
-                styles[size]
+                styles[size],
+                inputBoxClassName
               )}>
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (

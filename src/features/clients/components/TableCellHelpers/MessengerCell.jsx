@@ -5,7 +5,7 @@ import MessengerModal from "@components/ui/Messenger/MessengerModal";
 import useFetchMessages from "@hooks/data/useFetchMessages";
 import useMessengerActions from "@hooks/useMessengerActions";
 
-import ModalWrapper from "./ModalWrapper";
+import ModalWrapper from "./helper/ModalWrapper";
 
 const MessengerCell = ({ column }) => {
   const [open, setOpen] = useState(false);
