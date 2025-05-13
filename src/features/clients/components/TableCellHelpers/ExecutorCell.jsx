@@ -1,16 +1,21 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
-import ModalWrapper from "./helper/ModalWrapper";
+import moment from "moment";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Input } from "@components/ui";
+import ModalWrapper from "./helper/ModalWrapper";
 import ModalCell from "./helper/ModalCell";
 
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
-
+import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
 import useAuth from "@hooks/useAuth";
 
 import selectOptionsCreator from "@utils/selectOptionsCreator";
+import hasRole from "@utils/hasRole";
 
 import styles from "./style.module.scss";
+
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 
 const Title = ({ executor, user }) => {
   if (!executor) return "-";
@@ -21,22 +26,26 @@ const Title = ({ executor, user }) => {
 
 const ExecutorCell = ({ column }) => {
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      executor: column?.SlpCode,
-    },
-  });
-
   const { data: executors } = useFetchExecutors();
-  const { user } = useAuth();
-
   const executor = useMemo(() => {
     const foundExecutor = executors.find(
       (executor) => Number(executor.SlpCode) === Number(column?.SlpCode)
     );
     return foundExecutor;
   }, [column, executors]);
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm({
+    defaultValues: { executor: executor?.SlpCode ?? "" },
+  });
 
+  const mutation = useMutateClientPageForm();
+  const { currentClient } = useSelector((state) => state.page.clients);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const executorsOptions = useMemo(
     () =>
       selectOptionsCreator(executors, {
@@ -48,29 +57,62 @@ const ExecutorCell = ({ column }) => {
     [executors]
   );
 
-  const handleApply = useCallback((data) => {}, []);
+  const handleApply = useCallback(
+    async (data) => {
+      const formattedDueDate = moment(currentClient["DueDate"]).format(
+        "YYYY.MM.DD"
+      );
 
+      const payload = {
+        docEntry: currentClient?.["DocEntry"],
+        installmentId: currentClient?.["InstlmntID"],
+        data: {
+          slpCode: data?.executor,
+          DueDate: formattedDueDate,
+        },
+      };
+      try {
+        await mutation.mutateAsync(payload);
+        queryClient.invalidateQueries({
+          queryKey: ["clients"],
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setOpen(false);
+      }
+    },
+    [currentClient]
+  );
   return (
     <ModalWrapper
       open={open}
       setOpen={setOpen}
       column={column}
       title={<Title executor={executor} user={user} />}>
-      <ModalCell
-        title={"Ijrochini o'zgartitish"}
-        onClose={() => setOpen(false)}
-        onApply={handleSubmit(handleApply)}>
-        <Input
-          inputBoxClassName={styles["modal-input-wrapper"]}
-          className={styles["modal-input"]}
-          type="select"
-          variant={"outlined"}
-          value={executor?.SlpCode ?? ""}
-          options={executorsOptions}
-          canClickIcon={false}
-          {...register("executor")}
-        />
-      </ModalCell>
+      {hasRole(user, ["Manager"]) ? (
+        <ModalCell
+          title={"Ijrochini o'zgartirish"}
+          onClose={() => {
+            setOpen(false);
+            reset();
+          }}
+          onApply={handleSubmit(handleApply)}
+          applyButtonProps={{
+            disabled: !isDirty,
+            isLoading: mutation.isPending,
+          }}>
+          <Input
+            inputBoxClassName={styles["modal-input-wrapper"]}
+            className={styles["modal-input"]}
+            type="select"
+            variant={"outlined"}
+            options={executorsOptions}
+            canClickIcon={false}
+            {...register("executor")}
+          />
+        </ModalCell>
+      ) : null}
     </ModalWrapper>
   );
 };

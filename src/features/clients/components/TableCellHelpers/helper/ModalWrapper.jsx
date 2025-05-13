@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { useMemo, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,7 @@ import {
 
 const ModalWrapper = ({ open, setOpen, column, title, children }) => {
   const dispatch = useDispatch();
+  const timeoutRef = useRef();
 
   const { x, y, strategy, refs, update } = useFloating({
     placement: "top-end",
@@ -25,18 +26,33 @@ const ModalWrapper = ({ open, setOpen, column, title, children }) => {
     ],
     whileElementsMounted: autoUpdate,
   });
+
   // Sync floating when modal opens
   useEffect(() => {
     if (open) update();
   }, [open, update]);
 
   const handleMouseEnter = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     dispatch(setCurrentClient(column));
     setOpen(true);
-  }, [dispatch, column]);
+  }, [dispatch, column, setOpen]);
 
-  const handleMouseLeave = useCallback(() => {
-    setOpen(false);
+  const handleMouseLeave = useCallback(
+    (e) => {
+      console.log(e.relatedTarget, "relatedTarget");
+      if (e.relatedTarget && e.relatedTarget instanceof Window) return;
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false);
+      }, 200); // 200ms delay
+    },
+    [setOpen]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   const wrapperStyles = useMemo(

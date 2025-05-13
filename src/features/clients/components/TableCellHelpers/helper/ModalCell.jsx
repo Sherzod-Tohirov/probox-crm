@@ -1,7 +1,13 @@
 import { memo } from "react";
 import styles from "./style.module.scss";
 import { Button } from "@components/ui";
-const ModalCell = ({ title, children, onClose, onApply }) => {
+const ModalCell = ({
+  title,
+  children,
+  onClose,
+  onApply,
+  applyButtonProps = {},
+}) => {
   return (
     <div
       className={styles["modal"]}
@@ -24,7 +30,8 @@ const ModalCell = ({ title, children, onClose, onApply }) => {
           onClick={(e) => {
             e.preventDefault();
             onApply();
-          }}>
+          }}
+          {...applyButtonProps}>
           Tasdiqlash
         </Button>
       </div>
