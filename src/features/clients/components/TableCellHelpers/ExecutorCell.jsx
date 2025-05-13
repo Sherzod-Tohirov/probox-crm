@@ -90,7 +90,7 @@ const ExecutorCell = ({ column }) => {
       setOpen={setOpen}
       column={column}
       title={<Title executor={executor} user={user} />}>
-      {hasRole(user, ["Manager"]) ? (
+      {hasRole(user, ["Manager", "Cashier"]) ? (
         <ModalCell
           title={"Ijrochini o'zgartirish"}
           onClose={() => {

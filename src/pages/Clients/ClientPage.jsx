@@ -115,16 +115,16 @@ export default function ClientPage() {
                 </Col>
                 <Col>
                   <Row direction={"row"} gutter={3}>
-                    {/* <Col>
+                    <Col>
                       <Button
                         type={"button"}
                         className={styles["screenshot-btn"]}
                         onClick={() => handleSaveScreenshot(screenshotRef)}
                         form={"clientForm"}
                         variant={"filled"}>
-                        Screenshot qilish
+                        Screenshot qilish (test rejimida)
                       </Button>
-                    </Col> */}
+                    </Col>
                     <Col>
                       <Button
                         disabled={isSaveButtonDisabled}
