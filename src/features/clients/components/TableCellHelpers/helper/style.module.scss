@@ -14,6 +14,20 @@
   background-color: v.$secondary-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
+
+  &-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    padding: 3rem;
+    @include m.flex(center, start, 0);
+    width: 100%;
+    height: 100%;
+  }
+
   &-header {
     @include m.flex-center;
     padding: 7px;

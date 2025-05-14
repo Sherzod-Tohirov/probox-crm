@@ -71,6 +71,7 @@
   }
 
   td {
+    position: relative;
     padding: 3rem;
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;

@@ -160,7 +160,6 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
                 <Button
                   onClick={() => {
                     setShowMenu(false);
-                    console.log(msg?._id, "id deleting");
                     onDeleteMessage(msg?._id);
                   }}
                   variant="text"

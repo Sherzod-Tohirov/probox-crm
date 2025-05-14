@@ -1,8 +1,11 @@
 import { memo, useRef } from "react";
-import { useMemo, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
+
+import useClickOutside from "@hooks/helper/useClickOutside";
+import styles from "./style.module.scss";
 
 import {
   useFloating,
@@ -12,11 +15,12 @@ import {
   autoUpdate,
   FloatingPortal,
 } from "@floating-ui/react";
+import { flushSync } from "react-dom";
 
-const ModalWrapper = ({ open, setOpen, column, title, children }) => {
+const ModalWrapper = ({ open, setOpen, column, title, children, style }) => {
   const dispatch = useDispatch();
-  const timeoutRef = useRef();
-
+  const containerRef = useRef();
+  const { currentClient } = useSelector((state) => state.page.clients);
   const { x, y, strategy, refs, update } = useFloating({
     placement: "top-end",
     middleware: [
@@ -32,43 +36,27 @@ const ModalWrapper = ({ open, setOpen, column, title, children }) => {
     if (open) update();
   }, [open, update]);
 
-  const handleMouseEnter = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    dispatch(setCurrentClient(column));
-    setOpen(true);
-  }, [dispatch, column, setOpen]);
-
-  const handleMouseLeave = useCallback(
+  const handleClick = useCallback(
     (e) => {
-      console.log(e.relatedTarget, "relatedTarget");
-      if (e.relatedTarget && e.relatedTarget instanceof Window) return;
-      timeoutRef.current = setTimeout(() => {
-        setOpen(false);
-      }, 200); // 200ms delay
+      e.stopPropagation();
+      setOpen((prev) => !prev);
     },
-    [setOpen]
+    [column, dispatch, setOpen, currentClient]
   );
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+  const handleMouseEnter = useCallback(() => {
+    dispatch(setCurrentClient(column));
+  }, [column, dispatch, setOpen, currentClient]);
 
-  const wrapperStyles = useMemo(
-    () => ({
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }),
-    []
-  );
+  useEffect(() => {}, [currentClient]);
 
   return (
     <div
-      style={wrapperStyles}
+      style={style}
+      className={styles["modal-wrapper"]}
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}>
+      ref={containerRef}>
       <div ref={refs.setReference}>{title}</div>
       <AnimatePresence>
         {open && (

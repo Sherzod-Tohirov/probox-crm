@@ -18,9 +18,11 @@ import styles from "./style.module.scss";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
   );
+
   const [clientsDetails, setClientsDetails] = useState({
     totalPages: 0,
     total: 0,
@@ -33,7 +35,7 @@ export default function Clients() {
     page: currentPage + 1,
     params,
   });
-
+  console.log(params, "params");
   const { clientsTableColumns } = useTableColumns();
 
   const hasRestoredScroll = useRef(false);

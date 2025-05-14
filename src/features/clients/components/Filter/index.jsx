@@ -79,22 +79,18 @@ export default function Filter({ onFilter }) {
     return executorsOptions?.[0]?.value || "";
   }, [filterObj?.slpCode, executors]);
 
-  const handleSearchSelect = useCallback((client) => {
-    const formattedPhone = formatPhoneNumber(client.Phone1);
-    setValue("search", client.CardName);
-    setValue("phone", formattedPhone);
+  const handleSearchSelect = useCallback((clientData, filterKey) => {
+    setValue(filterKey, clientData);
 
     dispatch(
       setClientsFilter({
         ...filterObj, // Preserve existing filters
-        search: client.CardName,
-        phone: formattedPhone,
+        [filterKey]: clientData,
       })
     );
     setToggleSearchFields((prev) => ({
       ...prev,
-      search: false,
-      phone: false,
+      [filterKey]: false,
     }));
   }, []);
 
@@ -124,7 +120,6 @@ export default function Filter({ onFilter }) {
   }, [watchedFields.startDate, setValue]);
   console.log(shouldPaymentStatusMenu, "should");
   useEffect(() => {
-    console.log(watchedFields, filterObj, "obj");
     if (watchedFields.slpCode !== filterObj.slpCode) {
       dispatch(
         setClientsFilter({
@@ -165,7 +160,9 @@ export default function Filter({ onFilter }) {
               setToggleSearchFields((prev) => ({ ...prev, search: true }));
             }}
             onSearch={query.onSearch}
-            onSearchSelect={handleSearchSelect}
+            onSearchSelect={(client) =>
+              handleSearchSelect(client.CardName, "search")
+            }
             renderSearchItem={query.renderItem}
             searchable={toggleSearchFields.search}
             control={control}
@@ -182,7 +179,9 @@ export default function Filter({ onFilter }) {
             onFocus={() => {
               setToggleSearchFields((prev) => ({ ...prev, phone: true }));
             }}
-            onSearchSelect={handleSearchSelect}
+            onSearchSelect={(client) =>
+              handleSearchSelect(client.Phone1, "phone")
+            }
             renderSearchItem={phone.renderItem}
             placeholder={"90 123 45 67"}
             control={control}

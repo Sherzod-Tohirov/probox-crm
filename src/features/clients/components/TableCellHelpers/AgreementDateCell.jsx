@@ -37,7 +37,6 @@ const AgreementDateCell = ({ column }) => {
 
   const handleApply = useCallback(
     async (data) => {
-      console.log(data, "data");
       const formattedDueDate = moment(currentClient["DueDate"]).format(
         "YYYY.MM.DD"
       );

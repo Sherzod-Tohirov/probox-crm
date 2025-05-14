@@ -293,7 +293,7 @@ const Input = forwardRef(
         )}
 
         <Col fullWidth>
-          <Box dir="column" gap={1}>
+          <Box pos={"relative"} dir="column" gap={1}>
             <Box
               pos="relative"
               style={inputBoxStyle}

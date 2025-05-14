@@ -7,7 +7,7 @@ const useSaveScreenshot = () => {
 
     // Wait for all fonts
     await document.fonts.ready;
-
+      
     try {
       const dataUrl = await domtoimage.toPng(element, {
         bgcolor: "#fff",
@@ -23,6 +23,7 @@ const useSaveScreenshot = () => {
     } catch (error) {
       console.log(error);
     }
+    
   }, []);
 
   return { handleSaveScreenshot };

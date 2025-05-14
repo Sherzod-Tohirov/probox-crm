@@ -21,6 +21,7 @@ const MessengerCell = ({ column }) => {
 
   return (
     <ModalWrapper
+      style={{ justifyContent: "center" }}
       open={open}
       setOpen={setOpen}
       column={column}
