@@ -21,7 +21,7 @@ const useTableColumns = () => {
     () => [
       {
         key: "CardCode",
-        title: "ID",
+        title: "Kod",
         width: "2%",
         minWidth: "50px",
         icon: "barCodeFilled",
@@ -101,7 +101,6 @@ const useTableColumns = () => {
         width: "6%",
         icon: "calendarFact",
       },
-
       {
         key: "term",
         title: "Muddati",

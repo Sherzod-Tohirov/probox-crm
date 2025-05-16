@@ -3,7 +3,7 @@ import styles from "./table.module.scss";
 import iconsMap from "@utils/iconsMap";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 function Table({
   columns = [],
@@ -13,27 +13,47 @@ function Table({
   containerStyle = {},
   containerClass,
   isLoading = false,
+  showPivotColumn = false,
   getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
 
-  const handleMouseDown = () => {
+  const finalColumns = showPivotColumn
+    ? [
+        {
+          key: "pivotId",
+          icon: "barCodeFilled",
+          title: "ID",
+          width: "2%",
+          cellStyle: {
+            textAlign: "center",
+          },
+          renderCell: (_, rowIndex) => rowIndex + 1,
+        },
+        ...columns,
+      ]
+    : columns;
+
+  const handleMouseDown = useCallback(() => {
     pressTimeRef.current = Date.now();
     allowRowClickRef.current = true;
-  };
+  }, [allowRowClickRef, pressTimeRef]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     const pressDuration = Date.now() - pressTimeRef.current;
     allowRowClickRef.current = pressDuration < 400; // Disable row click if pressed for more than 200ms
-  };
+  }, [allowRowClickRef, pressTimeRef]);
 
-  const handleRowClick = (row) => {
-    if (allowRowClickRef.current) {
-      onRowClick(row);
-    }
-  };
+  const handleRowClick = useCallback(
+    (row) => {
+      if (allowRowClickRef.current) {
+        onRowClick(row);
+      }
+    },
+    [allowRowClickRef]
+  );
 
   return (
     <div
@@ -48,7 +68,7 @@ function Table({
         style={style}>
         <thead>
           <tr>
-            {columns.map((column) => (
+            {finalColumns.map((column) => (
               <th
                 // Use combination of key and index for uniqueness
                 key={`header-${column.key}-${uuidv4()}`}
@@ -84,7 +104,7 @@ function Table({
                   onTouchStart={handleMouseDown}
                   onTouchEnd={handleMouseUp}
                   style={{ ...getRowStyles(row) }}>
-                  {columns.map((column, colIndex) => (
+                  {finalColumns.map((column, colIndex) => (
                     <td
                       style={{ ...(column?.cellStyle ? column.cellStyle : {}) }}
                       key={`cell-${row.id || row.IntrSerial || rowIndex}-${
@@ -92,7 +112,7 @@ function Table({
                       }-${uuidv4()}`} // Ensure unique key for each cell
                     >
                       {column.renderCell
-                        ? column.renderCell(row)
+                        ? column.renderCell(row, rowIndex)
                         : row[column.key]}
                     </td>
                   ))}

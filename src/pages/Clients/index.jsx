@@ -15,10 +15,11 @@ import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import _ from "lodash";
 import styles from "./style.module.scss";
+import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
   );
@@ -35,7 +36,7 @@ export default function Clients() {
     page: currentPage + 1,
     params,
   });
-  console.log(params, "params");
+
   const { clientsTableColumns } = useTableColumns();
 
   const hasRestoredScroll = useRef(false);
@@ -108,12 +109,28 @@ export default function Clients() {
           </Row>
         </Col>
         <Col fullWidth>
+          {/* <VirtualizedTable
+            style={{ marginTop: "-24px" }}
+            isLoading={isLoading}
+            columns={clientsTableColumns}
+            data={clientsDetails.data}
+            onRowClick={handleRowClick}
+            showPivotColumn={true}
+            getRowStyles={(row) => {
+              if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
+                return {
+                  backgroundColor: "rgba(0,0,0,0.05)",
+                };
+              }
+            }}
+          /> */}
           <Table
             style={{ marginTop: "-24px" }}
             isLoading={isLoading}
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
+            showPivotColumn={true}
             getRowStyles={(row) => {
               if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
                 return {

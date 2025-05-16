@@ -9,12 +9,11 @@ import ModalWrapper from "./helper/ModalWrapper";
 
 const MessengerCell = ({ column }) => {
   const [open, setOpen] = useState(false);
-  const { currentClient } = useSelector((state) => state.page.clients);
 
   const { data: messages, isLoading } = useFetchMessages({
     enabled: open,
-    docEntry: currentClient?.["DocEntry"],
-    installmentId: currentClient?.["InstlmntID"],
+    docEntry: column?.["DocEntry"],
+    installmentId: column?.["InstlmntID"],
   });
 
   const { sendMessage, editMessage, deleteMessage } = useMessengerActions();

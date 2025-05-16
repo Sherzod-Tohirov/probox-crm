@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -41,21 +41,14 @@ const ModalWrapper = ({ open, setOpen, column, title, children, style }) => {
       e.stopPropagation();
       setOpen((prev) => !prev);
     },
-    [column, dispatch, setOpen, currentClient]
+    [column, dispatch, setOpen]
   );
-
-  const handleMouseEnter = useCallback(() => {
-    dispatch(setCurrentClient(column));
-  }, [column, dispatch, setOpen, currentClient]);
-
-  useEffect(() => {}, [currentClient]);
 
   return (
     <div
       style={style}
       className={styles["modal-wrapper"]}
       onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
       ref={containerRef}>
       <div ref={refs.setReference}>{title}</div>
       <AnimatePresence>

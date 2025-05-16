@@ -75,6 +75,15 @@ export default function ClientPage() {
       const formattedDueDate = moment(currentClient["DueDate"]).format(
         "YYYY.MM.DD"
       );
+      console.log(data, "data client");
+      const phonePayload = {
+        ...(!data.telephone.includes(currentClient?.["Phone1"])
+          ? { Phone1: data.telephone }
+          : {}),
+        ...(!data.additional_telephone.includes(currentClient?.["Phone2"])
+          ? { Phone2: data.additional_telephone }
+          : {}),
+      };
 
       const payload = {
         docEntry: currentClient?.["DocEntry"],
@@ -82,11 +91,17 @@ export default function ClientPage() {
         data: {
           slpCode: data?.executor,
           DueDate: formattedDueDate,
+          ...phonePayload,
           ...(formattedAgreementDate
             ? { newDueDate: formattedAgreementDate }
             : {}),
+          ...(!_.isEmpty(phonePayload)
+            ? { CardCode: currentClient?.["CardCode"] }
+            : {}),
         },
       };
+      
+      console.log(payload, "payload");
       try {
         await updateMutation.mutateAsync(payload);
         dispatch(
@@ -119,7 +134,9 @@ export default function ClientPage() {
                       <Button
                         type={"button"}
                         className={styles["screenshot-btn"]}
-                        onClick={() => handleSaveScreenshot(screenshotRef)}
+                        onClick={() =>
+                          _.debounce(handleSaveScreenshot, 200)(screenshotRef)
+                        }
                         form={"clientForm"}
                         variant={"filled"}>
                         Screenshot qilish (test rejimida)

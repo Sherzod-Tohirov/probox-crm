@@ -22,9 +22,9 @@
   border-spacing: 0;
   border-bottom: v.$primary-border-width v.$primary-border-type
     v.$primary-border-color;
-  overflow: hidden;
   background-color: v.$primary-table-bg;
   transition: all v.$transition-type v.$transition-time;
+  overflow: hidden;
   &.loading {
     opacity: 0.6;
   }

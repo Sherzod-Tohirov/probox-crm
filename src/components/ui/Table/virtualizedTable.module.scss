@@ -1,0 +1,109 @@
+// virtualizedTable.module.scss
+@use "@styles/variables" as v;
+@use "@styles/mixins" as m;
+
+.table-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+
+  & * {
+    transition: all v.$transition-time v.$transition-type;
+  }
+}
+
+.base-table {
+  width: 100%;
+  font-size: 3.2rem;
+  color: #3c3f47;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+  background-color: v.$primary-table-bg;
+  display: flex;
+  flex-direction: column;
+  border: none;
+
+  &.loading {
+    opacity: 0.6;
+  }
+}
+
+.table-header {
+  display: flex;
+  width: 100%;
+  background: v.$primary-table-header-bg;
+  border-bottom: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
+}
+
+.table-header-cell {
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  border-right: v.$secondary-border-width v.$primary-border-type v.$primary-border-color;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+    color: v.$secondary-color;
+  }
+
+  &:first-child {
+    border-radius: 12px 0 0 0;
+  }
+
+  &:last-child {
+    border-right: none;
+    border-radius: 0 12px 0 0;
+  }
+}
+
+.table-row {
+  display: flex;
+  align-items: center;
+  border-bottom: v.$secondary-border-width v.$primary-border-type v.$primary-border-color;
+  cursor: pointer;
+  transition: background-color v.$transition-time v.$transition-type;
+
+  &:hover {
+    background-color: v.$primary-table-hover-bg;
+  }
+}
+
+.table-cell {
+  padding: 1.5rem 2rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-right: v.$secondary-border-width v.$primary-border-type v.$primary-border-color;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &.empty-table {
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: normal;
+    color: v.$secondary-color;
+    border-bottom: none;
+    width: 100%;
+    padding: 3rem;
+  }
+}
+
+.table-loading-row {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  @include m.flex(start, center, 0);
+}

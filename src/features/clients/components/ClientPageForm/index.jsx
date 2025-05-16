@@ -69,7 +69,14 @@ function ClientPageForm({
     [executors]
   );
 
-  const { register, handleSubmit, control, watch, setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    formState: { isDirty },
+  } = useForm({
     defaultValues: {
       name: currentClient?.["CardName"] || "Mavjud emas",
       executor: executorsOptions?.[0]?.value,
@@ -182,13 +189,6 @@ function ClientPageForm({
     const formattedNewDueDate = moment(currentClient?.["NewDueDate"]).format(
       "DD.MM.YYYY"
     );
-
-    if (executor && executor != currentClient?.SlpCode) {
-      setIsSaveButtonDisabled(false);
-    }
-    if (agreementDate && agreementDate !== formattedNewDueDate) {
-      setIsSaveButtonDisabled(false);
-    }
   }, [executor, agreementDate, currentClient]);
 
   useEffect(() => {
@@ -199,6 +199,10 @@ function ClientPageForm({
       setValue("executor", foundExecutor.SlpCode);
     }
   }, [executors]);
+
+  useEffect(() => {
+    setIsSaveButtonDisabled(!isDirty);
+  }, [isDirty]);
 
   useEffect(() => {
     const imagesWithApi = currentClient?.Images?.map(
@@ -304,7 +308,6 @@ function ClientPageForm({
                   variant={"filled"}
                   size={"longer"}
                   hasIcon={false}
-                  disabled={true}
                   style={{ cursor: "auto" }}
                   {...register("telephone")}
                 />
@@ -319,7 +322,6 @@ function ClientPageForm({
                   variant={"filled"}
                   size={"longer"}
                   hasIcon={false}
-                  disabled={true}
                   style={{ cursor: "auto" }}
                   {...register("additional_telephone")}
                 />

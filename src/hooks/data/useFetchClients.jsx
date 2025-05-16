@@ -16,6 +16,7 @@ export default function useFetchClients(options = {}) {
     queryKey: ["clients", queryParams],
     queryFn: () => getClients(queryParams),
     enabled: true,
+    refetchOnMount: true,
     ...options.queryOptions,
   });
 
