@@ -15,7 +15,7 @@ import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import _ from "lodash";
 import styles from "./style.module.scss";
-import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
+// import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
