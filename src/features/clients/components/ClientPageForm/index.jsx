@@ -34,6 +34,7 @@ function ClientPageForm({
   const [uploadedImage, setUploadedImage] = useState([]);
   const [isImgSaveButtonDisabled, setImgSaveButtonDisabled] = useState(true);
   const { data: executors } = useFetchExecutors();
+
   const { user } = useAuth();
   const { alert } = useAlert();
 
@@ -52,12 +53,7 @@ function ClientPageForm({
       ),
     [currentClient]
   );
-  console.log(
-    moment(currentClient?.["NewDueDate"]).format("DD.MM.YYYY") || "",
-    "format"
-  );
   const [allImages, setAllImages] = useState([]);
-
   const executorsOptions = useMemo(
     () =>
       selectOptionsCreator(executors, {
@@ -73,7 +69,7 @@ function ClientPageForm({
     register,
     handleSubmit,
     control,
-    watch,
+    reset,
     setValue,
     formState: { isDirty },
   } = useForm({
@@ -82,7 +78,7 @@ function ClientPageForm({
       executor: executorsOptions?.[0]?.value,
       photo: [],
       telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
-      additional_telephone: currentClient?.["Phone2"] || "Mavjud emas",
+      additional_telephone: currentClient?.["Phone2"] || "",
       code: currentClient?.["CardCode"] || "00000",
       debtClient: formatterCurrency(
         currentClient?.["MaxDocTotal"] || "0",
@@ -96,8 +92,6 @@ function ClientPageForm({
       imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
-  const executor = watch("executor");
-  const agreementDate = watch("agreementDate");
 
   const handleImageInputClick = useCallback(() => {
     setImgPreviewModal(true);
@@ -109,6 +103,7 @@ function ClientPageForm({
     "image/jpeg",
     "image/svg+xml",
   ];
+
   const allowedExtensions = ["png", "jpg", "jpeg", "svg"];
 
   const handleImageChange = useCallback((e) => {
@@ -134,7 +129,7 @@ function ClientPageForm({
       })),
     ]);
   }, []);
-
+  console.log(isDirty, "isDirty");
   const handleImageUpload = useCallback(async () => {
     const commonPayload = {
       docEntry: currentClient?.["DocEntry"],
@@ -186,12 +181,6 @@ function ClientPageForm({
   }, [uploadedImage]);
 
   useEffect(() => {
-    const formattedNewDueDate = moment(currentClient?.["NewDueDate"]).format(
-      "DD.MM.YYYY"
-    );
-  }, [executor, agreementDate, currentClient]);
-
-  useEffect(() => {
     const foundExecutor = executors?.find(
       (executor) => Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
     );
@@ -220,7 +209,10 @@ function ClientPageForm({
     <form
       className={styles.form}
       id={formId}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(async (data) => {
+        await onSubmit(data);
+        reset(data);
+      })}
       {...props}>
       <ImagePreviewModal
         inputId={"photo"}

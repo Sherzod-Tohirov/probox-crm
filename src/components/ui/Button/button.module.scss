@@ -89,9 +89,20 @@
   }
 }
 
+$icon-sizes: 16px, 24px, 32px, 48px;
+
 .icon-text {
   @include m.flex(center, center, 0);
   color: v.$secondary-color;
+}
+
+@each $size in $icon-sizes {
+  .icon-size-#{$size} {
+    svg {
+      width: $size !important;
+      height: $size !important;
+    }
+  }
 }
 
 .loading-icon {

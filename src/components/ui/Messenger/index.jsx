@@ -35,6 +35,7 @@ export const Messenger = (
         <Button
           className={styles["toggle-button"]}
           variant={"text"}
+          iconSize={24}
           icon={"toggleOpen"}
           onClick={toggle}></Button>
         <Typography element="h2" className={styles.title}>

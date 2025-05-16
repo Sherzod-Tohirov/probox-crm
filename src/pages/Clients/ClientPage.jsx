@@ -76,11 +76,13 @@ export default function ClientPage() {
         "YYYY.MM.DD"
       );
       console.log(data, "data client");
+      console.log(
+        data.telephone.includes(currentClient?.["Phone1"]),
+        "invlaudes data"
+      );
       const phonePayload = {
-        ...(!data.telephone.includes(currentClient?.["Phone1"])
-          ? { Phone1: data.telephone }
-          : {}),
-        ...(!data.additional_telephone.includes(currentClient?.["Phone2"])
+        ...(data.telephone ? { Phone1: data.telephone } : {}),
+        ...(data.additional_telephone
           ? { Phone2: data.additional_telephone }
           : {}),
       };
@@ -100,16 +102,10 @@ export default function ClientPage() {
             : {}),
         },
       };
-      
+
       console.log(payload, "payload");
       try {
         await updateMutation.mutateAsync(payload);
-        dispatch(
-          setCurrentClient({
-            ...currentClient,
-            NewDueDate: formattedAgreementDate || currentClient?.["DueDate"],
-          })
-        );
         setIsSaveButtonDisabled(true);
       } catch (error) {
         console.log(error);

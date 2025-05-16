@@ -54,6 +54,7 @@ function Header() {
                 <Button
                   icon={"toggleClose"}
                   variant={"text"}
+                  iconSize={24}
                   onClick={messenger.toggle}
                 />
               </Col>

@@ -1,6 +1,7 @@
 const formatPhoneNumber = (value) => {
+  if (!value) return;
   // Remove any non-digit characters
-  const digits = value.replace(/\D/g, "");
+  const digits = String(value).replace(/\D/g, "");
   // Add 998 prefix if not present
   return digits.startsWith("998") ? digits : `998${digits}`;
 };

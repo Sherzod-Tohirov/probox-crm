@@ -17,6 +17,7 @@ function Button(
     color,
     icon,
     iconPosition = "left",
+    iconSize = 24,
     iconColor,
     isLoading = false,
     fullWidth = false,
@@ -63,7 +64,12 @@ function Button(
         align="center"
         justify="center">
         {icon ? (
-          <Typography element="span" className={styles["icon-text"]}>
+          <Typography
+            element="span"
+            className={classNames(
+              styles["icon-text"],
+              styles[`icon-size-${iconSize}px`]
+            )}>
             {iconsMap[icon]}
           </Typography>
         ) : (

@@ -17,14 +17,17 @@ const useMutateClientPageForm = () => {
     },
     onSuccess: (response) => {
       console.log(response, "response from page form");
-      if (response?.slpCode) {
-        dispatch(
-          setCurrentClient({
-            ...currentClient,
-            SlpCode: Number(response.slpCode),
-          })
-        );
-      }
+      dispatch(
+        setCurrentClient({
+          ...currentClient,
+          ...(response?.slpCode ? { SlpCode: Number(response.slpCode) } : {}),
+          ...(response?.Phone1 ? { Phone1: Number(response.Phone1) } : {}),
+          ...(response?.Phone2 ? { Phone2: Number(response.Phone2) } : {}),
+          ...(response?.newDueDate
+            ? { NewDueDate: Number(response.newDueDate) }
+            : {}),
+        })
+      );
       alert("Ma'lumotlar muvaffaqiyatli yangilandi!");
     },
   });
