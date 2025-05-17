@@ -1,21 +1,18 @@
 import moment from "moment";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Input } from "@components/ui";
 import ModalWrapper from "./helper/ModalWrapper";
 import ModalCell from "./helper/ModalCell";
-
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
 import useAuth from "@hooks/useAuth";
-
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import hasRole from "@utils/hasRole";
-
 import styles from "./style.module.scss";
-
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleModal } from "@store/slices/toggleSlice";
 
 const Title = ({ executor, user }) => {
   if (!executor) return "-";
@@ -25,7 +22,7 @@ const Title = ({ executor, user }) => {
 };
 
 const ExecutorCell = ({ column }) => {
-  const [open, setOpen] = useState(false);
+  const modalId = `${column?.["DocEntry"]}-executor-modal`;
   const { data: executors } = useFetchExecutors();
   const executor = useMemo(() => {
     const foundExecutor = executors.find(
@@ -45,6 +42,7 @@ const ExecutorCell = ({ column }) => {
   const mutation = useMutateClientPageForm();
   const { currentClient } = useSelector((state) => state.page.clients);
   const { user } = useAuth();
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const executorsOptions = useMemo(
     () =>
@@ -79,22 +77,21 @@ const ExecutorCell = ({ column }) => {
       } catch (error) {
         console.log(error);
       } finally {
-        setOpen(false);
+        dispatch(toggleModal(modalId));
       }
     },
     [currentClient]
   );
   return (
     <ModalWrapper
-      open={open}
-      setOpen={setOpen}
+      modalId={modalId}
       column={column}
       title={<Title executor={executor} user={user} />}>
       {hasRole(user, ["Manager", "Cashier"]) ? (
         <ModalCell
           title={"Ijrochini o'zgartirish"}
           onClose={() => {
-            setOpen(false);
+            dispatch(toggleModal(modalId));
             reset();
           }}
           onApply={handleSubmit(handleApply)}

@@ -10,15 +10,15 @@ import formatDate from "@utils/formatDate";
 import styles from "./style.module.scss";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleModal } from "../../../../store/slices/toggleSlice";
 const Title = ({ date }) => {
   if (!date) return "-";
   if (moment(date, "DD.MM.YYYY", true).isValid()) return date;
   return formatDate(date);
 };
-
 const AgreementDateCell = ({ column }) => {
-  const [open, setOpen] = useState(false);
+  const modalId = `${column?.["DocEntry"]}-agreement-date-modal`;
   const {
     reset,
     control,
@@ -33,6 +33,7 @@ const AgreementDateCell = ({ column }) => {
 
   const mutation = useMutateClientPageForm();
   const { currentClient } = useSelector((state) => state.page.clients);
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
   const handleApply = useCallback(
@@ -64,21 +65,20 @@ const AgreementDateCell = ({ column }) => {
       } catch (error) {
         console.log(error);
       } finally {
-        setOpen(false);
+        dispatch(toggleModal(modalId));
       }
     },
     [currentClient]
   );
   return (
     <ModalWrapper
-      open={open}
-      setOpen={setOpen}
+      modalId={modalId}
       column={column}
       title={<Title date={column?.NewDueDate} />}>
       <ModalCell
         title={"Muddatni o'zgartirish"}
         onClose={() => {
-          setOpen(false);
+          dispatch(toggleModal(modalId));
           reset();
         }}
         onApply={handleSubmit(handleApply)}

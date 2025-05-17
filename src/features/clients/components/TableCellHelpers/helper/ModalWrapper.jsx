@@ -1,10 +1,9 @@
-import { memo, useRef, useState } from "react";
+import { memo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
-
-import useClickOutside from "@hooks/helper/useClickOutside";
+import _ from "lodash";
 import styles from "./style.module.scss";
 
 import {
@@ -15,12 +14,14 @@ import {
   autoUpdate,
   FloatingPortal,
 } from "@floating-ui/react";
-import { flushSync } from "react-dom";
+import classNames from "classnames";
+import { toggleModal } from "@store/slices/toggleSlice";
 
-const ModalWrapper = ({ open, setOpen, column, title, children, style }) => {
+const ModalWrapper = ({ modalId, column, title, children, style }) => {
   const dispatch = useDispatch();
-  const containerRef = useRef();
+  const containerRef = useRef(null);
   const { currentClient } = useSelector((state) => state.page.clients);
+  const isModalOpen = useSelector((state) => state.toggle.modals?.[modalId]);
   const { x, y, strategy, refs, update } = useFloating({
     placement: "top-end",
     middleware: [
@@ -33,26 +34,42 @@ const ModalWrapper = ({ open, setOpen, column, title, children, style }) => {
 
   // Sync floating when modal opens
   useEffect(() => {
-    if (open) update();
-  }, [open, update]);
+    if (isModalOpen) update();
+  }, [isModalOpen, update]);
+
+  useEffect(() => {
+    console.log(currentClient, "currentCLient is updated");
+  }, [currentClient]);
+
+  // useEffect(() => {
+  //   if (
+  //     clickedRef.current &&
+  //     String(column?.["DocEntry"]) !==
+  //       String(clickedRef.current.closest(".cell-modal").id)
+  //   ) {
+  //     setOpen(false);
+  //   }
+  // }, [open, clickedRef.current]);
 
   const handleClick = useCallback(
     (e) => {
       e.stopPropagation();
-      setOpen((prev) => !prev);
+      dispatch(setCurrentClient(column));
+      dispatch(toggleModal(modalId));
     },
-    [column, dispatch, setOpen]
+    [column, dispatch, modalId]
   );
 
   return (
     <div
+      id={modalId}
       style={style}
-      className={styles["modal-wrapper"]}
+      className={classNames(styles["modal-wrapper"], "cell-modal")}
       onClick={handleClick}
       ref={containerRef}>
       <div ref={refs.setReference}>{title}</div>
       <AnimatePresence>
-        {open && (
+        {isModalOpen && (
           <FloatingPortal>
             <motion.div
               ref={refs.setFloating}
