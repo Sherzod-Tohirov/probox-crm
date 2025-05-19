@@ -1,6 +1,6 @@
 import { OrbitProgress } from "react-loading-indicators";
 import { motion } from "framer-motion";
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useMemo } from "react";
 
 import styles from "./button.module.scss";
 import iconsMap from "@utils/iconsMap";
@@ -22,12 +22,18 @@ function Button(
     isLoading = false,
     fullWidth = false,
     disabled = false,
+    animated = true,
     ...props
   },
   ref
 ) {
+  const Component = useMemo(
+    () => (animated ? motion.button : "button"),
+    [animated]
+  );
+
   return (
-    <motion.button
+    <Component
       ref={ref}
       className={classNames(
         className,
@@ -77,7 +83,7 @@ function Button(
         )}
         {children}
       </Box>
-    </motion.button>
+    </Component>
   );
 }
 

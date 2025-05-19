@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useCallback, useRef } from "react";
 
 function Table({
+  uniqueKey = null,
   columns = [],
   data = [],
   className,
@@ -68,10 +69,10 @@ function Table({
         style={style}>
         <thead>
           <tr>
-            {finalColumns.map((column) => (
+            {finalColumns.map((column, colIndex) => (
               <th
                 // Use combination of key and index for uniqueness
-                key={`header-${column.key}-${uuidv4()}`}
+                key={`header-${column.key}-${colIndex}`}
                 style={{
                   width: column.width || "auto",
                   minWidth: column.minWidth || "initial",
@@ -86,7 +87,7 @@ function Table({
         </thead>
         <tbody>
           {isLoading ? (
-            <tr className={styles["loading-row"]}>
+            <tr key={`pivot-${uniqueKey}`} className={styles["loading-row"]}>
               <td colSpan={columns.length} className={styles["empty-table"]}>
                 <ClipLoader color={"#94A3B8"} />
               </td>
@@ -97,7 +98,7 @@ function Table({
           {!isLoading && data?.length > 0
             ? data.map((row, rowIndex) => (
                 <tr
-                  key={`row-${uuidv4()}`} // Ensure unique key for each row
+                  key={`row-${uniqueKey ? row[uniqueKey] : uuidv4()}`} // Ensure unique key for each row
                   onClick={() => handleRowClick(row)}
                   onMouseDown={handleMouseDown}
                   onMouseUp={handleMouseUp}
@@ -107,9 +108,9 @@ function Table({
                   {finalColumns.map((column, colIndex) => (
                     <td
                       style={{ ...(column?.cellStyle ? column.cellStyle : {}) }}
-                      key={`cell-${row.id || row.IntrSerial || rowIndex}-${
-                        column.key || colIndex
-                      }-${uuidv4()}`} // Ensure unique key for each cell
+                      key={`cell-${
+                        uniqueKey ? `${row[uniqueKey]}-${colIndex}` : uuidv4()
+                      }`} // Ensure unique key for each cell
                     >
                       {column.renderCell
                         ? column.renderCell(row, rowIndex)

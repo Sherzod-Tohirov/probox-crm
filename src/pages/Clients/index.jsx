@@ -125,6 +125,7 @@ export default function Clients() {
             }}
           /> */}
           <Table
+            uniqueKey={"DocEntry"}
             style={{ marginTop: "-24px" }}
             isLoading={isLoading}
             columns={clientsTableColumns}

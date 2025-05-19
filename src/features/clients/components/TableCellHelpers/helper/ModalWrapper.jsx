@@ -20,7 +20,6 @@ import { toggleModal } from "@store/slices/toggleSlice";
 const ModalWrapper = ({ modalId, column, title, children, style }) => {
   const dispatch = useDispatch();
   const containerRef = useRef(null);
-  const { currentClient } = useSelector((state) => state.page.clients);
   const isModalOpen = useSelector((state) => state.toggle.modals?.[modalId]);
   const { x, y, strategy, refs, update } = useFloating({
     placement: "top-end",
@@ -36,20 +35,6 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
   useEffect(() => {
     if (isModalOpen) update();
   }, [isModalOpen, update]);
-
-  useEffect(() => {
-    console.log(currentClient, "currentCLient is updated");
-  }, [currentClient]);
-
-  // useEffect(() => {
-  //   if (
-  //     clickedRef.current &&
-  //     String(column?.["DocEntry"]) !==
-  //       String(clickedRef.current.closest(".cell-modal").id)
-  //   ) {
-  //     setOpen(false);
-  //   }
-  // }, [open, clickedRef.current]);
 
   const handleClick = useCallback(
     (e) => {

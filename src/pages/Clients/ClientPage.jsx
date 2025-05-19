@@ -33,7 +33,6 @@ import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
 import hasRole from "@utils/hasRole";
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
-import { setCurrentClient } from "@store/slices/clientsPageSlice";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -165,6 +164,7 @@ export default function ClientPage() {
             </Col>
             <Col fullWidth>
               <Table
+                uniqueKey={"InstlmntID"}
                 style={{ fontSize: "3.7rem" }}
                 columns={clientPageTableColumns}
                 isLoading={isLoading}
