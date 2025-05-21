@@ -13,7 +13,6 @@ export const fetchData = async (apiUrl, apiName = "data", params = {}) => {
 export const postData = async (apiUrl, data) => {
   try {
     const response = await api.post(apiUrl, data);
-    console.log(response, "response from postData");
     return response.data;
   } catch (error) {
     console.log(`Error while posting data to ${apiUrl}: `, error);

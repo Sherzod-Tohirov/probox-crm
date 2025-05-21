@@ -8,20 +8,25 @@ import {
   Pagination,
   Typography,
 } from "@components/ui";
+
 import Footer from "@components/Footer";
 
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   setClientsCurrentPage,
   setClientsPageSize,
 } from "@store/slices/clientsPageSlice";
+
 import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
+
 import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
 import useFetchStatistics from "@hooks/data/useFetchStatistics";
 import formatterCurrency from "@utils/formatterCurrency";
 import { ClipLoader } from "react-spinners";
+
 import styles from "./style.module.scss";
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const distributeMutation = useMutateDistributeClients();
@@ -43,7 +48,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
     { value: 20, label: "20" },
     { value: 50, label: "50" },
     { value: 100, label: "100" },
-    { value: 1000, label: "1000" },
+    { value: 200, label: "200" },
   ]);
   const handleDistributeClients = useCallback(async () => {
     try {
@@ -56,12 +61,22 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
       console.log(error, "Error while distributing clients. ");
     }
   }, []);
+  const calculatedInsTotal = useMemo(() => {
+    const paidToDate = Number(statisticsData?.["PaidToDate"]);
+    const sumApplied = Number(statisticsData?.["SumApplied"]);
+    const insTotal = Number(statisticsData?.["InsTotal"]);
+    if (paidToDate > sumApplied) {
+      return insTotal - (paidToDate - sumApplied);
+    }
+    return insTotal;
+  }, [statisticsData]);
+
   const percentageValue = useMemo(() => {
     return parseFloat(
-      Number(statisticsData?.["SumApplied"] / statisticsData?.["InsTotal"]) *
-        100 || 0
+      Number(statisticsData?.["SumApplied"] / calculatedInsTotal) * 100 || 0
     ).toFixed(2);
   }, [statisticsData]);
+
   return (
     <Footer>
       <Row direction={"column"} justify={"space-between"} gutter={5}>
@@ -76,7 +91,7 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 {isStatisticsLoading ? (
                   <ClipLoader color={"grey"} size={12} />
                 ) : (
-                  formatterCurrency(statisticsData?.["InsTotal"] || 0, "USD")
+                  formatterCurrency(calculatedInsTotal, "USD")
                 )}
               </Typography>
               <Typography

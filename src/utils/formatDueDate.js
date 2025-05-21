@@ -1,7 +1,6 @@
 import moment from "moment";
 
 const formatDueDate = (dueDate, monthCounter) => {
-  console.log(dueDate, "dueDate");
   if (!dueDate) return "-"; // handle missing values safely
   if (monthCounter === 0) return dueDate; // handle monthCounter 0 case
   // Take only the first 23 characters: "2025-04-15 00:00:00.000"

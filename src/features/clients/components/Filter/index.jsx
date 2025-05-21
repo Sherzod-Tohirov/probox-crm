@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import styles from "./filter.module.scss";
 
 import { useForm } from "react-hook-form";
@@ -11,23 +13,58 @@ import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
 
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
-import useAuth from "@hooks/useAuth";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-import { formatPhoneNumber } from "@utils/formatPhoneNumber";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import { statusOptions } from "@utils/options";
-import _ from "lodash";
+
 import moment from "moment";
 import classNames from "classnames";
+
 import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
 
 export default function Filter({ onFilter }) {
-  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
-  const [shouldPaymentStatusMenu, setShouldPaymentStatusMenu] = useState(false);
+  const [paymentStatusMenu, setPaymentStatusMenu] = useState({
+    isOpen: false,
+    control: false,
+  });
+
+  const [executorMenu, setExecutorMenu] = useState({
+    isOpen: false,
+    control: false,
+  });
+
+  const [toggleSearchFields, setToggleSearchFields] = useState({
+    search: false,
+    phone: false,
+  });
+
+  const dispatch = useDispatch(); // Add dispatch
+
+  const { data: executors, isPending: isExecutorsLoading } =
+    useFetchExecutors();
+  const { query, phone } = useFilter();
+
   const filterState = useSelector((state) => state.page.clients.filter);
+
+  const executorsOptions = useMemo(() => {
+    return selectOptionsCreator(executors, {
+      label: "SlpName",
+      value: "SlpCode",
+    });
+  }, [executors]);
+
+  // const defaultExecutor = useMemo(() => {
+  //   const foundExecutor = executors?.find(
+  //     (executor) => Number(executor.SlpCode) === Number(filterState?.slpCode)
+  //   );
+  //   if (foundExecutor && _.has(foundExecutor, "SlpCode")) {
+  //     return foundExecutor.SlpCode;
+  //   }
+  //   return executorsOptions?.[0]?.value || "";
+  // }, [filterState?.slpCode, executors]);
 
   const {
     register,
@@ -44,50 +81,23 @@ export default function Filter({ onFilter }) {
         statusOptions,
         filterState.paymentStatus
       ),
+      slpCode: getSelectOptionsFromKeys(executorsOptions, filterState.slpCode),
     },
     resolver: yupResolver(filterClientFormSchema),
     mode: "all",
   });
 
-  const [toggleSearchFields, setToggleSearchFields] = useState({
-    search: false,
-    phone: false,
-  });
-
-  const filterObj = useSelector((state) => state.page.clients.filter);
   const watchedFields = useWatchFilterFields(watch);
-  const { data: executors } = useFetchExecutors();
-  const { query, phone } = useFilter();
-  const dispatch = useDispatch(); // Add dispatch
-  const { user } = useAuth();
-
-  const executorsOptions = useMemo(() => {
-    return selectOptionsCreator(executors, {
-      label: "SlpName",
-      value: "SlpCode",
-      includeAll: true,
-    });
-  }, [executors]);
-
-  const defaultExecutor = useMemo(() => {
-    const foundExecutor = executors?.find(
-      (executor) => Number(executor.SlpCode) === Number(filterObj?.slpCode)
-    );
-    if (foundExecutor && _.has(foundExecutor, "SlpCode")) {
-      return foundExecutor.SlpCode;
-    }
-    return executorsOptions?.[0]?.value || "";
-  }, [filterObj?.slpCode, executors]);
 
   const handleSearchSelect = useCallback((clientData, filterKey) => {
     setValue(filterKey, clientData);
-
     dispatch(
       setClientsFilter({
-        ...filterObj, // Preserve existing filters
+        ...filterState, // Preserve existing filters
         [filterKey]: clientData,
       })
     );
+
     setToggleSearchFields((prev) => ({
       ...prev,
       [filterKey]: false,
@@ -102,8 +112,16 @@ export default function Filter({ onFilter }) {
         statusOptions,
         initialClientsFilterState.paymentStatus
       ),
+      slpCode: getSelectOptionsFromKeys(
+        executorsOptions,
+        initialClientsFilterState.slpCode
+      ),
     });
-  }, [initialClientsFilterState, statusOptions]);
+    setExecutorMenu({
+      isOpen: false,
+      control: false,
+    });
+  }, [initialClientsFilterState, statusOptions, executorsOptions]);
 
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
@@ -118,21 +136,41 @@ export default function Filter({ onFilter }) {
       setValue("endDate", newEndDate.format("DD.MM.YYYY"));
     }
   }, [watchedFields.startDate, setValue]);
-  console.log(shouldPaymentStatusMenu, "should");
+
   useEffect(() => {
-    if (watchedFields.slpCode !== filterObj.slpCode) {
+    if (!_.isEmpty(executorsOptions)) {
       dispatch(
         setClientsFilter({
-          ...filterObj,
+          ...filterState,
           search: "",
           phone: "998",
-          slpCode: watchedFields.slpCode,
+          slpCode: _.map(watchedFields.slpCode, "value").join(","),
         })
       );
       setValue("search", "");
       setValue("phone", "998");
     }
-  }, [watchedFields.slpCode]);
+  }, [watchedFields.slpCode, executorsOptions]);
+
+  useEffect(() => {
+    if (!_.isEmpty(executorsOptions)) {
+      console.log(filterState, "filterState");
+      const selectedOptions = getSelectOptionsFromKeys(
+        executorsOptions,
+        filterState.slpCode
+      );
+      const selectedPaymentStatus = getSelectOptionsFromKeys(
+        statusOptions,
+        filterState.paymentStatus
+      );
+
+      reset({
+        ...filterState,
+        paymentStatus: selectedPaymentStatus,
+        slpCode: selectedOptions,
+      });
+    }
+  }, [executorsOptions]);
 
   useEffect(() => {
     if (!watchedFields.search) {
@@ -219,23 +257,36 @@ export default function Filter({ onFilter }) {
             options={statusOptions}
             multipleSelect={true}
             onFocus={() => {
-              setIsStatusMenuOpen(false);
-              setShouldPaymentStatusMenu(false);
+              setPaymentStatusMenu(() => ({
+                control: false,
+                isOpen: false,
+              }));
             }}
-            {...(shouldPaymentStatusMenu
-              ? { menuIsOpen: isStatusMenuOpen }
+            {...(paymentStatusMenu.control
+              ? { menuIsOpen: paymentStatusMenu.isOpen }
               : {})}
             {...register("paymentStatus")}
           />
           <Input
+            type={"select"}
             size={"full-grow"}
             canClickIcon={false}
+            multipleSelect={true}
+            options={executorsOptions}
             variant={"outlined"}
             label={"Mas'ul ijrochi"}
-            type={"select"}
+            isLoading={isExecutorsLoading}
+            control={control}
+            onFocus={() => {
+              setExecutorMenu(() => ({
+                control: false,
+                isOpen: false,
+              }));
+            }}
+            {...(executorMenu.control
+              ? { menuIsOpen: executorMenu.isOpen }
+              : {})}
             {...register("slpCode")}
-            value={defaultExecutor}
-            options={executorsOptions}
           />
         </Col>
         <Col style={{ marginTop: "25px" }}>
@@ -245,6 +296,7 @@ export default function Filter({ onFilter }) {
                 className={classNames(styles["filter-btn"], styles["clear"])}
                 onClick={handleFilterClear}
                 icon={"delete"}
+                iconSize={18}
                 variant={"filled"}>
                 Tozalash
               </Button>
@@ -253,9 +305,17 @@ export default function Filter({ onFilter }) {
               <Button
                 className={styles["filter-btn"]}
                 icon={"search"}
+                iconSize={18}
                 onClick={() => {
-                  setIsStatusMenuOpen(false);
-                  setShouldPaymentStatusMenu(true);
+                  setPaymentStatusMenu({
+                    isOpen: false,
+                    control: true,
+                  });
+
+                  setExecutorMenu({
+                    isOpen: false,
+                    control: true,
+                  });
                 }}
                 variant={"filled"}>
                 Qidiruv

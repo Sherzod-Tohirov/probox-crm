@@ -11,6 +11,7 @@ const loadState = () => {
       filter: parsedState.filter || initialClientsFilterState,
       currentPage: parsedState.currentPage || 0,
       pageSize: parsedState.pageSize || 10,
+      lastAction: parsedState.lastAction || [],
     };
   } catch (error) {
     console.log("Error loading state", error);
@@ -20,18 +21,21 @@ const loadState = () => {
       filter: initialFilter,
       currentPage: 0,
       pageSize: 10,
+      lastAction: [],
     };
   }
 };
 
 const saveState = (state) => {
   try {
-    const { filter, currentPage, pageSize, currentClient } = state;
+    const { filter, currentPage, pageSize, currentClient, lastAction } = state;
+
     const serializedState = JSON.stringify({
       filter,
       currentPage,
       pageSize,
       currentClient,
+      lastAction,
     });
     localStorage.setItem("clientsPageState", serializedState);
   } catch (error) {
@@ -62,6 +66,10 @@ const clientsPageSlice = createSlice({
       state.filter = payload;
       saveState(state);
     },
+    setLastAction(state, action) {
+      state.lastAction = action.payload;
+      saveState(state);
+    },
     setClientsCurrentPage(state, action) {
       state.currentPage = action.payload;
       saveState(state);
@@ -79,5 +87,6 @@ export const {
   setClientsCurrentPage,
   setClientsPageSize,
   setCurrentClient,
+  setLastAction,
 } = clientsPageSlice.actions;
 export default clientsPageSlice.reducer;

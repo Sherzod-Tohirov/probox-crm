@@ -13,7 +13,7 @@ const formatToReadablePhoneNumber = (phone) => {
   let digits = phone.replace(/\D/g, "");
 
   // Remove country code if present
-  if (digits.startsWith("998")) {
+  if (digits.startsWith("998") && digits.length > 9) {
     digits = digits.slice(3);
   }
 

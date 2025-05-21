@@ -1,5 +1,6 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import Select, { components } from "react-select";
+import { ClipLoader } from "react-spinners";
 
 const CustomValueContainer = ({ children, options, ...props }) => {
   const selectedOptions = props.getValue();
@@ -25,7 +26,7 @@ const CustomOption = (props) => {
   );
 };
 
-const MultipleSelect = ({ field, options = [], ...props }) => {
+const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
   const handleChange = useCallback((selected, actionMeta, field) => {
     const allOptions = options.filter((opt) => opt.value !== "all");
     let newSelected = selected;
@@ -75,7 +76,23 @@ const MultipleSelect = ({ field, options = [], ...props }) => {
       hideSelectedOptions={false} // Keep selected options in the list
       components={{
         DropdownIndicator: () => null, // Remove dropdown icon
-        ValueContainer: CustomValueContainer, // Custom comma-separated display
+        ValueContainer: ({ children, options, ...props }) => {
+          const selectedOptions = props.getValue();
+          const displayValue = selectedOptions
+            .filter((opt) => opt.value !== "all") // Exclude "Select All" from display
+            .map((opt) => opt.label)
+            .join(", ");
+
+          return (
+            <components.ValueContainer {...props}>
+              {isLoading ? (
+                <ClipLoader size={16} color="rgba(0,0,0,0.4)" />
+              ) : (
+                displayValue || children[1]
+              )}
+            </components.ValueContainer>
+          );
+        }, // Custom comma-separated display
         Option: CustomOption, // Custom checkbox-like options
       }}
       onChange={(selected, actionMeta) =>

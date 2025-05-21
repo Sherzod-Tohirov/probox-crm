@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
 import moment from "moment";
-import _, { omit } from "lodash";
+import _, { filter, omit } from "lodash";
 
 const useWatchFilterFields = (watch) => {
   const dispatch = useDispatch();
-  const filterState = useSelector((state) => state.page.clients.filter);
 
   const [search, phone, startDate, endDate, paymentStatus, slpCode] = watch([
     "search",
@@ -26,6 +25,7 @@ const useWatchFilterFields = (watch) => {
     slpCode,
   };
 
+  const filterState = useSelector((state) => state.page.clients.filter);
   useEffect(() => {
     const startDateValid = moment(startDate, "DD.MM.YYYY").isValid()
       ? startDate
@@ -35,12 +35,22 @@ const useWatchFilterFields = (watch) => {
       ? endDate
       : moment().endOf("month").format("DD.MM.YYYY");
 
+    if (filterState.slpCode && !watchedFields.slpCode.length) {
+      return;
+    }
+
     dispatch(
       setClientsFilter({
-        ...omit(watchedFields, ["startDate", "endDate"]), // Remove startDate and endDate from filterState
+        ...omit(watchedFields, [
+          "startDate",
+          "endDate",
+          "slpCode",
+          "paymentStatus",
+        ]), // Remove startDate and endDate from filterState
         startDate: startDateValid,
         endDate: endDateValid,
         paymentStatus: _.map(watchedFields.paymentStatus, "value").join(","),
+        slpCode: _.map(watchedFields.slpCode, "value").join(","),
       })
     );
   }, [search, phone, startDate, endDate, paymentStatus, slpCode]);

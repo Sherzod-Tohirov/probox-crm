@@ -56,6 +56,7 @@ const Input = forwardRef(
       error = null,
       renderSearchItem = () => {},
       onClick = () => {},
+      isLoading = false,
       ...props
     },
     ref
@@ -139,6 +140,7 @@ const Input = forwardRef(
                   style={commonProps.style}
                   field={field}
                   options={options}
+                  isLoading={isLoading}
                   onClick={commonProps.onClick}
                   {...props}
                 />

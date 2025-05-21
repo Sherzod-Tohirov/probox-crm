@@ -208,8 +208,9 @@ const useTableColumns = () => {
         title: "To'landi",
         width: "7%",
         renderCell: (column) => {
-          if (!column.PaidToDate) return "0$";
-          return formatterCurrency(column.PaidToDate, "USD");
+          return (
+            <span style={{color: "red"}}>{formatterCurrency(column.PaidToDate || 0, "USD")}</span>
+          );
         },
         icon: "income",
       },

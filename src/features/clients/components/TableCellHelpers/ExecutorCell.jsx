@@ -1,6 +1,6 @@
 import moment from "moment";
-import { memo, useCallback, useMemo } from "react";
-import { Input } from "@components/ui";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Input, Row, Col, Button } from "@components/ui";
 import ModalWrapper from "./helper/ModalWrapper";
 import ModalCell from "./helper/ModalCell";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
+import { setLastAction } from "@store/slices/clientsPageSlice";
 
 const Title = ({ executor, user }) => {
   if (!executor) return "-";
@@ -22,8 +23,10 @@ const Title = ({ executor, user }) => {
 };
 
 const ExecutorCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-executor-modal`;
   const { data: executors } = useFetchExecutors();
+  const modalId = `${column?.["DocEntry"]}-executor-modal`;
+  const queryClient = useQueryClient();
+
   const executor = useMemo(() => {
     const foundExecutor = executors.find(
       (executor) => Number(executor.SlpCode) === Number(column?.SlpCode)
@@ -33,17 +36,29 @@ const ExecutorCell = ({ column }) => {
   const {
     reset,
     register,
+    setValue,
     handleSubmit,
+    watch,
     formState: { isDirty },
   } = useForm({
-    defaultValues: { executor: executor?.SlpCode ?? "" },
+    defaultValues: { slpCode: executor?.SlpCode ?? "" },
   });
-
+  const slpCodeField = watch("slpCode");
+  const dispatch = useDispatch();
   const mutation = useMutateClientPageForm();
   const { currentClient } = useSelector((state) => state.page.clients);
   const { user } = useAuth();
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
+  const lastAction = useSelector((state) => state.page.clients.lastAction);
+  const hasLastAction = useMemo(
+    () =>
+      lastAction.find(
+        (action) =>
+          action.id === currentClient?.["DocEntry"] &&
+          action.type === "slpCode_update"
+      ),
+    [lastAction, currentClient, dispatch]
+  );
+
   const executorsOptions = useMemo(
     () =>
       selectOptionsCreator(executors, {
@@ -55,6 +70,24 @@ const ExecutorCell = ({ column }) => {
     [executors]
   );
 
+  const [isLastActionBtnDisabled, setIsLastActionBtnDisabled] = useState(
+    !hasLastAction
+  );
+
+  useEffect(() => {
+    if (hasLastAction) {
+      setIsLastActionBtnDisabled(slpCodeField == hasLastAction?.oldValue);
+    } else {
+      setIsLastActionBtnDisabled(true);
+    }
+  }, [slpCodeField, hasLastAction]);
+
+  const handleLastAction = useCallback(() => {
+    if (hasLastAction) {
+      setValue("slpCode", Number(hasLastAction?.oldValue));
+    }
+  }, [hasLastAction]);
+
   const handleApply = useCallback(
     async (data) => {
       const formattedDueDate = moment(currentClient["DueDate"]).format(
@@ -65,10 +98,28 @@ const ExecutorCell = ({ column }) => {
         docEntry: currentClient?.["DocEntry"],
         installmentId: currentClient?.["InstlmntID"],
         data: {
-          slpCode: data?.executor,
+          slpCode: data?.slpCode,
           DueDate: formattedDueDate,
         },
       };
+
+      if (hasLastAction) {
+        hasLastAction.oldValue = currentClient?.["SlpCode"];
+        hasLastAction.newValue = data?.slpCode;
+        dispatch(setLastAction([...lastAction]));
+      } else {
+        dispatch(
+          setLastAction([
+            ...lastAction,
+            {
+              id: currentClient?.["DocEntry"],
+              type: "slpCode_update",
+              oldValue: String(currentClient?.["SlpCode"]),
+              newValue: data?.slpCode,
+            },
+          ])
+        );
+      }
       try {
         await mutation.mutateAsync(payload);
         queryClient.invalidateQueries({
@@ -82,6 +133,7 @@ const ExecutorCell = ({ column }) => {
     },
     [currentClient]
   );
+
   return (
     <ModalWrapper
       modalId={modalId}
@@ -99,15 +151,29 @@ const ExecutorCell = ({ column }) => {
             disabled: !isDirty,
             isLoading: mutation.isPending,
           }}>
-          <Input
-            inputBoxClassName={styles["modal-input-wrapper"]}
-            className={styles["modal-input"]}
-            type="select"
-            variant={"outlined"}
-            options={executorsOptions}
-            canClickIcon={false}
-            {...register("executor")}
-          />
+          <Row direction={"row"} gutter={2} align={"center"}>
+            <Col flexGrow>
+              <Input
+                inputBoxClassName={styles["modal-input-wrapper"]}
+                className={styles["modal-input"]}
+                type="select"
+                variant={"outlined"}
+                options={executorsOptions}
+                canClickIcon={false}
+                {...register("slpCode")}
+              />
+            </Col>
+            <Col>
+              <Button
+                title={"Oxirgi holatga qaytarish"}
+                iconSize={16}
+                disabled={isLastActionBtnDisabled}
+                variant={"filled"}
+                iconColor={"secondary"}
+                onClick={handleLastAction}
+                icon={"refresh"}></Button>
+            </Col>
+          </Row>
         </ModalCell>
       ) : null}
     </ModalWrapper>

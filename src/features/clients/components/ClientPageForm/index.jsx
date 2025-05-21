@@ -129,7 +129,6 @@ function ClientPageForm({
       })),
     ]);
   }, []);
-  console.log(isDirty, "isDirty");
   const handleImageUpload = useCallback(async () => {
     const commonPayload = {
       docEntry: currentClient?.["DocEntry"],

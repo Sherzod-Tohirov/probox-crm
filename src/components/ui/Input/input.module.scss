@@ -80,7 +80,7 @@
   // &.disabled {
   //   pointer-events: none;
   // }
-  
+
   &.error {
     border-color: v.$danger-color !important;
   }
@@ -330,13 +330,25 @@
 
 :global(.react-select__value-container) {
   position: absolute !important;
+  height: inherit;
   margin: 0 !important;
-  overflow: scroll;
+  overflow-y: auto !important;
   padding: 0 !important;
   padding-right: 25% !important;
   line-height: 100% !important;
   font-size: 13px;
   color: v.$filter-input-placeholder-color !important;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+  }
 }
 
 :global(.react-select__indicator) {

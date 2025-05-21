@@ -6,6 +6,19 @@ const initialState = {
   modals: {}, // modalId => true, or false to toggle modal
 };
 
+function deleteModals(state, action, isAll = false) {
+  Object.entries(state.modals).forEach(([modalId, _]) => {
+    if (isAll) {
+      delete state.modals[modalId];
+      return;
+    }
+
+    if (modalId !== action.payload) {
+      delete state.modals[modalId];
+    }
+  });
+}
+
 const toggleSlice = createSlice({
   name: "toggle",
   initialState,
@@ -18,16 +31,15 @@ const toggleSlice = createSlice({
     },
     toggleModal(state, action) {
       state.modals[action.payload] = !state.modals?.[action.payload];
-      Object.entries(state.modals).forEach(([modalId, _]) => {
-        if (modalId !== action.payload) {
-          delete state.modals[modalId];
-        }
-      });
+      deleteModals(state, action);
+    },
+    closeAllModals(state, action) {
+      deleteModals(state, action, true);
     },
   },
 });
 
-export const { toggleSidebar, toggleMessenger, toggleModal } =
+export const { toggleSidebar, toggleMessenger, toggleModal, closeAllModals } =
   toggleSlice.actions;
 
 export default toggleSlice.reducer;

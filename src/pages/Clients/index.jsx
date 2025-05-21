@@ -1,10 +1,13 @@
+import _ from "lodash";
+
 import { Col, Row, Navigation, Table } from "@components/ui";
 import ClientsPageFooter from "@features/clients/components/ClientsPageFooter";
 import Filter from "@features/clients/components/Filter";
 
 import { useCallback, useLayoutEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { closeAllModals } from "@store/slices/toggleSlice";
 
 import {
   setClientsCurrentPage,
@@ -13,13 +16,12 @@ import {
 
 import useFetchClients from "@hooks/data/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
-import _ from "lodash";
 import styles from "./style.module.scss";
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
   );
@@ -56,8 +58,8 @@ export default function Clients() {
     setParams(() => ({
       search: filterData.search,
       paymentStatus: _.map(filterData.paymentStatus, "value").join(","),
+      slpCode: _.map(filterData.slpCode, "value").join(","),
       phone: filterData.phone,
-      slpCode: filterData.slpCode,
       startDate: filterData.startDate,
       endDate: filterData.endDate,
     }));
@@ -77,6 +79,7 @@ export default function Clients() {
     }
   }, [data]);
 
+  //Adjust scroll position as user exits from clients page
   useLayoutEffect(() => {
     if (
       data &&
@@ -94,6 +97,11 @@ export default function Clients() {
       });
     }
   }, [data]);
+
+  // Close all modals if route changes
+  useLayoutEffect(() => {
+    dispatch(closeAllModals());
+  }, [location.pathname]);
 
   return (
     <>
