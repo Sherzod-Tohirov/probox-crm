@@ -9,7 +9,7 @@ import useAuth from "@hooks/useAuth";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import hasRole from "@utils/hasRole";
 import styles from "./style.module.scss";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
@@ -33,22 +33,21 @@ const ExecutorCell = ({ column }) => {
     );
     return foundExecutor;
   }, [column, executors]);
-  const {
-    reset,
-    register,
-    setValue,
-    handleSubmit,
-    watch,
-    formState: { isDirty },
-  } = useForm({
+
+  const { reset, register, setValue, handleSubmit, control, watch } = useForm({
     defaultValues: { slpCode: executor?.SlpCode ?? "" },
   });
+
+  const { isDirty } = useFormState({ control });
   const slpCodeField = watch("slpCode");
   const dispatch = useDispatch();
   const mutation = useMutateClientPageForm();
+
   const { currentClient } = useSelector((state) => state.page.clients);
   const { user } = useAuth();
+
   const lastAction = useSelector((state) => state.page.clients.lastAction);
+
   const hasLastAction = useMemo(
     () =>
       lastAction.find(
@@ -84,9 +83,17 @@ const ExecutorCell = ({ column }) => {
 
   const handleLastAction = useCallback(() => {
     if (hasLastAction) {
-      setValue("slpCode", Number(hasLastAction?.oldValue));
+      setValue("slpCode", Number(hasLastAction?.oldValue), {
+        shouldDirty: true,
+      });
     }
   }, [hasLastAction]);
+
+  useEffect(() => {
+    if (executor) {
+      reset({ slpCode: executor?.SlpCode ?? "" });
+    }
+  }, [executor?.SlpCode, reset]);
 
   const handleApply = useCallback(
     async (data) => {
@@ -102,11 +109,20 @@ const ExecutorCell = ({ column }) => {
           DueDate: formattedDueDate,
         },
       };
-
       if (hasLastAction) {
-        hasLastAction.oldValue = currentClient?.["SlpCode"];
-        hasLastAction.newValue = data?.slpCode;
-        dispatch(setLastAction([...lastAction]));
+        const copiedLastAction = { ...hasLastAction };
+        copiedLastAction.oldValue = String(currentClient?.["SlpCode"]);
+        copiedLastAction.currentValue = String(data?.slpCode);
+        const updatedActions = lastAction.map((action) => {
+          if (
+            action.id === copiedLastAction.id &&
+            action.type === copiedLastAction.type
+          ) {
+            return copiedLastAction;
+          }
+          return action;
+        });
+        dispatch(setLastAction(updatedActions));
       } else {
         dispatch(
           setLastAction([
@@ -115,7 +131,7 @@ const ExecutorCell = ({ column }) => {
               id: currentClient?.["DocEntry"],
               type: "slpCode_update",
               oldValue: String(currentClient?.["SlpCode"]),
-              newValue: data?.slpCode,
+              currentValue: String(data?.slpCode),
             },
           ])
         );
