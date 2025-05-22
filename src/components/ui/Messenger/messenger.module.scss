@@ -167,11 +167,11 @@
   transform-origin: bottom left;
   &-text {
     position: relative;
-    min-width: 100px;
+    min-width: 160px;
     padding: 8px 20px 4px 16px;
     @include m.flex(start, start, 0, column);
     color: v.$primary-color;
-    font-size: 3.5rem;
+    font-size: 3.4rem;
     font-style: normal;
     font-weight: 500;
     line-height: 143%;
@@ -242,10 +242,12 @@
 
   &-author {
     color: v.$secondary-color;
-    font-size: 3rem;
+    font-size: 3.5rem;
+    color: v.$tertiary-color;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 150%;
+    letter-spacing: 1.1px;
   }
 
   &-time {
@@ -253,14 +255,15 @@
     color: v.$secondary-color;
     font-size: 2.5rem;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 17px;
+    color: v.$tertiary-color;
   }
 
   &-avatar-icon {
     @include m.flex-center;
     font-size: 14px;
-    color: #8e97a9;
+    color: v.$tertiary-color;
     svg {
       width: 14px;
       height: 14px;

@@ -2,10 +2,8 @@
 @use "@styles/mixins" as m;
 
 .table-container {
-  position: relative;
   width: 100%;
-  min-height: 60vh;
-
+  min-height: 50vh;
   & * {
     transition: all v.$transition-time v.$transition-type;
   }

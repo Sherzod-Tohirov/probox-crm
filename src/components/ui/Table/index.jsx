@@ -1,10 +1,10 @@
-import classNames from "classnames";
-import styles from "./table.module.scss";
-import iconsMap from "@utils/iconsMap";
 import { ClipLoader } from "react-spinners";
-import { v4 as uuidv4 } from "uuid";
 import { useCallback, useRef } from "react";
+import iconsMap from "@utils/iconsMap";
+import classNames from "classnames";
+import { v4 as uuidv4 } from "uuid";
 
+import styles from "./table.module.scss";
 function Table({
   uniqueKey = null,
   columns = [],
@@ -107,7 +107,9 @@ function Table({
                   style={{ ...getRowStyles(row) }}>
                   {finalColumns.map((column, colIndex) => (
                     <td
-                      style={{ ...(column?.cellStyle ? column.cellStyle : {}) }}
+                      style={{
+                        ...(column?.cellStyle ? column.cellStyle : {}),
+                      }}
                       key={`cell-${
                         uniqueKey ? `${row[uniqueKey]}-${colIndex}` : uuidv4()
                       }`} // Ensure unique key for each cell
