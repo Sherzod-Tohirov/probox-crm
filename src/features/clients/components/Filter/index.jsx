@@ -311,7 +311,7 @@ export default function Filter({ onFilter }) {
             canClickIcon={false}
             options={productOptions}
             variant={"outlined"}
-            label={"Mahsulot"}
+            label={"Buyum"}
             {...register("phoneConfiscated")}
           />
         </Col>

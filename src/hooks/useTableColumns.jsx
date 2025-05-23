@@ -87,7 +87,7 @@ const useTableColumns = () => {
       },
       {
         key: "PaidToDate",
-        title: "Mahsulot",
+        title: "Buyum",
         renderCell: (column) => <ProductCell column={column} />,
         width: "7%",
         icon: "products",

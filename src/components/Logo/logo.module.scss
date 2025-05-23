@@ -6,9 +6,10 @@
 
 .logo-link {
   display: flex;
-  max-width: 122px;
+  padding: 2px;
+  max-width: 111px;
+  gap: 2px;
   overflow: hidden;
-
   &.not-touchable {
     pointer-events: none;
   }
@@ -31,6 +32,6 @@
 }
 
 .logo-small-img {
-  width: 11rem;
-  height: 9rem;
+  width: 36px;
+  height: 36px;
 }

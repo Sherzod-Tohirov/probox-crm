@@ -6,6 +6,6 @@ export const statusOptions = [
 
 export const productOptions = [
   { value: "", label: "Hammasi" },
-  { value: "true", label: "Mahsulot bilan" },
-  { value: "false", label: "Mahsulotsiz" },
+  { value: "true", label: "Buyum bilan" },
+  { value: "false", label: "Buyumsiz" },
 ];

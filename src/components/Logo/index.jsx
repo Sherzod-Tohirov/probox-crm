@@ -1,5 +1,5 @@
-import logoSmall from "@assets/images/logo-small.png";
-import logo from "@assets/images/logo.png";
+import logoSmall from "@assets/images/new_logo-small.png";
+import logo from "@assets/images/new_logo.png";
 import { Link } from "react-router-dom";
 import styles from "./logo.module.scss";
 import { memo } from "react";

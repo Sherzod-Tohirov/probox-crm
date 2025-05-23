@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import ModalCell from "./helper/ModalCell";
 import ModalWrapper from "./helper/ModalWrapper";
 import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
-
-import formatDate from "@utils/formatDate";
+import useAuth from "@hooks/useAuth";
+import hasRole from "@utils/hasRole";
 import styles from "./style.module.scss";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
 const Title = ({ phoneConfiscated }) => {
   if (!phoneConfiscated) return "-";
-  return <span className={styles["product-box-text"]}>Mahsulot</span>;
+  return <span className={styles["product-box-text"]}>Mahsulot 📲</span>;
 };
 const ProductCell = ({ column }) => {
   const modalId = `${column?.["DocEntry"]}-product-modal`;
@@ -33,7 +33,7 @@ const ProductCell = ({ column }) => {
   const { currentClient } = useSelector((state) => state.page.clients);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-
+  const { user } = useAuth();
   const handleApply = useCallback(
     async (data) => {
       const formattedDueDate = moment(currentClient["DueDate"]).format(
@@ -67,11 +67,11 @@ const ProductCell = ({ column }) => {
     () => [
       {
         value: "true",
-        label: "Mahsulot",
+        label: "Buyum bilan",
       },
       {
         value: "false",
-        label: "Mahsulotsiz",
+        label: "Buyumsiz",
       },
     ],
     []
@@ -81,27 +81,29 @@ const ProductCell = ({ column }) => {
       modalId={modalId}
       column={column}
       title={<Title phoneConfiscated={column?.["phoneConfiscated"]} />}>
-      <ModalCell
-        title={"Mahsulotni o'zgartirish"}
-        onClose={() => {
-          dispatch(toggleModal(modalId));
-          reset();
-        }}
-        onApply={handleSubmit(handleApply)}
-        applyButtonProps={{
-          disabled: !isDirty,
-          isLoading: mutation.isPending,
-        }}>
-        {column.SlpName}
-        <Input
-          type={"select"}
-          size={"full-grow"}
-          canClickIcon={false}
-          options={productOptions}
-          variant={"outlined"}
-          {...register("phoneConfiscated")}
-        />
-      </ModalCell>
+      {hasRole(user, ["Manager", "Cashier"]) ? (
+        <ModalCell
+          title={"Buyum holatini o'zgartirish"}
+          onClose={() => {
+            dispatch(toggleModal(modalId));
+            reset();
+          }}
+          onApply={handleSubmit(handleApply)}
+          applyButtonProps={{
+            disabled: !isDirty,
+            isLoading: mutation.isPending,
+          }}>
+          {column.SlpName}
+          <Input
+            type={"select"}
+            size={"full-grow"}
+            canClickIcon={false}
+            options={productOptions}
+            variant={"outlined"}
+            {...register("phoneConfiscated")}
+          />
+        </ModalCell>
+      ) : null}
     </ModalWrapper>
   );
 };

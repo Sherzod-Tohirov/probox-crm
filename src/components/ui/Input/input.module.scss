@@ -370,11 +370,13 @@
 }
 
 :global(.react-select__option) {
-  padding: 4px 6px !important;
-  font-size: 13px !important;
+  padding: 5px 8px !important;
+  font-size: 3.5rem !important;
+  font-weight: 500 !important;
+  border-bottom: 1px solid rgb(245, 244, 244);
   &:hover {
-    background-color: #0078d7;
-    color: #fff !important;
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
   }
 
   &:first-child:hover {
@@ -389,6 +391,15 @@
 }
 
 :global(.react-select__option--is-selected) {
-  background-color: #0078d7 !important;
-  color: #fff !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  background-color: transparent !important;
+  &::after {
+    content: "✅";
+    @include m.flex-center;
+    width: 14px;
+    height: 14px;
+    margin-left: auto;
+  }
 }
