@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { Button } from "@components/ui";
 import MessengerModal from "@components/ui/Messenger/MessengerModal";
-import useFetchMessages from "@hooks/data/useFetchMessages";
+import useFetchMessages from "@hooks/data/clients/useFetchMessages";
 import useMessengerActions from "@hooks/useMessengerActions";
 
 import ModalWrapper from "./helper/ModalWrapper";

@@ -143,3 +143,19 @@ export const deleteClientImages = async (payload = {}, params = {}) => {
     throw error.response?.data || error;
   }
 };
+
+export const updatePhoneConfiscated = async (payload = {}, params = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error("Installment id and doc entry are required !");
+
+    const response = await api.put(
+      `/invoice/confiscating/${payload.docEntry}/${payload.installmentId}`,
+      payload?.data || {}
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

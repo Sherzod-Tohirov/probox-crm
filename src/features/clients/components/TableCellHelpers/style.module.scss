@@ -1,6 +1,18 @@
+@use "@styles/mixins" as m;
+@use "@styles/variables" as v;
+
 .modal-input {
   padding: 10px !important;
   &-wrapper {
     width: 100% !important;
   }
+}
+
+.product-box-text {
+  @include m.flex(center, center);
+  width: 85px;
+  height: 34px;
+  background-color: steelblue;
+  border-radius: 10px;
+  color: #fff;
 }

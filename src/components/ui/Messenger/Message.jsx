@@ -13,7 +13,7 @@ import classNames from "classnames";
 import styles from "./messenger.module.scss";
 import iconsMap from "@utils/iconsMap";
 import { Col, Button, Typography, Box } from "@components/ui";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();

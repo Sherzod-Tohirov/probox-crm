@@ -1,7 +1,7 @@
 import { getClients } from "@services/clientsService";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { applyDefaultParams } from "../utils";
+import { applyDefaultParams } from "../../utils";
 
 export default function useFetchClients(options = {}) {
   const { currentPage, pageSize } = useSelector((state) => state.page.clients);

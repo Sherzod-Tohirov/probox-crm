@@ -25,11 +25,11 @@ import useAuth from "@hooks/useAuth";
 import useToggle from "@hooks/useToggle";
 import useTableColumns from "@hooks/useTableColumns";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useFetchMessages from "@hooks/data/useFetchMessages";
+import useFetchMessages from "@hooks/data/clients/useFetchMessages";
 import useClickOutside from "@hooks/helper/useClickOutside";
 import useMessengerActions from "@hooks/useMessengerActions";
-import useMutateClientPageForm from "@hooks/data/useMutateClientPageForm";
-import useFetchClientEntriesById from "@hooks/data/useFetchClientEntriesById";
+import useMutateClientPageForm from "@hooks/data/clients/useMutateClientPageForm";
+import useFetchClientEntriesById from "@hooks/data/clients/useFetchClientEntriesById";
 import hasRole from "@utils/hasRole";
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
@@ -73,11 +73,6 @@ export default function ClientPage() {
       );
       const formattedDueDate = moment(currentClient["DueDate"]).format(
         "YYYY.MM.DD"
-      );
-      console.log(data, "data client");
-      console.log(
-        data.telephone.includes(currentClient?.["Phone1"]),
-        "invlaudes data"
       );
       const phonePayload = {
         ...(data.telephone ? { Phone1: data.telephone } : {}),

@@ -1,37 +1,35 @@
 import moment from "moment";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Input } from "@components/ui";
 import { useForm } from "react-hook-form";
 import ModalCell from "./helper/ModalCell";
 import ModalWrapper from "./helper/ModalWrapper";
-import useMutateClientPageForm from "@hooks/data/clients/useMutateClientPageForm";
+import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
 
 import formatDate from "@utils/formatDate";
 import styles from "./style.module.scss";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleModal } from "../../../../store/slices/toggleSlice";
-const Title = ({ date }) => {
-  if (!date) return "-";
-  if (moment(date, "DD.MM.YYYY", true).isValid()) return date;
-  return formatDate(date);
+import { toggleModal } from "@store/slices/toggleSlice";
+const Title = ({ phoneConfiscated }) => {
+  if (!phoneConfiscated) return "-";
+  return <span className={styles["product-box-text"]}>Mahsulot</span>;
 };
-const AgreementDateCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-agreement-date-modal`;
+const ProductCell = ({ column }) => {
+  const modalId = `${column?.["DocEntry"]}-product-modal`;
   const {
     reset,
-    control,
     register,
     handleSubmit,
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      agreementDate: column?.NewDueDate,
+      phoneConfiscated: column?.["phoneConfiscated"],
     },
   });
 
-  const mutation = useMutateClientPageForm();
+  const mutation = useMutatePhoneConfiscated();
   const { currentClient } = useSelector((state) => state.page.clients);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -42,21 +40,15 @@ const AgreementDateCell = ({ column }) => {
         "YYYY.MM.DD"
       );
 
-      const formattedAgreementDate = formatDate(
-        data?.agreementDate,
-        "DD.MM.YYYY",
-        "YYYY.MM.DD"
-      );
-
       const payload = {
         docEntry: currentClient?.["DocEntry"],
         installmentId: currentClient?.["InstlmntID"],
         data: {
-          slpCode: column?.SlpCode,
+          phoneConfiscated: data.phoneConfiscated === "true",
           DueDate: formattedDueDate,
-          newDueDate: formattedAgreementDate,
         },
       };
+      console.log(payload, "payload");
       try {
         await mutation.mutateAsync(payload);
         queryClient.invalidateQueries({
@@ -70,13 +62,27 @@ const AgreementDateCell = ({ column }) => {
     },
     [currentClient]
   );
+
+  const productOptions = useMemo(
+    () => [
+      {
+        value: "true",
+        label: "Mahsulot",
+      },
+      {
+        value: "false",
+        label: "Mahsulotsiz",
+      },
+    ],
+    []
+  );
   return (
     <ModalWrapper
       modalId={modalId}
       column={column}
-      title={<Title date={column?.NewDueDate} />}>
+      title={<Title phoneConfiscated={column?.["phoneConfiscated"]} />}>
       <ModalCell
-        title={"Muddatni o'zgartirish"}
+        title={"Mahsulotni o'zgartirish"}
         onClose={() => {
           dispatch(toggleModal(modalId));
           reset();
@@ -88,17 +94,16 @@ const AgreementDateCell = ({ column }) => {
         }}>
         {column.SlpName}
         <Input
-          inputBoxClassName={styles["modal-input-wrapper"]}
-          className={styles["modal-input"]}
-          type="date"
-          variant={"outlined"}
+          type={"select"}
+          size={"full-grow"}
           canClickIcon={false}
-          control={control}
-          {...register("agreementDate")}
+          options={productOptions}
+          variant={"outlined"}
+          {...register("phoneConfiscated")}
         />
       </ModalCell>
     </ModalWrapper>
   );
 };
 
-export default memo(AgreementDateCell);
+export default memo(ProductCell);

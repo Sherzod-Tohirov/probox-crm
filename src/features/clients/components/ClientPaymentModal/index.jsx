@@ -13,7 +13,7 @@ import {
   PAYMENT_ACCOUNTS,
   CLIENT_PAYMENT_ERROR_MESSAGES,
 } from "@utils/constants";
-import useMutateClientPaymentModal from "@hooks/data/useMutateClientPayment";
+import useMutateClientPaymentModal from "@hooks/data/clients/useMutateClientPayment";
 import { useQueryClient } from "@tanstack/react-query";
 import { ClipLoader } from "react-spinners";
 

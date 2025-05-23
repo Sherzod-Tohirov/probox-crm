@@ -12,7 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 import { filterClientFormSchema } from "@utils/validationSchemas";
 
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
@@ -24,6 +24,7 @@ import moment from "moment";
 import classNames from "classnames";
 
 import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
+import { productOptions } from "../../../../utils/options";
 
 export default function Filter({ onFilter }) {
   const [paymentStatusMenu, setPaymentStatusMenu] = useState({
@@ -123,6 +124,22 @@ export default function Filter({ onFilter }) {
     });
   }, [initialClientsFilterState, statusOptions, executorsOptions]);
 
+  const handleFilter = useCallback((data) => {
+    try {
+      setExecutorMenu({
+        isOpen: false,
+        control: false,
+      });
+      setPaymentStatusMenu({
+        isOpen: false,
+        control: false,
+      });
+      onFilter(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
     const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
@@ -181,7 +198,7 @@ export default function Filter({ onFilter }) {
   return (
     <form
       className={styles["filter-form"]}
-      onSubmit={handleSubmit(onFilter)}
+      onSubmit={handleSubmit(handleFilter)}
       autoComplete="off">
       <Row direction={"row"} gutter={6.25}>
         <Col gutter={4} flexGrow>
@@ -287,6 +304,15 @@ export default function Filter({ onFilter }) {
               ? { menuIsOpen: executorMenu.isOpen }
               : {})}
             {...register("slpCode")}
+          />
+          <Input
+            type={"select"}
+            size={"full-grow"}
+            canClickIcon={false}
+            options={productOptions}
+            variant={"outlined"}
+            label={"Mahsulot"}
+            {...register("phoneConfiscated")}
           />
         </Col>
         <Col style={{ marginTop: "25px" }}>

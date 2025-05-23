@@ -22,8 +22,8 @@ import formatDate from "@utils/formatDate";
 import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
 
-import useMutateDistributeClients from "@hooks/data/useMutateDistributeClients";
-import useFetchStatistics from "@hooks/data/useFetchStatistics";
+import useMutateDistributeClients from "@hooks/data/clients/useMutateDistributeClients";
+import useFetchStatistics from "@hooks/data/clients/useFetchStatistics";
 import formatterCurrency from "@utils/formatterCurrency";
 import { ClipLoader } from "react-spinners";
 

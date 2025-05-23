@@ -14,7 +14,7 @@ import {
   setCurrentClient,
 } from "@store/slices/clientsPageSlice";
 
-import useFetchClients from "@hooks/data/useFetchClients";
+import useFetchClients from "@hooks/data/clients/useFetchClients";
 import useTableColumns from "@hooks/useTableColumns";
 import styles from "./style.module.scss";
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
@@ -62,6 +62,7 @@ export default function Clients() {
       phone: filterData.phone,
       startDate: filterData.startDate,
       endDate: filterData.endDate,
+      phoneConfiscated: filterData.phoneConfiscated,
     }));
   }, []);
 
@@ -143,7 +144,7 @@ export default function Clients() {
             getRowStyles={(row) => {
               if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
                 return {
-                  backgroundColor: "rgba(0,0,0,0.05)",
+                  backgroundColor: "rgba(206, 236, 249, 0.94)",
                 };
               }
             }}

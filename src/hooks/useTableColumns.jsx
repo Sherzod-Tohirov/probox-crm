@@ -4,7 +4,7 @@ import { Status, List, Box } from "@components/ui";
 
 import useAuth from "@hooks/useAuth";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
 
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
@@ -12,6 +12,7 @@ import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
 import MessengerCell from "@features/clients/components/TableCellHelpers/MessengerCell";
 import AgreementDateCell from "@features/clients/components/TableCellHelpers/AgreementDateCell";
 import ExecutorCell from "../features/clients/components/TableCellHelpers/ExecutorCell";
+import ProductCell from "../features/clients/components/TableCellHelpers/ProductCell";
 
 const useTableColumns = () => {
   const { data: executors } = useFetchExecutors();
@@ -83,6 +84,13 @@ const useTableColumns = () => {
         },
         width: "14%",
         icon: "income",
+      },
+      {
+        key: "PaidToDate",
+        title: "Mahsulot",
+        renderCell: (column) => <ProductCell column={column} />,
+        width: "7%",
+        icon: "products",
       },
       {
         key: "status",
@@ -209,7 +217,9 @@ const useTableColumns = () => {
         width: "7%",
         renderCell: (column) => {
           return (
-            <span style={{color: "red"}}>{formatterCurrency(column.PaidToDate || 0, "USD")}</span>
+            <span style={{ color: "red" }}>
+              {formatterCurrency(column.PaidToDate || 0, "USD")}
+            </span>
           );
         },
         icon: "income",

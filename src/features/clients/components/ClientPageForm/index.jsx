@@ -8,8 +8,8 @@ import Label from "./Label";
 
 import useAuth from "@hooks/useAuth";
 import useAlert from "@hooks/useAlert";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
-import useMutateClientImages from "@hooks/data/useMutateClientImages";
+import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
+import useMutateClientImages from "@hooks/data/clients/useMutateClientImages";
 
 import styles from "./clientPageForm.module.scss";
 

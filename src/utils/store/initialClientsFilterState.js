@@ -9,4 +9,5 @@ export const initialClientsFilterState = {
   endDate: endOfMonth,
   paymentStatus: "all",
   slpCode: "",
+  phoneConfiscated: "",
 };

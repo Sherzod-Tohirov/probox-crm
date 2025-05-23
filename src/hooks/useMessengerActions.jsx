@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import useMutateMessages from "@hooks/data/useMutateMessages";
+import useMutateMessages from "@hooks/data/clients/useMutateMessages";
 
 const useMessengerActions = () => {
   const postMessageMutation = useMutateMessages("post");
