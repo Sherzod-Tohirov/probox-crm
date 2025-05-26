@@ -26,4 +26,8 @@
     color: v.$danger-color;
     background: rgba(v.$danger-color, 0.6);
   }
+
+  &.product {
+    background-color: rgb(97, 168, 227);
+  }
 }

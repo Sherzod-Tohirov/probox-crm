@@ -1,20 +1,27 @@
 import moment from "moment";
-import { memo, useCallback, useMemo, useState } from "react";
-import { Input } from "@components/ui";
+import { memo, useCallback, useMemo } from "react";
+import { Input, Status } from "@components/ui";
 import { useForm } from "react-hook-form";
 import ModalCell from "./helper/ModalCell";
 import ModalWrapper from "./helper/ModalWrapper";
 import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
 import useAuth from "@hooks/useAuth";
 import hasRole from "@utils/hasRole";
-import styles from "./style.module.scss";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
-const Title = ({ phoneConfiscated }) => {
-  if (!phoneConfiscated) return "-";
-  return <span className={styles["product-box-text"]}>Mahsulot 📲</span>;
+const Title = ({ column }) => {
+  let status = "unpaid";
+  if (column.phoneConfiscated) status = "product";
+  else {
+    const statusCalc =
+      parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
+    if (statusCalc > 0 && statusCalc < column.InsTotal) status = "partial";
+    if (statusCalc === 0) status = "paid";
+  }
+
+  return <Status status={status} />;
 };
 const ProductCell = ({ column }) => {
   const modalId = `${column?.["DocEntry"]}-product-modal`;
@@ -80,7 +87,7 @@ const ProductCell = ({ column }) => {
     <ModalWrapper
       modalId={modalId}
       column={column}
-      title={<Title phoneConfiscated={column?.["phoneConfiscated"]} />}>
+      title={<Title column={column} />}>
       {hasRole(user, ["Manager", "Cashier"]) ? (
         <ModalCell
           title={"Buyum holatini o'zgartirish"}

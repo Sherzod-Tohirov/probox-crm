@@ -13,7 +13,6 @@ const useMutatePhoneConfiscated = () => {
     },
     onSuccess: (response) => {
       if (response) {
-        console.log("accepted!");
         queryClient.invalidateQueries({ queryKey: ["clients"] });
         queryClient.invalidateQueries({ queryKey: ["statistics"] });
       }

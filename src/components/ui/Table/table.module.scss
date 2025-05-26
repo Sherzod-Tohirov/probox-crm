@@ -3,7 +3,6 @@
 
 .table-container {
   width: 100%;
-  min-height: 50vh;
   & * {
     transition: all v.$transition-time v.$transition-type;
   }
@@ -18,11 +17,11 @@
   line-height: 150%;
   border: none;
   border-spacing: 0;
+  border-collapse: collapse;
   border-bottom: v.$primary-border-width v.$primary-border-type
     v.$primary-border-color;
   background-color: v.$primary-table-bg;
   transition: all v.$transition-type v.$transition-time;
-  overflow: hidden;
   &.loading {
     opacity: 0.6;
   }
@@ -39,6 +38,26 @@
     }
   }
 
+  thead {
+    th {
+      z-index: 999;
+      text-align: start;
+      border: v.$secondary-border-width v.$primary-border-type
+        v.$primary-border-color;
+      padding: 3rem;
+      flex: 1 0 0;
+      background: v.$primary-table-header-bg;
+    }
+
+    th:first-child {
+      border-radius: 12px 0px 0px 12px;
+    }
+
+    th:last-child {
+      border-radius: 0px 12px 12px 0px;
+    }
+  }
+
   tbody {
     & tr {
       cursor: pointer;
@@ -49,23 +68,6 @@
 
   tr:hover {
     background-color: v.$primary-table-hover-bg;
-  }
-
-  th {
-    text-align: start;
-    border: v.$secondary-border-width v.$primary-border-type
-      v.$primary-border-color;
-    padding: 3rem;
-    flex: 1 0 0;
-    background: v.$primary-table-header-bg;
-  }
-
-  th:first-child {
-    border-radius: 12px 0px 0px 12px;
-  }
-
-  th:last-child {
-    border-radius: 0px 12px 12px 0px;
   }
 
   td {

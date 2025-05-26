@@ -24,7 +24,7 @@ const useTableColumns = () => {
         key: "CardCode",
         title: "Kod",
         width: "2%",
-        minWidth: "50px",
+        minWidth: "40px",
         icon: "barCodeFilled",
       },
       {
@@ -86,27 +86,10 @@ const useTableColumns = () => {
         icon: "income",
       },
       {
-        key: "PaidToDate",
-        title: "Buyum",
-        renderCell: (column) => <ProductCell column={column} />,
-        width: "7%",
-        icon: "products",
-      },
-      {
         key: "status",
         title: "Holati",
-        renderCell: (column) => {
-          let status = "unpaid";
-
-          const statusCalc =
-            parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
-          if (statusCalc > 0 && statusCalc < column.InsTotal)
-            status = "partial";
-          if (statusCalc === 0) status = "paid";
-
-          return <Status status={status} />;
-        },
-        width: "6%",
+        renderCell: (column) => <ProductCell column={column} />,
+        width: "8%",
         icon: "calendarFact",
       },
       {
