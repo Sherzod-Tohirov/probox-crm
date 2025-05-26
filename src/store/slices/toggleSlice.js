@@ -1,12 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
-
 const initialState = {
   isSidebarOpen: true,
   isMessengerOpen: false,
   modals: {}, // modalId => true, or false to toggle modal
 };
 
-function deleteModals(state, action, isAll = false) {
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem("toggleState");
+    if (serializedState === null) {
+      return initialState;
+    }
+    return JSON.parse(serializedState);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteModals = (state, action, isAll = false) => {
   Object.entries(state.modals).forEach(([modalId, _]) => {
     if (isAll) {
       delete state.modals[modalId];
@@ -17,14 +28,19 @@ function deleteModals(state, action, isAll = false) {
       delete state.modals[modalId];
     }
   });
-}
+};
+
+const saveState = (state) => {
+  localStorage.setItem("toggleState", JSON.stringify(state));
+};
 
 const toggleSlice = createSlice({
   name: "toggle",
-  initialState,
+  initialState: loadState(),
   reducers: {
     toggleSidebar(state) {
       state.isSidebarOpen = !state.isSidebarOpen;
+      saveState(state);
     },
     toggleMessenger(state) {
       state.isMessengerOpen = !state.isMessengerOpen;
