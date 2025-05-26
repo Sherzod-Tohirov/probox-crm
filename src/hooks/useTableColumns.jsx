@@ -74,8 +74,10 @@ const useTableColumns = () => {
           return (
             (
               <Box gap={1}>
-                <span>{formatterCurrency(column.PaidToDate, "USD")} </span>
-                <span style={{ fontWeight: 900, color: "steelblue" }}>
+                <span style={{ color: "red" }}>
+                  {formatterCurrency(column.PaidToDate, "USD")}{" "}
+                </span>
+                <span style={{ fontWeight: 900, color: "red" }}>
                   ({formatterCurrency(SUM || 0, "UZS")})
                 </span>
               </Box>
@@ -90,6 +92,7 @@ const useTableColumns = () => {
         title: "Holati",
         renderCell: (column) => <ProductCell column={column} />,
         width: "8%",
+        minWidth: "110px",
         icon: "calendarFact",
       },
       {

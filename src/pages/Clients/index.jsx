@@ -134,6 +134,7 @@ export default function Clients() {
             }}
           /> */}
           <Table
+            scrollable
             uniqueKey={"DocEntry"}
             style={{ marginTop: "-24px" }}
             isLoading={isLoading}

@@ -15,6 +15,8 @@ function Table({
   containerClass,
   isLoading = false,
   showPivotColumn = false,
+  scrollable = false,
+  scrollHeight = "calc(100vh - 450px)",
   getRowStyles = () => ({}),
   onRowClick = () => {},
 }) {
@@ -58,80 +60,86 @@ function Table({
 
   return (
     <div
-      style={containerStyle}
-      className={classNames(styles["table-container"], containerClass)}>
-      <table
-        className={classNames(
-          styles["base-table"],
-          { [styles["loading"]]: isLoading },
-          className
-        )}
-        style={style}>
-        <thead>
-          <tr>
-            {finalColumns.map((column, colIndex) => (
-              <th
-                // Use combination of key and index for uniqueness
-                key={`header-${column.key}-${colIndex}`}
-                style={{
-                  width: column.width || "auto",
-                  minWidth: column.minWidth || "initial",
-                  maxWidth: column.maxWidth || "initial",
-                }}>
-                <div className={styles["table-header-cell"]}>
-                  {column.icon && iconsMap[column.icon]} {column.title}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr key={`pivot-${uniqueKey}`} className={styles["loading-row"]}>
-              <td colSpan={columns.length} className={styles["empty-table"]}>
-                <ClipLoader color={"#94A3B8"} />
-              </td>
-            </tr>
-          ) : (
-            ""
+      style={{ height: scrollable ? scrollHeight : "auto" }}
+      className={classNames(styles["table-wrapper"], {
+        [styles["scrollable"]]: scrollable,
+      })}>
+      <div
+        style={containerStyle}
+        className={classNames(styles["table-container"], containerClass)}>
+        <table
+          className={classNames(
+            styles["base-table"],
+            { [styles["loading"]]: isLoading },
+            className
           )}
-          {!isLoading && data?.length > 0
-            ? data.map((row, rowIndex) => (
-                <tr
-                  key={`row-${uniqueKey ? row[uniqueKey] : uuidv4()}`} // Ensure unique key for each row
-                  onClick={() => handleRowClick(row)}
-                  onMouseDown={handleMouseDown}
-                  onMouseUp={handleMouseUp}
-                  onTouchStart={handleMouseDown}
-                  onTouchEnd={handleMouseUp}
-                  style={{ ...getRowStyles(row) }}>
-                  {finalColumns.map((column, colIndex) => (
+          style={style}>
+          <thead>
+            <tr>
+              {finalColumns.map((column, colIndex) => (
+                <th
+                  // Use combination of key and index for uniqueness
+                  key={`header-${column.key}-${colIndex}`}
+                  style={{
+                    width: column.width || "auto",
+                    minWidth: column.minWidth || "initial",
+                    maxWidth: column.maxWidth || "initial",
+                  }}>
+                  <div className={styles["table-header-cell"]}>
+                    {column.icon && iconsMap[column.icon]} {column.title}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr key={`pivot-${uniqueKey}`} className={styles["loading-row"]}>
+                <td colSpan={columns.length} className={styles["empty-table"]}>
+                  <ClipLoader color={"#94A3B8"} />
+                </td>
+              </tr>
+            ) : (
+              ""
+            )}
+            {!isLoading && data?.length > 0
+              ? data.map((row, rowIndex) => (
+                  <tr
+                    key={`row-${uniqueKey ? row[uniqueKey] : uuidv4()}`} // Ensure unique key for each row
+                    onClick={() => handleRowClick(row)}
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
+                    onTouchStart={handleMouseDown}
+                    onTouchEnd={handleMouseUp}
+                    style={{ ...getRowStyles(row) }}>
+                    {finalColumns.map((column, colIndex) => (
+                      <td
+                        style={{
+                          ...(column?.cellStyle ? column.cellStyle : {}),
+                        }}
+                        key={`cell-${
+                          uniqueKey ? `${row[uniqueKey]}-${colIndex}` : uuidv4()
+                        }`} // Ensure unique key for each cell
+                      >
+                        {column.renderCell
+                          ? column.renderCell(row, rowIndex)
+                          : row[column.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              : !isLoading && (
+                  <tr>
                     <td
-                      style={{
-                        ...(column?.cellStyle ? column.cellStyle : {}),
-                      }}
-                      key={`cell-${
-                        uniqueKey ? `${row[uniqueKey]}-${colIndex}` : uuidv4()
-                      }`} // Ensure unique key for each cell
-                    >
-                      {column.renderCell
-                        ? column.renderCell(row, rowIndex)
-                        : row[column.key]}
+                      colSpan={columns.length}
+                      className={styles["empty-table"]}>
+                      Ma'lumot mavjud emas.
                     </td>
-                  ))}
-                </tr>
-              ))
-            : !isLoading && (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className={styles["empty-table"]}>
-                    Ma'lumot mavjud emas.
-                  </td>
-                </tr>
-              )}
-        </tbody>
-      </table>
+                  </tr>
+                )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

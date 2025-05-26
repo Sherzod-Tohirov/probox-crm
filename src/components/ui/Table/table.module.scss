@@ -1,7 +1,26 @@
 @use "@styles/variables" as v;
 @use "@styles/mixins" as m;
 
+.table-wrapper {
+  position: relative;
+  width: 100%;
+  &.scrollable {
+    overflow: auto;
+    height: calc(100vh - 450px);
+    & .table-container {
+      padding-top: 20px;
+    }
+
+    & table th {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+  }
+}
+
 .table-container {
+  @include m.flex(start, start, 0);
   width: 100%;
   & * {
     transition: all v.$transition-time v.$transition-type;
@@ -31,6 +50,7 @@
     &.loading-row {
       position: absolute;
       top: 50%;
+      z-index: 999;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
@@ -40,7 +60,6 @@
 
   thead {
     th {
-      z-index: 999;
       text-align: start;
       border: v.$secondary-border-width v.$primary-border-type
         v.$primary-border-color;
@@ -68,6 +87,10 @@
 
   tr:hover {
     background-color: v.$primary-table-hover-bg;
+  }
+
+  tr:first-child td {
+    padding-top: 5rem;
   }
 
   td {

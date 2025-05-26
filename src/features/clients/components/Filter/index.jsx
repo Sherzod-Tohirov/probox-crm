@@ -1,4 +1,7 @@
 import _ from "lodash";
+import moment from "moment";
+import classNames from "classnames";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./filter.module.scss";
 
@@ -10,23 +13,19 @@ import useFilter from "@features/clients/hooks/useFilter";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
-import { filterClientFormSchema } from "@utils/validationSchemas";
 
 import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
+import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
 import selectOptionsCreator from "@utils/selectOptionsCreator";
 import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
+import { filterClientFormSchema } from "@utils/validationSchemas";
 import { statusOptions } from "@utils/options";
-
-import moment from "moment";
-import classNames from "classnames";
-
-import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
-import { productOptions } from "../../../../utils/options";
+import { productOptions } from "@utils/options";
 
 export default function Filter({ onFilter }) {
+  const isFirstRender = useRef(true);
   const [paymentStatusMenu, setPaymentStatusMenu] = useState({
     isOpen: false,
     control: false,
@@ -56,16 +55,6 @@ export default function Filter({ onFilter }) {
       value: "SlpCode",
     });
   }, [executors]);
-
-  // const defaultExecutor = useMemo(() => {
-  //   const foundExecutor = executors?.find(
-  //     (executor) => Number(executor.SlpCode) === Number(filterState?.slpCode)
-  //   );
-  //   if (foundExecutor && _.has(foundExecutor, "SlpCode")) {
-  //     return foundExecutor.SlpCode;
-  //   }
-  //   return executorsOptions?.[0]?.value || "";
-  // }, [filterState?.slpCode, executors]);
 
   const {
     register,
@@ -156,16 +145,19 @@ export default function Filter({ onFilter }) {
 
   useEffect(() => {
     if (!_.isEmpty(executorsOptions)) {
-      dispatch(
-        setClientsFilter({
-          ...filterState,
-          search: "",
-          phone: "998",
-          slpCode: _.map(watchedFields.slpCode, "value").join(","),
-        })
-      );
-      setValue("search", "");
-      setValue("phone", "998");
+      const formattedSlpCode = _.map(watchedFields.slpCode, "value").join(",");
+      if (filterState && filterState.slpCode !== formattedSlpCode) {
+        dispatch(
+          setClientsFilter({
+            ...filterState,
+            search: "",
+            phone: "998",
+            slpCode: formattedSlpCode,
+          })
+        );
+        setValue("search", "");
+        setValue("phone", "998");
+      }
     }
   }, [watchedFields.slpCode, executorsOptions]);
 
@@ -190,6 +182,11 @@ export default function Filter({ onFilter }) {
   }, [executorsOptions]);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     if (!watchedFields.search) {
       setValue("phone", "998");
     }
@@ -273,15 +270,15 @@ export default function Filter({ onFilter }) {
             control={control}
             options={statusOptions}
             multipleSelect={true}
-            onFocus={() => {
-              setPaymentStatusMenu(() => ({
-                control: false,
-                isOpen: false,
-              }));
-            }}
-            {...(paymentStatusMenu.control
-              ? { menuIsOpen: paymentStatusMenu.isOpen }
-              : {})}
+            // onFocus={() => {
+            //   setPaymentStatusMenu(() => ({
+            //     control: false,
+            //     isOpen: false,
+            //   }));
+            // }}
+            // {...(paymentStatusMenu.control
+            //   ? { menuIsOpen: paymentStatusMenu.isOpen }
+            //   : {})}
             {...register("paymentStatus")}
           />
           <Input
@@ -294,15 +291,15 @@ export default function Filter({ onFilter }) {
             label={"Mas'ul ijrochi"}
             isLoading={isExecutorsLoading}
             control={control}
-            onFocus={() => {
-              setExecutorMenu(() => ({
-                control: false,
-                isOpen: false,
-              }));
-            }}
-            {...(executorMenu.control
-              ? { menuIsOpen: executorMenu.isOpen }
-              : {})}
+            // onFocus={() => {
+            //   setExecutorMenu(() => ({
+            //     control: false,
+            //     isOpen: false,
+            //   }));
+            // }}
+            // {...(executorMenu.control
+            //   ? { menuIsOpen: executorMenu.isOpen }
+            //   : {})}
             {...register("slpCode")}
           />
           <Input

@@ -98,7 +98,9 @@ const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
       onChange={(selected, actionMeta) =>
         handleChange(selected, actionMeta, field)
       }
-      value={field.value || []} // Ensure controlled value
+      value={options.filter((opt) =>
+        field.value?.some((val) => val.value === opt.value)
+      )} // Ensure controlled value
     />
   );
 };

@@ -33,7 +33,6 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
   );
-
   const { data: statisticsData, isLoading: isStatisticsLoading } =
     useFetchStatistics({
       startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
