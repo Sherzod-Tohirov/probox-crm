@@ -56,7 +56,7 @@ export default function ClientPage() {
     installmentId: currentClient?.["InstlmntID"],
     enabled: isOpen,
   });
-  console.log(isMessagesLoading, "isLoadingMeessssee");
+
   const { data: clientEntries, isLoading } = useFetchClientEntriesById(id);
 
   // Handle outside click to close messenger
@@ -96,8 +96,6 @@ export default function ClientPage() {
             : {}),
         },
       };
-
-      console.log(payload, "payload");
       try {
         await updateMutation.mutateAsync(payload);
         setIsSaveButtonDisabled(true);
@@ -159,6 +157,9 @@ export default function ClientPage() {
             </Col>
             <Col fullWidth>
               <Table
+                containerStyle={{
+                  minHeight: "calc(35dvh)",
+                }}
                 uniqueKey={"InstlmntID"}
                 style={{ fontSize: "3.7rem" }}
                 columns={clientPageTableColumns}

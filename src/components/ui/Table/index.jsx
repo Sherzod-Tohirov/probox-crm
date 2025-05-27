@@ -1,25 +1,29 @@
 import { ClipLoader } from "react-spinners";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, forwardRef } from "react";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 
 import styles from "./table.module.scss";
-function Table({
-  uniqueKey = null,
-  columns = [],
-  data = [],
-  className,
-  style = {},
-  containerStyle = {},
-  containerClass,
-  isLoading = false,
-  showPivotColumn = false,
-  scrollable = false,
-  scrollHeight = "calc(100vh - 450px)",
-  getRowStyles = () => ({}),
-  onRowClick = () => {},
-}) {
+function Table(
+  {
+    uniqueKey = null,
+    columns = [],
+    data = [],
+    className,
+    style = {},
+    containerStyle = {},
+    containerClass,
+    containerHeight = null,
+    isLoading = false,
+    showPivotColumn = false,
+    scrollable = false,
+    scrollHeight = "calc(100vh - 450px)",
+    getRowStyles = () => ({}),
+    onRowClick = () => {},
+  },
+  ref
+) {
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
 
@@ -60,14 +64,26 @@ function Table({
 
   return (
     <div
-      style={{ height: scrollable ? scrollHeight : "auto" }}
-      className={classNames(styles["table-wrapper"], {
-        [styles["scrollable"]]: scrollable,
-      })}>
-      <div
-        style={containerStyle}
-        className={classNames(styles["table-container"], containerClass)}>
+      id="table-wrapper"
+      data-testid="table-wrapper"
+      style={{
+        height: scrollable
+          ? scrollHeight
+          : containerHeight
+          ? containerHeight
+          : "auto",
+        ...containerStyle,
+      }}
+      className={classNames(
+        styles["table-wrapper"],
+        {
+          [styles["scrollable"]]: scrollable,
+        },
+        containerClass
+      )}>
+      <div className={classNames(styles["table-container"])}>
         <table
+          ref={ref}
           className={classNames(
             styles["base-table"],
             { [styles["loading"]]: isLoading },
@@ -144,4 +160,4 @@ function Table({
   );
 }
 
-export default Table;
+export default forwardRef(Table);

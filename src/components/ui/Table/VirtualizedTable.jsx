@@ -1,107 +1,173 @@
-// // VirtualizedTable.tsx updated to work with @tanstack/react-table v8 column definitions
+import { ClipLoader } from "react-spinners";
+import { useCallback, useRef, forwardRef, memo, useMemo } from "react";
+import iconsMap from "@utils/iconsMap";
+import classNames from "classnames";
+import { FixedSizeList as List } from "react-window";
+import { v4 as uuidv4 } from "uuid";
+import styles from "./table.module.scss";
 
-// import {
-//   useReactTable,
-//   getCoreRowModel,
-//   flexRender,
-// } from "@tanstack/react-table";
-// import { useVirtualizer } from "@tanstack/react-virtual";
-// import { useRef } from "react";
-// import classNames from "classnames";
-// import styles from "./virtualizedTable.module.scss";
-// import { ClipLoader } from "react-spinners";
+function Table(
+  {
+    uniqueKey = null,
+    columns = [],
+    data = [],
+    className,
+    style = {},
+    containerStyle = {},
+    containerClass,
+    containerHeight = null,
+    isLoading = false,
+    showPivotColumn = false,
+    scrollable = false,
+    scrollHeight = "calc(100vh - 450px)",
+    getRowStyles = () => ({}),
+    onRowClick = () => {},
+    rowHeight = 50,
+  },
+  ref
+) {
+  const pressTimeRef = useRef(0);
+  const allowRowClickRef = useRef(true);
 
-// function VirtualizedTable({
-//   columns = [],
-//   data = [],
-//   className,
-//   containerClass,
-//   isLoading = false,
-//   height = 600,
-//   rowHeight = 50,
-//   onRowClick = () => {},
-// }) {
-//   const parentRef = useRef();
+  const finalColumns = useMemo(() => {
+    return showPivotColumn
+      ? [
+          {
+            key: "pivotId",
+            icon: "barCodeFilled",
+            title: "ID",
+            width: "2%",
+            cellStyle: {
+              textAlign: "center",
+            },
+            renderCell: (_, rowIndex) => rowIndex + 1,
+          },
+          ...columns,
+        ]
+      : columns;
+  }, [columns, showPivotColumn]);
 
-//   const table = useReactTable({
-//     columns: columns.map((col) => ({
-//       id: col.key || col.id || col.accessorKey, // ensure ID exists
-//       accessorKey: col.key,
-//       header: col.title,
-//       cell: col.renderCell
-//         ? ({ row }) => col.renderCell(row.original)
-//         : undefined,
-//       size: col.width ? parseInt(col.width) : undefined,
-//     })),
-//     data,
-//     getCoreRowModel: getCoreRowModel(),
-//   });
+  const handleMouseDown = useCallback(() => {
+    pressTimeRef.current = Date.now();
+    allowRowClickRef.current = true;
+  }, []);
 
-//   const rowVirtualizer = useVirtualizer({
-//     count: table.getRowModel().rows.length,
-//     getScrollElement: () => parentRef.current,
-//     estimateSize: () => rowHeight,
-//     overscan: 10,
-//   });
+  const handleMouseUp = useCallback(() => {
+    const pressDuration = Date.now() - pressTimeRef.current;
+    allowRowClickRef.current = pressDuration < 400;
+  }, []);
 
-//   return (
-//     <div className={classNames(styles["table-container"], containerClass)}>
-//       <table className={classNames(styles["base-table"], className)}>
-//         <thead className={styles["table-header"]}>
-//           {table.getHeaderGroups().map((headerGroup) => (
-//             <tr key={headerGroup.id} className={styles["table-row"]}>
-//               {headerGroup.headers.map((header) => (
-//                 <th key={header.id} className={styles["table-header-cell"]}>
-//                   {header.isPlaceholder
-//                     ? null
-//                     : flexRender(
-//                         header.column.columnDef.header,
-//                         header.getContext()
-//                       )}
-//                 </th>
-//               ))}
-//             </tr>
-//           ))}
-//         </thead>
-//       </table>
+  const handleRowClick = useCallback(
+    (row) => {
+      if (allowRowClickRef.current) {
+        onRowClick(row);
+      }
+    },
+    [onRowClick]
+  );
 
-//       <div ref={parentRef} style={{ height: `${height}px`, overflow: "auto" }}>
-//         <table className={classNames(styles["base-table"], className)}>
-//           <tbody style={{ height: rowVirtualizer.getTotalSize() }}>
-//             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-//               const row = table.getRowModel().rows[virtualRow.index];
-//               return (
-//                 <tr
-//                   key={row.id}
-//                   className={styles["table-row"]}
-//                   style={{ transform: `translateY(${virtualRow.start}px)` }}
-//                   onClick={() => onRowClick(row.original)}>
-//                   {row.getVisibleCells().map((cell) => (
-//                     <td key={cell.id} className={styles["table-cell"]}>
-//                       {flexRender(
-//                         cell.column.columnDef.cell,
-//                         cell.getContext()
-//                       )}
-//                     </td>
-//                   ))}
-//                 </tr>
-//               );
-//             })}
-//           </tbody>
-//         </table>
-//         {isLoading && (
-//           <div className={styles["table-loading-row"]}>
-//             <ClipLoader color="#94A3B8" />
-//           </div>
-//         )}
-//         {!isLoading && data.length === 0 && (
-//           <div className={styles["table-cell"]} style={{ textAlign: "center" }}>
-//             Ma'lumot mavjud emas.
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
+  const Row = memo(({ index, style: rowStyle }) => {
+    const row = data[index];
+    return (
+      <tr
+        key={`row-${uniqueKey ? row[uniqueKey] : index}`}
+        onClick={() => handleRowClick(row)}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        style={{ ...getRowStyles(row), ...rowStyle }}
+        role="row">
+        {finalColumns.map((column, colIndex) => (
+          <td
+            role="cell"
+            data-testid={`cell-${index}-${column.key}`}
+            key={`cell-${index}-${colIndex}`}
+            style={column.cellStyle || {}}>
+            {column.renderCell
+              ? column.renderCell(row, index)
+              : row[column.key]}
+          </td>
+        ))}
+      </tr>
+    );
+  });
 
-// export default VirtualizedTable;
+  return (
+    <div
+      id="table-wrapper"
+      data-testid="table-wrapper"
+      style={{
+        height: scrollable
+          ? scrollHeight
+          : containerHeight
+          ? containerHeight
+          : "auto",
+        ...containerStyle,
+      }}
+      className={classNames(
+        styles["table-wrapper"],
+        {
+          [styles["scrollable"]]: scrollable,
+        },
+        containerClass
+      )}>
+      <div className={classNames(styles["table-container"])}>
+        <table
+          ref={ref}
+          role="table"
+          className={classNames(
+            styles["base-table"],
+            { [styles["loading"]]: isLoading },
+            className
+          )}
+          style={style}>
+          <thead>
+            <tr role="row">
+              {finalColumns.map((column, colIndex) => (
+                <th
+                  role="columnheader"
+                  key={`header-${column.key}-${colIndex}`}
+                  style={{
+                    width: column.width || "auto",
+                    minWidth: column.minWidth || "initial",
+                    maxWidth: column.maxWidth || "initial",
+                  }}>
+                  <div className={styles["table-header-cell"]}>
+                    {column.icon && iconsMap[column.icon]} {column.title}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr key={`loading`} className={styles["loading-row"]}>
+                <td colSpan={columns.length} className={styles["empty-table"]}>
+                  <ClipLoader color={"#94A3B8"} />
+                </td>
+              </tr>
+            ) : data?.length > 0 ? (
+              <List
+                height={parseInt(scrollHeight, 10) || 500}
+                itemCount={data.length}
+                itemSize={rowHeight}
+                width="100%"
+                outerElementType="tbody">
+                {Row}
+              </List>
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className={styles["empty-table"]}>
+                  Ma'lumot mavjud emas.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export default forwardRef(Table);

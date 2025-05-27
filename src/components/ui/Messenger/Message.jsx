@@ -19,6 +19,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();
   const [showMenu, setShowMenu] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [messageText, setMessageText] = useState(msg?.["Comments"]);
   const [editText, setEditText] = useState(msg?.["Comments"]);
 
   const { x, y, strategy, update, refs } = useFloating({
@@ -31,6 +33,11 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     return autoUpdate(refs.reference.current, refs.floating.current, update);
   }, [refs.reference, refs.floating, update]);
 
+  useEffect(() => {
+    setMessageText(msg?.["Comments"]);
+    setEditText(msg?.["Comments"]);
+  }, [msg?.["Comments"]]);
+
   const handleContextMenu = (e) => {
     e.preventDefault();
     setShowMenu(true);
@@ -39,6 +46,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
   const handleEditSubmit = async () => {
     try {
+      setIsSubmitting(true);
       if (editText === "") {
         onDeleteMessage(msg?._id);
         return;
@@ -47,11 +55,14 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
         editText !== msg?.["Comments"] &&
         typeof onEditMessage === "function"
       ) {
-        onEditMessage(msg?._id, { Comments: editText });
+        setMessageText(editText);
+        await onEditMessage(msg?._id, { Comments: editText });
       }
     } catch (error) {
+      setMessageText(msg?.["Comments"]);
       console.error(error);
     } finally {
+      setIsSubmitting(false);
       setEditMode(false);
     }
   };
@@ -93,9 +104,9 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             <textarea
               className={styles["message-edit-input"]}
               value={editText}
+              disabled={isSubmitting}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (e.shiftKey) return;
+                if (e.key === "Enter" && !e.shiftKey && !isSubmitting) {
                   handleEditSubmit();
                 }
               }}
@@ -103,11 +114,23 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
               autoFocus
             />
           ) : (
-            <p>{msg?.["Comments"]}</p>
+            <p>{messageText}</p>
           )}
-          <time className={styles["message-time"]} dateTime={timestamp}>
-            {timestamp}
-          </time>
+          <Box dir="row" gap={2} align="center" justify={"end"}>
+            {editMode && (
+              <Button
+                className={styles["message-edit-submit-btn"]}
+                onClick={handleEditSubmit}
+                variant={"text"}
+                icon={"send"}
+                disabled={isSubmitting}>
+                {isSubmitting ? "Saqlanmoqda..." : "Saqlash"}
+              </Button>
+            )}
+            <time className={styles["message-time"]} dateTime={timestamp}>
+              {timestamp}
+            </time>
+          </Box>
         </div>
       </Col>
 

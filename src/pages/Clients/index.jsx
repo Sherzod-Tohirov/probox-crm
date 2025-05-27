@@ -22,6 +22,7 @@ export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const clientsTableRef = useRef(null);
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
   );
@@ -45,7 +46,8 @@ export default function Clients() {
 
   const handleRowClick = useCallback(
     (row) => {
-      const scrollY = window.scrollY;
+      const tableWrapper = clientsTableRef.current.closest("#table-wrapper");
+      const scrollY = tableWrapper ? tableWrapper.scrollTop : 0;
       sessionStorage.setItem("scrollPositionClients", scrollY);
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
@@ -88,10 +90,15 @@ export default function Clients() {
       data.data.length > 0 &&
       !hasRestoredScroll.current
     ) {
+      console.log(
+        clientsTableRef.current.closest("#table-wrapper"),
+        "table-wrapper"
+      );
+      const tableWrapper = clientsTableRef.current.closest("#table-wrapper");
       requestAnimationFrame(() => {
         const savedY = sessionStorage.getItem("scrollPositionClients");
         if (savedY && !isNaN(parseInt(savedY))) {
-          window.scrollTo(0, parseInt(savedY));
+          tableWrapper.scrollTop = parseInt(savedY);
           sessionStorage.removeItem("scrollPositionClients");
           hasRestoredScroll.current = true;
         }
@@ -118,23 +125,9 @@ export default function Clients() {
           </Row>
         </Col>
         <Col fullWidth>
-          {/* <VirtualizedTable
-            style={{ marginTop: "-24px" }}
-            isLoading={isLoading}
-            columns={clientsTableColumns}
-            data={clientsDetails.data}
-            onRowClick={handleRowClick}
-            showPivotColumn={true}
-            getRowStyles={(row) => {
-              if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
-                return {
-                  backgroundColor: "rgba(0,0,0,0.05)",
-                };
-              }
-            }}
-          /> */}
           <Table
             scrollable
+            ref={clientsTableRef}
             uniqueKey={"DocEntry"}
             style={{ marginTop: "-24px" }}
             isLoading={isLoading}
