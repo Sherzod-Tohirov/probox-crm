@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Input, Row, Col, Button } from "@components/ui";
 import ModalWrapper from "./helper/ModalWrapper";
 import ModalCell from "./helper/ModalCell";
-import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useMutateClientPageForm from "@hooks/data/clients/useMutateClientPageForm";
 import useAuth from "@hooks/useAuth";
 import selectOptionsCreator from "@utils/selectOptionsCreator";

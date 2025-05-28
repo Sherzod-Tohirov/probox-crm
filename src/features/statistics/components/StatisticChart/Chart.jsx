@@ -8,26 +8,51 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useMemo } from "react";
+import formatterCurrency from "@utils/formatterCurrency"; // Import your currency formatter
 
-export default function Chart({ data }) {
+export default function Chart({ data, keys = {} }) {
+  // Add formatter function
+  const formatValue = (value) => {
+    if (!value && value !== 0) return "";
+    return `${formatterCurrency(value, "USD")}`;
+  };
+
+  // Add this data validation
+  const validData = useMemo(
+    () =>
+      data?.map((item) => ({
+        ...item,
+        [keys.firstLine]: Number(item[keys.firstLine]) || null,
+        [keys.secondLine]: Number(item[keys.secondLine]) || null,
+      })) || [],
+    [data, keys.firstLine, keys.secondLine]
+  );
+
   return (
     <div style={{ width: "100%", minHeight: "400px", fontSize: "3rem" }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={400}>
         <LineChart
-          data={data}
+          data={validData} // Use validated data
           margin={{
             top: 20,
             right: 15,
-            left: -20,
+            left: 0,
             bottom: 20,
           }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 26, 0.15)" />
           <XAxis
-            dataKey="name"
+            dataKey={keys.name || "name"}
             tick={{ fill: "#666" }}
             axisLine={{ stroke: "#eee" }}
+            interval={0} // show all ticks
           />
-          <YAxis tick={{ fill: "#666" }} axisLine={{ stroke: "#eee" }} />
+          <YAxis
+            tick={{ fill: "#666" }}
+            axisLine={{ stroke: "#eee" }}
+            domain={["auto", "auto"]} // or [0, 'dataMax + 1000']
+            tickFormatter={formatValue} // Add formatter to Y axis
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -35,31 +60,29 @@ export default function Chart({ data }) {
               border: "none",
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
             }}
+            formatter={formatValue} // Add formatter to tooltip
           />
-          <Legend verticalAlign="top" height={36} iconType="circle" />
+          <Legend
+            verticalAlign="top"
+            height={36}
+            iconType="circle"
+            formatter={(value) => `${value}`} // Optional: customize legend labels
+          />
           <Line
             type="linear"
-            dataKey="sales"
+            dataKey={keys["firstLine"] || "sales"}
             stroke="#8979FF"
             strokeWidth={2}
             dot={{ fill: "#fff" }}
             activeDot={{ r: 6 }}
-            style={{
-              filter:
-                "drop-shadow(0px 3px 3px rgba(137, 121, 255, 0.40)) drop-shadow(0px 6px 9px rgba(137, 121, 255, 0.40))",
-            }}
           />
           <Line
             type="linear"
-            dataKey="revenue"
+            dataKey={keys["secondLine"] || "revenue"}
             stroke="#FF928A"
             strokeWidth={2}
             dot={{ fill: "#fff" }}
             activeDot={{ r: 6 }}
-            style={{
-              filter:
-                "drop-shadow(0px 3px 3px rgba(255, 146, 138, 0.40)) drop-shadow(0px 6px 9px rgba(255, 146, 138, 0.40)) drop-shadow(0px 9px 18px rgba(255, 146, 138, 0.40))",
-            }}
           />
         </LineChart>
       </ResponsiveContainer>

@@ -48,7 +48,6 @@ const useWatchFilterFields = (watch) => {
     if (filterState.slpCode && !watchedFields.slpCode.length) {
       return;
     }
-    console.log(watchedFields, "watchedFields");
     dispatch(
       setClientsFilter({
         ...omit(watchedFields, [

@@ -23,11 +23,12 @@ import hasRole from "@utils/hasRole";
 import useAuth from "@hooks/useAuth";
 
 import useMutateDistributeClients from "@hooks/data/clients/useMutateDistributeClients";
-import useFetchStatistics from "@hooks/data/clients/useFetchStatistics";
+import useFetchStatistics from "@hooks/data/statistics/useFetchStatistics";
 import formatterCurrency from "@utils/formatterCurrency";
 import { ClipLoader } from "react-spinners";
 
 import styles from "./style.module.scss";
+import { insTotalCalculator } from "@utils/calculator";
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { currentPage, pageSize, filter } = useSelector(
@@ -61,13 +62,11 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
     }
   }, []);
   const calculatedInsTotal = useMemo(() => {
-    const paidToDate = Number(statisticsData?.["PaidToDate"]);
-    const sumApplied = Number(statisticsData?.["SumApplied"]);
-    const insTotal = Number(statisticsData?.["InsTotal"]);
-    if (paidToDate > sumApplied) {
-      return insTotal - (paidToDate - sumApplied);
-    }
-    return insTotal;
+    return insTotalCalculator({
+      paidToDate: statisticsData?.["PaidToDate"],
+      sumApplied: statisticsData?.["SumApplied"],
+      insTotal: statisticsData?.["InsTotal"],
+    });
   }, [statisticsData]);
 
   const percentageValue = useMemo(() => {

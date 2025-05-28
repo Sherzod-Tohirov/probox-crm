@@ -55,7 +55,6 @@ const ProductCell = ({ column }) => {
           DueDate: formattedDueDate,
         },
       };
-      console.log(payload, "payload");
       try {
         await mutation.mutateAsync(payload);
         queryClient.invalidateQueries({

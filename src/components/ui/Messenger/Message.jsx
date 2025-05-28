@@ -1,19 +1,13 @@
-import { useState, useRef, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  useFloating,
-  shift,
-  offset,
-  flip,
-  autoUpdate,
-} from "@floating-ui/react-dom";
 import moment from "moment";
 import classNames from "classnames";
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useFloating, shift, offset, autoUpdate } from "@floating-ui/react-dom";
 
-import styles from "./messenger.module.scss";
-import iconsMap from "@utils/iconsMap";
 import { Col, Button, Typography, Box } from "@components/ui";
-import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import iconsMap from "@utils/iconsMap";
+import styles from "./messenger.module.scss";
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();

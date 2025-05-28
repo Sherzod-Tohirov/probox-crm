@@ -1,0 +1,25 @@
+@use "@assets/styles/variables" as v;
+
+.sticky-col {
+  position: sticky !important;
+  top: 107px !important;
+  z-index: 1;
+  background-color: v.$primary-bg;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: -26px;
+    left: 0;
+    width: 100%;
+    height: 26px;
+    background-color: v.$primary-bg;
+    z-index: -1;
+  }
+
+  &::after {
+    top: auto;
+    bottom: -12px;
+  }
+}

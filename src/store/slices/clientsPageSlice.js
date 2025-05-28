@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
+import { initialClientsFilterState } from "@utils/store/initialStates";
 
 const loadState = () => {
   try {
@@ -18,7 +18,7 @@ const loadState = () => {
     return {
       clients: [],
       currentClient: {},
-      filter: initialFilter,
+      filter: initialClientsFilterState,
       currentPage: 0,
       pageSize: 10,
       lastAction: [],

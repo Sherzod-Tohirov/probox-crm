@@ -1,6 +1,14 @@
 import { Col, Row, Table } from "@components/ui";
+import Filter from "@features/statistics/components/Filter";
 import StatisticChart from "@features/statistics/components/StatisticChart";
-
+import useStatisticsData from "@features/statistics/hooks/useStatisticsData";
+import styles from "./style.module.scss";
+import useAuth from "@hooks/useAuth";
+import { useSelector } from "react-redux";
+import formatDate from "@utils/formatDate";
+import { useCallback, useEffect, useState } from "react";
+import _ from "lodash";
+import { insTotalCalculator } from "@utils/calculator";
 const generalStatisticColumn = [
   { key: "month", title: "Month", icon: "calendar" },
   { key: "plan", title: "Plan", icon: "card" },
@@ -38,13 +46,69 @@ const table2Data = Array.from({ length: 20 }, (_, index) => ({
 }));
 
 export default function Statistics() {
+  const filterState = useSelector((state) => state.page.statistics.filter);
+  const { user } = useAuth();
+  const [params, setParams] = useState(() => ({
+    startDate: formatDate(filterState.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+    endDate: formatDate(filterState.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+    slpCode: filterState.slpCode === "" ? user?.slpCode : filterState.slpCode,
+  }));
+  const [formattedMonthlyData, setFormattedMonthlyData] = useState([]);
+  const { monthly, salesPerson } = useStatisticsData(params);
+  console.log(monthly, "monthly statistics data");
+  console.log(salesPerson, "sales person statistics data");
+  const handleFilter = useCallback(
+    (data) => {
+      setParams({
+        startDate: formatDate(data.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+        endDate: formatDate(data.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+        slpCode: _.map(data.slpCode, "value").join(",") || user?.slpCode,
+      });
+    },
+    [user?.slpCode]
+  );
+  useEffect(() => {
+    if (monthly?.data?.length) {
+      const formattedData = monthly.data.map((item) => ({
+        day: formatDate(item["DueDate"], "YYYY.MM.DD", "DD.MM"),
+        qoplandi: parseInt(item["PaidToDate"], 10),
+        jami: parseInt(
+          insTotalCalculator({
+            paidToDate: item["PaidToDate"],
+            sumApplied: item["SumApplied"],
+            insTotal: item["InsTotal"],
+          }),
+          10
+        ),
+      }));
+      setFormattedMonthlyData(formattedData);
+    } else {
+      setFormattedMonthlyData([]);
+    }
+  }, [monthly?.data]);
   return (
     <Row gutter={8}>
+      <Col fullWidth className={styles["sticky-col"]}>
+        <Filter onFilter={handleFilter} />
+      </Col>
       <Col fullWidth>
         <Table columns={generalStatisticColumn} data={generalStatisticData} />
       </Col>
       <Col fullWidth>
-        <StatisticChart />
+        <StatisticChart
+          title={"Oylik statistika"}
+          date={{
+            startDate: formatDate(params.startDate, "YYYY.MM.DD", "DD.MM.YYYY"),
+            endDate: formatDate(params.endDate, "YYYY.MM.DD", "DD.MM.YYYY"),
+          }}
+          data={formattedMonthlyData}
+          isLoading={monthly.isLoading}
+          keys={{
+            name: "day",
+            firstLine: "qoplandi",
+            secondLine: "jami",
+          }}
+        />
       </Col>
       <Col fullWidth>
         <Table columns={table2Columns} data={table2Data} />

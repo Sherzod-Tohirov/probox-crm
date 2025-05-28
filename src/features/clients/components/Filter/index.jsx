@@ -14,15 +14,15 @@ import useFilter from "@features/clients/hooks/useFilter";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Input, Row } from "@components/ui";
 
-import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
-
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import { setClientsFilter } from "@store/slices/clientsPageSlice";
-import { initialClientsFilterState } from "@utils/store/initialClientsFilterState";
-import selectOptionsCreator from "@utils/selectOptionsCreator";
-import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
-import { filterClientFormSchema } from "@utils/validationSchemas";
-import { statusOptions } from "@utils/options";
+
 import { productOptions } from "@utils/options";
+import { statusOptions } from "@utils/options";
+import selectOptionsCreator from "@utils/selectOptionsCreator";
+import { filterClientFormSchema } from "@utils/validationSchemas";
+import { initialClientsFilterState } from "@utils/store/initialStates";
+import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 
 export default function Filter({ onFilter }) {
   const isFirstRender = useRef(true);
@@ -163,7 +163,6 @@ export default function Filter({ onFilter }) {
 
   useEffect(() => {
     if (!_.isEmpty(executorsOptions)) {
-      console.log(filterState, "filterState");
       const selectedOptions = getSelectOptionsFromKeys(
         executorsOptions,
         filterState.slpCode

@@ -90,10 +90,6 @@ export default function Clients() {
       data.data.length > 0 &&
       !hasRestoredScroll.current
     ) {
-      console.log(
-        clientsTableRef.current.closest("#table-wrapper"),
-        "table-wrapper"
-      );
       const tableWrapper = clientsTableRef.current.closest("#table-wrapper");
       requestAnimationFrame(() => {
         const savedY = sessionStorage.getItem("scrollPositionClients");

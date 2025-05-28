@@ -1,10 +1,10 @@
 import moment from "moment";
 import { useMemo } from "react";
-import { Status, List, Box } from "@components/ui";
+import { List, Box } from "@components/ui";
 
 import useAuth from "@hooks/useAuth";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useFetchExecutors from "@hooks/data/clients/useFetchExecutors";
+import useFetchExecutors from "@hooks/data/useFetchExecutors";
 
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
