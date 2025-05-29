@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./messenger.module.scss";
 import { Button, Col, Row, Box } from "@components/ui";
 import classNames from "classnames";
+import { useCallback } from "react";
 const MessageForm = ({ onSubmit, size = "" }) => {
   const {
     register,
@@ -12,6 +13,15 @@ const MessageForm = ({ onSubmit, size = "" }) => {
     formState: { isValid },
   } = useForm({
     resolver: yupResolver(messengerSchema),
+  });
+  const handleKeyDown = useCallback((e) => {
+    console.log(e, "clicked");
+    if (!isValid) return;
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit({ msgText: e.target.value });
+      reset();
+    }
   });
   return (
     <form
@@ -22,6 +32,7 @@ const MessageForm = ({ onSubmit, size = "" }) => {
       })}>
       <textarea
         className={styles["text-input"]}
+        onKeyDown={handleKeyDown}
         placeholder="Xabar yozish..."
         {...register("msgText")}></textarea>
       <Row direction="row" align="center" justify="space-between">
