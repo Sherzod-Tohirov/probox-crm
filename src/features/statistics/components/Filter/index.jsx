@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import useAuth from "@hooks/useAuth";
 import { useForm } from "react-hook-form";
 import { memo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,7 @@ import _ from "lodash";
 
 const Filter = ({ onFilter }) => {
   const { executors } = useFilter();
+  const { user } = useAuth();
   const dispatch = useDispatch();
   console.log(executors, "executors");
 
@@ -38,7 +40,6 @@ const Filter = ({ onFilter }) => {
     mode: "all",
   });
   const watchedFields = useWatchedFields(watch);
-
   const handleFilterClear = useCallback(() => {
     dispatch(setStatisticsFilter(initialStatisticsFilterState));
     reset({
@@ -55,7 +56,10 @@ const Filter = ({ onFilter }) => {
 
     reset({
       ...filterState,
-      slpCode: getSelectOptionsFromKeys(executors.options, filterState.slpCode),
+      slpCode: getSelectOptionsFromKeys(
+        executors.options,
+        filterState.slpCode ? filterState.slpCode : String(user?.SlpCode) || ""
+      ),
     });
   }, [executors.options, reset]);
 

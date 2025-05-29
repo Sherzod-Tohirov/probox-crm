@@ -1,9 +1,25 @@
 import useFetchMonthlyStatistics from "@hooks/data/statistics/useFetchMonthlyStatistics";
 import useFetchSalesPersonStatistics from "@hooks/data/statistics/useFetchSalesPersonStatistics";
+import { useCallback } from "react";
+import formatDate from "@utils/formatDate";
+import { insTotalCalculator } from "@utils/calculator";
 const useStatisticsData = (params) => {
   const { data: monthlyStatisticsData, isLoading: isMonthlyStatisticsLoading } =
     useFetchMonthlyStatistics(params);
-
+  const formatterMonthlyData = useCallback((data) => {
+    return data.map((item) => ({
+      day: formatDate(item["DueDate"], "YYYY.MM.DD", "DD.MM"),
+      qoplandi: parseInt(item["PaidToDate"], 10),
+      jami: parseInt(
+        insTotalCalculator({
+          paidToDate: item["PaidToDate"],
+          sumApplied: item["SumApplied"],
+          insTotal: item["InsTotal"],
+        }),
+        10
+      ),
+    }));
+  }, []);
   const {
     data: salesPersonStatisticsData,
     isLoading: isSalesPersonStatisticsLoading,
@@ -17,6 +33,9 @@ const useStatisticsData = (params) => {
     salesPerson: {
       data: salesPersonStatisticsData,
       isLoading: isSalesPersonStatisticsLoading,
+    },
+    utils: {
+      formatMonthlyData: formatterMonthlyData,
     },
   };
 };

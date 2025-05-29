@@ -44,6 +44,7 @@ import {
   LogoutFilled,
 } from "@assets/images/icons/Icons";
 import {
+  CalendarFilled,
   Delete,
   DeleteFilled,
   Edit,
@@ -60,6 +61,7 @@ const iconsMap = {
   dashboard: <Dashboard />,
   clients: <Clients />,
   calendar: <Calendar />,
+  calendarFilled: <CalendarFilled />,
   calendarFact: <CalendarFact />,
   products: <Products />,
   leads: <Leads />,

@@ -5,6 +5,10 @@
   position: relative;
   scroll-behavior: smooth;
   width: 100%;
+  &.loading {
+    pointer-events: none;
+    min-height: 12dvh;
+  }
   &.scrollable {
     overflow: auto;
     height: calc(100vh - 450px);
@@ -50,7 +54,7 @@
     transition: all v.$transition-type v.$transition-time;
     &.loading-row {
       position: absolute;
-      top: 50%;
+      top: 56%;
       z-index: 999;
       left: 50%;
       transform: translate(-50%, -50%);

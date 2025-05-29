@@ -78,6 +78,7 @@ function Table(
         styles["table-wrapper"],
         {
           [styles["scrollable"]]: scrollable,
+          [styles["loading"]]: isLoading,
         },
         containerClass
       )}>
@@ -112,7 +113,7 @@ function Table(
             {isLoading ? (
               <tr key={`pivot-${uniqueKey}`} className={styles["loading-row"]}>
                 <td colSpan={columns.length} className={styles["empty-table"]}>
-                  <ClipLoader color={"#94A3B8"} />
+                  <ClipLoader color={"#94A3B8"} size={26} />
                 </td>
               </tr>
             ) : (
