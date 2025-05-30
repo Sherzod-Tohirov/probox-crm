@@ -4,7 +4,7 @@ export default function getPercentageColor(percentage) {
   } else if (percentage > 40 && percentage <= 50) {
     return "#f6a600"; // Yellow for 41-50%
   } else if (percentage > 60 && percentage <= 80) {
-    return "#4caf50"; // Yellow Green for 61-80%
+    return "#f6a600"; // Dark Yellow  for 61-80%
   } else if (percentage > 80 && percentage <= 100) {
     return "#027243"; // Dark Green for 81-100%
   }
