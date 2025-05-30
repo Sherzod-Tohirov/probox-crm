@@ -69,7 +69,12 @@ const useStatisticsTableColumns = () => {
       icon: "income",
       renderCell: (column) => {
         const insTotal = calculateInsTotal(column);
-        return calculatePercentage(column.SumApplied, insTotal);
+        const { value, color } = calculatePercentage(
+          column.SumApplied,
+          insTotal,
+          true
+        );
+        return <span style={{ color }}>{value}</span>;
       },
     },
   ]);

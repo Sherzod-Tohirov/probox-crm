@@ -15,7 +15,6 @@ const MessageForm = ({ onSubmit, size = "" }) => {
     resolver: yupResolver(messengerSchema),
   });
   const handleKeyDown = useCallback((e) => {
-    console.log(e, "clicked");
     if (!isValid) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

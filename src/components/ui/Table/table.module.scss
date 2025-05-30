@@ -7,7 +7,6 @@
   width: 100%;
   &.loading {
     pointer-events: none;
-    min-height: 12dvh;
   }
   &.scrollable {
     overflow: auto;
@@ -46,23 +45,11 @@
     v.$primary-border-color;
   background-color: v.$primary-table-bg;
   transition: all v.$transition-type v.$transition-time;
+
   &.loading {
     opacity: 0.6;
   }
-
-  tr {
-    transition: all v.$transition-type v.$transition-time;
-    &.loading-row {
-      position: absolute;
-      top: 56%;
-      z-index: 999;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      @include m.flex(start, center, 0);
-    }
-  }
-
+  
   thead {
     th {
       text-align: start;
@@ -83,6 +70,7 @@
   }
 
   tbody {
+    position: relative;
     & tr {
       cursor: pointer;
       max-height: 50px !important;
@@ -105,6 +93,7 @@
       v.$primary-border-color;
 
     &.empty-table {
+      padding: 0 !important;
       text-align: center;
       font-size: 3.5rem;
       font-weight: 500;

@@ -16,7 +16,6 @@ const useMessengerActions = () => {
   }, []);
 
   const deleteMessage = useCallback(async (id) => {
-    console.log(id, "inside function deleteMessage");
     try {
       await deleteMessageMutation.mutateAsync(id);
     } catch (error) {

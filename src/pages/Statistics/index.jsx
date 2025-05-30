@@ -3,11 +3,14 @@ import { useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 
 import { Col, Row, Table } from "@components/ui";
+
 import Filter from "@features/statistics/components/Filter";
 import StatisticChart from "@features/statistics/components/StatisticChart";
 import useStatisticsData from "@features/statistics/hooks/useStatisticsData";
 import useStatisticsTableColumns from "@features/statistics/hooks/useStatisticsTableColumns";
+
 import useAuth from "@hooks/useAuth";
+
 import formatDate from "@utils/formatDate";
 
 import styles from "./style.module.scss";
@@ -24,8 +27,6 @@ export default function Statistics() {
   }));
   const [formattedMonthlyData, setFormattedMonthlyData] = useState([]);
   const { monthly, salesPerson, utils } = useStatisticsData(params);
-  console.log(monthly, "monthly statistics data");
-  console.log(salesPerson, "sales person statistics data");
   const handleFilter = useCallback(
     (data) => {
       setParams({
@@ -47,7 +48,7 @@ export default function Statistics() {
   return (
     <Row gutter={8}>
       <Col fullWidth className={styles["sticky-col"]}>
-        <Filter onFilter={handleFilter} />
+        <Filter onFilter={handleFilter} setParams={setParams} />
       </Col>
       <Col fullWidth>
         <Table
@@ -68,8 +69,8 @@ export default function Statistics() {
           isLoading={monthly.isLoading}
           keys={{
             name: "day",
-            firstLine: "qoplandi",
-            secondLine: "jami",
+            firstLine: "jami",
+            secondLine: "qoplandi",
           }}
         />
       </Col>

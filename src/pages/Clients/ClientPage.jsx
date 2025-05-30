@@ -23,7 +23,7 @@ import useSaveScreenshot from "@features/clients/hooks/useSaveScreenshot";
 
 import useAuth from "@hooks/useAuth";
 import useToggle from "@hooks/useToggle";
-import useTableColumns from "@hooks/useTableColumns";
+import useClientsTableColumns from "@features/clients/hooks/useClientsTableColumns";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import useFetchMessages from "@hooks/data/clients/useFetchMessages";
 import useClickOutside from "@hooks/helper/useClickOutside";
@@ -46,7 +46,7 @@ export default function ClientPage() {
   const updateMutation = useMutateClientPageForm();
   const { handleSaveScreenshot } = useSaveScreenshot();
   const { isOpen, toggle } = useToggle("messenger");
-  const { clientPageTableColumns } = useTableColumns();
+  const { clientPageTableColumns } = useClientsTableColumns();
   const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient

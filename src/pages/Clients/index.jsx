@@ -15,7 +15,7 @@ import {
 } from "@store/slices/clientsPageSlice";
 
 import useFetchClients from "@hooks/data/clients/useFetchClients";
-import useTableColumns from "@hooks/useTableColumns";
+import useClientsTableColumns from "@features/clients/hooks/useClientsTableColumns";
 import styles from "./style.module.scss";
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
@@ -40,7 +40,7 @@ export default function Clients() {
     params,
   });
 
-  const { clientsTableColumns } = useTableColumns();
+  const { clientsTableColumns } = useClientsTableColumns();
 
   const hasRestoredScroll = useRef(false);
 
@@ -106,6 +106,8 @@ export default function Clients() {
   useLayoutEffect(() => {
     dispatch(closeAllModals());
   }, [location.pathname]);
+
+  // Close all modal if click outside of modal or cell
 
   return (
     <>

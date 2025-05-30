@@ -9,7 +9,6 @@ export const getMessages = async (options = {}) => {
       `invoice/comments/${options.docEntry}/${options.installmentId}`,
       "messages"
     );
-    console.log(response);
     return response || [];
   } catch (error) {
     console.error(error);
@@ -26,7 +25,6 @@ export const postMessage = async (data, options = {}) => {
       `invoice/comments/${options.docEntry}/${options.installmentId}`,
       data
     );
-    console.log(response);
     return response || [];
   } catch (error) {
     console.error(error);

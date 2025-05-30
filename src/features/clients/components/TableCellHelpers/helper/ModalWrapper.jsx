@@ -20,6 +20,7 @@ import { toggleModal } from "@store/slices/toggleSlice";
 const ModalWrapper = ({ modalId, column, title, children, style }) => {
   const dispatch = useDispatch();
   const containerRef = useRef(null);
+  const floatingRef = useRef(null);
   const isModalOpen = useSelector((state) => state.toggle.modals?.[modalId]);
   const { x, y, strategy, refs, update } = useFloating({
     placement: "top-end",
@@ -30,6 +31,33 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
     ],
     whileElementsMounted: autoUpdate,
   });
+
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (!isModalOpen) return;
+
+      const isClickInsideContainer = containerRef.current?.contains(
+        event.target
+      );
+      const isClickInsideFloating = floatingRef.current?.contains(event.target);
+
+      if (!isClickInsideContainer && !isClickInsideFloating) {
+        dispatch(toggleModal(modalId));
+      }
+    },
+    [isModalOpen, modalId, dispatch]
+  );
+
+  useEffect(() => {
+    // Only add the listener when the modal is open
+    if (isModalOpen) {
+      // Use capture phase to handle clicks before they reach other elements
+      document.addEventListener("mousedown", handleClickOutside, true);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside, true);
+      };
+    }
+  }, [isModalOpen, handleClickOutside]);
 
   // Sync floating when modal opens
   useEffect(() => {
@@ -57,7 +85,10 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
         {isModalOpen && (
           <FloatingPortal>
             <motion.div
-              ref={refs.setFloating}
+              ref={(el) => {
+                refs.setFloating(el);
+                floatingRef.current = el;
+              }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}

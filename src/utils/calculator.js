@@ -1,3 +1,5 @@
+import getPercentageColor from "./getPercentageColor";
+
 export const insTotalCalculator = ({ paidToDate, sumApplied, insTotal }) => {
   if (Number(paidToDate) > Number(sumApplied)) {
     return Number(insTotal) - (Number(paidToDate) - Number(sumApplied));
@@ -5,9 +7,14 @@ export const insTotalCalculator = ({ paidToDate, sumApplied, insTotal }) => {
   return insTotal;
 };
 
-export const calculatePercentage = (part, total) => {
+export const calculatePercentage = (part, total, color = false) => {
   if (total === 0) return "0.00 %"; // Avoid division by zero
-  return String(((part / total) * 100).toFixed(2)) + " %"; // Return percentage with two decimal places
+  const value = ((part / total) * 100).toFixed(2);
+  const percentage = String(value) + " %"; // Return percentage with two decimal places
+  if (color) {
+    return { value: percentage, color: getPercentageColor(Number(value)) };
+  }
+  return percentage;
 };
 
 export const getValue = (percent) => {

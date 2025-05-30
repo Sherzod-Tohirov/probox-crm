@@ -9,7 +9,6 @@ const useStatisticsData = (params) => {
   const formatterMonthlyData = useCallback((data) => {
     return data.map((item) => ({
       day: formatDate(item["DueDate"], "YYYY.MM.DD", "DD.MM"),
-      qoplandi: parseInt(item["PaidToDate"], 10),
       jami: parseInt(
         insTotalCalculator({
           paidToDate: item["PaidToDate"],
@@ -18,6 +17,7 @@ const useStatisticsData = (params) => {
         }),
         10
       ),
+      qoplandi: parseInt(item["SumApplied"], 10),
     }));
   }, []);
   const {

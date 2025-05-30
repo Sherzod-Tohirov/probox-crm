@@ -42,7 +42,6 @@ const statisticsPageSlice = createSlice({
       const payload = {
         ...action.payload,
       };
-      console.log(payload, "payload");
       state.filter = payload;
       saveState(state);
     },

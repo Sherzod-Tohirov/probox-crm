@@ -13,7 +13,7 @@ import { setStatisticsFilter } from "@store/slices/statisticsPageSlice";
 import styles from "./style.module.scss";
 import _ from "lodash";
 
-const Filter = ({ onFilter }) => {
+const Filter = ({ onFilter, setParams }) => {
   const { executors } = useFilter();
   const { user } = useAuth();
   const dispatch = useDispatch();
@@ -49,6 +49,9 @@ const Filter = ({ onFilter }) => {
         initialStatisticsFilterState.slpCode
       ),
     });
+    setParams({
+      ...initialStatisticsFilterState,
+    });
   }, [initialStatisticsFilterState, executors.options]);
 
   useEffect(() => {
@@ -60,6 +63,10 @@ const Filter = ({ onFilter }) => {
         executors.options,
         filterState.slpCode ? filterState.slpCode : String(user?.SlpCode) || ""
       ),
+    });
+    setParams({
+      ...filterState,
+      slpCode: filterState.slpCode || String(user?.SlpCode) || "",
     });
   }, [executors.options, reset]);
 

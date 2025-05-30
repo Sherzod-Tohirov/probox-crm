@@ -38,7 +38,7 @@ function Box({
       flexDirection: dir,
       alignItems: align,
       justifyContent: justify,
-      gap: gap + "rem",
+      gap: `${gap}rem`,
       padding: `${paddingTop || paddingY || padding}rem ${
         paddingRight || paddingX || padding
       }rem ${paddingBottom || paddingY || padding}rem ${
@@ -49,6 +49,7 @@ function Box({
       }rem ${marginBottom || marginY || margin}rem ${
         marginLeft || marginX || margin
       }rem`,
+      ...props.style,
     }),
     [
       dir,

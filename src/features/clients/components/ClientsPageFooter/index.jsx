@@ -29,6 +29,7 @@ import { ClipLoader } from "react-spinners";
 
 import styles from "./style.module.scss";
 import { insTotalCalculator } from "@utils/calculator";
+import moment from "moment";
 const ClientsFooter = ({ clientsDetails = {}, data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { currentPage, pageSize, filter } = useSelector(
@@ -148,7 +149,6 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 </Col>
               </Row>
             </Col>
-
             <Col>
               <Pagination
                 pageCount={clientsDetails.totalPages}
@@ -158,11 +158,10 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                 }
               />
             </Col>
-
             {hasRole(user, ["Manager"]) ? (
               <Col>
                 <Button
-                  disabled
+                  disabled={moment().date() !== 1}
                   variant={"filled"}
                   onClick={handleDistributeClients}
                   isLoading={distributeMutation.isPending}>

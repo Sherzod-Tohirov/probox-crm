@@ -11,10 +11,11 @@ import formatterCurrency from "@utils/formatterCurrency";
 import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
 import MessengerCell from "@features/clients/components/TableCellHelpers/MessengerCell";
 import AgreementDateCell from "@features/clients/components/TableCellHelpers/AgreementDateCell";
-import ExecutorCell from "../features/clients/components/TableCellHelpers/ExecutorCell";
-import ProductCell from "../features/clients/components/TableCellHelpers/ProductCell";
+import ExecutorCell from "@features/clients/components/TableCellHelpers/ExecutorCell";
+import ProductCell from "@features/clients/components/TableCellHelpers/ProductCell";
+import ManualPaymentCell from "@features/clients/components/TableCellHelpers/ManualPaymentCell";
 
-const useTableColumns = () => {
+const useClientsTableColumns = () => {
   const { data: executors } = useFetchExecutors();
   const { data: currency } = useFetchCurrency();
   const { user } = useAuth();
@@ -69,22 +70,9 @@ const useTableColumns = () => {
       {
         key: "PaidToDate",
         title: "To'landi",
-        renderCell: (column) => {
-          const SUM = column.PaidToDate * currency?.["Rate"];
-          return (
-            (
-              <Box gap={1}>
-                <span style={{ color: "red" }}>
-                  {formatterCurrency(column.PaidToDate, "USD")}{" "}
-                </span>
-                <span style={{ fontWeight: 900, color: "red" }}>
-                  ({formatterCurrency(SUM || 0, "UZS")})
-                </span>
-              </Box>
-            ) || "Unknown"
-          );
-        },
+        renderCell: (column) => <ManualPaymentCell column={column} />,
         width: "14%",
+        minWidth: "160px",
         icon: "income",
       },
       {
@@ -272,4 +260,4 @@ const useTableColumns = () => {
   return { clientsTableColumns, clientPageTableColumns };
 };
 
-export default useTableColumns;
+export default useClientsTableColumns;
