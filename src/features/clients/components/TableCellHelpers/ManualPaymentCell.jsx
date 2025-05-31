@@ -1,18 +1,19 @@
 import moment from "moment";
-import { memo, useCallback, useMemo } from "react";
-import { Input, Box } from "@components/ui";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import { Input, Box } from "@components/ui";
+import { memo, useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
 import useAuth from "@hooks/useAuth";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import { useQueryClient } from "@tanstack/react-query";
-import { toggleModal } from "@store/slices/toggleSlice";
+import useMutatePartialPayment from "@hooks/data/clients/useMutatePartialPayment";
+
 import hasRole from "@utils/hasRole";
 import ModalCell from "./helper/ModalCell";
 import ModalWrapper from "./helper/ModalWrapper";
+import { toggleModal } from "@store/slices/toggleSlice";
 import formatterCurrency from "@utils/formatterCurrency";
+
 const Title = ({ column }) => {
   const { data: currency } = useFetchCurrency();
 
@@ -39,35 +40,59 @@ const ManualPaymentCell = ({ column }) => {
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      phoneConfiscated: column?.["phoneConfiscated"],
+      partial: column?.["partial"],
     },
   });
-  const mutation = useMutatePhoneConfiscated();
+  const mutation = useMutatePartialPayment();
+  const { user } = useAuth();
   const { currentClient } = useSelector((state) => state.page.clients);
   const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const handleApply = useCallback(async (data) => {}, [currentClient]);
+  const handleApply = useCallback(
+    async (data) => {
+      const formattedDueDate = moment(currentClient["DueDate"]).format(
+        "YYYY.MM.DD"
+      );
+      const payload = {
+        docEntry: currentClient?.["DocEntry"],
+        installmentId: currentClient?.["InstlmntID"],
+        data: {
+          partial: data.partial === "true",
+          DueDate: formattedDueDate,
+        },
+      };
+      try {
+        await mutation.mutateAsync(payload);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        dispatch(toggleModal(modalId));
+      }
+    },
+    [currentClient]
+  );
 
   const paymentOptions = useMemo(
     () => [
       {
-        value: "true",
-        label: "To'liq qoplash",
+        value: true,
+        label: "To'langan qilish",
       },
       {
-        value: "false",
+        value: false,
         label: "Belgilanmagan",
       },
     ],
     []
   );
+  const canUserModify =
+    hasRole(user, ["Manager", "Cashier"]) && !column.phoneConfiscated;
   return (
     <ModalWrapper
+      allowClick={!canUserModify}
       modalId={modalId}
       column={column}
       title={<Title column={column} />}>
-      {/* {hasRole(user, ["Manager", "Cashier"]) && !column.PhoneConfiscated ? (
+      {canUserModify ? (
         <ModalCell
           title={"To'lov holatini o'zgartirish"}
           onClose={() => {
@@ -86,10 +111,10 @@ const ManualPaymentCell = ({ column }) => {
             canClickIcon={false}
             options={paymentOptions}
             variant={"outlined"}
-            {...register("phoneConfiscated")}
+            {...register("partial")}
           />
         </ModalCell>
-      ) : null} */}
+      ) : null}
     </ModalWrapper>
   );
 };

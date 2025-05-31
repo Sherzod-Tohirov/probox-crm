@@ -159,3 +159,19 @@ export const updatePhoneConfiscated = async (payload = {}, params = {}) => {
     throw error.response?.data || error;
   }
 };
+
+export const updatePartialPayment = async (payload = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error("Installment id and doc entry are required !");
+
+    const response = await api.put(
+      `/invoice/partial/${payload.docEntry}/${payload.installmentId}`,
+      payload?.data || {}
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

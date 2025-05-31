@@ -7,6 +7,7 @@ export default function Status({ status, ...props }) {
     paid: "To'langan",
     partial: "Qisman",
     unpaid: "To'lanmagan",
+    manual_paid: "To'langan",
     product: "Mahsulot",
   };
   return (

@@ -10,3 +10,4 @@ export default function getPercentageColor(percentage) {
   }
   return "#000000"; // Default color for out of range values
 }
+

@@ -28,7 +28,7 @@ const ExecutorCell = ({ column }) => {
   const queryClient = useQueryClient();
 
   const executor = useMemo(() => {
-    const foundExecutor = executors.find(
+    const foundExecutor = executors?.find(
       (executor) => Number(executor.SlpCode) === Number(column?.SlpCode)
     );
     return foundExecutor;

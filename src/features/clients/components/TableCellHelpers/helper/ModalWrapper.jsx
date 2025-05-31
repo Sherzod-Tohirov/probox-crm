@@ -17,7 +17,14 @@ import {
 import classNames from "classnames";
 import { toggleModal } from "@store/slices/toggleSlice";
 
-const ModalWrapper = ({ modalId, column, title, children, style }) => {
+const ModalWrapper = ({
+  modalId,
+  column,
+  title,
+  children,
+  style,
+  allowClick = false,
+}) => {
   const dispatch = useDispatch();
   const containerRef = useRef(null);
   const floatingRef = useRef(null);
@@ -31,7 +38,6 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
     ],
     whileElementsMounted: autoUpdate,
   });
-
   const handleClickOutside = useCallback(
     (event) => {
       if (!isModalOpen) return;
@@ -41,7 +47,19 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
       );
       const isClickInsideFloating = floatingRef.current?.contains(event.target);
 
-      if (!isClickInsideContainer && !isClickInsideFloating) {
+      // Check for common UI overlay elements
+      const isClickInsidePopover =
+        event.target.closest(".flatpickr-calendar") || // Flatpickr calendar
+        event.target.closest(".select__menu") || // React-select menu
+        event.target.closest('[role="listbox"]') || // Generic listbox (dropdowns)
+        event.target.closest('[role="dialog"]') || // Generic dialogs
+        event.target.closest('[role="tooltip"]'); // Tooltips
+
+      if (
+        !isClickInsideContainer &&
+        !isClickInsideFloating &&
+        !isClickInsidePopover
+      ) {
         dispatch(toggleModal(modalId));
       }
     },
@@ -66,9 +84,11 @@ const ModalWrapper = ({ modalId, column, title, children, style }) => {
 
   const handleClick = useCallback(
     (e) => {
-      e.stopPropagation();
-      dispatch(setCurrentClient(column));
-      dispatch(toggleModal(modalId));
+      if (!allowClick) {
+        e.stopPropagation();
+        dispatch(setCurrentClient(column));
+        dispatch(toggleModal(modalId));
+      }
     },
     [column, dispatch, modalId]
   );

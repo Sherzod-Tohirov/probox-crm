@@ -12,8 +12,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
 const Title = ({ column }) => {
+  console.log(column.partial);
   let status = "unpaid";
   if (column.phoneConfiscated) status = "product";
+  else if (column.partial) status = "manual_paid";
   else {
     const statusCalc =
       parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
@@ -82,12 +84,15 @@ const ProductCell = ({ column }) => {
     ],
     []
   );
+  const canUserModify =
+    hasRole(user, ["Manager", "Cashier"]) && !column.partial;
   return (
     <ModalWrapper
+      allowClick={!canUserModify}
       modalId={modalId}
       column={column}
       title={<Title column={column} />}>
-      {hasRole(user, ["Manager", "Cashier"]) ? (
+      {canUserModify ? (
         <ModalCell
           title={"Buyum holatini o'zgartirish"}
           onClose={() => {

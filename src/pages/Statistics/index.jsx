@@ -27,6 +27,7 @@ export default function Statistics() {
   }));
   const [formattedMonthlyData, setFormattedMonthlyData] = useState([]);
   const { monthly, salesPerson, utils } = useStatisticsData(params);
+  
   const handleFilter = useCallback(
     (data) => {
       setParams({

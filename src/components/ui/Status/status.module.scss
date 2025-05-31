@@ -17,6 +17,11 @@
     background: rgba(v.$success-color, 0.6);
   }
 
+  &.manual_paid {
+    color: v.$success-color;
+    background: rgba(v.$success-color, 0.4);
+  }
+
   &.partial {
     color: rgba(v.$info-color, 0.8);
     background: rgba(v.$info-color, 0.6);
