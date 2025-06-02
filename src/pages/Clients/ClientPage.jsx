@@ -207,6 +207,7 @@ export default function ClientPage() {
       <Messenger
         ref={messengerRef}
         messages={messages}
+        hasToggleControl={true}
         isLoading={isMessagesLoading}
         onSendMessage={sendMessage}
         onEditMessage={editMessage}

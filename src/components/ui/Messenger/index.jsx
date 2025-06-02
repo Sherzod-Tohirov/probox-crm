@@ -15,6 +15,7 @@ export const Messenger = (
     onSendMessage,
     onEditMessage,
     onDeleteMessage,
+    hasToggleControl = false,
   },
   ref
 ) => {
@@ -49,6 +50,7 @@ export const Messenger = (
           </div>
         ) : (
           <MessageRenderer
+            hasToggleControl={hasToggleControl}
             onEditMessage={onEditMessage}
             onDeleteMessage={onDeleteMessage}
             messages={messages}
