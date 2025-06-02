@@ -1,16 +1,19 @@
 import moment from "moment";
 import classNames from "classnames";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useFloating, shift, offset, autoUpdate } from "@floating-ui/react-dom";
 
 import { Col, Button, Typography, Box } from "@components/ui";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useAuth from "@hooks/useAuth";
 import iconsMap from "@utils/iconsMap";
+import getMessageColorForUser from "@utils/getMessageColorForUser";
 import styles from "./messenger.module.scss";
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();
+  const { user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,8 +37,10 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    setShowMenu(true);
-    update();
+    if (msg?.["SlpCode"] === user?.SlpCode) {
+      setShowMenu(true);
+      update();
+    }
   };
 
   const handleEditSubmit = async () => {
@@ -82,7 +87,14 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
   const executor = executors?.find((e) => e?.["SlpCode"] === msg?.["SlpCode"]);
   const timestamp = moment(msg?.["DocDate"]).local().format("HH:mm");
-
+  const msgColor = useMemo(
+    () =>
+      getMessageColorForUser(
+        msg?.["SlpCode"],
+        executors?.map((e) => e?.["SlpCode"]) || []
+      ),
+    [msg?.["SlpCode"], executors]
+  );
   return (
     <motion.div
       ref={refs.setReference}
@@ -93,7 +105,9 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       exit={{ scale: 0, y: -20 }}
       transition={{ damping: 10, type: "tween", duration: 0.2 }}>
       <Col>
-        <div className={styles["message-text"]}>
+        <div
+          style={{ backgroundColor: msgColor.bg }}
+          className={styles["message-text"]}>
           {editMode ? (
             <textarea
               className={styles["message-edit-input"]}
@@ -130,15 +144,23 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
       <Col>
         <Box dir="row" gap={1} align="center">
-          <Typography element="span" className={styles["message-avatar-icon"]}>
+          <Typography
+            style={{ color: msgColor.text }}
+            element="span"
+            className={styles["message-avatar-icon"]}>
             {msg.avatar ? (
               <img src={msg.avatar} width={50} height={50} />
             ) : (
               iconsMap["avatarFilled"]
             )}
           </Typography>
-          <Typography element="span" className={styles["message-author"]}>
-            {executor?.["SlpName"] || "Noma'lum shaxs"}
+          <Typography
+            style={{ color: msgColor.text }}
+            element="span"
+            className={styles["message-author"]}>
+            {msg?.["SlpCode"] === user?.SlpCode
+              ? "Siz"
+              : executor?.["SlpName"] || "Noma'lum shaxs"}
           </Typography>
         </Box>
       </Col>

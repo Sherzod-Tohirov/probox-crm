@@ -1,10 +1,63 @@
 import { ClipLoader } from "react-spinners";
-import { useCallback, useRef, forwardRef } from "react";
+import { useCallback, useMemo, useRef, forwardRef, memo } from "react";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
-
 import styles from "./table.module.scss";
+
+// Memoized table cell component
+const TableCell = memo(({ column, row, rowIndex }) => {
+  const content = column.renderCell
+    ? column.renderCell(row, rowIndex)
+    : row[column.key];
+
+  return <td style={column?.cellStyle || {}}>{content}</td>;
+});
+
+// Memoized table row component
+const TableRow = memo(
+  ({
+    row,
+    columns,
+    rowIndex,
+    uniqueKey,
+    onRowClick,
+    getRowStyles,
+    handleMouseDown,
+    handleMouseUp,
+  }) => {
+    const handleClick = useCallback(() => {
+      onRowClick(row);
+    }, [row, onRowClick]);
+
+    const uniqueKeyValue = useMemo(() => {
+      if (Array.isArray(uniqueKey)) {
+        return uniqueKey.map((key) => row[key]).join("-");
+      }
+      return uniqueKey ? row[uniqueKey] : uuidv4();
+    }, [row, uniqueKey]);
+
+    return (
+      <tr
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        style={getRowStyles(row)}>
+        {columns.map((column, colIndex) => (
+          <TableCell
+            key={`${uniqueKeyValue}-${column.key}-${colIndex}`}
+            column={column}
+            row={row}
+            rowIndex={rowIndex}
+          />
+        ))}
+      </tr>
+    );
+  }
+);
+
 function Table(
   {
     uniqueKey = null,
@@ -27,39 +80,62 @@ function Table(
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
 
-  const finalColumns = showPivotColumn
-    ? [
-        {
-          key: "pivotId",
-          icon: "barCodeFilled",
-          title: "ID",
-          width: "2%",
-          cellStyle: {
-            textAlign: "center",
-          },
-          renderCell: (_, rowIndex) => rowIndex + 1,
-        },
-        ...columns,
-      ]
-    : columns;
+  const finalColumns = useMemo(() => {
+    if (!showPivotColumn) return columns;
+
+    return [
+      {
+        key: "pivotId",
+        icon: "barCodeFilled",
+        title: "ID",
+        width: "2%",
+        cellStyle: { textAlign: "center" },
+        renderCell: (_, rowIndex) => rowIndex + 1,
+      },
+      ...columns,
+    ];
+  }, [columns, showPivotColumn]);
 
   const handleMouseDown = useCallback(() => {
     pressTimeRef.current = Date.now();
     allowRowClickRef.current = true;
-  }, [allowRowClickRef, pressTimeRef]);
+  }, []);
 
   const handleMouseUp = useCallback(() => {
     const pressDuration = Date.now() - pressTimeRef.current;
-    allowRowClickRef.current = pressDuration < 400; // Disable row click if pressed for more than 200ms
-  }, [allowRowClickRef, pressTimeRef]);
+    allowRowClickRef.current = pressDuration < 400;
+  }, []);
 
-  const handleRowClick = useCallback(
+  const memoizedRowClick = useCallback(
     (row) => {
       if (allowRowClickRef.current) {
         onRowClick(row);
       }
     },
-    [allowRowClickRef]
+    [onRowClick]
+  );
+
+  const containerClassName = useMemo(
+    () =>
+      classNames(
+        styles["table-wrapper"],
+        {
+          [styles["scrollable"]]: scrollable,
+          [styles["loading"]]: isLoading,
+        },
+        containerClass
+      ),
+    [scrollable, isLoading, containerClass]
+  );
+
+  const tableClassName = useMemo(
+    () =>
+      classNames(
+        styles["base-table"],
+        { [styles["loading"]]: isLoading },
+        className
+      ),
+    [isLoading, className]
   );
 
   return (
@@ -67,35 +143,16 @@ function Table(
       id="table-wrapper"
       data-testid="table-wrapper"
       style={{
-        height: scrollable
-          ? scrollHeight
-          : containerHeight
-          ? containerHeight
-          : "auto",
+        height: scrollable ? scrollHeight : containerHeight || "auto",
         ...containerStyle,
       }}
-      className={classNames(
-        styles["table-wrapper"],
-        {
-          [styles["scrollable"]]: scrollable,
-          [styles["loading"]]: isLoading,
-        },
-        containerClass
-      )}>
-      <div className={classNames(styles["table-container"])}>
-        <table
-          ref={ref}
-          className={classNames(
-            styles["base-table"],
-            { [styles["loading"]]: isLoading },
-            className
-          )}
-          style={style}>
+      className={containerClassName}>
+      <div className={styles["table-container"]}>
+        <table ref={ref} className={tableClassName} style={style}>
           <thead>
             <tr>
               {finalColumns.map((column, colIndex) => (
                 <th
-                  // Use combination of key and index for uniqueness
                   key={`header-${column.key}-${colIndex}`}
                   style={{
                     width: column.width || "auto",
@@ -111,49 +168,36 @@ function Table(
           </thead>
           <tbody>
             {isLoading ? (
-              <tr key={`pivot-${uniqueKey}`} className={styles["loading-row"]}>
-                <td colSpan={columns.length} className={styles["empty-table"]}>
+              <tr className={styles["loading-row"]}>
+                <td
+                  colSpan={finalColumns.length}
+                  className={styles["empty-table"]}>
                   <ClipLoader color={"#94A3B8"} size={26} />
                 </td>
               </tr>
+            ) : data?.length > 0 ? (
+              data.map((row, rowIndex) => (
+                <TableRow
+                  key={`row-${rowIndex}`}
+                  row={row}
+                  columns={finalColumns}
+                  rowIndex={rowIndex}
+                  uniqueKey={uniqueKey}
+                  onRowClick={memoizedRowClick}
+                  getRowStyles={getRowStyles}
+                  handleMouseDown={handleMouseDown}
+                  handleMouseUp={handleMouseUp}
+                />
+              ))
             ) : (
-              ""
+              <tr>
+                <td
+                  colSpan={finalColumns.length}
+                  className={styles["empty-table"]}>
+                  Ma'lumot mavjud emas.
+                </td>
+              </tr>
             )}
-            {!isLoading && data?.length > 0
-              ? data.map((row, rowIndex) => (
-                  <tr
-                    key={`row-${uniqueKey ? row[uniqueKey] : uuidv4()}`} // Ensure unique key for each row
-                    onClick={() => handleRowClick(row)}
-                    onMouseDown={handleMouseDown}
-                    onMouseUp={handleMouseUp}
-                    onTouchStart={handleMouseDown}
-                    onTouchEnd={handleMouseUp}
-                    style={{ ...getRowStyles(row) }}>
-                    {finalColumns.map((column, colIndex) => (
-                      <td
-                        style={{
-                          ...(column?.cellStyle ? column.cellStyle : {}),
-                        }}
-                        key={`cell-${
-                          uniqueKey ? `${row[uniqueKey]}-${colIndex}` : uuidv4()
-                        }`} // Ensure unique key for each cell
-                      >
-                        {column.renderCell
-                          ? column.renderCell(row, rowIndex)
-                          : row[column.key]}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              : !isLoading && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className={styles["empty-table"]}>
-                      Ma'lumot mavjud emas.
-                    </td>
-                  </tr>
-                )}
           </tbody>
         </table>
       </div>
@@ -161,4 +205,4 @@ function Table(
   );
 }
 
-export default forwardRef(Table);
+export default memo(forwardRef(Table));

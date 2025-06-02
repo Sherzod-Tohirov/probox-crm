@@ -11,6 +11,7 @@ export default function StatisticChart({
   date = {},
   isLoading = false,
 }) {
+  console.log(date, "date");
   return (
     <div className={styles.statistic}>
       <Row>

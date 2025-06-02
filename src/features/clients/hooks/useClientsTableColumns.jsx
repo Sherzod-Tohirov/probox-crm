@@ -110,6 +110,7 @@ const useClientsTableColumns = () => {
       },
       {
         key: "executor",
+        minWidth: "120px",
         title: "Ijrochi",
         icon: "avatarFilled",
         renderCell: (column) => <ExecutorCell column={column} />,

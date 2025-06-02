@@ -57,7 +57,6 @@ const useStatisticsTableColumns = () => {
       minWidth: "40px",
       icon: "income",
       renderCell: (column) => {
-        console.log(column, "column");
         if (!column.PhoneConfiscated) return "-";
         return formatterCurrency(column.Confiscated, "USD");
       },

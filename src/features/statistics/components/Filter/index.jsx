@@ -9,9 +9,10 @@ import getSelectOptionsFromKeys from "@utils/getSelectOptionsFromKeys";
 import useWatchedFields from "@features/statistics/hooks/useWatchedFields";
 import { initialStatisticsFilterState } from "@utils/store/initialStates";
 import { setStatisticsFilter } from "@store/slices/statisticsPageSlice";
-
+import formatDate from "@utils/formatDate";
 import styles from "./style.module.scss";
 import _ from "lodash";
+import moment from "moment";
 
 const Filter = ({ onFilter, setParams }) => {
   const { executors } = useFilter();
@@ -26,6 +27,7 @@ const Filter = ({ onFilter, setParams }) => {
     "filterState in Filter component"
   );
   const {
+    setValue,
     register,
     handleSubmit,
     reset,
@@ -55,6 +57,20 @@ const Filter = ({ onFilter, setParams }) => {
   }, [initialStatisticsFilterState, executors.options]);
 
   useEffect(() => {
+    const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
+    const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
+
+    const isSameMonth = startDate.isSame(endDate, "month");
+    if (watchedFields.startDate && !isSameMonth) {
+      let newEndDate = startDate.clone().endOf("month");
+      if (newEndDate.date() !== startDate.date()) {
+        newEndDate = newEndDate.endOf("month");
+      }
+      setValue("endDate", newEndDate.format("DD.MM.YYYY"));
+    }
+  }, [watchedFields.startDate, setValue]);
+
+  useEffect(() => {
     if (_.isEmpty(executors.options)) return;
 
     reset({
@@ -65,7 +81,8 @@ const Filter = ({ onFilter, setParams }) => {
       ),
     });
     setParams({
-      ...filterState,
+      startDate: formatDate(filterState.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+      endDate: formatDate(filterState.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
       slpCode: filterState.slpCode || String(user?.SlpCode) || "",
     });
   }, [executors.options, reset]);

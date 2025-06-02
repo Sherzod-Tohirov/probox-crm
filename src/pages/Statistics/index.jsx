@@ -25,9 +25,9 @@ export default function Statistics() {
     endDate: formatDate(filterState.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
     slpCode: filterState.slpCode === "" ? user?.slpCode : filterState.slpCode,
   }));
+  console.log(params, "params");
   const [formattedMonthlyData, setFormattedMonthlyData] = useState([]);
   const { monthly, salesPerson, utils } = useStatisticsData(params);
-  
   const handleFilter = useCallback(
     (data) => {
       setParams({
