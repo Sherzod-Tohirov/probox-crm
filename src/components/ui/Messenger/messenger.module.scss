@@ -56,6 +56,16 @@
       padding: 10px;
       padding-right: 15px;
       overflow-y: auto;
+
+      &-toggle-btn {
+        font-size: 2.8rem !important;
+        font-weight: 700 !important;
+        opacity: 0.6 !important;
+        svg {
+          width: 20px !important;
+          height: 20px !important;
+        }
+      }
       &::-webkit-scrollbar {
         width: 8px;
       }
@@ -165,9 +175,9 @@
   @include m.flex(start, start, 1rem, column);
   will-change: transform;
   transform-origin: bottom left;
-  &-text {
+  &-text-wrapper {
     position: relative;
-    min-width: 160px;
+    min-width: 140px;
     padding: 8px 20px 4px 16px;
     @include m.flex(start, start, 0, column);
     color: v.$primary-color;
@@ -203,6 +213,12 @@
     p {
       word-break: break-word;
     }
+  }
+
+  &-text {
+    color: inherit;
+    font-size: 4rem;
+    font-weight: 800;
   }
 
   &-edit-submit-btn {
@@ -284,8 +300,8 @@
   .message-text {
     min-width: 100px;
     padding-right: 12px;
-    font-size: 3.7rem;
-    font-weight: 800;
+    font-size: 3.9rem;
+    font-weight: 900;
   }
 }
 

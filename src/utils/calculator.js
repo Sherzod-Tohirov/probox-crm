@@ -9,7 +9,7 @@ export const insTotalCalculator = ({ paidToDate, sumApplied, insTotal }) => {
 
 export const calculatePercentage = (part, total, color = false) => {
   if (total === 0) return "0.00 %"; // Avoid division by zero
-  const value = ((part / total) * 100).toFixed(2);
+  const value = parseFloat((part / total) * 100).toFixed(2);
   const percentage = String(value) + " %"; // Return percentage with two decimal places
   if (color) {
     return { value: percentage, color: getPercentageColor(Number(value)) };
@@ -41,6 +41,5 @@ export const getValue = (percent) => {
 
 export const calculateKPI = (percentage, sumApplied) => {
   const value = getValue(percentage);
-  console.log(value, "value");
-  return (sumApplied / 100) * value;
+  return parseFloat((sumApplied / 100) * value).toFixed(2);
 };

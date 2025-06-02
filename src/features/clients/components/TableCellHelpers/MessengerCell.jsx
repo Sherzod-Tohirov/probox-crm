@@ -25,6 +25,7 @@ const MessengerCell = ({ column }) => {
       column={column}
       title={<Button icon="messenger" variant="text" />}>
       <MessengerModal
+        hasToggleControl={true}
         messages={messages || []}
         onEditMessage={editMessage}
         onDeleteMessage={deleteMessage}

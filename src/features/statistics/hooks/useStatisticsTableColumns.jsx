@@ -4,10 +4,10 @@ import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 
 import formatDate from "@utils/formatDate";
-import formatterCurrency from "@utils/formatterCurrency";
-
-import { insTotalCalculator, calculatePercentage } from "@utils/calculator";
 import { calculateKPI } from "@utils/calculator";
+import formatterCurrency from "@utils/formatterCurrency";
+import { insTotalCalculator, calculatePercentage } from "@utils/calculator";
+
 const useStatisticsTableColumns = () => {
   const { data: executors } = useFetchExecutors();
   const { data: currency } = useFetchCurrency();
@@ -19,6 +19,18 @@ const useStatisticsTableColumns = () => {
       insTotal: column.InsTotal,
     });
   }, []);
+
+  const getFormattedSalary = useCallback((column) => {
+    const foundExecutor = executors?.find(
+      (executor) => executor.SlpCode === column.SlpCode
+    );
+    let salary = 2000000;
+    if (foundExecutor && foundExecutor?.["U_summa"]) {
+      salary = Number(String(foundExecutor?.["U_summa"]).replaceAll(" ", ""));
+    }
+    return salary;
+  }, []);
+
   const monthlyStatisticsColumns = useMemo(() => [
     {
       key: "DueDate",
@@ -162,7 +174,7 @@ const useStatisticsTableColumns = () => {
       icon: "income",
       renderCell: (column) => {
         if (column.SlpCode === null) return "-";
-        const salary = 2000000;
+        const salary = getFormattedSalary(column);
         return formatterCurrency(salary);
       },
     },
@@ -174,7 +186,7 @@ const useStatisticsTableColumns = () => {
       icon: "income",
       renderCell: (column) => {
         if (column.SlpCode === null) return "-";
-        const salary = 2000000;
+        const salary = getFormattedSalary(column);
         const insTotal = calculateInsTotal(column);
         const percentage = ((column.SumApplied / insTotal) * 100).toFixed(2);
         const kpi = calculateKPI(percentage, column.SumApplied);

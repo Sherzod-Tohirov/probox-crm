@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import MessageRenderer from "./MessageRenderer";
 import { Typography } from "@components/ui";
@@ -7,16 +7,18 @@ import MessageForm from "./MessageForm";
 import styles from "./messenger.module.scss";
 import classNames from "classnames";
 import { ClipLoader } from "react-spinners";
+import moment from "moment";
 
 const MessengerModal = ({
   messages = [],
   onSendMessage,
   onEditMessage,
   onDeleteMessage,
+  hasToggleControl = false,
   isLoading = false,
 }) => {
   const [showSendForm, setShowSendForm] = useState(false);
-
+ 
   return (
     <motion.div
       className={styles["messenger-modal"]}
@@ -38,6 +40,7 @@ const MessengerModal = ({
           </div>
         ) : (
           <MessageRenderer
+            hasToggleControl={hasToggleControl}
             onDeleteMessage={onDeleteMessage}
             onEditMessage={onEditMessage}
             messages={messages}

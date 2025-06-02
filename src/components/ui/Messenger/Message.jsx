@@ -107,7 +107,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       <Col>
         <div
           style={{ backgroundColor: msgColor.bg }}
-          className={styles["message-text"]}>
+          className={styles["message-text-wrapper"]}>
           {editMode ? (
             <textarea
               className={styles["message-edit-input"]}
@@ -122,7 +122,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
               autoFocus
             />
           ) : (
-            <p>{messageText}</p>
+            <p className={styles["message-text"]}>{messageText}</p>
           )}
           <Box dir="row" gap={2} align="center" justify={"end"}>
             {editMode && (

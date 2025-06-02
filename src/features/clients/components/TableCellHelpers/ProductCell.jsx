@@ -12,7 +12,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleModal } from "@store/slices/toggleSlice";
 const Title = ({ column }) => {
-  console.log(column.partial);
   let status = "unpaid";
   if (column.phoneConfiscated) status = "product";
   else if (column.partial) status = "manual_paid";
