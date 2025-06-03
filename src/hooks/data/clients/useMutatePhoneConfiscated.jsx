@@ -12,9 +12,16 @@ const useMutatePhoneConfiscated = () => {
       alert("Mahsulot tanlashda xatolik yuz berdi!", { type: "error" });
     },
     onSuccess: (response) => {
+      if (response.phoneConfiscated) {
+        alert("Muvaffaqiyatli mahsulot tanlandi!");
+      } else {
+        alert("Mahsulot tanlash bekor qilindi!", { type: "info" });
+      }
+
       if (response) {
         queryClient.invalidateQueries({ queryKey: ["clients"] });
         queryClient.invalidateQueries({ queryKey: ["statistics"] });
+        queryClient.invalidateQueries({ queryKey: ["clientEntries"] });
       }
     },
   });

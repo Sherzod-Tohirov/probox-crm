@@ -62,6 +62,9 @@
 
   &.danger {
     background-color: v.$danger-color !important;
+    svg {
+      color: #fff;
+    }
   }
 
   // icons

@@ -12,9 +12,16 @@ const useMutatePartialPayment = () => {
       alert("Qisman to'lovda xatolik yuz berdi!", { type: "error" });
     },
     onSuccess: (response) => {
+      if (response.partial) {
+        alert("To'lov muvaffaqiyatli amalga oshirildi!", { type: "success" });
+      } else {
+        alert("To'lov bekor qilindi!", { type: "info" });
+      }
+
       if (response) {
         queryClient.invalidateQueries({ queryKey: ["clients"] });
         queryClient.invalidateQueries({ queryKey: ["statistics"] });
+        queryClient.invalidateQueries({ queryKey: ["clientEntries"] });
       }
     },
   });

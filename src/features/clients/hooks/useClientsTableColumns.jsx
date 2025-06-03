@@ -1,24 +1,61 @@
 import moment from "moment";
-import { useMemo } from "react";
-import { List, Box } from "@components/ui";
+import { useCallback, useMemo } from "react";
+import { List, Box, Button } from "@components/ui";
 
 import useAuth from "@hooks/useAuth";
 import useFetchCurrency from "@hooks/data/useFetchCurrency";
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
+import useMutatePartialPayment from "@hooks/data/clients/useMutatePartialPayment";
+import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
 
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
 import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
+
 import MessengerCell from "@features/clients/components/TableCellHelpers/MessengerCell";
 import AgreementDateCell from "@features/clients/components/TableCellHelpers/AgreementDateCell";
 import ExecutorCell from "@features/clients/components/TableCellHelpers/ExecutorCell";
 import ProductCell from "@features/clients/components/TableCellHelpers/ProductCell";
 import ManualPaymentCell from "@features/clients/components/TableCellHelpers/ManualPaymentCell";
+import { useSelector } from "react-redux";
 
 const useClientsTableColumns = () => {
   const { data: executors } = useFetchExecutors();
   const { data: currency } = useFetchCurrency();
+  const currentClient = useSelector(
+    (state) => state.page.clients.currentClient
+  );
+  const paymentMutation = useMutatePartialPayment();
+  const phoneConfiscatedMutation = useMutatePhoneConfiscated();
+
   const { user } = useAuth();
+  const handleCancelPayment = useCallback(async ({ column, type }) => {
+    const formattedDueDate = moment(column.DueDate).format("YYYY.MM.DD");
+
+    console.log(formattedDueDate, "formated");
+    try {
+      const commonPayload = {
+        docEntry: currentClient?.["DocEntry"],
+        installmentId: column?.["InstlmntID"],
+      };
+      if (type === "payment") {
+        const payload = {
+          ...commonPayload,
+          data: { DueDate: formattedDueDate, partial: false },
+        };
+        await paymentMutation.mutate(payload);
+      }
+      if (type === "product") {
+        const payload = {
+          ...commonPayload,
+          data: { DueDate: formattedDueDate, phoneConfiscated: false },
+        };
+        await phoneConfiscatedMutation.mutate(payload);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   const clientsTableColumns = useMemo(
     () => [
       {
@@ -224,6 +261,25 @@ const useClientsTableColumns = () => {
 
           const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
           if (!lastPaymentDate) return "-";
+          if (column.partial || column.phoneConfiscated) {
+            const isPartial = column.partial;
+            return (
+              <Button
+                isLoading={
+                  paymentMutation.isPending ||
+                  phoneConfiscatedMutation.isPending
+                }
+                onClick={() =>
+                  handleCancelPayment({
+                    column,
+                    type: isPartial ? "payment" : "product",
+                  })
+                }
+                color={"danger"}>
+                Bekor qilish ({isPartial ? "To'lovni" : "Mahsulotni"}){" "}
+              </Button>
+            );
+          }
           const diff = moment(lastPaymentDate).diff(
             moment(column.DueDate),
             "days"

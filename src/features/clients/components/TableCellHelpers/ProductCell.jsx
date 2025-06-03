@@ -1,5 +1,5 @@
 import moment from "moment";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { Input, Status } from "@components/ui";
 import { useForm } from "react-hook-form";
 import ModalCell from "./helper/ModalCell";
@@ -24,12 +24,33 @@ const Title = ({ column }) => {
 
   return <Status status={status} />;
 };
+
+const useProductCell = (column) => {
+  const { user } = useAuth();
+  const productOptions = useMemo(
+    () => [
+      {
+        value: "true",
+        label: "Buyum bilan",
+      },
+      {
+        value: "false",
+        label: "Buyumsiz",
+      },
+    ],
+    []
+  );
+  const canUserModify =
+    hasRole(user, ["Manager", "Cashier"]) && !column.partial;
+  return { productOptions, canUserModify };
+};
 const ProductCell = ({ column }) => {
   const modalId = `${column?.["DocEntry"]}-product-modal`;
   const {
     reset,
     register,
     handleSubmit,
+    setValue,
     formState: { isDirty },
   } = useForm({
     defaultValues: {
@@ -39,9 +60,9 @@ const ProductCell = ({ column }) => {
 
   const mutation = useMutatePhoneConfiscated();
   const { currentClient } = useSelector((state) => state.page.clients);
+  const { productOptions, canUserModify } = useProductCell(column);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
   const handleApply = useCallback(
     async (data) => {
       const formattedDueDate = moment(currentClient["DueDate"]).format(
@@ -70,21 +91,15 @@ const ProductCell = ({ column }) => {
     [currentClient]
   );
 
-  const productOptions = useMemo(
-    () => [
-      {
-        value: "true",
-        label: "Buyum bilan",
-      },
-      {
-        value: "false",
-        label: "Buyumsiz",
-      },
-    ],
-    []
-  );
-  const canUserModify =
-    hasRole(user, ["Manager", "Cashier"]) && !column.partial;
+  // Sync form with column changes
+  useEffect(() => {
+    if (column?.["phoneConfiscated"] !== undefined) {
+      setValue("phoneConfiscated", Boolean(column["phoneConfiscated"]), {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    }
+  }, [column?.["phoneConfiscated"], setValue]);
   return (
     <ModalWrapper
       allowClick={!canUserModify}
