@@ -44,7 +44,6 @@ const saveState = (state) => {
 };
 
 const initialState = loadState();
-
 // Save the initial state to localStorage
 saveState(initialState);
 

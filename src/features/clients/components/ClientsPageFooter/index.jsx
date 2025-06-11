@@ -131,21 +131,24 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
                     defaultValue={Number(pageSize)}
                     onChange={(e) => {
                       dispatch(setClientsPageSize(Number(e.target.value)));
-                      dispatch(setClientsCurrentPage(0));
                     }}
                     canClickIcon={false}
                     width={"100px"}
                   />
                 </Col>
                 <Col>
-                  <Typography variant={"primary"} element="span">
-                    {clientsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
-                    {"-"}
-                    {(currentPage + 1) * pageSize > data?.total
-                      ? data.total
-                      : currentPage * pageSize + pageSize}{" "}
-                    gacha {clientsDetails.total}ta dan
-                  </Typography>
+                  <Box className={styles["total-text-wrapper"]}>
+                    <Typography variant={"primary"} element="span">
+                      {clientsDetails.total > 0
+                        ? currentPage * pageSize + 1
+                        : 0}
+                      {"-"}
+                      {(currentPage + 1) * pageSize > data?.total
+                        ? data.total
+                        : currentPage * pageSize + pageSize}{" "}
+                      gacha {clientsDetails.total}ta dan
+                    </Typography>
+                  </Box>
                 </Col>
               </Row>
             </Col>

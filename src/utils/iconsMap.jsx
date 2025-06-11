@@ -51,6 +51,8 @@ import {
   EditFilled,
   Eye,
   EyeClosed,
+  Filter,
+  FilterFilled,
   MenuDots,
   Messenger,
   MessengerFilled,
@@ -112,6 +114,8 @@ const iconsMap = {
   pencil: <Pencil />,
   delete: <Delete />,
   deleteFilled: <DeleteFilled />,
+  filter: <Filter />,
+  filterFilled: <FilterFilled />
 };
 
 export default iconsMap;
