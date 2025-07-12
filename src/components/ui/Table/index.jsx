@@ -14,6 +14,25 @@ const TableCell = memo(({ column, row, rowIndex }) => {
   return <td style={column?.cellStyle || {}}>{content}</td>;
 });
 
+// Selection checkbox cell
+const SelectionCell = memo(({ checked, onChange }) => (
+  <td style={{ textAlign: "center" }}>
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
+    />
+  </td>
+));
+
+// Selection header cell
+const SelectionHeaderCell = memo(({ checked, onChange }) => (
+  <th style={{ textAlign: "center", width: "40px" }}>
+    <input type="checkbox" checked={checked} onChange={onChange} />
+  </th>
+));
+
 // Memoized table row component
 const TableRow = memo(
   ({
@@ -25,6 +44,9 @@ const TableRow = memo(
     getRowStyles,
     handleMouseDown,
     handleMouseUp,
+    selectionEnabled,
+    selected,
+    onSelectRow,
   }) => {
     const handleClick = useCallback(() => {
       onRowClick(row);
@@ -45,6 +67,9 @@ const TableRow = memo(
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
         style={getRowStyles(row)}>
+        {selectionEnabled && (
+          <SelectionCell checked={selected} onChange={() => onSelectRow(row)} />
+        )}
         {columns.map((column, colIndex) => (
           <TableCell
             key={`${uniqueKeyValue}-${column.key}-${colIndex}`}
@@ -67,6 +92,9 @@ function Table(
     style = {},
     containerStyle = {},
     containerClass,
+    selectionEnabled = true,
+    selectedRowKeys = [],
+    onSelectionChange = () => {},
     containerHeight = null,
     isLoading = false,
     showPivotColumn = false,
@@ -115,6 +143,45 @@ function Table(
     [onRowClick]
   );
 
+  // Selection logic
+  const getRowKey = useCallback(
+    (row) => {
+      if (Array.isArray(uniqueKey)) {
+        return uniqueKey.map((key) => row[key]).join("-");
+      }
+      return uniqueKey ? row[uniqueKey] : uuidv4();
+    },
+    [uniqueKey]
+  );
+
+  const allSelected = useMemo(() => {
+    if (!data?.length) return false;
+    return data.every((row) => selectedRowKeys.includes(getRowKey(row)));
+  }, [data, selectedRowKeys, getRowKey]);
+
+  const handleSelectAll = useCallback(() => {
+    if (allSelected) {
+      onSelectionChange([]);
+    } else {
+      const allKeys = data.map(getRowKey);
+      onSelectionChange(allKeys);
+    }
+  }, [allSelected, data, getRowKey, onSelectionChange]);
+
+  const handleSelectRow = useCallback(
+    (row) => {
+      const key = getRowKey(row);
+      let newSelected;
+      if (selectedRowKeys.includes(key)) {
+        newSelected = selectedRowKeys.filter((k) => k !== key);
+      } else {
+        newSelected = [...selectedRowKeys, key];
+      }
+      onSelectionChange(newSelected);
+    },
+    [selectedRowKeys, onSelectionChange, getRowKey]
+  );
+
   const containerClassName = useMemo(
     () =>
       classNames(
@@ -151,6 +218,12 @@ function Table(
         <table ref={ref} className={tableClassName} style={style}>
           <thead>
             <tr>
+              {selectionEnabled && (
+                <SelectionHeaderCell
+                  checked={allSelected}
+                  onChange={handleSelectAll}
+                />
+              )}
               {finalColumns.map((column, colIndex) => (
                 <th
                   key={`header-${column.key}-${colIndex}`}
@@ -170,7 +243,7 @@ function Table(
             {isLoading ? (
               <tr className={styles["loading-row"]}>
                 <td
-                  colSpan={finalColumns.length}
+                  colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
                   className={styles["empty-table"]}>
                   <ClipLoader color={"#94A3B8"} size={26} />
                 </td>
@@ -187,12 +260,15 @@ function Table(
                   getRowStyles={getRowStyles}
                   handleMouseDown={handleMouseDown}
                   handleMouseUp={handleMouseUp}
+                  selectionEnabled={selectionEnabled}
+                  selected={selectedRowKeys.includes(getRowKey(row))}
+                  onSelectRow={handleSelectRow}
                 />
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={finalColumns.length}
+                  colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
                   className={styles["empty-table"]}>
                   Ma'lumot mavjud emas.
                 </td>

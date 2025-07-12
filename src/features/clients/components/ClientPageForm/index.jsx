@@ -20,7 +20,7 @@ import formatDate from "@utils/formatDate";
 import { v4 as uuidv4 } from "uuid";
 import hasRole from "@utils/hasRole";
 import { store } from "@store/store";
-import moment from "moment";
+import YandexMap from "@components/ui/Map/YandexMap";
 
 function ClientPageForm({
   formId,
@@ -29,6 +29,7 @@ function ClientPageForm({
   ...props
 }) {
   const currentClient = store.getState().page.clients.currentClient;
+  const [userAddressCoords, setUserAddressCoords] = useState({});
   const [imgPreviewModal, setImgPreviewModal] = useState(false);
   const [softDeletedImageIds, setSoftDeletedImageIds] = useState([]);
   const [uploadedImage, setUploadedImage] = useState([]);
@@ -410,6 +411,17 @@ function ClientPageForm({
               </InputGroup>
             </Col>
           </Row>
+        </Col>
+        <Col>
+          <YandexMap
+            onChangeCoords={(coords) => {
+              setUserAddressCoords({
+                lat: coords[0],
+                lng: coords[1],
+              });
+              setIsSaveButtonDisabled(false);
+            }}
+          />
         </Col>
       </Row>
     </form>

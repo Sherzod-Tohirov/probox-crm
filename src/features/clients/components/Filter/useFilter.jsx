@@ -250,7 +250,7 @@ const useFilter = () => {
       filter: handleFilter,
       clear: handleFilterClear,
     },
-    toggleSearchFields
+    toggleSearchFields,
   };
 };
 

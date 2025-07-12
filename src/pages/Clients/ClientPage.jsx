@@ -33,6 +33,7 @@ import useFetchClientEntriesById from "@hooks/data/clients/useFetchClientEntries
 import hasRole from "@utils/hasRole";
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
+import YandexMap from "@components/ui/Map/YandexMap";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -127,7 +128,7 @@ export default function ClientPage() {
                         }
                         form={"clientForm"}
                         variant={"filled"}>
-                        Screenshot qilish (test rejimida)
+                        Screenshot
                       </Button>
                     </Col>
                     <Col>
@@ -149,12 +150,17 @@ export default function ClientPage() {
         <Col fullWidth>
           <Row gutter={6} ref={screenshotRef} style={{ position: "relative" }}>
             <Col fullWidth>
-              <ClientPageForm
-                setIsSaveButtonDisabled={setIsSaveButtonDisabled}
-                onSubmit={handleClientPageSubmit}
-                formId={"clientForm"}
-              />
+              <Row direction={"row"} gutter={6}>
+                <Col>
+                  <ClientPageForm
+                    setIsSaveButtonDisabled={setIsSaveButtonDisabled}
+                    onSubmit={handleClientPageSubmit}
+                    formId={"clientForm"}
+                  />
+                </Col>
+              </Row>
             </Col>
+
             <Col fullWidth>
               <Table
                 containerStyle={{
