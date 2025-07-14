@@ -118,3 +118,36 @@
     color: v.$secondary-color;
   }
 }
+.selection-checkbox {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  input {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    appearance: none;
+    border-radius: 50%;
+    border: v.$primary-border-width v.$primary-border-type
+      v.$primary-color;
+    background-color: v.$primary-table-bg;
+
+    &:checked {
+      background-color: v.$primary-color;
+      border-color: v.$primary-color;
+
+      &::after {
+        content: "";
+        position: absolute;
+        width: 1.5rem;
+        height: 1.5rem;
+        background-size: cover;
+      }
+    }
+  }
+}
+

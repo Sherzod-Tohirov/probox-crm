@@ -33,7 +33,6 @@ import useFetchClientEntriesById from "@hooks/data/clients/useFetchClientEntries
 import hasRole from "@utils/hasRole";
 import formatDate from "@utils/formatDate";
 import formatterCurrency from "@utils/formatterCurrency";
-import YandexMap from "@components/ui/Map/YandexMap";
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -171,6 +170,9 @@ export default function ClientPage() {
                 columns={clientPageTableColumns}
                 isLoading={isLoading}
                 data={clientEntries}
+                onSelecrtionChange={(selected) => {
+                  console.log("Selected Rows:", selected);
+                }}
                 getRowStyles={(row) => {
                   return {
                     ...(row["InstlmntID"] === currentClient["InstlmntID"]

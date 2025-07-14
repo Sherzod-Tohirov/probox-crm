@@ -17,19 +17,28 @@ const TableCell = memo(({ column, row, rowIndex }) => {
 // Selection checkbox cell
 const SelectionCell = memo(({ checked, onChange }) => (
   <td style={{ textAlign: "center" }}>
-    <input
+    <label className={styles["selection-checkbox"]}>
+      <input
       type="checkbox"
       checked={checked}
       onChange={onChange}
       onClick={(e) => e.stopPropagation()}
     />
-  </td>
+    </label>
+</td>
 ));
 
 // Selection header cell
 const SelectionHeaderCell = memo(({ checked, onChange }) => (
   <th style={{ textAlign: "center", width: "40px" }}>
-    <input type="checkbox" checked={checked} onChange={onChange} />
+     <label className={styles["selection-checkbox"]}>
+      <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
+    />
+    </label>
   </th>
 ));
 
@@ -92,7 +101,7 @@ function Table(
     style = {},
     containerStyle = {},
     containerClass,
-    selectionEnabled = true,
+    selectionEnabled = false,
     selectedRowKeys = [],
     onSelectionChange = () => {},
     containerHeight = null,

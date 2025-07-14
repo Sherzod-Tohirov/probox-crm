@@ -17,8 +17,8 @@ const YandexMap = ({ userCoords = [41.2995, 69.2401], onChangeCoords }) => {
       const placemark = new window.ymaps.Placemark(
         userCoords,
         {
-          hintContent: "Перетащи меня",
-          balloonContent: "Это ваша точка",
+          hintContent: "Meni yurgiz",
+          balloonContent: "Bu sizning joyingiz",
         },
         {
           draggable: true, // Make the placemark draggable

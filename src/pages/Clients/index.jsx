@@ -131,6 +131,7 @@ export default function Clients() {
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
+            selectionEnabled={true}
             showPivotColumn={true}
             getRowStyles={(row) => {
               if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
