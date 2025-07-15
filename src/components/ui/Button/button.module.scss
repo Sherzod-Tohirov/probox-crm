@@ -60,6 +60,11 @@
     color: v.$text-button-color-secondary !important;
   }
 
+  &.info {
+    background-color: v.$info-color !important;
+    color: #fff !important;
+  }
+
   &.danger {
     background-color: v.$danger-color !important;
     svg {

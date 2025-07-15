@@ -9,19 +9,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { closeAllModals } from "@store/slices/toggleSlice";
 
-import {
-  setClientsCurrentPage,
-  setCurrentClient,
-} from "@store/slices/clientsPageSlice";
+import { setCurrentClient } from "@store/slices/clientsPageSlice";
 
 import useFetchClients from "@hooks/data/clients/useFetchClients";
 import useClientsTableColumns from "@features/clients/hooks/useClientsTableColumns";
 import styles from "./style.module.scss";
+import hasRole from "@utils/hasRole";
+import useAuth from "@hooks/useAuth";
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const { user } = useAuth();
   const clientsTableRef = useRef(null);
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
@@ -33,6 +33,7 @@ export default function Clients() {
     data: [],
   });
 
+  const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
 
   const { data, isLoading } = useFetchClients({
@@ -43,7 +44,7 @@ export default function Clients() {
   const { clientsTableColumns } = useClientsTableColumns();
 
   const hasRestoredScroll = useRef(false);
-
+  console.log("selected rows: ", selectedRows);
   const handleRowClick = useCallback(
     (row) => {
       const tableWrapper = clientsTableRef.current.closest("#table-wrapper");
@@ -131,7 +132,9 @@ export default function Clients() {
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
-            selectionEnabled={true}
+            selectionEnabled={hasRole(user, ["Agent"])}
+            selectedRows={selectedRows}
+            onSelectionChange={setSelectedRows}
             showPivotColumn={true}
             getRowStyles={(row) => {
               if (row?.["DocEntry"] === currentClient?.["DocEntry"]) {
@@ -144,7 +147,11 @@ export default function Clients() {
         </Col>
         <Col style={{ width: "100%" }}></Col>
       </Row>
-      <ClientsPageFooter clientsDetails={clientsDetails} data={data} />
+      <ClientsPageFooter
+        clientsDetails={clientsDetails}
+        selectedRows={selectedRows}
+        data={data}
+      />
     </>
   );
 }

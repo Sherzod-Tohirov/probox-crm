@@ -1,10 +1,10 @@
 import { Modal, Box, Typography, Button } from "@components/ui";
+import { AnimatePresence, motion } from "framer-motion";
 import styles from "./clientPageForm.module.scss";
+import Skeleton from "react-loading-skeleton";
+import { memo, useState } from "react";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
-import { memo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Skeleton from "react-loading-skeleton";
 
 const PreviewModalFooter = memo(
   ({ onCancel, onApply, isLoading, isDisabled }) => {
@@ -25,21 +25,22 @@ const PreviewModalFooter = memo(
   }
 );
 
-export default function ImagePreviewModal({
-  images = [],
+export default function FilePreviewModal({
+  files = [],
   inputId,
   isOpen,
   onClose,
   onApply,
   isLoading,
   isDisabled = false,
-  onRemoveImage,
+  onRemoveFile,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
-  const [loadedImages, setLoadedImages] = useState({});
+  const [loadedFiles, setLoadedFiles] = useState({});
+
   return (
     <Modal
-      title="Mijozga tegishli rasmlar"
+      title="Mijozga tegishli hujjatlar"
       isOpen={isOpen}
       onClose={onClose}
       footer={
@@ -57,13 +58,13 @@ export default function ImagePreviewModal({
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
             <AnimatePresence>
-              {images.length ? (
-                images.map((img, index) => {
+              {files.length ? (
+                files.map((file, index) => {
                   return (
                     <>
-                      {!loadedImages[img?.id] && (
+                      {!loadedFiles[file?.id] && (
                         <Skeleton
-                          key={img?.id}
+                          key={file?.id}
                           count={1}
                           style={{ background: "rgba(0,0,0,0.4s)" }}
                           className={styles["file-image"]}
@@ -72,15 +73,15 @@ export default function ImagePreviewModal({
                       <motion.img
                         className={classNames(styles["preview-img"], {
                           [styles["active"]]: currentImage === index,
-                          [styles["hidden"]]: loadedImages[img?.id],
+                          [styles["hidden"]]: loadedFiles[file?.id],
                         })}
-                        key={img?.id}
-                        src={img?.image}
-                        alt={img?.image}
+                        key={file?.id}
+                        src={file?.image}
+                        alt={file?.image}
                         onLoad={() =>
-                          setLoadedImages((prev) => ({
+                          setLoadedFiles((prev) => ({
                             ...prev,
-                            [img.id]: true,
+                            [file.id]: true,
                           }))
                         }
                       />
@@ -95,7 +96,7 @@ export default function ImagePreviewModal({
                   gap={2}
                   className={styles["no-image"]}>
                   <Typography element={"p"} className={styles["no-image-text"]}>
-                    Hozircha rasmlar yo'q
+                    Hozircha hujjatlar yo'q
                   </Typography>
                 </Box>
               )}
@@ -104,7 +105,7 @@ export default function ImagePreviewModal({
         </div>
         <div className={styles["image-indicator"]}>
           <AnimatePresence mode="popLayout">
-            {images.map((img, index) => (
+            {files.map((file, index) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -118,8 +119,8 @@ export default function ImagePreviewModal({
                   damping: 30,
                 }}
                 className={styles["indicator-img-wrapper"]}
-                key={img?.id}>
-                {!loadedImages[img?.id] && (
+                key={file?.id}>
+                {!loadedFiles[file?.id] && (
                   <Skeleton
                     count={1}
                     style={{ background: "rgba(0,0,0,0)" }}
@@ -129,13 +130,13 @@ export default function ImagePreviewModal({
                 <motion.img
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
-                    [styles["hidden"]]: !loadedImages[img?.id],
+                    [styles["hidden"]]: !loadedFiles[file?.id],
                   })}
-                  key={img?.id}
-                  src={img?.image}
-                  alt={img?.image}
+                  key={file?.id}
+                  src={file?.image}
+                  alt={file?.image}
                   onLoad={() =>
-                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
+                    setLoadedFiles((prev) => ({ ...prev, [file.id]: true }))
                   }
                   layoutId={`image-${index}`}
                   onClick={() => setCurrentImage(index)}
@@ -143,7 +144,7 @@ export default function ImagePreviewModal({
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
-                    onRemoveImage(img, index);
+                    onRemoveFile(file, index);
                     if (index === currentImage) {
                       setCurrentImage(0);
                     }
@@ -157,7 +158,7 @@ export default function ImagePreviewModal({
           <label htmlFor={inputId} className={styles["upload-photo-label"]}>
             <Box dir="column" align="center" gap={1}>
               <Typography element="span">{iconsMap["addCircle"]}</Typography>
-              <Typography element="span">Rasm yuklash</Typography>
+              <Typography element="span">Hujjat yuklash</Typography>
             </Box>
           </label>
         </div>

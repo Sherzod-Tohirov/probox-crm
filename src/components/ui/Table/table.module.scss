@@ -40,7 +40,7 @@
   line-height: 150%;
   border: none;
   border-spacing: 0;
-  border-collapse: collapse;
+  border-collapse: separate;
   border-bottom: v.$primary-border-width v.$primary-border-type
     v.$primary-border-color;
   background-color: v.$primary-table-bg;
@@ -49,7 +49,7 @@
   &.loading {
     opacity: 0.6;
   }
-  
+
   thead {
     th {
       text-align: start;
@@ -132,13 +132,12 @@
     cursor: pointer;
     appearance: none;
     border-radius: 50%;
-    border: v.$primary-border-width v.$primary-border-type
-      v.$primary-color;
+    border: v.$primary-border-width v.$primary-border-type v.$primary-color;
     background-color: v.$primary-table-bg;
 
     &:checked {
-      background-color: v.$primary-color;
-      border-color: v.$primary-color;
+      background-color: v.$seventh-color;
+      border-color: v.$seventh-color;
 
       &::after {
         content: "";
@@ -150,4 +149,3 @@
     }
   }
 }
-

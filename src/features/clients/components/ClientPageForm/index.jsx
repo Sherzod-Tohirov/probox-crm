@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Input, Row } from "@components/ui";
 import { useForm } from "react-hook-form";
 
-import ImagePreviewModal from "./ImagePreviewModal";
+import FilePreviewModal from "./FilePreviewModal";
 import InputGroup from "./InputGroup";
 import Label from "./Label";
 
@@ -30,10 +30,10 @@ function ClientPageForm({
 }) {
   const currentClient = store.getState().page.clients.currentClient;
   const [userAddressCoords, setUserAddressCoords] = useState({});
-  const [imgPreviewModal, setImgPreviewModal] = useState(false);
-  const [softDeletedImageIds, setSoftDeletedImageIds] = useState([]);
-  const [uploadedImage, setUploadedImage] = useState([]);
-  const [isImgSaveButtonDisabled, setImgSaveButtonDisabled] = useState(true);
+  const [filePreviewModal, setFilePreviewModal] = useState(false);
+  const [softDeletedFileIds, setSoftDeletedFileIds] = useState([]);
+  const [uploadedFile, setUploadedFile] = useState([]);
+  const [isFileSaveButtonDisabled, setFileSaveButtonDisabled] = useState(true);
   const { data: executors } = useFetchExecutors();
 
   const { user } = useAuth();
@@ -42,7 +42,7 @@ function ClientPageForm({
   const updateMutation = useMutateClientImages("update");
   const deleteMutation = useMutateClientImages("delete");
 
-  const clientImagesWithAPI = useMemo(
+  const clientFilesWithAPI = useMemo(
     () =>
       currentClient?.Images?.map(
         (img) =>
@@ -54,7 +54,7 @@ function ClientPageForm({
       ),
     [currentClient]
   );
-  const [allImages, setAllImages] = useState([]);
+  const [allFiles, setAllFiles] = useState([]);
   const executorsOptions = useMemo(
     () =>
       selectOptionsCreator(executors, {
@@ -93,9 +93,9 @@ function ClientPageForm({
       imei: currentClient?.["IntrSerial"] || "0000000000000000",
     },
   });
-
-  const handleImageInputClick = useCallback(() => {
-    setImgPreviewModal(true);
+  console.log(allFiles, "all files");
+  const handleFileInputClick = useCallback(() => {
+    setFilePreviewModal(true);
   }, []);
 
   const allowedTypes = [
@@ -103,11 +103,23 @@ function ClientPageForm({
     "image/jpg",
     "image/jpeg",
     "image/svg+xml",
+    "image/gif",
+    "application/pdf",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   ];
 
-  const allowedExtensions = ["png", "jpg", "jpeg", "svg"];
-
-  const handleImageChange = useCallback((e) => {
+  const allowedExtensions = [
+    "png",
+    "jpg",
+    "jpeg",
+    "svg",
+    "gif",
+    "pdf",
+    "xls",
+    "xlsx",
+  ];
+  const handleFileChange = useCallback((e) => {
     const files = Array.from(e.target.files);
     const validFiles = files.filter((file) => {
       const ext = file.name.split(".").pop().toLowerCase();
@@ -117,43 +129,45 @@ function ClientPageForm({
     });
     // Show error or ignore invalid files
     if (validFiles.length !== files.length) {
-      alert("Faqat png, jpg, jpeg, svg fayllarni yuklang!", { type: "info" });
+      alert("Faqat png, jpg, jpeg, svg, pdf, excel fayllarni yuklang!", {
+        type: "info",
+      });
     }
     // Continue with validFiles
-    setUploadedImage((prev) => [
+    setUploadedFile((prev) => [
       ...prev,
       ...validFiles.map((file) => ({
         id: uuidv4(),
-        image: URL.createObjectURL(file),
-        file,
+        file: URL.createObjectURL(file),
+        originalFile: file,
         type: "upload",
       })),
     ]);
   }, []);
-  const handleImageUpload = useCallback(async () => {
+
+  const handleFileUpload = useCallback(async () => {
     const commonPayload = {
       docEntry: currentClient?.["DocEntry"],
       installmentId: currentClient?.["InstlmntID"],
     };
-
     try {
-      if (uploadedImage.length > 0) {
-        const formDataImages = new FormData();
-        uploadedImage.forEach((img) => {
-          formDataImages.append("files", img.file);
+      if (uploadedFile.length > 0) {
+        const formDataFiles = new FormData();
+        uploadedFile.forEach((file) => {
+          formDataFiles.append("files", file.originalFile);
         });
         const updatePayload = {
           ...commonPayload,
-          data: formDataImages,
+          data: formDataFiles,
         };
         await updateMutation.mutateAsync(updatePayload);
         if (!updateMutation.isError) {
-          setUploadedImage([]);
+          setUploadedFile([]);
         }
       }
-      if (softDeletedImageIds.length > 0) {
+      if (softDeletedFileIds.length > 0) {
         await Promise.all(
-          softDeletedImageIds.map((id) => {
+          softDeletedFileIds.map((id) => {
             const deletePayload = {
               ...commonPayload,
               id,
@@ -161,29 +175,30 @@ function ClientPageForm({
             return deleteMutation.mutateAsync(deletePayload);
           })
         );
-        setSoftDeletedImageIds([]);
+        setSoftDeletedFileIds([]);
       }
     } catch (error) {
-      console.log("Update/Delete Images error: ", error);
+      console.log("Update/Delete Files error: ", error);
     } finally {
-      setImgPreviewModal(false);
+      setFilePreviewModal(false);
     }
-  }, [uploadedImage, softDeletedImageIds, currentClient]);
+  }, [uploadedFile, softDeletedFileIds, currentClient]);
 
   useEffect(() => {
-    setAllImages((prev) => {
-      const filteredImages = uploadedImage.filter((img) =>
-        prev.every((allImg) => allImg.id !== img.id)
+    setAllFiles((prev) => {
+      const filteredFiles = uploadedFile.filter((file) =>
+        prev.every((allFile) => allFile.id !== file.id)
       );
-      return [...prev, ...filteredImages];
+      return [...prev, ...filteredFiles];
     });
-    if (uploadedImage.length > 0) setImgSaveButtonDisabled(false);
-  }, [uploadedImage]);
+    if (uploadedFile.length > 0) setFileSaveButtonDisabled(false);
+  }, [uploadedFile]);
 
   useEffect(() => {
     const foundExecutor = executors?.find(
       (executor) => Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
     );
+
     if (foundExecutor) {
       setValue("executor", foundExecutor.SlpCode);
     }
@@ -194,15 +209,15 @@ function ClientPageForm({
   }, [isDirty]);
 
   useEffect(() => {
-    const imagesWithApi = currentClient?.Images?.map(
-      (img) =>
+    const filesWithApi = currentClient?.Files?.map(
+      (file) =>
         ({
-          id: img._id,
-          image: API_CLIENT_IMAGES + img?.image,
+          id: file._id,
+          image: API_CLIENT_IMAGES + file?.image,
           type: "server",
         } || [])
     );
-    setAllImages(() => imagesWithApi);
+    setAllFiles(() => filesWithApi);
   }, [currentClient]);
 
   return (
@@ -214,32 +229,32 @@ function ClientPageForm({
         reset(data);
       })}
       {...props}>
-      <ImagePreviewModal
-        inputId={"photo"}
-        images={allImages}
-        isOpen={imgPreviewModal}
+      <FilePreviewModal
+        inputId={"file"}
+        files={allFiles}
+        isOpen={filePreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
-        isDisabled={isImgSaveButtonDisabled}
-        onRemoveImage={(img) => {
-          setImgSaveButtonDisabled(false);
-          if (img.type === "server") {
-            setSoftDeletedImageIds((p) => [...p, img.id]);
+        isDisabled={isFileSaveButtonDisabled}
+        onRemoveFile={(file) => {
+          setFileSaveButtonDisabled(false);
+          if (file.type === "server") {
+            setSoftDeletedFileIds((p) => [...p, file.id]);
           }
-          if (img.type === "upload") {
-            setUploadedImage((p) =>
-              p.filter((prevImg) => prevImg.id !== img.id)
+          if (file.type === "upload") {
+            setUploadedFile((p) =>
+              p.filter((prevImg) => prevImg.id !== file.id)
             );
           }
-          setAllImages((prev) =>
-            prev.filter((imgItem) => imgItem.id !== img.id)
+          setAllFiles((prev) =>
+            prev.filter((fileItem) => fileItem.id !== file.id)
           );
         }}
         onClose={() => {
-          setAllImages([...clientImagesWithAPI]);
-          setImgPreviewModal(false);
-          setUploadedImage([]);
+          setAllFiles([...clientFilesWithAPI]);
+          setFilePreviewModal(false);
+          setUploadedFile([]);
         }}
-        onApply={handleImageUpload}
+        onApply={handleFileUpload}
       />
       <Row direction={"row"} gutter={6}>
         <Col>
@@ -273,21 +288,21 @@ function ClientPageForm({
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="photo" htmlFor={"photo"}>
-                  Rasm
+                <Label icon="photo" htmlFor={"file"}>
+                  Fayllar
                 </Label>
                 <Input
-                  id={"photo"}
+                  id={"file"}
                   type="file"
-                  images={clientImagesWithAPI}
-                  accept="image/png,image/jpg,image/jpeg,image/svg+xml"
+                  images={clientFilesWithAPI}
+                  accept={`.${allowedExtensions.join(", .")}`}
                   multiple
                   variant={"filled"}
                   size={"longer"}
                   className={styles.fileInput}
-                  onClick={handleImageInputClick}
-                  onChange={handleImageChange}
-                  name={"images"}
+                  onClick={handleFileInputClick}
+                  onChange={handleFileChange}
+                  name={"files"}
                 />
               </InputGroup>
             </Col>

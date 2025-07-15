@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   Col,
   Row,
@@ -30,7 +30,9 @@ import { ClipLoader } from "react-spinners";
 import styles from "./style.module.scss";
 import { insTotalCalculator } from "@utils/calculator";
 import moment from "moment";
-const ClientsFooter = ({ clientsDetails = {}, data }) => {
+import orderByNearest from "@utils/orderByNearest";
+import { random } from "lodash";
+const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
@@ -62,6 +64,54 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
       console.log(error, "Error while distributing clients. ");
     }
   }, []);
+  const handleNavigateToRoute = useCallback(() => {
+    if (selectedRows.length === 0) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const currentLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        const ordered = orderByNearest(selectedRows, currentLocation);
+        console.log(currentLocation, "Current location");
+
+        console.log(ordered, "Ordered stops by nearest location");
+
+        const url =
+          "https://yandex.uz/maps/?rtext=" +
+          ordered
+            .map(
+              ({ location }) =>
+                `${location?.lat || random(41.311081, 42)},${
+                  location?.lng || random(69.240562, 70)
+                }`
+            )
+            .join("~") +
+          "&rtt=auto";
+
+        window.open(url, "_blank");
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+
+        // Fallback to default location (e.g. your office)
+        const fallbackLocation = { lat: 41.311081, lng: 69.240562 };
+        const ordered = orderByNearest(selectedRows, fallbackLocation);
+
+        const url =
+          "https://yandex.ru/maps/?rtext=" +
+          ordered
+            .map(({ location }) => `${location?.lat},${location?.lng}`)
+            .join("~") +
+          "&rtt=auto";
+
+        window.open(url, "_blank");
+      }
+    );
+  }, [selectedRows]);
+
   const calculatedInsTotal = useMemo(() => {
     return insTotalCalculator({
       paidToDate: statisticsData?.["PaidToDate"],
@@ -79,41 +129,57 @@ const ClientsFooter = ({ clientsDetails = {}, data }) => {
   return (
     <Footer>
       <Row direction={"column"} justify={"space-between"} gutter={5}>
-        <Col>
-          <Box gap={2} dir="column" align={"start"} justify={"center"}>
-            <>
-              <Typography
-                className={styles["statistics-text"]}
-                variant={"primary"}
-                element="span">
-                <strong> To'liq summa:</strong>{" "}
-                {isStatisticsLoading ? (
-                  <ClipLoader color={"grey"} size={12} />
-                ) : (
-                  formatterCurrency(calculatedInsTotal, "USD")
-                )}
-              </Typography>
-              <Typography
-                className={styles["statistics-text"]}
-                variant={"primary"}
-                element="span">
-                <strong> Qoplandi:</strong>{" "}
-                {isStatisticsLoading ? (
-                  <ClipLoader color={"grey"} size={12} />
-                ) : (
-                  <span style={{ color: "green" }}>
-                    {formatterCurrency(
-                      statisticsData?.["SumApplied"] || 0,
-                      "USD"
+        <Col fullWidth>
+          <Row direction={"row"} align={"center"} justify={"space-between"}>
+            <Col>
+              <Box gap={2} dir="column" align={"start"} justify={"center"}>
+                <>
+                  <Typography
+                    className={styles["statistics-text"]}
+                    variant={"primary"}
+                    element="span">
+                    <strong> To'liq summa:</strong>{" "}
+                    {isStatisticsLoading ? (
+                      <ClipLoader color={"grey"} size={12} />
+                    ) : (
+                      formatterCurrency(calculatedInsTotal, "USD")
                     )}
-                  </span>
-                )}{" "}
-                <span style={{ color: percentageValue > 50 ? "green" : "red" }}>
-                  {`(${percentageValue}%)`}
-                </span>
-              </Typography>
-            </>
-          </Box>
+                  </Typography>
+                  <Typography
+                    className={styles["statistics-text"]}
+                    variant={"primary"}
+                    element="span">
+                    <strong> Qoplandi:</strong>{" "}
+                    {isStatisticsLoading ? (
+                      <ClipLoader color={"grey"} size={12} />
+                    ) : (
+                      <span style={{ color: "green" }}>
+                        {formatterCurrency(
+                          statisticsData?.["SumApplied"] || 0,
+                          "USD"
+                        )}
+                      </span>
+                    )}{" "}
+                    <span
+                      style={{ color: percentageValue > 50 ? "green" : "red" }}>
+                      {`(${percentageValue}%)`}
+                    </span>
+                  </Typography>
+                </>
+              </Box>
+            </Col>
+            {hasRole(user, ["Agent"]) ? (
+              <Col>
+                <Button
+                  disabled={selectedRows.length === 0}
+                  onClick={handleNavigateToRoute}
+                  style={{ minWidth: "162px" }}
+                  color={"info"}>
+                  Marshrutga o'tish
+                </Button>
+              </Col>
+            ) : null}
+          </Row>
         </Col>
         <Col fullWidth>
           <Row direction={"row"} align={"center"} justify={"space-between"}>

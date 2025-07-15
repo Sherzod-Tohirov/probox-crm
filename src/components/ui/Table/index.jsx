@@ -16,28 +16,28 @@ const TableCell = memo(({ column, row, rowIndex }) => {
 
 // Selection checkbox cell
 const SelectionCell = memo(({ checked, onChange }) => (
-  <td style={{ textAlign: "center" }}>
+  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
     <label className={styles["selection-checkbox"]}>
       <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      onClick={(e) => e.stopPropagation()}
-    />
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        onClick={(e) => e.stopPropagation()}
+      />
     </label>
-</td>
+  </td>
 ));
 
 // Selection header cell
 const SelectionHeaderCell = memo(({ checked, onChange }) => (
   <th style={{ textAlign: "center", width: "40px" }}>
-     <label className={styles["selection-checkbox"]}>
+    <label className={styles["selection-checkbox"]}>
       <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      onClick={(e) => e.stopPropagation()}
-    />
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        onClick={(e) => e.stopPropagation()}
+      />
     </label>
   </th>
 ));
@@ -75,7 +75,12 @@ const TableRow = memo(
         onMouseUp={handleMouseUp}
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
-        style={getRowStyles(row)}>
+        style={{
+          ...getRowStyles(row, rowIndex),
+          cursor: "pointer",
+          backgroundColor: selected ? "#f0f0f0" : "transparent",
+          transition: "background-color 0.2s ease",
+        }}>
         {selectionEnabled && (
           <SelectionCell checked={selected} onChange={() => onSelectRow(row)} />
         )}
@@ -102,7 +107,7 @@ function Table(
     containerStyle = {},
     containerClass,
     selectionEnabled = false,
-    selectedRowKeys = [],
+    selectedRows = [], // <-- change here
     onSelectionChange = () => {},
     containerHeight = null,
     isLoading = false,
@@ -119,7 +124,6 @@ function Table(
 
   const finalColumns = useMemo(() => {
     if (!showPivotColumn) return columns;
-
     return [
       {
         key: "pivotId",
@@ -163,32 +167,60 @@ function Table(
     [uniqueKey]
   );
 
+  // Helper to check if a row is selected
+  const isRowSelected = useCallback(
+    (row) => {
+      const key = Array.isArray(uniqueKey)
+        ? uniqueKey.map((k) => row[k]).join("-")
+        : uniqueKey
+        ? row[uniqueKey]
+        : null;
+      return selectedRows.some(
+        (selected) =>
+          (Array.isArray(uniqueKey)
+            ? uniqueKey.map((k) => selected[k]).join("-")
+            : uniqueKey
+            ? selected[uniqueKey]
+            : null) === key
+      );
+    },
+    [selectedRows, uniqueKey]
+  );
+
   const allSelected = useMemo(() => {
     if (!data?.length) return false;
-    return data.every((row) => selectedRowKeys.includes(getRowKey(row)));
-  }, [data, selectedRowKeys, getRowKey]);
+    return data.every((row) => isRowSelected(row));
+  }, [data, isRowSelected]);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
       onSelectionChange([]);
     } else {
-      const allKeys = data.map(getRowKey);
-      onSelectionChange(allKeys);
+      onSelectionChange([...data]);
     }
-  }, [allSelected, data, getRowKey, onSelectionChange]);
+  }, [allSelected, data, onSelectionChange]);
 
   const handleSelectRow = useCallback(
     (row) => {
-      const key = getRowKey(row);
-      let newSelected;
-      if (selectedRowKeys.includes(key)) {
-        newSelected = selectedRowKeys.filter((k) => k !== key);
+      if (isRowSelected(row)) {
+        onSelectionChange(selectedRows.filter(
+          (selected) =>
+            (Array.isArray(uniqueKey)
+              ? uniqueKey.map((k) => selected[k]).join("-")
+              : uniqueKey
+              ? selected[uniqueKey]
+              : null) !==
+            (Array.isArray(uniqueKey)
+              ? uniqueKey.map((k) => row[k]).join("-")
+              : uniqueKey
+              ? row[uniqueKey]
+              : null)
+        ));
       } else {
-        newSelected = [...selectedRowKeys, key];
+        onSelectionChange([...selectedRows, row]);
       }
-      onSelectionChange(newSelected);
     },
-    [selectedRowKeys, onSelectionChange, getRowKey]
+    [selectedRows, onSelectionChange, uniqueKey, isRowSelected]
   );
 
   const containerClassName = useMemo(
@@ -270,7 +302,7 @@ function Table(
                   handleMouseDown={handleMouseDown}
                   handleMouseUp={handleMouseUp}
                   selectionEnabled={selectionEnabled}
-                  selected={selectedRowKeys.includes(getRowKey(row))}
+                  selected={isRowSelected(row)}
                   onSelectRow={handleSelectRow}
                 />
               ))

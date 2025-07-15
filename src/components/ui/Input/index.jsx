@@ -205,7 +205,7 @@ const Input = forwardRef(
                     );
                   })
                 ) : (
-                  <Col>Rasmlar yo'q</Col>
+                  <Col>Hujjatlar yo'q</Col>
                 )}
               </Row>
             </label>
