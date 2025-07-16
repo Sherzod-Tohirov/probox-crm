@@ -1,10 +1,10 @@
 import { Modal, Box, Typography, Button } from "@components/ui";
-import { AnimatePresence, motion } from "framer-motion";
 import styles from "./clientPageForm.module.scss";
-import Skeleton from "react-loading-skeleton";
-import { memo, useState } from "react";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
+import { memo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Skeleton from "react-loading-skeleton";
 
 const PreviewModalFooter = memo(
   ({ onCancel, onApply, isLoading, isDisabled }) => {
@@ -26,21 +26,20 @@ const PreviewModalFooter = memo(
 );
 
 export default function FilePreviewModal({
-  files = [],
+  images = [],
   inputId,
   isOpen,
   onClose,
   onApply,
   isLoading,
   isDisabled = false,
-  onRemoveFile,
+  onRemoveImage,
 }) {
   const [currentImage, setCurrentImage] = useState(0);
-  const [loadedFiles, setLoadedFiles] = useState({});
-
+  const [loadedImages, setLoadedImages] = useState({});
   return (
     <Modal
-      title="Mijozga tegishli hujjatlar"
+      title="Mijozga tegishli rasmlar"
       isOpen={isOpen}
       onClose={onClose}
       footer={
@@ -58,33 +57,61 @@ export default function FilePreviewModal({
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
             <AnimatePresence>
-              {files.length ? (
-                files.map((file, index) => {
+              {images.length ? (
+                images.map((img, index) => {
                   return (
                     <>
-                      {!loadedFiles[file?.id] && (
+                      {!loadedImages[img?.id] && (
                         <Skeleton
-                          key={file?.id}
+                          key={img?.id}
                           count={1}
                           style={{ background: "rgba(0,0,0,0.4s)" }}
                           className={styles["file-image"]}
                         />
                       )}
-                      <motion.img
-                        className={classNames(styles["preview-img"], {
-                          [styles["active"]]: currentImage === index,
-                          [styles["hidden"]]: loadedFiles[file?.id],
-                        })}
-                        key={file?.id}
-                        src={file?.image}
-                        alt={file?.image}
-                        onLoad={() =>
-                          setLoadedFiles((prev) => ({
-                            ...prev,
-                            [file.id]: true,
-                          }))
+                      {(() => {
+                        if (img.originalFile.type.startsWith("image/")) {
+                          return (
+                            <motion.img
+                              className={classNames(styles["preview-img"], {
+                                [styles["active"]]: currentImage === index,
+                                [styles["hidden"]]: loadedImages[img?.id],
+                              })}
+                              key={img?.id}
+                              src={img?.file}
+                              alt={img?.originalFile.name}
+                              onLoad={() =>
+                                setLoadedImages((prev) => ({
+                                  ...prev,
+                                  [img.id]: true,
+                                }))
+                              }
+                            />
+                          );
                         }
-                      />
+
+                        if (
+                          img.originalFile.type.startsWith("application/pdf")
+                        ) {
+                          return (
+                            <motion.iframe
+                              className={classNames(styles["preview-img"], {
+                                [styles["active"]]: currentImage === index,
+                                [styles["hidden"]]: loadedImages[img?.id],
+                              })}
+                              key={img?.id}
+                              src={img?.file}
+                              alt={img?.originalFile.name}
+                              onLoad={() =>
+                                setLoadedImages((prev) => ({
+                                  ...prev,
+                                  [img.id]: true,
+                                }))
+                              }
+                            />
+                          );
+                        }
+                      })()}
                     </>
                   );
                 })
@@ -96,7 +123,7 @@ export default function FilePreviewModal({
                   gap={2}
                   className={styles["no-image"]}>
                   <Typography element={"p"} className={styles["no-image-text"]}>
-                    Hozircha hujjatlar yo'q
+                    Hozircha rasmlar yo'q
                   </Typography>
                 </Box>
               )}
@@ -105,7 +132,7 @@ export default function FilePreviewModal({
         </div>
         <div className={styles["image-indicator"]}>
           <AnimatePresence mode="popLayout">
-            {files.map((file, index) => (
+            {images.map((img, index) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -119,8 +146,8 @@ export default function FilePreviewModal({
                   damping: 30,
                 }}
                 className={styles["indicator-img-wrapper"]}
-                key={file?.id}>
-                {!loadedFiles[file?.id] && (
+                key={img?.id}>
+                {!loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
                     style={{ background: "rgba(0,0,0,0)" }}
@@ -130,13 +157,13 @@ export default function FilePreviewModal({
                 <motion.img
                   className={classNames(styles["indicator-img"], {
                     [styles["active"]]: currentImage === index,
-                    [styles["hidden"]]: !loadedFiles[file?.id],
+                    [styles["hidden"]]: !loadedImages[img?.id],
                   })}
-                  key={file?.id}
-                  src={file?.image}
-                  alt={file?.image}
+                  key={img?.id}
+                  src={img?.file}
+                  alt={img?.originalFile.name}
                   onLoad={() =>
-                    setLoadedFiles((prev) => ({ ...prev, [file.id]: true }))
+                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
                   }
                   layoutId={`image-${index}`}
                   onClick={() => setCurrentImage(index)}
@@ -144,7 +171,7 @@ export default function FilePreviewModal({
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
-                    onRemoveFile(file, index);
+                    onRemoveImage(img, index);
                     if (index === currentImage) {
                       setCurrentImage(0);
                     }
@@ -158,7 +185,7 @@ export default function FilePreviewModal({
           <label htmlFor={inputId} className={styles["upload-photo-label"]}>
             <Box dir="column" align="center" gap={1}>
               <Typography element="span">{iconsMap["addCircle"]}</Typography>
-              <Typography element="span">Hujjat yuklash</Typography>
+              <Typography element="span">Rasm yuklash</Typography>
             </Box>
           </label>
         </div>

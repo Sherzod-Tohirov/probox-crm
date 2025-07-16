@@ -186,6 +186,7 @@ function ClientPageForm({
 
   useEffect(() => {
     setAllFiles((prev) => {
+      if (!prev || !Array.isArray(prev)) return [];
       const filteredFiles = uploadedFile.filter((file) =>
         prev.every((allFile) => allFile.id !== file.id)
       );
@@ -231,11 +232,11 @@ function ClientPageForm({
       {...props}>
       <FilePreviewModal
         inputId={"file"}
-        files={allFiles}
+        images={allFiles}
         isOpen={filePreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
         isDisabled={isFileSaveButtonDisabled}
-        onRemoveFile={(file) => {
+        onRemoveImage={(file) => {
           setFileSaveButtonDisabled(false);
           if (file.type === "server") {
             setSoftDeletedFileIds((p) => [...p, file.id]);
