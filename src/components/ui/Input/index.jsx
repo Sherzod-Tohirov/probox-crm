@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, useCallback, useMemo, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import classNames from "classnames";
 import styles from "./input.module.scss";
@@ -25,6 +25,8 @@ const inputIcons = {
   tel: "telephone",
   date: "calendarDays",
 };
+
+
 
 const Input = forwardRef(
   (
@@ -183,7 +185,7 @@ const Input = forwardRef(
                               className={styles["file-image"]}
                             />
                           )}
-
+              {console.log("Image in Input: ", image)}
                           <motion.img
                             className={classNames(styles["file-image"], {
                               [styles["hidden"]]: !loadedImages[key],
@@ -269,6 +271,41 @@ const Input = forwardRef(
       [props, type, options, commonProps, images, uniqueId]
     );
 
+     const findFileType = useCallback((file) => {
+    
+      if(file.type === "server") {
+            const extension = file.image.split('.').pop()?.toLowerCase();
+            switch (extension) {
+              case 'jpg':
+              case 'jpeg':
+            case 'png':
+            case 'gif':
+              return 'image';
+            case 'pdf':
+              return 'pdf';
+            case 'xlsx':
+            case 'xls':
+              return 'excel';
+            default:
+              return 'unknown';
+  }
+     }else {
+        return file.originalFile.type.startsWith("image/")
+          ? "image"
+          : file.originalFile.type.startsWith("application/pdf")
+          ? "pdf"
+          : file.originalFile.type.startsWith(
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+          ? "excel"
+
+          
+          : "other";
+
+
+     }
+  }
+, []);
     if (variant === "search") {
       return (
         <Box dir="row" gap={2} align={"center"}>

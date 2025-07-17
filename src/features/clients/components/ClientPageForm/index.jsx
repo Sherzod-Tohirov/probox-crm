@@ -8,6 +8,7 @@ import Label from "./Label";
 
 import useAuth from "@hooks/useAuth";
 import useAlert from "@hooks/useAlert";
+
 import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useMutateClientImages from "@hooks/data/clients/useMutateClientImages";
 
@@ -138,7 +139,7 @@ function ClientPageForm({
       ...prev,
       ...validFiles.map((file) => ({
         id: uuidv4(),
-        file: URL.createObjectURL(file),
+        image: URL.createObjectURL(file),
         originalFile: file,
         type: "upload",
       })),
@@ -210,7 +211,7 @@ function ClientPageForm({
   }, [isDirty]);
 
   useEffect(() => {
-    const filesWithApi = currentClient?.Files?.map(
+    const filesWithApi = currentClient?.Images?.map(
       (file) =>
         ({
           id: file._id,

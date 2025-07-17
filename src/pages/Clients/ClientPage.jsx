@@ -1,5 +1,5 @@
-import moment from "moment";
-import * as _ from "lodash";
+import moment from 'moment';
+import * as _ from 'lodash';
 
 import {
   Col,
@@ -8,31 +8,31 @@ import {
   Button,
   Typography,
   Table,
-} from "@components/ui";
-import styles from "./style.module.scss";
-import { useCallback, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+} from '@components/ui';
+import styles from './style.module.scss';
+import { useCallback, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-import Footer from "@components/Footer";
-import Messenger from "@components/ui/Messenger";
+import Footer from '@components/Footer';
+import Messenger from '@components/ui/Messenger';
 
-import ClientPageForm from "@features/clients/components/ClientPageForm";
-import ClientPaymentModal from "@features/clients/components/ClientPaymentModal";
-import useSaveScreenshot from "@features/clients/hooks/useSaveScreenshot";
+import ClientPageForm from '@features/clients/components/ClientPageForm';
+import ClientPaymentModal from '@features/clients/components/ClientPaymentModal';
+import useSaveScreenshot from '@features/clients/hooks/useSaveScreenshot';
 
-import useAuth from "@hooks/useAuth";
-import useToggle from "@hooks/useToggle";
-import useClientsTableColumns from "@features/clients/hooks/useClientsTableColumns";
-import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useFetchMessages from "@hooks/data/clients/useFetchMessages";
-import useClickOutside from "@hooks/helper/useClickOutside";
-import useMessengerActions from "@hooks/useMessengerActions";
-import useMutateClientPageForm from "@hooks/data/clients/useMutateClientPageForm";
-import useFetchClientEntriesById from "@hooks/data/clients/useFetchClientEntriesById";
-import hasRole from "@utils/hasRole";
-import formatDate from "@utils/formatDate";
-import formatterCurrency from "@utils/formatterCurrency";
+import useAuth from '@hooks/useAuth';
+import useToggle from '@hooks/useToggle';
+import useClientsTableColumns from '@features/clients/hooks/useClientsTableColumns';
+import useFetchCurrency from '@hooks/data/useFetchCurrency';
+import useFetchMessages from '@hooks/data/clients/useFetchMessages';
+import useClickOutside from '@hooks/helper/useClickOutside';
+import useMessengerActions from '@hooks/useMessengerActions';
+import useMutateClientPageForm from '@hooks/data/clients/useMutateClientPageForm';
+import useFetchClientEntriesById from '@hooks/data/clients/useFetchClientEntriesById';
+import hasRole from '@utils/hasRole';
+import formatDate from '@utils/formatDate';
+import formatterCurrency from '@utils/formatterCurrency';
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -45,15 +45,15 @@ export default function ClientPage() {
   const screenshotRef = useRef(null);
   const updateMutation = useMutateClientPageForm();
   const { handleSaveScreenshot } = useSaveScreenshot();
-  const { isOpen, toggle } = useToggle("messenger");
+  const { isOpen, toggle } = useToggle('messenger');
   const { clientPageTableColumns } = useClientsTableColumns();
   const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
   const { data: messages, isLoading: isMessagesLoading } = useFetchMessages({
-    docEntry: currentClient?.["DocEntry"],
-    installmentId: currentClient?.["InstlmntID"],
+    docEntry: currentClient?.['DocEntry'],
+    installmentId: currentClient?.['InstlmntID'],
     enabled: isOpen,
   });
 
@@ -68,11 +68,11 @@ export default function ClientPage() {
     async (data) => {
       const formattedAgreementDate = formatDate(
         data?.agreementDate,
-        "DD.MM.YYYY",
-        "YYYY.MM.DD"
+        'DD.MM.YYYY',
+        'YYYY.MM.DD'
       );
-      const formattedDueDate = moment(currentClient["DueDate"]).format(
-        "YYYY.MM.DD"
+      const formattedDueDate = moment(currentClient['DueDate']).format(
+        'YYYY.MM.DD'
       );
       const phonePayload = {
         ...(data.telephone ? { Phone1: data.telephone } : {}),
@@ -82,8 +82,8 @@ export default function ClientPage() {
       };
 
       const payload = {
-        docEntry: currentClient?.["DocEntry"],
-        installmentId: currentClient?.["InstlmntID"],
+        docEntry: currentClient?.['DocEntry'],
+        installmentId: currentClient?.['InstlmntID'],
         data: {
           slpCode: data?.executor,
           DueDate: formattedDueDate,
@@ -92,7 +92,7 @@ export default function ClientPage() {
             ? { newDueDate: formattedAgreementDate }
             : {}),
           ...(!_.isEmpty(phonePayload)
-            ? { CardCode: currentClient?.["CardCode"] }
+            ? { CardCode: currentClient?.['CardCode'] }
             : {}),
         },
       };
@@ -114,19 +114,20 @@ export default function ClientPage() {
             <Col fullWidth>
               <Row direction="row" align="center" justify="space-between">
                 <Col>
-                  <Navigation fallbackBackPath={"/clients"} />
+                  <Navigation fallbackBackPath={'/clients'} />
                 </Col>
                 <Col>
-                  <Row direction={"row"} gutter={3}>
+                  <Row direction={'row'} gutter={3}>
                     <Col>
                       <Button
-                        type={"button"}
-                        className={styles["screenshot-btn"]}
+                        type={'button'}
+                        className={styles['screenshot-btn']}
                         onClick={() =>
                           _.debounce(handleSaveScreenshot, 200)(screenshotRef)
                         }
-                        form={"clientForm"}
-                        variant={"filled"}>
+                        form={'clientForm'}
+                        variant={'filled'}
+                      >
                         Screenshot
                       </Button>
                     </Col>
@@ -134,9 +135,10 @@ export default function ClientPage() {
                       <Button
                         disabled={isSaveButtonDisabled}
                         isLoading={updateMutation.isPending}
-                        type={"submit"}
-                        form={"clientForm"}
-                        variant={"filled"}>
+                        type={'submit'}
+                        form={'clientForm'}
+                        variant={'filled'}
+                      >
                         Saqlash
                       </Button>
                     </Col>
@@ -147,14 +149,14 @@ export default function ClientPage() {
           </Row>
         </Col>
         <Col fullWidth>
-          <Row gutter={6} ref={screenshotRef} style={{ position: "relative" }}>
+          <Row gutter={6} ref={screenshotRef} style={{ position: 'relative' }}>
             <Col fullWidth>
-              <Row direction={"row"} gutter={6}>
+              <Row direction={'row'} gutter={6}>
                 <Col>
                   <ClientPageForm
                     setIsSaveButtonDisabled={setIsSaveButtonDisabled}
                     onSubmit={handleClientPageSubmit}
-                    formId={"clientForm"}
+                    formId={'clientForm'}
                   />
                 </Col>
               </Row>
@@ -163,20 +165,20 @@ export default function ClientPage() {
             <Col fullWidth>
               <Table
                 containerStyle={{
-                  minHeight: "calc(35dvh)",
+                  minHeight: 'calc(35dvh)',
                 }}
-                uniqueKey={"InstlmntID"}
-                style={{ fontSize: "3.7rem" }}
+                uniqueKey={'InstlmntID'}
+                style={{ fontSize: '3.7rem' }}
                 columns={clientPageTableColumns}
                 isLoading={isLoading}
                 data={clientEntries}
                 onSelecrtionChange={(selected) => {
-                  console.log("Selected Rows:", selected);
+                  console.log('Selected Rows:', selected);
                 }}
                 getRowStyles={(row) => {
                   return {
-                    ...(row["InstlmntID"] === currentClient["InstlmntID"]
-                      ? { backgroundColor: "rgba(0,0,0,0.1)" }
+                    ...(row['InstlmntID'] === currentClient['InstlmntID']
+                      ? { backgroundColor: 'rgba(0,0,0,0.1)' }
                       : {}),
                   };
                 }}
@@ -186,21 +188,22 @@ export default function ClientPage() {
         </Col>
       </Row>
       <Footer>
-        <Row direction={"row"} align={"center"} justify={"space-between"}>
-          <Typography style={{ fontSize: "4rem" }} element={"span"}>
-            Qolgan qarzdorlik summasi:{" "}
+        <Row direction={'row'} align={'center'} justify={'space-between'}>
+          <Typography style={{ fontSize: '4rem' }} element={'span'}>
+            Qolgan qarzdorlik summasi:{' '}
             {formatterCurrency(
-              Number(currentClient["MaxDocTotal"]) -
-                Number(currentClient["MaxTotalPaidToDate"]) || 0,
-              "USD"
+              Number(currentClient['MaxDocTotal']) -
+                Number(currentClient['MaxTotalPaidToDate']) || 0,
+              'USD'
             )}
           </Typography>
           <Col>
-            {_.get(currency, "Rate", 0) > 0 ? (
-              hasRole(user, ["Manager", "Cashier"]) ? (
+            {_.get(currency, 'Rate', 0) > 0 ? (
+              hasRole(user, ['Manager', 'Cashier']) ? (
                 <Button
-                  variant={"filled"}
-                  onClick={() => setPaymentModal(true)}>
+                  variant={'filled'}
+                  onClick={() => setPaymentModal(true)}
+                >
                   To'lov qo'shish
                 </Button>
               ) : null

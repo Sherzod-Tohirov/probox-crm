@@ -38,6 +38,37 @@ export default function FilePreviewModal({
 }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [loadedImages, setLoadedImages] = useState({});
+console.log("loadedImages", loadedImages);
+  const findFileType = (file) => {
+    
+    if(file.type === "server") {
+          const extension = file.image.split('.').pop()?.toLowerCase();
+           switch (extension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif':
+              return 'image';
+            case 'pdf':
+              return 'pdf';
+            case 'xlsx':
+            case 'xls':
+              return 'excel';
+            default:
+              return 'unknown';
+  }
+     }else {
+        return file.originalFile.type.startsWith("image/")
+          ? "image"
+          : file.originalFile.type.startsWith("application/pdf")
+          ? "pdf"
+          : file.originalFile.type.startsWith(
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+          ? "excel"
+          : "other";
+     }
+  }
   return (
     <Modal
       title="Mijozga tegishli hujjatlar"
@@ -72,7 +103,7 @@ export default function FilePreviewModal({
                         />
                       )}
                       {(() => {
-                        if (img.originalFile.type.startsWith("image/")) {
+                        if (findFileType(img) === "image") {
                           return (
                             <motion.img
                               className={classNames(styles["preview-img"], {
@@ -80,8 +111,7 @@ export default function FilePreviewModal({
                                 [styles["hidden"]]: loadedImages[img?.id],
                               })}
                               key={img?.id}
-                              src={img?.file}
-                              alt={img?.originalFile.name}
+                              src={img?.image}
                               onLoad={() =>
                                 setLoadedImages((prev) => ({
                                   ...prev,
@@ -92,9 +122,7 @@ export default function FilePreviewModal({
                           );
                         }
 
-                        if (
-                          img.originalFile.type.startsWith("application/pdf")
-                        ) {
+                        if (findFileType(img) === "pdf") {
                           return (
                             <motion.iframe
                               className={classNames(styles["preview-img"], {
@@ -103,7 +131,6 @@ export default function FilePreviewModal({
                               })}
                               key={img?.id}
                               src={img?.file}
-                              alt={img?.originalFile.name}
                               onLoad={() =>
                                 setLoadedImages((prev) => ({
                                   ...prev,
@@ -151,15 +178,17 @@ export default function FilePreviewModal({
                 className={styles["indicator-img-wrapper"]}
                 key={img?.id}
               >
-                {!loadedImages[img?.id] && (
+                {console.log("findFileType(img)", findFileType(img))}
+                {findFileType(img) === "image" && !loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
                     style={{ background: "rgba(0,0,0,0)" }}
                     className={styles["indicator-img"]}
                   />
                 )}
-                {() => {
-                  if (img.originalFile.type.startsWith("image/")) {
+                {(() => {
+                  if (findFileType(img) === "image") {
+                    console.log("THis block works: ", img)
                     return (
                       <motion.img
                         className={classNames(styles["indicator-img"], {
@@ -167,8 +196,7 @@ export default function FilePreviewModal({
                           [styles["hidden"]]: !loadedImages[img?.id],
                         })}
                         key={img?.id}
-                        src={img?.file}
-                        alt={img?.originalFile.name}
+                        src={img?.image}
                         onLoad={() =>
                           setLoadedImages((prev) => ({
                             ...prev,
@@ -181,22 +209,22 @@ export default function FilePreviewModal({
                     );
                   }
                   if (
-                    img.originalFile.type.startsWith("application/pdf")
+                   findFileType(img) === "pdf"
                   ) {
                     return (
-                      <Box>
-                          {iconsMap["PdfFile"]}
-                      </Box>
+                      <span className={styles["file-icon"]}>
+                          {iconsMap["pdfFile"]}
+                      </span>
                     );
                   }
-                  if(img.originalFile.type.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                  if(findFileType(img) === "excel") {
                     return (
-                      <Box>
-                        {iconsMap["ExcelFile"]}
-                      </Box>
+                      <span className={styles["file-icon"]}>
+                        {iconsMap["excelFile"]}
+                      </span>
                     );
                   }
-                }}
+                })()}
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {

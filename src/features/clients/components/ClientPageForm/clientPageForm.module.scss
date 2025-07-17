@@ -143,3 +143,17 @@
 .hidden {
   display: none;
 }
+
+
+.file-icon {
+  @include m.flex(center, center);
+  width: auto;
+  height: 65px;
+  color: v.$primary-color;
+  font-size: 2.5rem;
+  cursor: pointer;
+  & svg {
+    width: auto;
+    height: 65px;
+  }
+}
