@@ -17,7 +17,8 @@ const PreviewModalFooter = memo(
           fullWidth
           onClick={onApply}
           isLoading={isLoading}
-          disabled={isDisabled}>
+          disabled={isDisabled}
+        >
           Saqlash
         </Button>
       </Box>
@@ -39,7 +40,7 @@ export default function FilePreviewModal({
   const [loadedImages, setLoadedImages] = useState({});
   return (
     <Modal
-      title="Mijozga tegishli rasmlar"
+      title="Mijozga tegishli hujjatlar"
       isOpen={isOpen}
       onClose={onClose}
       footer={
@@ -52,7 +53,8 @@ export default function FilePreviewModal({
           isDisabled={isDisabled}
           onApply={onApply}
         />
-      }>
+      }
+    >
       <div className={styles["image-preview-container"]}>
         <div className={styles["image-preview-wrapper"]}>
           <div className={styles["image-preview"]}>
@@ -121,7 +123,8 @@ export default function FilePreviewModal({
                   align="center"
                   justify="center"
                   gap={2}
-                  className={styles["no-image"]}>
+                  className={styles["no-image"]}
+                >
                   <Typography element={"p"} className={styles["no-image-text"]}>
                     Hozircha rasmlar yo'q
                   </Typography>
@@ -146,7 +149,8 @@ export default function FilePreviewModal({
                   damping: 30,
                 }}
                 className={styles["indicator-img-wrapper"]}
-                key={img?.id}>
+                key={img?.id}
+              >
                 {!loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
@@ -154,20 +158,45 @@ export default function FilePreviewModal({
                     className={styles["indicator-img"]}
                   />
                 )}
-                <motion.img
-                  className={classNames(styles["indicator-img"], {
-                    [styles["active"]]: currentImage === index,
-                    [styles["hidden"]]: !loadedImages[img?.id],
-                  })}
-                  key={img?.id}
-                  src={img?.file}
-                  alt={img?.originalFile.name}
-                  onLoad={() =>
-                    setLoadedImages((prev) => ({ ...prev, [img.id]: true }))
+                {() => {
+                  if (img.originalFile.type.startsWith("image/")) {
+                    return (
+                      <motion.img
+                        className={classNames(styles["indicator-img"], {
+                          [styles["active"]]: currentImage === index,
+                          [styles["hidden"]]: !loadedImages[img?.id],
+                        })}
+                        key={img?.id}
+                        src={img?.file}
+                        alt={img?.originalFile.name}
+                        onLoad={() =>
+                          setLoadedImages((prev) => ({
+                            ...prev,
+                            [img.id]: true,
+                          }))
+                        }
+                        layoutId={`image-${index}`}
+                        onClick={() => setCurrentImage(index)}
+                      />
+                    );
                   }
-                  layoutId={`image-${index}`}
-                  onClick={() => setCurrentImage(index)}
-                />
+                  if (
+                    img.originalFile.type.startsWith("application/pdf")
+                  ) {
+                    return (
+                      <Box>
+                          {iconsMap["PdfFile"]}
+                      </Box>
+                    );
+                  }
+                  if(img.originalFile.type.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                    return (
+                      <Box>
+                        {iconsMap["ExcelFile"]}
+                      </Box>
+                    );
+                  }
+                }}
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
@@ -176,7 +205,8 @@ export default function FilePreviewModal({
                       setCurrentImage(0);
                     }
                   }}
-                  className={styles["indicator-img-close"]}>
+                  className={styles["indicator-img-close"]}
+                >
                   {iconsMap["close"]}
                 </motion.span>
               </motion.div>
