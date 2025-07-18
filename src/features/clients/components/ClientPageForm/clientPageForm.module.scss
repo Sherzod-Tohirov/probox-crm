@@ -1,5 +1,5 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .form {
   @include m.flex(center, start, 12px, column);
@@ -47,7 +47,7 @@
   object-fit: cover;
 
   &.active {
-    display: block;
+    display: block !important;
   }
 }
 
@@ -141,9 +141,8 @@
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
-
 
 .file-icon {
   @include m.flex(center, center);

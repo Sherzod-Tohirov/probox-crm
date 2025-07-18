@@ -26,6 +26,22 @@ const PreviewModalFooter = memo(
   }
 );
 
+const EmptyPlaceholder = memo(({ title, className }) => {
+  return (
+    <Box
+      dir="column"
+      align="center"
+      justify="center"
+      gap={2}
+      className={classNames(styles['no-image'], className)}
+    >
+      <Typography element={'p'} className={styles['no-image-text']}>
+        {title ?? " Hozircha hujjatlar yo'q"}
+      </Typography>
+    </Box>
+  );
+});
+
 export default function FilePreviewModal({
   images = [],
   inputId,
@@ -129,10 +145,7 @@ export default function FilePreviewModal({
                           );
                         }
 
-                        if (
-                          findFileType(img) === 'pdf' ||
-                          findFileType(img) === 'excel'
-                        ) {
+                        if (findFileType(img) === 'pdf') {
                           return (
                             <motion.iframe
                               className={classNames(styles['preview-img'], {
@@ -140,11 +153,7 @@ export default function FilePreviewModal({
                                 [styles['hidden']]: loadedImages[img?.id],
                               })}
                               key={img?.id}
-                              src={
-                                findFileType(img) === 'pdf'
-                                  ? img?.image
-                                  : `https://docs.google.com/gview?url=${img.image}&embedded=true`
-                              }
+                              src={img?.image}
                               onLoad={() =>
                                 setLoadedImages((prev) => ({
                                   ...prev,
@@ -155,23 +164,21 @@ export default function FilePreviewModal({
                           );
                         }
                         if (findFileType(img) === 'excel') {
+                          return (
+                            <EmptyPlaceholder
+                              className={classNames({
+                                [styles['hidden']]: currentImage !== index,
+                              })}
+                              title={'Excel faylni yuklab oling'}
+                            />
+                          );
                         }
                       })()}
                     </>
                   );
                 })
               ) : (
-                <Box
-                  dir="column"
-                  align="center"
-                  justify="center"
-                  gap={2}
-                  className={styles['no-image']}
-                >
-                  <Typography element={'p'} className={styles['no-image-text']}>
-                    Hozircha hujjatlar yo'q
-                  </Typography>
-                </Box>
+                <EmptyPlaceholder />
               )}
             </AnimatePresence>
           </div>
@@ -238,12 +245,15 @@ export default function FilePreviewModal({
                   }
                   if (findFileType(img) === 'excel') {
                     return (
-                      <span
+                      <a
+                        href={img.image}
                         className={styles['file-icon']}
+                        download
+                        rel="noopener noreferrer"
                         onClick={() => setCurrentImage(index)}
                       >
                         {iconsMap['excelFile']}
-                      </span>
+                      </a>
                     );
                   }
                 })()}

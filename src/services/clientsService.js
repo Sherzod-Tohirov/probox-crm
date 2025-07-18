@@ -1,9 +1,9 @@
-import moment from "moment";
-import api from "./axiosConfig";
+import moment from 'moment';
+import api from './axiosConfig';
 
 export const getClients = async (params = {}) => {
   try {
-    const response = await api.get("/invoice", {
+    const response = await api.get('/invoice', {
       params: {
         page: params.page,
         limit: params.limit,
@@ -34,14 +34,14 @@ export const getClientEntriesById = async (id, params = {}) => {
 
 export const searchClients = async (params = {}) => {
   try {
-    const response = await api.get("/search", {
+    const response = await api.get('/search', {
       params: {
         page: params.page,
         limit: params.limit,
         ...params,
       },
     });
-    response, "response";
+    (response, 'response');
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -51,14 +51,14 @@ export const searchClients = async (params = {}) => {
 export const distributeClients = async (params = {}) => {
   try {
     const response = await api.put(
-      "/invoice/distribution",
+      '/invoice/distribution',
       {},
       {
         params: {
           startDate:
-            params?.startDate || moment().startOf("month").format("YYYY.MM.DD"),
+            params?.startDate || moment().startOf('month').format('YYYY.MM.DD'),
           endDate:
-            params?.endDate || moment().endOf("month").format("YYYY.MM.DD"),
+            params?.endDate || moment().endOf('month').format('YYYY.MM.DD'),
           ...params,
         },
       }
@@ -85,7 +85,7 @@ export const addClientPayment = async (data, params = {}) => {
 export const updateClientExecutor = async (payload = {}, params = {}) => {
   try {
     if (!payload?.installmentId || !payload?.docEntry)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
     const response = await api.put(
       `/invoice/executor/${payload.docEntry}/${payload.installmentId}`,
       payload.data,
@@ -104,13 +104,13 @@ export const updateClientExecutor = async (payload = {}, params = {}) => {
 export const updateClientImages = async (payload = {}, params = {}) => {
   try {
     if (!payload?.installmentId || !payload?.docEntry)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
     const response = await api.put(
       `/invoice/upload/${payload.docEntry}/${payload.installmentId}`,
       payload.data,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
         params: {
           ...params,
@@ -124,10 +124,29 @@ export const updateClientImages = async (payload = {}, params = {}) => {
   }
 };
 
+export const updateClientAddress = async (payload = {}, params = {}) => {
+  try {
+    if (!payload?.installmentId || !payload?.docEntry)
+      throw Error('Installment id and doc entry are required !');
+    const response = await api.put(
+      `/invoice/address/${payload.docEntry}/${payload.installmentId}`,
+      payload.data,
+      {
+        params: {
+          ...params,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const deleteClientImages = async (payload = {}, params = {}) => {
   try {
     if (!payload?.installmentId || !payload?.docEntry)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
 
     const response = await api.delete(
       `/invoice/upload/${payload.docEntry}/${payload.installmentId}/${payload.id}`,
@@ -147,7 +166,7 @@ export const deleteClientImages = async (payload = {}, params = {}) => {
 export const updatePhoneConfiscated = async (payload = {}, params = {}) => {
   try {
     if (!payload?.installmentId || !payload?.docEntry)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
 
     const response = await api.put(
       `/invoice/confiscating/${payload.docEntry}/${payload.installmentId}`,
@@ -163,7 +182,7 @@ export const updatePhoneConfiscated = async (payload = {}, params = {}) => {
 export const updatePartialPayment = async (payload = {}) => {
   try {
     if (!payload?.installmentId || !payload?.docEntry)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
 
     const response = await api.put(
       `/invoice/partial/${payload.docEntry}/${payload.installmentId}`,
