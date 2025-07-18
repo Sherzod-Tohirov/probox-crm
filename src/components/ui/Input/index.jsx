@@ -1,32 +1,30 @@
-import { forwardRef, useCallback, useMemo, useState } from "react";
-import Flatpickr from "react-flatpickr";
-import classNames from "classnames";
-import styles from "./input.module.scss";
-import iconsMap from "@utils/iconsMap";
-import Typography from "../Typography";
-import { Box, Col, Row } from "@components/ui";
-import { omit } from "ramda";
-import { Controller } from "react-hook-form";
-import PhoneInput from "react-phone-input-2";
-import moment from "moment";
-import * as r from "ramda";
-import "flatpickr/dist/themes/airbnb.css";
-import "react-phone-input-2/lib/style.css";
-import { AnimatePresence, motion } from "framer-motion";
-import SearchField from "./SearchField";
-import { formatPhoneNumber } from "@utils/formatPhoneNumber";
-import MultipleSelect from "./MultipleSelect";
-import Skeleton from "react-loading-skeleton";
+import { forwardRef, useCallback, useMemo, useState } from 'react';
+import Flatpickr from 'react-flatpickr';
+import classNames from 'classnames';
+import styles from './input.module.scss';
+import iconsMap from '@utils/iconsMap';
+import Typography from '../Typography';
+import { Box, Col, Row } from '@components/ui';
+import { omit } from 'ramda';
+import { Controller } from 'react-hook-form';
+import PhoneInput from 'react-phone-input-2';
+import moment from 'moment';
+import * as r from 'ramda';
+import 'flatpickr/dist/themes/airbnb.css';
+import 'react-phone-input-2/lib/style.css';
+import { AnimatePresence, motion } from 'framer-motion';
+import SearchField from './SearchField';
+import { formatPhoneNumber } from '@utils/formatPhoneNumber';
+import MultipleSelect from './MultipleSelect';
+import Skeleton from 'react-loading-skeleton';
 
 const inputIcons = {
-  email: "email",
-  select: "arrowDown",
-  search: "search",
-  tel: "telephone",
-  date: "calendarDays",
+  email: 'email',
+  select: 'arrowDown',
+  search: 'search',
+  tel: 'telephone',
+  date: 'calendarDays',
 };
-
-
 
 const Input = forwardRef(
   (
@@ -37,15 +35,15 @@ const Input = forwardRef(
       inputBoxClassName,
       className,
       width,
-      type = "text",
+      type = 'text',
       variant,
       icon,
       iconText,
       label,
       options = [],
-      placeholderColor = "primary",
+      placeholderColor = 'primary',
       images = [],
-      size = "",
+      size = '',
       searchText,
       searchable = false,
       multipleSelect = false,
@@ -65,6 +63,37 @@ const Input = forwardRef(
   ) => {
     const [loadedImages, setLoadedImages] = useState({});
 
+    const findFileType = useCallback((file) => {
+      if (file.type === 'server') {
+        const extension = file.image.split('.').pop()?.toLowerCase();
+        switch (extension) {
+          case 'jpg':
+          case 'jpeg':
+          case 'png':
+          case 'gif':
+          case 'webp':
+            return 'image';
+          case 'pdf':
+            return 'pdf';
+          case 'xlsx':
+          case 'xls':
+            return 'excel';
+          default:
+            return 'unknown';
+        }
+      } else {
+        return file.originalFile.type.startsWith('image/')
+          ? 'image'
+          : file.originalFile.type.startsWith('application/pdf')
+            ? 'pdf'
+            : file.originalFile.type.startsWith(
+                  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+              ? 'excel'
+              : 'other';
+      }
+    }, []);
+
     const uniqueId = useMemo(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
@@ -79,12 +108,12 @@ const Input = forwardRef(
     const classes = useMemo(
       () =>
         classNames(
-          styles["input"],
+          styles['input'],
           styles[variant],
           styles[type],
           styles[`placeholder-${placeholderColor}`],
-          styles[disabled ? "disabled" : ""],
-          styles[error ? "error" : ""],
+          styles[disabled ? 'disabled' : ''],
+          styles[error ? 'error' : ''],
           className,
           { [styles.error]: error }
         ),
@@ -116,18 +145,18 @@ const Input = forwardRef(
                 options={{
                   enableTime: false,
                   defaultDate: field.value || props.defaultValue || new Date(),
-                  dateFormat: "d.m.Y", // Custom date format
+                  dateFormat: 'd.m.Y', // Custom date format
                   locale: { firstDayOfWeek: 1 },
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
                   // Format to dd.mm.yyyy before saving to form
                   const formatted = dateArr[0]
-                    ? moment(dateArr[0]).format("DD.MM.YYYY")
-                    : "";
+                    ? moment(dateArr[0]).format('DD.MM.YYYY')
+                    : '';
                   field.onChange(formatted);
                 }}
-                {...omit(props, ["datePickerOptions"])}
+                {...omit(props, ['datePickerOptions'])}
               />
             )}
           />
@@ -155,14 +184,15 @@ const Input = forwardRef(
               <option
                 disabled={option.isNotSelectable}
                 key={option.value}
-                value={option.value}>
+                value={option.value}
+              >
                 {option.label}
               </option>
             ))}
           </select>
         ),
         file: (
-          <Box dir="row" align={"center"}>
+          <Box dir="row" align={'center'}>
             <input
               id={props.id || uniqueId}
               type="file"
@@ -177,31 +207,72 @@ const Input = forwardRef(
                     const key = image?.id || image?.image || image;
                     return (
                       <AnimatePresence>
-                        <Col key={key} style={{ position: "relative" }}>
-                          {!loadedImages[key] && (
-                            <Skeleton
-                              count={1}
-                              style={{ background: "rgba(0,0,0,0.2)" }}
-                              className={styles["file-image"]}
-                            />
+                        <Col key={key} style={{ position: 'relative' }}>
+                          {findFileType(image) === 'image' &&
+                            !loadedImages[key] && (
+                              <Skeleton
+                                count={1}
+                                style={{ background: 'rgba(0,0,0,0.2)' }}
+                                className={styles['file-image']}
+                              />
+                            )}
+                          {console.log(
+                            'Image in Input: ',
+                            image,
+                            findFileType(image),
+                            loadedImages[key]
                           )}
-              {console.log("Image in Input: ", image)}
-                          <motion.img
-                            className={classNames(styles["file-image"], {
-                              [styles["hidden"]]: !loadedImages[key],
-                            })}
-                            src={image?.image || image}
-                            alt={"Client image url:" + (image?.image || image)}
-                            onLoad={() =>
-                              setLoadedImages((p) => ({
-                                ...p,
-                                [key]: true,
-                              }))
+                          {(() => {
+                            if (findFileType(image) === 'image') {
+                              return (
+                                <motion.img
+                                  className={classNames(styles['file-image'], {
+                                    [styles['hidden']]: !loadedImages[key],
+                                  })}
+                                  src={image?.image || image}
+                                  alt={
+                                    'Client image url:' +
+                                    (image?.image || image)
+                                  }
+                                  onLoad={() =>
+                                    setLoadedImages((p) => ({
+                                      ...p,
+                                      [key]: true,
+                                    }))
+                                  }
+                                  style={
+                                    !loadedImages[key]
+                                      ? { visibility: 'hidden' }
+                                      : {}
+                                  }
+                                />
+                              );
                             }
-                            style={
-                              !loadedImages[key] ? { visibility: "hidden" } : {}
+                            if (findFileType(image) === 'pdf') {
+                              return (
+                                <motion.div
+                                  className={classNames(styles['file-icon'])}
+                                  onLoad={() =>
+                                    setLoadedImages((p) => ({
+                                      ...p,
+                                      [key]: true,
+                                    }))
+                                  }
+                                >
+                                  {iconsMap['pdfFile']}
+                                </motion.div>
+                              );
                             }
-                          />
+                            if (findFileType(image) === 'excel') {
+                              return (
+                                <motion.div
+                                  className={classNames(styles['file-icon'])}
+                                >
+                                  {iconsMap['excelFile']}
+                                </motion.div>
+                              );
+                            }
+                          })()}
                         </Col>
                       </AnimatePresence>
                     );
@@ -222,19 +293,19 @@ const Input = forwardRef(
                 <PhoneInput
                   {...(props.onFocus ? { onFocus: props.onFocus } : {})}
                   {...field}
-                  {...r.omit(["className", "style"], commonProps)}
-                  value={formatPhoneNumber(field.value || "")}
+                  {...r.omit(['className', 'style'], commonProps)}
+                  value={formatPhoneNumber(field.value || '')}
                   inputClass={classNames(
                     styles[`input-tel-${variant}`],
                     styles[size]
                   )}
                   inputStyle={commonProps.style}
-                  containerClass={styles["input-tel-container"]}
-                  onlyCountries={["uz"]}
+                  containerClass={styles['input-tel-container']}
+                  onlyCountries={['uz']}
                   disableDropdown={true}
                   countryCodeEditable={false}
-                  buttonClass={styles["hidden"]}
-                  country={"uz"}
+                  buttonClass={styles['hidden']}
+                  country={'uz'}
                   onChange={(value) => {
                     // Ensure the value always starts with 998
                     const formattedValue = formatPhoneNumber(value);
@@ -253,7 +324,7 @@ const Input = forwardRef(
               return (
                 <input
                   {...field}
-                  value={field.value || ""}
+                  value={field.value || ''}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                   }}
@@ -271,50 +342,15 @@ const Input = forwardRef(
       [props, type, options, commonProps, images, uniqueId]
     );
 
-     const findFileType = useCallback((file) => {
-    
-      if(file.type === "server") {
-            const extension = file.image.split('.').pop()?.toLowerCase();
-            switch (extension) {
-              case 'jpg':
-              case 'jpeg':
-            case 'png':
-            case 'gif':
-              return 'image';
-            case 'pdf':
-              return 'pdf';
-            case 'xlsx':
-            case 'xls':
-              return 'excel';
-            default:
-              return 'unknown';
-  }
-     }else {
-        return file.originalFile.type.startsWith("image/")
-          ? "image"
-          : file.originalFile.type.startsWith("application/pdf")
-          ? "pdf"
-          : file.originalFile.type.startsWith(
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-          ? "excel"
-
-          
-          : "other";
-
-
-     }
-  }
-, []);
-    if (variant === "search") {
+    if (variant === 'search') {
       return (
-        <Box dir="row" gap={2} align={"center"}>
-          <Typography element="span" className={styles["icon-text"]}>
-            {iconsMap["search"]}
+        <Box dir="row" gap={2} align={'center'}>
+          <Typography element="span" className={styles['icon-text']}>
+            {iconsMap['search']}
           </Typography>
           <input
             type={type}
-            className={classNames(styles["input"], styles["search-variant"])}
+            className={classNames(styles['input'], styles['search-variant'])}
             {...props}
           />
         </Box>
@@ -322,45 +358,47 @@ const Input = forwardRef(
     }
 
     return (
-      <Row className={styles["input-wrapper"]} gutter={1.5}>
+      <Row className={styles['input-wrapper']} gutter={1.5}>
         {label && (
           <Col>
-            <Typography element="label" className={styles["label"]}>
+            <Typography element="label" className={styles['label']}>
               {label}
             </Typography>
           </Col>
         )}
 
         <Col fullWidth>
-          <Box pos={"relative"} dir="column" gap={1}>
+          <Box pos={'relative'} dir="column" gap={1}>
             <Box
               pos="relative"
               style={inputBoxStyle}
               className={classNames(
-                styles["input-box"],
+                styles['input-box'],
                 styles[variant],
                 styles[type],
                 styles[size],
                 inputBoxClassName
-              )}>
+              )}
+            >
               {inputTypeMatcher[type] || inputTypeMatcher.default}
               {hasIcon ? (
                 <Typography
                   style={{
-                    cursor: onIconClick ? "pointer" : "default",
-                    pointerEvents: canClickIcon ? "auto" : "none",
+                    cursor: onIconClick ? 'pointer' : 'default',
+                    pointerEvents: canClickIcon ? 'auto' : 'none',
                   }}
                   element="span"
-                  className={styles["icon"]}
-                  {...(onIconClick ? { onClick: onIconClick } : {})}>
+                  className={styles['icon']}
+                  {...(onIconClick ? { onClick: onIconClick } : {})}
+                >
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>
               ) : (
-                ""
+                ''
               )}
             </Box>
             <AnimatePresence mode="popLayout">
-              {searchable && searchText?.length && searchText !== "998" ? (
+              {searchable && searchText?.length && searchText !== '998' ? (
                 <SearchField
                   renderItem={renderSearchItem}
                   onSearch={onSearch}
@@ -368,7 +406,7 @@ const Input = forwardRef(
                   onSelect={onSearchSelect}
                 />
               ) : (
-                ""
+                ''
               )}
             </AnimatePresence>
             <AnimatePresence mode="popLayout">
@@ -378,11 +416,12 @@ const Input = forwardRef(
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className={styles["error-text"]}>
+                  className={styles['error-text']}
+                >
                   {error}
                 </motion.span>
               ) : (
-                ""
+                ''
               )}
             </AnimatePresence>
           </Box>

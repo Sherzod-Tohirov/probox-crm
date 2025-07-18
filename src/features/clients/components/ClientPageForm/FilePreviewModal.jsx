@@ -1,10 +1,10 @@
-import { Modal, Box, Typography, Button } from "@components/ui";
-import styles from "./clientPageForm.module.scss";
-import iconsMap from "@utils/iconsMap";
-import classNames from "classnames";
-import { memo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Skeleton from "react-loading-skeleton";
+import { Modal, Box, Typography, Button } from '@components/ui';
+import styles from './clientPageForm.module.scss';
+import iconsMap from '@utils/iconsMap';
+import classNames from 'classnames';
+import { memo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Skeleton from 'react-loading-skeleton';
 
 const PreviewModalFooter = memo(
   ({ onCancel, onApply, isLoading, isDisabled }) => {
@@ -38,37 +38,37 @@ export default function FilePreviewModal({
 }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [loadedImages, setLoadedImages] = useState({});
-console.log("loadedImages", loadedImages);
   const findFileType = (file) => {
-    
-    if(file.type === "server") {
-          const extension = file.image.split('.').pop()?.toLowerCase();
-           switch (extension) {
-            case 'jpg':
-            case 'jpeg':
-            case 'png':
-            case 'gif':
-              return 'image';
-            case 'pdf':
-              return 'pdf';
-            case 'xlsx':
-            case 'xls':
-              return 'excel';
-            default:
-              return 'unknown';
-  }
-     }else {
-        return file.originalFile.type.startsWith("image/")
-          ? "image"
-          : file.originalFile.type.startsWith("application/pdf")
-          ? "pdf"
+    if (file.type === 'server') {
+      const extension = file.image.split('.').pop()?.toLowerCase();
+      switch (extension) {
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+        case 'webp':
+          return 'image';
+        case 'pdf':
+          return 'pdf';
+        case 'xlsx':
+        case 'xls':
+          return 'excel';
+        default:
+          return 'unknown';
+      }
+    } else {
+      return file.originalFile.type.startsWith('image/')
+        ? 'image'
+        : file.originalFile.type.startsWith('application/pdf')
+          ? 'pdf'
           : file.originalFile.type.startsWith(
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-          ? "excel"
-          : "other";
-     }
-  }
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              )
+            ? 'excel'
+            : 'other';
+    }
+  };
+  console.log('Current Image: ', currentImage, 'Loaded Images: ', loadedImages);
   return (
     <Modal
       title="Mijozga tegishli hujjatlar"
@@ -86,9 +86,9 @@ console.log("loadedImages", loadedImages);
         />
       }
     >
-      <div className={styles["image-preview-container"]}>
-        <div className={styles["image-preview-wrapper"]}>
-          <div className={styles["image-preview"]}>
+      <div className={styles['image-preview-container']}>
+        <div className={styles['image-preview-wrapper']}>
+          <div className={styles['image-preview']}>
             <AnimatePresence>
               {images.length ? (
                 images.map((img, index) => {
@@ -98,17 +98,24 @@ console.log("loadedImages", loadedImages);
                         <Skeleton
                           key={img?.id}
                           count={1}
-                          style={{ background: "rgba(0,0,0,0.4s)" }}
-                          className={styles["file-image"]}
+                          style={{ background: 'rgba(0,0,0,0.4s)' }}
+                          className={styles['file-image']}
                         />
                       )}
                       {(() => {
-                        if (findFileType(img) === "image") {
+                        {
+                          console.log(
+                            'Image in FilePreviewModal: ',
+                            img,
+                            index
+                          );
+                        }
+                        if (findFileType(img) === 'image') {
                           return (
                             <motion.img
-                              className={classNames(styles["preview-img"], {
-                                [styles["active"]]: currentImage === index,
-                                [styles["hidden"]]: loadedImages[img?.id],
+                              className={classNames(styles['preview-img'], {
+                                [styles['active']]: currentImage === index,
+                                [styles['hidden']]: loadedImages[img?.id],
                               })}
                               key={img?.id}
                               src={img?.image}
@@ -122,15 +129,22 @@ console.log("loadedImages", loadedImages);
                           );
                         }
 
-                        if (findFileType(img) === "pdf") {
+                        if (
+                          findFileType(img) === 'pdf' ||
+                          findFileType(img) === 'excel'
+                        ) {
                           return (
                             <motion.iframe
-                              className={classNames(styles["preview-img"], {
-                                [styles["active"]]: currentImage === index,
-                                [styles["hidden"]]: loadedImages[img?.id],
+                              className={classNames(styles['preview-img'], {
+                                [styles['active']]: currentImage === index,
+                                [styles['hidden']]: loadedImages[img?.id],
                               })}
                               key={img?.id}
-                              src={img?.file}
+                              src={
+                                findFileType(img) === 'pdf'
+                                  ? img?.image
+                                  : `https://docs.google.com/gview?url=${img.image}&embedded=true`
+                              }
                               onLoad={() =>
                                 setLoadedImages((prev) => ({
                                   ...prev,
@@ -139,6 +153,8 @@ console.log("loadedImages", loadedImages);
                               }
                             />
                           );
+                        }
+                        if (findFileType(img) === 'excel') {
                         }
                       })()}
                     </>
@@ -150,17 +166,17 @@ console.log("loadedImages", loadedImages);
                   align="center"
                   justify="center"
                   gap={2}
-                  className={styles["no-image"]}
+                  className={styles['no-image']}
                 >
-                  <Typography element={"p"} className={styles["no-image-text"]}>
-                    Hozircha rasmlar yo'q
+                  <Typography element={'p'} className={styles['no-image-text']}>
+                    Hozircha hujjatlar yo'q
                   </Typography>
                 </Box>
               )}
             </AnimatePresence>
           </div>
         </div>
-        <div className={styles["image-indicator"]}>
+        <div className={styles['image-indicator']}>
           <AnimatePresence mode="popLayout">
             {images.map((img, index) => (
               <motion.div
@@ -170,30 +186,30 @@ console.log("loadedImages", loadedImages);
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{
                   duration: 0.2,
-                  type: "tween",
-                  ease: "easeInOut",
+                  type: 'tween',
+                  ease: 'easeInOut',
                   stiffness: 300,
                   damping: 30,
                 }}
-                className={styles["indicator-img-wrapper"]}
+                className={styles['indicator-img-wrapper']}
                 key={img?.id}
               >
-                {console.log("findFileType(img)", findFileType(img))}
-                {findFileType(img) === "image" && !loadedImages[img?.id] && (
+                {console.log('findFileType(img)', findFileType(img))}
+                {findFileType(img) === 'image' && !loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
-                    style={{ background: "rgba(0,0,0,0)" }}
-                    className={styles["indicator-img"]}
+                    style={{ background: 'rgba(0,0,0,0)' }}
+                    className={styles['indicator-img']}
                   />
                 )}
                 {(() => {
-                  if (findFileType(img) === "image") {
-                    console.log("THis block works: ", img)
+                  if (findFileType(img) === 'image') {
+                    console.log('THis block works: ', img);
                     return (
                       <motion.img
-                        className={classNames(styles["indicator-img"], {
-                          [styles["active"]]: currentImage === index,
-                          [styles["hidden"]]: !loadedImages[img?.id],
+                        className={classNames(styles['indicator-img'], {
+                          [styles['active']]: currentImage === index,
+                          [styles['hidden']]: !loadedImages[img?.id],
                         })}
                         key={img?.id}
                         src={img?.image}
@@ -208,19 +224,25 @@ console.log("loadedImages", loadedImages);
                       />
                     );
                   }
-                  if (
-                   findFileType(img) === "pdf"
-                  ) {
+                  if (findFileType(img) === 'pdf') {
                     return (
-                      <span className={styles["file-icon"]}>
-                          {iconsMap["pdfFile"]}
-                      </span>
+                      <Box>
+                        <span
+                          className={styles['file-icon']}
+                          onClick={() => setCurrentImage(index)}
+                        >
+                          {iconsMap['pdfFile']}
+                        </span>
+                      </Box>
                     );
                   }
-                  if(findFileType(img) === "excel") {
+                  if (findFileType(img) === 'excel') {
                     return (
-                      <span className={styles["file-icon"]}>
-                        {iconsMap["excelFile"]}
+                      <span
+                        className={styles['file-icon']}
+                        onClick={() => setCurrentImage(index)}
+                      >
+                        {iconsMap['excelFile']}
                       </span>
                     );
                   }
@@ -233,17 +255,17 @@ console.log("loadedImages", loadedImages);
                       setCurrentImage(0);
                     }
                   }}
-                  className={styles["indicator-img-close"]}
+                  className={styles['indicator-img-close']}
                 >
-                  {iconsMap["close"]}
+                  {iconsMap['close']}
                 </motion.span>
               </motion.div>
             ))}
           </AnimatePresence>
-          <label htmlFor={inputId} className={styles["upload-photo-label"]}>
+          <label htmlFor={inputId} className={styles['upload-photo-label']}>
             <Box dir="column" align="center" gap={1}>
-              <Typography element="span">{iconsMap["addCircle"]}</Typography>
-              <Typography element="span">Rasm yuklash</Typography>
+              <Typography element="span">{iconsMap['addCircle']}</Typography>
+              <Typography element="span">Hujjat yuklash</Typography>
             </Box>
           </label>
         </div>

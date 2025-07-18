@@ -58,7 +58,7 @@ const useSaveScreenshot = () => {
         );
       }
     } catch (error) {
-      alert("Rasm yuklashda xatolik yuz berdi!", { type: "error" });
+      alert("Hujjat yuklashda xatolik yuz berdi!", { type: "error" });
     } finally {
       // Restore original styles
       element.style.overflow = originalStyle.overflow;

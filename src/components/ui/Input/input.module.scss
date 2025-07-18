@@ -1,5 +1,5 @@
-@use "@styles/mixins.scss" as m;
-@use "@styles/variables.scss" as v;
+@use '@styles/mixins.scss' as m;
+@use '@styles/variables.scss' as v;
 
 .input {
   width: 100%;
@@ -41,7 +41,7 @@
     line-height: 143%;
     color: v.$primary-color;
     border-radius: 12px;
-    background-color: "";
+    background-color: '';
     transition: min-width v.$transition-time v.$transition-type;
   }
 
@@ -54,11 +54,11 @@
     color: v.$filter-input-color !important;
   }
 
-  &.file[type="file"] {
+  &.file[type='file'] {
     display: none !important;
   }
 
-  &.file[type="file"] + label {
+  &.file[type='file'] + label {
     min-height: 43px;
     max-height: 68px;
     overflow: auto;
@@ -174,7 +174,7 @@
   line-height: 143% !important;
   color: v.$primary-color !important;
   border-radius: 12px !important;
-  background-color: "" !important;
+  background-color: '' !important;
   border: 1px solid transparent !important;
   transition: all v.$transition-time v.$transition-type !important;
 }
@@ -396,10 +396,37 @@
   align-items: center;
   background-color: transparent !important;
   &::after {
-    content: "✅";
+    content: '✅';
     @include m.flex-center;
     width: 14px;
     height: 14px;
     margin-left: auto;
+  }
+}
+
+.file-icon {
+  @include m.flex(center, center);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: v.$primary-color;
+  transition: all v.$transition-time v.$transition-type;
+
+  & svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &.hidden {
+    display: none !important;
+  }
+
+  &.active {
+    opacity: 1 !important;
+  }
+
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
   }
 }

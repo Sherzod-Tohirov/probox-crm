@@ -1,27 +1,27 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { Col, Input, Row } from "@components/ui";
-import { useForm } from "react-hook-form";
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Col, Input, Row } from '@components/ui';
+import { useForm } from 'react-hook-form';
 
-import FilePreviewModal from "./FilePreviewModal";
-import InputGroup from "./InputGroup";
-import Label from "./Label";
+import FilePreviewModal from './FilePreviewModal';
+import InputGroup from './InputGroup';
+import Label from './Label';
 
-import useAuth from "@hooks/useAuth";
-import useAlert from "@hooks/useAlert";
+import useAuth from '@hooks/useAuth';
+import useAlert from '@hooks/useAlert';
 
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
-import useMutateClientImages from "@hooks/data/clients/useMutateClientImages";
+import useFetchExecutors from '@hooks/data/useFetchExecutors';
+import useMutateClientImages from '@hooks/data/clients/useMutateClientImages';
 
-import styles from "./clientPageForm.module.scss";
+import styles from './clientPageForm.module.scss';
 
-import selectOptionsCreator from "@utils/selectOptionsCreator";
-import formatterCurrency from "@utils/formatterCurrency";
-import { API_CLIENT_IMAGES } from "@utils/apiUtils";
-import formatDate from "@utils/formatDate";
-import { v4 as uuidv4 } from "uuid";
-import hasRole from "@utils/hasRole";
-import { store } from "@store/store";
-import YandexMap from "@components/ui/Map/YandexMap";
+import selectOptionsCreator from '@utils/selectOptionsCreator';
+import formatterCurrency from '@utils/formatterCurrency';
+import { API_CLIENT_IMAGES } from '@utils/apiUtils';
+import formatDate from '@utils/formatDate';
+import { v4 as uuidv4 } from 'uuid';
+import hasRole from '@utils/hasRole';
+import { store } from '@store/store';
+import YandexMap from '@components/ui/Map/YandexMap';
 
 function ClientPageForm({
   formId,
@@ -40,8 +40,8 @@ function ClientPageForm({
   const { user } = useAuth();
   const { alert } = useAlert();
 
-  const updateMutation = useMutateClientImages("update");
-  const deleteMutation = useMutateClientImages("delete");
+  const updateMutation = useMutateClientImages('update');
+  const deleteMutation = useMutateClientImages('delete');
 
   const clientFilesWithAPI = useMemo(
     () =>
@@ -50,8 +50,8 @@ function ClientPageForm({
           ({
             id: img._id,
             image: API_CLIENT_IMAGES + img?.image,
-            type: "server",
-          } || [])
+            type: 'server',
+          }) || []
       ),
     [currentClient]
   );
@@ -59,8 +59,8 @@ function ClientPageForm({
   const executorsOptions = useMemo(
     () =>
       selectOptionsCreator(executors, {
-        label: "SlpName",
-        value: "SlpCode",
+        label: 'SlpName',
+        value: 'SlpCode',
         includeEmpty: true,
         isEmptySelectable: false,
       }),
@@ -76,62 +76,64 @@ function ClientPageForm({
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      name: currentClient?.["CardName"] || "Mavjud emas",
+      name: currentClient?.['CardName'] || 'Mavjud emas',
       executor: executorsOptions?.[0]?.value,
       photo: [],
-      telephone: currentClient?.["Phone1"] || "+998 00 000 00 00",
-      additional_telephone: currentClient?.["Phone2"] || "",
-      code: currentClient?.["CardCode"] || "00000",
+      telephone: currentClient?.['Phone1'] || '+998 00 000 00 00',
+      additional_telephone: currentClient?.['Phone2'] || '',
+      code: currentClient?.['CardCode'] || '00000',
       debtClient: formatterCurrency(
-        currentClient?.["MaxDocTotal"] || "0",
-        "USD"
+        currentClient?.['MaxDocTotal'] || '0',
+        'USD'
       ),
-      passportSeries: currentClient?.["Cellular"] || "Mavjud emas",
+      passportSeries: currentClient?.['Cellular'] || 'Mavjud emas',
       product:
-        currentClient?.["Dscription"] || "iPhone 16 Pro max 256gb desert",
-      deadline: formatDate(currentClient?.["DueDate"]),
-      agreementDate: formatDate(currentClient?.["NewDueDate"]) || "",
-      imei: currentClient?.["IntrSerial"] || "0000000000000000",
+        currentClient?.['Dscription'] || 'iPhone 16 Pro max 256gb desert',
+      deadline: formatDate(currentClient?.['DueDate']),
+      agreementDate: formatDate(currentClient?.['NewDueDate']) || '',
+      imei: currentClient?.['IntrSerial'] || '0000000000000000',
     },
   });
-  console.log(allFiles, "all files");
+  console.log(allFiles, 'all files');
   const handleFileInputClick = useCallback(() => {
     setFilePreviewModal(true);
   }, []);
 
   const allowedTypes = [
-    "image/png",
-    "image/jpg",
-    "image/jpeg",
-    "image/svg+xml",
-    "image/gif",
-    "application/pdf",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    'image/png',
+    'image/jpg',
+    'image/jpeg',
+    'image/webp',
+    'image/svg+xml',
+    'image/gif',
+    'application/pdf',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   ];
 
   const allowedExtensions = [
-    "png",
-    "jpg",
-    "jpeg",
-    "svg",
-    "gif",
-    "pdf",
-    "xls",
-    "xlsx",
+    'png',
+    'jpg',
+    'jpeg',
+    'svg',
+    'gif',
+    'pdf',
+    'xls',
+    'xlsx',
+    'webp',
   ];
   const handleFileChange = useCallback((e) => {
     const files = Array.from(e.target.files);
     const validFiles = files.filter((file) => {
-      const ext = file.name.split(".").pop().toLowerCase();
+      const ext = file.name.split('.').pop().toLowerCase();
       return (
         allowedTypes.includes(file.type) && allowedExtensions.includes(ext)
       );
     });
     // Show error or ignore invalid files
     if (validFiles.length !== files.length) {
-      alert("Faqat png, jpg, jpeg, svg, pdf, excel fayllarni yuklang!", {
-        type: "info",
+      alert('Faqat png, jpg, jpeg, webp, svg, pdf, excel fayllarni yuklang!', {
+        type: 'info',
       });
     }
     // Continue with validFiles
@@ -141,21 +143,21 @@ function ClientPageForm({
         id: uuidv4(),
         image: URL.createObjectURL(file),
         originalFile: file,
-        type: "upload",
+        type: 'upload',
       })),
     ]);
   }, []);
 
   const handleFileUpload = useCallback(async () => {
     const commonPayload = {
-      docEntry: currentClient?.["DocEntry"],
-      installmentId: currentClient?.["InstlmntID"],
+      docEntry: currentClient?.['DocEntry'],
+      installmentId: currentClient?.['InstlmntID'],
     };
     try {
       if (uploadedFile.length > 0) {
         const formDataFiles = new FormData();
         uploadedFile.forEach((file) => {
-          formDataFiles.append("files", file.originalFile);
+          formDataFiles.append('files', file.originalFile);
         });
         const updatePayload = {
           ...commonPayload,
@@ -179,7 +181,7 @@ function ClientPageForm({
         setSoftDeletedFileIds([]);
       }
     } catch (error) {
-      console.log("Update/Delete Files error: ", error);
+      console.log('Update/Delete Files error: ', error);
     } finally {
       setFilePreviewModal(false);
     }
@@ -202,7 +204,7 @@ function ClientPageForm({
     );
 
     if (foundExecutor) {
-      setValue("executor", foundExecutor.SlpCode);
+      setValue('executor', foundExecutor.SlpCode);
     }
   }, [executors]);
 
@@ -216,8 +218,8 @@ function ClientPageForm({
         ({
           id: file._id,
           image: API_CLIENT_IMAGES + file?.image,
-          type: "server",
-        } || [])
+          type: 'server',
+        }) || []
     );
     setAllFiles(() => filesWithApi);
   }, [currentClient]);
@@ -230,19 +232,20 @@ function ClientPageForm({
         await onSubmit(data);
         reset(data);
       })}
-      {...props}>
+      {...props}
+    >
       <FilePreviewModal
-        inputId={"file"}
+        inputId={'file'}
         images={allFiles}
         isOpen={filePreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
         isDisabled={isFileSaveButtonDisabled}
         onRemoveImage={(file) => {
           setFileSaveButtonDisabled(false);
-          if (file.type === "server") {
+          if (file.type === 'server') {
             setSoftDeletedFileIds((p) => [...p, file.id]);
           }
-          if (file.type === "upload") {
+          if (file.type === 'upload') {
             setUploadedFile((p) =>
               p.filter((prevImg) => prevImg.id !== file.id)
             );
@@ -258,7 +261,7 @@ function ClientPageForm({
         }}
         onApply={handleFileUpload}
       />
-      <Row direction={"row"} gutter={6}>
+      <Row direction={'row'} gutter={6}>
         <Col>
           <Row gutter={1}>
             <Col>
@@ -266,11 +269,11 @@ function ClientPageForm({
                 <Label icon="avatarFilled">FIO</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  style={{ pointerEvents: "all" }}
-                  {...register("name")}
+                  style={{ pointerEvents: 'all' }}
+                  {...register('name')}
                 />
               </InputGroup>
             </Col>
@@ -279,32 +282,32 @@ function ClientPageForm({
                 <Label icon="avatarFilled">Ijrochi</Label>
                 <Input
                   type="select"
-                  variant={"filled"}
+                  variant={'filled'}
                   options={executorsOptions}
                   canClickIcon={false}
-                  size={"longer"}
-                  disabled={!hasRole(user, ["Manager"])}
-                  {...register("executor")}
+                  size={'longer'}
+                  disabled={!hasRole(user, ['Manager'])}
+                  {...register('executor')}
                 />
               </InputGroup>
             </Col>
             <Col>
               <InputGroup>
-                <Label icon="photo" htmlFor={"file"}>
+                <Label icon="photo" htmlFor={'file'}>
                   Fayllar
                 </Label>
                 <Input
-                  id={"file"}
+                  id={'file'}
                   type="file"
                   images={clientFilesWithAPI}
-                  accept={`.${allowedExtensions.join(", .")}`}
+                  accept={`.${allowedExtensions.join(', .')}`}
                   multiple
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   className={styles.fileInput}
                   onClick={handleFileInputClick}
                   onChange={handleFileChange}
-                  name={"files"}
+                  name={'files'}
                 />
               </InputGroup>
             </Col>
@@ -314,11 +317,11 @@ function ClientPageForm({
                 <Input
                   type="tel"
                   control={control}
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   hasIcon={false}
-                  style={{ cursor: "auto" }}
-                  {...register("telephone")}
+                  style={{ cursor: 'auto' }}
+                  {...register('telephone')}
                 />
               </InputGroup>
             </Col>
@@ -328,11 +331,11 @@ function ClientPageForm({
                 <Input
                   type="text"
                   control={control}
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   hasIcon={false}
-                  style={{ cursor: "auto" }}
-                  {...register("additional_telephone")}
+                  style={{ cursor: 'auto' }}
+                  {...register('additional_telephone')}
                 />
               </InputGroup>
             </Col>
@@ -341,10 +344,10 @@ function ClientPageForm({
                 <Label icon="barCodeFilled">Mijoz kodi</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  {...register("code")}
+                  {...register('code')}
                 />
               </InputGroup>
             </Col>
@@ -357,10 +360,10 @@ function ClientPageForm({
                 <Label icon="expense">Jami qarzdorlik</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  {...register("debtClient")}
+                  {...register('debtClient')}
                 />
               </InputGroup>
             </Col>
@@ -369,10 +372,10 @@ function ClientPageForm({
                 <Label icon="products">Mahsulot nomi</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  {...register("product")}
+                  {...register('product')}
                 />
               </InputGroup>
             </Col>
@@ -381,12 +384,12 @@ function ClientPageForm({
                 <Label icon="calendar">To'lov muddati</Label>
                 <Input
                   type="date"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   control={control}
                   hasIcon={false}
                   disabled={true}
-                  {...register("deadline")}
+                  {...register('deadline')}
                 />
               </InputGroup>
             </Col>
@@ -395,11 +398,11 @@ function ClientPageForm({
                 <Label icon="calendar">Kelishilgan sana</Label>
                 <Input
                   type="date"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   control={control}
                   hasIcon={false}
-                  {...register("agreementDate")}
+                  {...register('agreementDate')}
                 />
               </InputGroup>
             </Col>
@@ -408,10 +411,10 @@ function ClientPageForm({
                 <Label icon="barCodeFilled">IMEI</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  {...register("imei")}
+                  {...register('imei')}
                 />
               </InputGroup>
             </Col>
@@ -420,10 +423,10 @@ function ClientPageForm({
                 <Label icon="barCodeFilled">Passport seriyasi</Label>
                 <Input
                   type="text"
-                  variant={"filled"}
-                  size={"longer"}
+                  variant={'filled'}
+                  size={'longer'}
                   disabled={true}
-                  {...register("passportSeries")}
+                  {...register('passportSeries')}
                 />
               </InputGroup>
             </Col>
