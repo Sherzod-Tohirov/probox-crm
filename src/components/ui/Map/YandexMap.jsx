@@ -28,12 +28,10 @@ const YandexMap = ({ userCoords = [41.2995, 69.2401], onChangeCoords }) => {
       // 🧲 Catch the change event when dragging ends
       placemark.events.add("dragend", function () {
         const newCoords = placemark.geometry.getCoordinates();
-        console.log("New Coords:", newCoords);
 
         // Optional: Reverse geocode to get address
         window.ymaps.geocode(newCoords).then((res) => {
           const newAddress = res.geoObjects.get(0)?.getAddressLine();
-          console.log("New Address:", newAddress);
           if (onChangeCoords && typeof onChangeCoords === "function") {
             onChangeCoords(newCoords, newAddress);
           }

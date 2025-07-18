@@ -42,7 +42,7 @@ import {
   Lock,
   Logout,
   LogoutFilled,
-} from "@assets/images/icons/Icons";
+} from '@assets/images/icons/Icons';
 import {
   CalendarFilled,
   Delete,
@@ -57,9 +57,14 @@ import {
   MenuDots,
   Messenger,
   MessengerFilled,
+  Mic,
+  MicFilled,
+  PauseCircleFilled,
   PdfFile,
   Pencil,
-} from "../assets/images/icons/Icons";
+  StopCircle,
+  StopCircleFilled,
+} from '../assets/images/icons/Icons';
 
 const iconsMap = {
   dashboard: <Dashboard />,
@@ -120,6 +125,11 @@ const iconsMap = {
   filterFilled: <FilterFilled />,
   pdfFile: <PdfFile />,
   excelFile: <ExcelFile />,
+  mic: <Mic />,
+  micFilled: <MicFilled />,
+  stopCircle: <StopCircle />,
+  stopCircleFilled: <StopCircleFilled />,
+  pauseCircleFilled: <PauseCircleFilled />,
 };
 
 export default iconsMap;

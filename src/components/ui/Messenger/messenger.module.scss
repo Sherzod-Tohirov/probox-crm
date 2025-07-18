@@ -1,12 +1,12 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .messenger {
   position: fixed;
   top: 0;
   right: 0;
   min-height: 0;
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Open Sans', sans-serif;
   @include m.flex-direction(column);
   width: 356px;
   height: 100%;
@@ -461,4 +461,51 @@
     }
     color: v.$fourth-color;
   }
+}
+
+.file-input-label {
+  @include m.flex(center, center);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: v.$secondary-color;
+  font-size: 2.5rem;
+  color: v.$button-bg;
+  border-radius: 50%;
+  transition: all v.$transition-time v.$transition-type;
+  & svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.mic-icon {
+  color: v.$button-bg;
+  cursor: pointer;
+  &.recording {
+    color: v.$danger-color;
+  }
+}
+
+.file-preview-photo {
+  width: 100px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.audio-recorder {
+  background-color: #fff !important;
+  &-status {
+    display: inline-flex;
+    flex-grow: 0 !important;
+    width: 80px !important;
+  }
+  &.recording {
+    width: 200px !important;
+  }
+}
+
+.hidden {
+  display: none !important;
 }

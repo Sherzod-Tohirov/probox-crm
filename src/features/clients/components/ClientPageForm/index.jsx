@@ -94,7 +94,6 @@ function ClientPageForm({
       imei: currentClient?.['IntrSerial'] || '0000000000000000',
     },
   });
-  console.log(allFiles, 'all files');
   const handleFileInputClick = useCallback(() => {
     setFilePreviewModal(true);
   }, []);

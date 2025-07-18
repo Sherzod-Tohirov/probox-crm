@@ -216,12 +216,6 @@ const Input = forwardRef(
                                 className={styles['file-image']}
                               />
                             )}
-                          {console.log(
-                            'Image in Input: ',
-                            image,
-                            findFileType(image),
-                            loadedImages[key]
-                          )}
                           {(() => {
                             if (findFileType(image) === 'image') {
                               return (

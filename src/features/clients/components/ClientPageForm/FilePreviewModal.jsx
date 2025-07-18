@@ -84,7 +84,6 @@ export default function FilePreviewModal({
             : 'other';
     }
   };
-  console.log('Current Image: ', currentImage, 'Loaded Images: ', loadedImages);
   return (
     <Modal
       title="Mijozga tegishli hujjatlar"
@@ -119,13 +118,6 @@ export default function FilePreviewModal({
                         />
                       )}
                       {(() => {
-                        {
-                          console.log(
-                            'Image in FilePreviewModal: ',
-                            img,
-                            index
-                          );
-                        }
                         if (findFileType(img) === 'image') {
                           return (
                             <motion.img
@@ -201,7 +193,6 @@ export default function FilePreviewModal({
                 className={styles['indicator-img-wrapper']}
                 key={img?.id}
               >
-                {console.log('findFileType(img)', findFileType(img))}
                 {findFileType(img) === 'image' && !loadedImages[img?.id] && (
                   <Skeleton
                     count={1}
@@ -211,7 +202,6 @@ export default function FilePreviewModal({
                 )}
                 {(() => {
                   if (findFileType(img) === 'image') {
-                    console.log('THis block works: ', img);
                     return (
                       <motion.img
                         className={classNames(styles['indicator-img'], {
