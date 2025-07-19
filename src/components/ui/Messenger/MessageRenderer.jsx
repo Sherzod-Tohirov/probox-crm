@@ -2,7 +2,7 @@ import { groupBy } from "ramda";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Message from "./Message";
 import MessageDate from "./MessageDate";
-import styles from "./messenger.module.scss";
+import styles from "./styles/messenger.module.scss";
 import { Box, Button } from "@components/ui";
 import { AnimatePresence } from "framer-motion";
 import _ from "lodash";

@@ -1,0 +1,30 @@
+.voice-player {
+ 
+}
+
+.play-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 8px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.play-button:hover {
+  background-color: #0056b3;
+}
+
+.waveform {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.timer {
+  font-size: 12px;
+  color: #555;
+  min-width: 60px;
+  text-align: right;
+}

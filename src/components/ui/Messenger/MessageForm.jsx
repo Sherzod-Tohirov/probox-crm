@@ -1,12 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { messengerSchema } from '@utils/validationSchemas';
 import { yupResolver } from '@hookform/resolvers/yup';
-import styles from './messenger.module.scss';
+import styles from './styles/messenger.module.scss';
 import { Button, Col, Row, Box } from '@components/ui';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 import iconsMap from '@utils/iconsMap';
-import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
+import MessageVoiceRecorder from './MessageVoiceRecorder';
+import MessageVoicePreview from './MessageVoicePreview';
 
 const messageInputRenderer = (type, form = {}, formData = {}) => {
   const handleKeyDown = useCallback((e) => {
@@ -34,6 +35,7 @@ const messageInputRenderer = (type, form = {}, formData = {}) => {
       );
     case 'audio':
       if (!formData.audioBlob) return;
+      return <MessageVoicePreview audioBlob={formData.audioBlob} />;
     default:
       return (
         <textarea
@@ -50,7 +52,6 @@ const MessageForm = ({ onSubmit, size = '' }) => {
   const [messageType, setMessageType] = useState('text');
   const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const { startRecording, stopRecording } = useAudioRecorder();
   console.log(isRecording, 'isRecording');
   const {
     register,
@@ -61,7 +62,6 @@ const MessageForm = ({ onSubmit, size = '' }) => {
   } = useForm({
     resolver: yupResolver(messengerSchema),
   });
-  console.log('Recording: ', isRecording);
   const [msgPhoto] = watch(['msgPhoto']);
   console.log(msgPhoto, 'msgPhoto');
   useEffect(() => {
@@ -90,7 +90,12 @@ const MessageForm = ({ onSubmit, size = '' }) => {
           msgPhoto,
         }
       )}
-      <Row direction="row" align="center" justify="space-between">
+      <Row
+        style={{ marginTop: 'auto' }}
+        direction="row"
+        align="center"
+        justify="space-between"
+      >
         <Col>
           <Row direction="row" gutter={2} align="center">
             <Col>
@@ -108,26 +113,10 @@ const MessageForm = ({ onSubmit, size = '' }) => {
               </Box>
             </Col>
             <Col>
-              <AudioRecorder
+              <MessageVoiceRecorder
                 onRecordingComplete={(blob) => {
                   setAudioBlob(blob);
                   setIsRecording(false);
-                }}
-                audioTrackConstraints={{
-                  noiseSuppression: true,
-                  echoCancellation: true,
-                }}
-                downloadFileExtension="mp3"
-                classes={{
-                  AudioRecorderClass: classNames(styles['audio-recorder'], {
-                    [styles['recording']]: isRecording,
-                  }),
-                  AudioRecorderStartSaveClass: classNames(
-                    styles['audio-recorder-start']
-                  ),
-                  AudioRecorderStatusClass: classNames(
-                    styles['audio-recorder-status']
-                  ),
                 }}
               />
             </Col>

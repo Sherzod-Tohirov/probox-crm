@@ -9,7 +9,7 @@ import useFetchExecutors from "@hooks/data/useFetchExecutors";
 import useAuth from "@hooks/useAuth";
 import iconsMap from "@utils/iconsMap";
 import getMessageColorForUser from "@utils/getMessageColorForUser";
-import styles from "./messenger.module.scss";
+import styles from "./styles/messenger.module.scss";
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const { data: executors } = useFetchExecutors();

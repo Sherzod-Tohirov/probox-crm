@@ -62,7 +62,6 @@ const Input = forwardRef(
     ref
   ) => {
     const [loadedImages, setLoadedImages] = useState({});
-
     const findFileType = useCallback((file) => {
       if (file.type === 'server') {
         const extension = file.image.split('.').pop()?.toLowerCase();

@@ -1,5 +1,5 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .btn {
   @include m.flex-center;
@@ -88,6 +88,12 @@
   &.icon-secondary-color {
     span {
       color: v.$button-color !important;
+    }
+  }
+
+  &.icon-danger-color {
+    span {
+      color: v.$danger-color !important;
     }
   }
 
