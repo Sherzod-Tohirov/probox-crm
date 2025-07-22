@@ -1,19 +1,19 @@
-import { useMutation } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useMutation } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 
 import {
   deleteMessage,
   postMessage,
   putMessage,
-} from "@services/messengerService";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@services/messengerService';
+import { useQueryClient } from '@tanstack/react-query';
 
 const invalidateMessages = (queryClient, currentClient) => {
   queryClient.invalidateQueries({
     queryKey: [
-      "messages",
-      currentClient?.["DocEntry"],
-      currentClient?.["InstlmntID"],
+      'messages',
+      currentClient?.['DocEntry'],
+      currentClient?.['InstlmntID'],
     ],
   });
 };
@@ -23,15 +23,17 @@ const useMutateMessages = (action) => {
     (state) => state.page.clients.currentClient
   );
 
-  if (action === "post") {
+  if (action === 'post') {
     return useMutation({
-      mutationFn: (data) =>
-        postMessage(data, {
-          docEntry: currentClient?.["DocEntry"],
-          installmentId: currentClient?.["InstlmntID"],
-        }),
+      mutationFn: (data) => {
+        console.log(data, 'data inside mutation');
+        return postMessage(data, {
+          docEntry: currentClient?.['DocEntry'],
+          installmentId: currentClient?.['InstlmntID'],
+        });
+      },
       onError: (error) => {
-        console.log("Error while posting message: ", error);
+        console.log('Error while posting message: ', error);
       },
       onSuccess: (response) => {
         invalidateMessages(queryClient, currentClient);
@@ -39,12 +41,12 @@ const useMutateMessages = (action) => {
     });
   }
 
-  if (action === "update") {
+  if (action === 'update') {
     return useMutation({
       mutationFn: (data) =>
         putMessage(data.id ?? data._id, { Comments: data.Comments }),
       onError: (error) => {
-        console.log("Error while updating message: ", error);
+        console.log('Error while updating message: ', error);
       },
       onSuccess: (response) => {
         invalidateMessages(queryClient, currentClient);
@@ -52,11 +54,11 @@ const useMutateMessages = (action) => {
     });
   }
 
-  if (action === "delete") {
+  if (action === 'delete') {
     return useMutation({
       mutationFn: (id) => deleteMessage(id),
       onError: (error) => {
-        console.log("Error while deleting message: ", error);
+        console.log('Error while deleting message: ', error);
       },
       onSuccess: (response) => {
         invalidateMessages(queryClient, currentClient);

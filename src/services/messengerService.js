@@ -1,13 +1,14 @@
-import { deleteData, fetchData, postData, putData } from "./utilities";
+import api from './axiosConfig';
+import { deleteData, fetchData, postData, putData } from './utilities';
 
 export const getMessages = async (options = {}) => {
   try {
     if (!options?.docEntry || !options?.installmentId)
-      throw Error("Installment id and doc entry are required !");
+      throw Error('Installment id and doc entry are required !');
 
     const response = await fetchData(
       `invoice/comments/${options.docEntry}/${options.installmentId}`,
-      "messages"
+      'messages'
     );
     return response || [];
   } catch (error) {
@@ -16,25 +17,29 @@ export const getMessages = async (options = {}) => {
   }
 };
 
-export const postMessage = async (data, options = {}) => {
+export const postMessage = async (data = {}, options = {}) => {
   try {
-    if (!options?.docEntry || !options?.installmentId)
-      throw Error("Installment id and doc entry are required !");
-
-    const response = await postData(
+    if (!options?.installmentId || !options?.docEntry)
+      throw Error('Installment id and doc entry are required !');
+    const response = await api.post(
       `invoice/comments/${options.docEntry}/${options.installmentId}`,
-      data
+      data,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
-    return response || [];
+
+    return response.data;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw error.response?.data || error;
   }
 };
 
 export const putMessage = async (id, data, options = {}) => {
   try {
-    if (!id) throw Error("Id is required !");
+    if (!id) throw Error('Id is required !');
     const response = await putData(`invoice/comments/${id}`, data);
     return response || [];
   } catch (error) {
@@ -45,7 +50,7 @@ export const putMessage = async (id, data, options = {}) => {
 
 export const deleteMessage = async (id, options = {}) => {
   try {
-    if (!id) throw Error("Id is required !");
+    if (!id) throw Error('Id is required !');
     const response = await deleteData(`invoice/comments/${id}`);
     return response || [];
   } catch (error) {

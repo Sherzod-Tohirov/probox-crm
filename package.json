@@ -10,6 +10,7 @@
     "preview": "vite preview --port 5646 --host"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
     "@floating-ui/react": "^0.27.8",
     "@floating-ui/react-dom": "^2.1.2",
     "@hookform/resolvers": "^4.0.0",
@@ -50,6 +51,7 @@
     "react-use": "^17.6.0",
     "react-window": "^1.8.11",
     "recharts": "^2.15.1",
+    "recordrtc": "^5.6.2",
     "sass": "^1.83.1",
     "uuid": "^11.0.5",
     "yup": "^1.6.1"

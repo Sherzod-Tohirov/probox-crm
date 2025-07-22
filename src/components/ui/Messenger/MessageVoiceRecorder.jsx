@@ -1,17 +1,17 @@
 import { useEffect } from 'react';
-import { useAudioRecorder } from 'react-audio-voice-recorder';
+import useAudioRecorder from './useAudioRecorder';
 import { Button } from '@components/ui';
 import styles from './styles/messenger.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
 const MessageVoiceRecorder = ({ onRecordingComplete }) => {
   const {
-    startRecording,
-    stopRecording,
-    togglePauseResume,
-    recordingBlob,
     isRecording,
+    audioBlob,
     isPaused,
     recordingTime,
+    togglePausePlay,
+    startRecording,
+    stopRecording,
   } = useAudioRecorder({
     noiseSuppression: true,
     echoCancellation: true,
@@ -20,10 +20,10 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
 
   // when recording is finished
   useEffect(() => {
-    if (recordingBlob) {
-      onRecordingComplete(recordingBlob);
+    if (audioBlob) {
+      onRecordingComplete(audioBlob);
     }
-  }, [recordingBlob]);
+  }, [audioBlob]);
 
   return (
     <div className={styles['voice-recorder-wrapper']}>
@@ -45,7 +45,7 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
               <Button
                 color="primary"
                 className={styles['voice-recorder-pause']}
-                onClick={togglePauseResume}
+                onClick={togglePausePlay}
                 variant={'text'}
                 disabled={!isRecording}
               >

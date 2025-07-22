@@ -30,7 +30,7 @@ export const messengerSchema = yup
       return !!(
         values.msgText?.trim() ||
         values.msgPhoto?.length > 0 ||
-        values.audio
+        values.msgAudio
       );
     }
   );

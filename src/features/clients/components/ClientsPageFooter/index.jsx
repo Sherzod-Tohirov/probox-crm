@@ -75,10 +75,6 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
         };
 
         const ordered = orderByNearest(selectedRows, currentLocation);
-        console.log(currentLocation, "Current location");
-
-        console.log(ordered, "Ordered stops by nearest location");
-
         const url =
           "https://yandex.uz/maps/?rtext=" +
           ordered

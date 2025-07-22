@@ -32,7 +32,6 @@ const useClientsTableColumns = () => {
   const handleCancelPayment = useCallback(async ({ column, type }) => {
     const formattedDueDate = moment(column.DueDate).format("YYYY.MM.DD");
 
-    console.log(formattedDueDate, "formated");
     try {
       const commonPayload = {
         docEntry: currentClient?.["DocEntry"],

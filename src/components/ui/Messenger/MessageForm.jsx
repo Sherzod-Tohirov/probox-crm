@@ -11,7 +11,7 @@ import MessageVoicePreview from './MessageVoicePreview';
 
 const messageInputRenderer = (type, form = {}, formData = {}) => {
   const handleKeyDown = useCallback((e) => {
-    if (!isValid) return;
+    if (!form.isValid) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       form.onSubmit({ msgText: e.target.value });
@@ -35,7 +35,7 @@ const messageInputRenderer = (type, form = {}, formData = {}) => {
       );
     case 'audio':
       if (!formData.audioBlob) return;
-      return <MessageVoicePreview audioBlob={formData.audioBlob} />;
+      return <MessageVoicePreview file={formData.audioBlob} />;
     default:
       return (
         <textarea
@@ -52,18 +52,18 @@ const MessageForm = ({ onSubmit, size = '' }) => {
   const [messageType, setMessageType] = useState('text');
   const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  console.log(isRecording, 'isRecording');
+
   const {
     register,
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { isValid },
   } = useForm({
     resolver: yupResolver(messengerSchema),
   });
   const [msgPhoto] = watch(['msgPhoto']);
-  console.log(msgPhoto, 'msgPhoto');
   useEffect(() => {
     if (msgPhoto && msgPhoto?.length > 0) {
       setMessageType('image');
@@ -77,14 +77,15 @@ const MessageForm = ({ onSubmit, size = '' }) => {
   return (
     <form
       className={classNames(styles['text-input-form'], styles[size])}
-      onSubmit={handleSubmit((data) => {
-        onSubmit(data);
+      onSubmit={handleSubmit(async (data) => {
+        await onSubmit(data);
         reset();
+        setAudioBlob(null);
       })}
     >
       {messageInputRenderer(
         messageType,
-        { onSubmit, reset, register },
+        { onSubmit, reset, register, isValid },
         {
           audioBlob,
           msgPhoto,
@@ -107,7 +108,7 @@ const MessageForm = ({ onSubmit, size = '' }) => {
                     {...register('msgPhoto')}
                     className={styles['file-input']}
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg, image/png"
                   />
                 </label>
               </Box>
@@ -117,6 +118,7 @@ const MessageForm = ({ onSubmit, size = '' }) => {
                 onRecordingComplete={(blob) => {
                   setAudioBlob(blob);
                   setIsRecording(false);
+                  setValue('msgAudio', blob, { shouldValidate: true });
                 }}
               />
             </Col>
