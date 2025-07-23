@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from 'react';
 import {
   Col,
   Row,
@@ -7,31 +7,31 @@ import {
   Input,
   Pagination,
   Typography,
-} from "@components/ui";
+} from '@components/ui';
 
-import Footer from "@components/Footer";
+import Footer from '@components/Footer';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   setClientsCurrentPage,
   setClientsPageSize,
-} from "@store/slices/clientsPageSlice";
+} from '@store/slices/clientsPageSlice';
 
-import formatDate from "@utils/formatDate";
-import hasRole from "@utils/hasRole";
-import useAuth from "@hooks/useAuth";
+import formatDate from '@utils/formatDate';
+import hasRole from '@utils/hasRole';
+import useAuth from '@hooks/useAuth';
 
-import useMutateDistributeClients from "@hooks/data/clients/useMutateDistributeClients";
-import useFetchStatistics from "@hooks/data/statistics/useFetchStatistics";
-import formatterCurrency from "@utils/formatterCurrency";
-import { ClipLoader } from "react-spinners";
+import useMutateDistributeClients from '@hooks/data/clients/useMutateDistributeClients';
+import useFetchStatistics from '@hooks/data/statistics/useFetchStatistics';
+import formatterCurrency from '@utils/formatterCurrency';
+import { ClipLoader } from 'react-spinners';
 
-import styles from "./style.module.scss";
-import { insTotalCalculator } from "@utils/calculator";
-import moment from "moment";
-import orderByNearest from "@utils/orderByNearest";
-import { random } from "lodash";
+import styles from './style.module.scss';
+import { insTotalCalculator } from '@utils/calculator';
+import moment from 'moment';
+import orderByNearest from '@utils/orderByNearest';
+import { random } from 'lodash';
 const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { currentPage, pageSize, filter } = useSelector(
@@ -39,29 +39,30 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   );
   const { data: statisticsData, isLoading: isStatisticsLoading } =
     useFetchStatistics({
-      startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
-      endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+      startDate: formatDate(filter.startDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
+      endDate: formatDate(filter.endDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
       slpCode: filter.slpCode,
     });
   const dispatch = useDispatch();
   const { user } = useAuth();
 
   const tableSizeSelectOptions = useMemo(() => [
-    { value: 10, label: "10" },
-    { value: 20, label: "20" },
-    { value: 50, label: "50" },
-    { value: 100, label: "100" },
-    { value: 200, label: "200" },
+    { value: 10, label: '10' },
+    { value: 20, label: '20' },
+    { value: 50, label: '50' },
+    { value: 100, label: '100' },
+    { value: 200, label: '200' },
+    { value: 300, label: '300' },
   ]);
   const handleDistributeClients = useCallback(async () => {
     try {
       const payload = {
-        startDate: formatDate(filter.startDate, "DD.MM.YYYY", "YYYY.MM.DD"),
-        endDate: formatDate(filter.endDate, "DD.MM.YYYY", "YYYY.MM.DD"),
+        startDate: formatDate(filter.startDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
+        endDate: formatDate(filter.endDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
       };
       distributeMutation.mutate(payload);
     } catch (error) {
-      console.log(error, "Error while distributing clients. ");
+      console.log(error, 'Error while distributing clients. ');
     }
   }, []);
   const handleNavigateToRoute = useCallback(() => {
@@ -76,7 +77,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
 
         const ordered = orderByNearest(selectedRows, currentLocation);
         const url =
-          "https://yandex.uz/maps/?rtext=" +
+          'https://yandex.uz/maps/?rtext=' +
           ordered
             .map(
               ({ location }) =>
@@ -84,93 +85,97 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                   location?.lng || random(69.240562, 70)
                 }`
             )
-            .join("~") +
-          "&rtt=auto";
+            .join('~') +
+          '&rtt=auto';
 
-        window.open(url, "_blank");
+        window.open(url, '_blank');
       },
       (error) => {
-        console.error("Error getting location:", error);
+        console.error('Error getting location:', error);
 
         // Fallback to default location (e.g. your office)
         const fallbackLocation = { lat: 41.311081, lng: 69.240562 };
         const ordered = orderByNearest(selectedRows, fallbackLocation);
 
         const url =
-          "https://yandex.ru/maps/?rtext=" +
+          'https://yandex.ru/maps/?rtext=' +
           ordered
             .map(({ location }) => `${location?.lat},${location?.lng}`)
-            .join("~") +
-          "&rtt=auto";
+            .join('~') +
+          '&rtt=auto';
 
-        window.open(url, "_blank");
+        window.open(url, '_blank');
       }
     );
   }, [selectedRows]);
 
   const calculatedInsTotal = useMemo(() => {
     return insTotalCalculator({
-      paidToDate: statisticsData?.["PaidToDate"],
-      sumApplied: statisticsData?.["SumApplied"],
-      insTotal: statisticsData?.["InsTotal"],
+      paidToDate: statisticsData?.['PaidToDate'],
+      sumApplied: statisticsData?.['SumApplied'],
+      insTotal: statisticsData?.['InsTotal'],
     });
   }, [statisticsData]);
 
   const percentageValue = useMemo(() => {
     return parseFloat(
-      Number(statisticsData?.["SumApplied"] / calculatedInsTotal) * 100 || 0
+      Number(statisticsData?.['SumApplied'] / calculatedInsTotal) * 100 || 0
     ).toFixed(2);
   }, [statisticsData]);
 
   return (
     <Footer>
-      <Row direction={"column"} justify={"space-between"} gutter={5}>
+      <Row direction={'column'} justify={'space-between'} gutter={5}>
         <Col fullWidth>
-          <Row direction={"row"} align={"center"} justify={"space-between"}>
+          <Row direction={'row'} align={'center'} justify={'space-between'}>
             <Col>
-              <Box gap={2} dir="column" align={"start"} justify={"center"}>
+              <Box gap={2} dir="column" align={'start'} justify={'center'}>
                 <>
                   <Typography
-                    className={styles["statistics-text"]}
-                    variant={"primary"}
-                    element="span">
-                    <strong> To'liq summa:</strong>{" "}
+                    className={styles['statistics-text']}
+                    variant={'primary'}
+                    element="span"
+                  >
+                    <strong> To'liq summa:</strong>{' '}
                     {isStatisticsLoading ? (
-                      <ClipLoader color={"grey"} size={12} />
+                      <ClipLoader color={'grey'} size={12} />
                     ) : (
-                      formatterCurrency(calculatedInsTotal, "USD")
+                      formatterCurrency(calculatedInsTotal, 'USD')
                     )}
                   </Typography>
                   <Typography
-                    className={styles["statistics-text"]}
-                    variant={"primary"}
-                    element="span">
-                    <strong> Qoplandi:</strong>{" "}
+                    className={styles['statistics-text']}
+                    variant={'primary'}
+                    element="span"
+                  >
+                    <strong> Qoplandi:</strong>{' '}
                     {isStatisticsLoading ? (
-                      <ClipLoader color={"grey"} size={12} />
+                      <ClipLoader color={'grey'} size={12} />
                     ) : (
-                      <span style={{ color: "green" }}>
+                      <span style={{ color: 'green' }}>
                         {formatterCurrency(
-                          statisticsData?.["SumApplied"] || 0,
-                          "USD"
+                          statisticsData?.['SumApplied'] || 0,
+                          'USD'
                         )}
                       </span>
-                    )}{" "}
+                    )}{' '}
                     <span
-                      style={{ color: percentageValue > 50 ? "green" : "red" }}>
+                      style={{ color: percentageValue > 50 ? 'green' : 'red' }}
+                    >
                       {`(${percentageValue}%)`}
                     </span>
                   </Typography>
                 </>
               </Box>
             </Col>
-            {hasRole(user, ["Agent"]) ? (
+            {hasRole(user, ['Agent']) ? (
               <Col>
                 <Button
                   disabled={selectedRows.length === 0}
                   onClick={handleNavigateToRoute}
-                  style={{ minWidth: "162px" }}
-                  color={"info"}>
+                  style={{ minWidth: '162px' }}
+                  color={'info'}
+                >
                   Marshrutga o'tish
                 </Button>
               </Col>
@@ -178,36 +183,37 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
           </Row>
         </Col>
         <Col fullWidth>
-          <Row direction={"row"} align={"center"} justify={"space-between"}>
+          <Row direction={'row'} align={'center'} justify={'space-between'}>
             <Col>
               <Row
-                direction={"row"}
-                align={"center"}
-                justify={"space-between"}
-                gutter={3}>
+                direction={'row'}
+                align={'center'}
+                justify={'space-between'}
+                gutter={3}
+              >
                 <Col>
                   <Input
-                    variant={"outlined"}
-                    type={"select"}
+                    variant={'outlined'}
+                    type={'select'}
                     options={tableSizeSelectOptions}
                     defaultValue={Number(pageSize)}
                     onChange={(e) => {
                       dispatch(setClientsPageSize(Number(e.target.value)));
                     }}
                     canClickIcon={false}
-                    width={"100px"}
+                    width={'100px'}
                   />
                 </Col>
                 <Col>
-                  <Box className={styles["total-text-wrapper"]}>
-                    <Typography variant={"primary"} element="span">
+                  <Box className={styles['total-text-wrapper']}>
+                    <Typography variant={'primary'} element="span">
                       {clientsDetails.total > 0
                         ? currentPage * pageSize + 1
                         : 0}
-                      {"-"}
+                      {'-'}
                       {(currentPage + 1) * pageSize > data?.total
                         ? data.total
-                        : currentPage * pageSize + pageSize}{" "}
+                        : currentPage * pageSize + pageSize}{' '}
                       gacha {clientsDetails.total}ta dan
                     </Typography>
                   </Box>
@@ -223,13 +229,14 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                 }
               />
             </Col>
-            {hasRole(user, ["Manager"]) ? (
+            {hasRole(user, ['Manager']) ? (
               <Col>
                 <Button
                   disabled={moment().date() !== 1}
-                  variant={"filled"}
+                  variant={'filled'}
                   onClick={handleDistributeClients}
-                  isLoading={distributeMutation.isPending}>
+                  isLoading={distributeMutation.isPending}
+                >
                   Mijozlarni taqsimlash
                 </Button>
               </Col>

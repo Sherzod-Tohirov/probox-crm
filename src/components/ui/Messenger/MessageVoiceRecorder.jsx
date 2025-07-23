@@ -29,6 +29,7 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
     <div className={styles['voice-recorder-wrapper']}>
       <div className={styles['voice-recorder-controls']}>
         <Button
+          type="button"
           iconColor={isRecording ? 'danger' : 'primary'}
           onClick={isRecording ? stopRecording : startRecording}
           variant={'text'}
@@ -43,6 +44,7 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
               exit={{ opacity: 0, x: -20 }}
             >
               <Button
+                type="button"
                 color="primary"
                 className={styles['voice-recorder-pause']}
                 onClick={togglePausePlay}

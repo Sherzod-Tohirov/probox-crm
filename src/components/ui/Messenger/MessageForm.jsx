@@ -83,62 +83,86 @@ const MessageForm = ({ onSubmit, size = '' }) => {
         setAudioBlob(null);
       })}
     >
-      {messageInputRenderer(
-        messageType,
-        { onSubmit, reset, register, isValid },
-        {
-          audioBlob,
-          msgPhoto,
-        }
-      )}
-      <Row
-        style={{ marginTop: 'auto' }}
-        direction="row"
-        align="center"
-        justify="space-between"
-      >
-        <Col>
-          <Row direction="row" gutter={2} align="center">
-            <Col>
-              <Box>
-                <label className={styles['file-input-label']}>
-                  {iconsMap['addCircle']}
-
-                  <input
-                    {...register('msgPhoto')}
-                    className={styles['file-input']}
-                    type="file"
-                    accept="image/jpeg, image/png"
-                  />
-                </label>
-              </Box>
+      <Row direction="column" gutter={2} style={{ height: '100%' }}>
+        <Col fullWidth flexGrow>
+          <Row direction="row" align="start">
+            <Col flexGrow style={{ minHeight: '72px' }}>
+              {messageInputRenderer(
+                messageType,
+                { onSubmit, reset, register, isValid },
+                {
+                  audioBlob,
+                  msgPhoto,
+                }
+              )}
             </Col>
-            <Col>
-              <MessageVoiceRecorder
-                onRecordingComplete={(blob) => {
-                  setAudioBlob(blob);
-                  setIsRecording(false);
-                  setValue('msgAudio', blob, { shouldValidate: true });
-                }}
-              />
-            </Col>
+            {messageType !== 'text' ? (
+              <Col>
+                <Button
+                  icon={'close'}
+                  variant={'text'}
+                  onClick={() => {
+                    setMessageType('text');
+                    setAudioBlob(null);
+                    reset();
+                  }}
+                ></Button>
+              </Col>
+            ) : null}
           </Row>
         </Col>
-        <Col>
-          <Button
-            className={classNames(styles['send-btn'], {
-              [styles['invalid']]: !isValid,
-            })}
-            style={{ fontWeight: 500 }}
-            icon={'send'}
-            variant={'text'}
-            iconPosition="right"
-            iconColor={'primary'}
-            color={'primary'}
-            type={'submit'}
+        <Col fullWidth>
+          <Row
+            style={{ marginTop: 'auto' }}
+            direction="row"
+            align="center"
+            justify="space-between"
           >
-            Yuborish
-          </Button>
+            <Col>
+              <Row direction="row" gutter={2} align="center">
+                <Col>
+                  <Box>
+                    <label className={styles['file-input-label']}>
+                      {iconsMap['addCircle']}
+
+                      <input
+                        {...register('msgPhoto')}
+                        className={styles['file-input']}
+                        type="file"
+                        accept="image/jpeg, image/png"
+                      />
+                    </label>
+                  </Box>
+                </Col>
+                <Col>
+                  <MessageVoiceRecorder
+                    onRecordingComplete={(blob) => {
+                      setValue('msgPhoto', [], { shouldValidate: true });
+                      setAudioBlob(blob);
+                      setIsRecording(false);
+                      setValue('msgAudio', blob, { shouldValidate: true });
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Col>
+            <Col>
+              <Button
+                className={classNames(styles['send-btn'], {
+                  [styles['invalid']]: !isValid,
+                })}
+                style={{ fontWeight: 500 }}
+                icon={'send'}
+                variant={'text'}
+                iconPosition="right"
+                iconColor={'primary'}
+                color={'primary'}
+                type={'submit'}
+              >
+                Yuborish
+              </Button>
+            </Col>
+          </Row>
         </Col>
       </Row>
     </form>

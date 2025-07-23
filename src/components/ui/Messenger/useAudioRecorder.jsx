@@ -1,5 +1,6 @@
 import { set } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import getAccurateDuration from '../../../utils/getAccurateDuration';
 
 const useAudioRecorder = ({
   sampleRate = 44100,
@@ -8,10 +9,9 @@ const useAudioRecorder = ({
 } = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [intervalId, setIntervalId] = useState(null);
+  const intervalId = useRef(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
@@ -38,7 +38,7 @@ const useAudioRecorder = ({
       const newIntervalId = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-      setIntervalId(newIntervalId);
+      intervalId.current = newIntervalId;
 
       audioChunksRef.current = [];
 
@@ -48,10 +48,26 @@ const useAudioRecorder = ({
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         setAudioBlob(audioBlob);
+        const duration = await getAccurateDuration(audioBlob);
+        audioBlob.duration = duration;
         stream.getTracks().forEach((track) => track.stop());
+        setRecordingTime(0);
+      };
+
+      mediaRecorder.onpause = () => {
+        setIsPaused(true);
+        if (intervalId.current) clearInterval(intervalId.current);
+      };
+
+      mediaRecorder.onresume = () => {
+        setIsPaused(false);
+        const newIntervalId = setInterval(() => {
+          setRecordingTime((prev) => prev + 1);
+        }, 1000);
+        intervalId.current = newIntervalId;
       };
 
       mediaRecorder.start(1000);
@@ -69,33 +85,22 @@ const useAudioRecorder = ({
     ) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setIsPaused(false);
       setRecordingTime(0);
-      if (intervalId) clearInterval(intervalId);
-      setIntervalId(null);
+      if (intervalId.current) clearInterval(intervalId.current);
+      intervalId.current = null;
     }
   }, []);
 
   const togglePausePlay = useCallback(() => {
-    if (!mediaRecorderRef.current) {
-      console.warn('No audio available to play');
-      return false;
-    }
+    if (!mediaRecorderRef.current) return;
 
-    if (mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.pause();
-      setIsPaused(true);
-      if (intervalId) clearInterval(intervalId);
-    }
-
-    if (mediaRecorderRef.current.state === 'paused') {
+    if (isPaused) {
       mediaRecorderRef.current.resume();
-      setIsPaused(false);
-      const newIntervalId = setInterval(() => {
-        setRecordingTime((prev) => (prev += 1));
-      }, 1000);
-      setIntervalId(newIntervalId);
+    } else {
+      mediaRecorderRef.current.pause();
     }
-  }, [mediaRecorderRef.current]);
+  }, [isPaused]);
 
   useEffect(() => {
     return () => {
@@ -116,7 +121,6 @@ const useAudioRecorder = ({
     startRecording,
     stopRecording,
     togglePausePlay,
-    isPlaying,
     recordingTime,
     isPaused,
   };
