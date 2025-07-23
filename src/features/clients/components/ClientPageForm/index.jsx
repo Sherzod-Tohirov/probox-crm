@@ -11,17 +11,19 @@ import useAlert from '@hooks/useAlert';
 
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useMutateClientImages from '@hooks/data/clients/useMutateClientImages';
+import useMutateClientAddress from '@hooks/data/clients/useMutateClientAddress';
 
 import styles from './clientPageForm.module.scss';
 
 import selectOptionsCreator from '@utils/selectOptionsCreator';
 import formatterCurrency from '@utils/formatterCurrency';
+import YandexMap from '@components/ui/Map/YandexMap';
 import { API_CLIENT_IMAGES } from '@utils/apiUtils';
 import formatDate from '@utils/formatDate';
-import { v4 as uuidv4 } from 'uuid';
 import hasRole from '@utils/hasRole';
 import { store } from '@store/store';
-import YandexMap from '@components/ui/Map/YandexMap';
+import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 
 function ClientPageForm({
   formId,
@@ -42,6 +44,7 @@ function ClientPageForm({
 
   const updateMutation = useMutateClientImages('update');
   const deleteMutation = useMutateClientImages('delete');
+  const updateAddressMutation = useMutateClientAddress();
 
   const clientFilesWithAPI = useMemo(
     () =>
@@ -229,6 +232,16 @@ function ClientPageForm({
       id={formId}
       onSubmit={handleSubmit(async (data) => {
         await onSubmit(data);
+        console.log(userAddressCoords, 'coords');
+        const hasCoords =
+          'lat' in userAddressCoords && 'long' in userAddressCoords;
+        console.log(hasCoords, 'has coords');
+        if (hasCoords) {
+          await updateAddressMutation.mutate({
+            cardCode: currentClient?.['CardCode'],
+            data: userAddressCoords,
+          });
+        }
         reset(data);
       })}
       {...props}
@@ -436,7 +449,7 @@ function ClientPageForm({
             onChangeCoords={(coords) => {
               setUserAddressCoords({
                 lat: coords[0],
-                lng: coords[1],
+                long: coords[1],
               });
               setIsSaveButtonDisabled(false);
             }}

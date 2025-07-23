@@ -126,10 +126,9 @@ export const updateClientImages = async (payload = {}, params = {}) => {
 
 export const updateClientAddress = async (payload = {}, params = {}) => {
   try {
-    if (!payload?.installmentId || !payload?.docEntry)
-      throw Error('Installment id and doc entry are required !');
+    if (!payload?.cardCode) throw Error('Card code is required !');
     const response = await api.put(
-      `/invoice/address/${payload.docEntry}/${payload.installmentId}`,
+      `/invoice/map/${payload.cardCode}`,
       payload.data,
       {
         params: {
