@@ -446,6 +446,7 @@ function ClientPageForm({
         </Col>
         <Col>
           <YandexMap
+            userCoords={currentClient.location}
             onChangeCoords={(coords) => {
               setUserAddressCoords({
                 lat: coords[0],

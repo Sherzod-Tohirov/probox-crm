@@ -1,5 +1,5 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .table-wrapper {
   position: relative;
@@ -126,6 +126,11 @@
   align-items: center;
   justify-content: center;
 
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
   input {
     width: 100%;
     height: 100%;
@@ -140,7 +145,7 @@
       border-color: v.$seventh-color;
 
       &::after {
-        content: "";
+        content: '';
         position: absolute;
         width: 1.5rem;
         height: 1.5rem;

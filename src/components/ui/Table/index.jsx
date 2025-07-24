@@ -1,9 +1,9 @@
-import { ClipLoader } from "react-spinners";
-import { useCallback, useMemo, useRef, forwardRef, memo } from "react";
-import iconsMap from "@utils/iconsMap";
-import classNames from "classnames";
-import { v4 as uuidv4 } from "uuid";
-import styles from "./table.module.scss";
+import { ClipLoader } from 'react-spinners';
+import { useCallback, useMemo, useRef, forwardRef, memo } from 'react';
+import iconsMap from '@utils/iconsMap';
+import classNames from 'classnames';
+import { v4 as uuidv4 } from 'uuid';
+import styles from './table.module.scss';
 
 // Memoized table cell component
 const TableCell = memo(({ column, row, rowIndex }) => {
@@ -15,10 +15,15 @@ const TableCell = memo(({ column, row, rowIndex }) => {
 });
 
 // Selection checkbox cell
-const SelectionCell = memo(({ checked, onChange }) => (
-  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
-    <label className={styles["selection-checkbox"]}>
+const SelectionCell = memo(({ checked, onChange, ...props }) => (
+  <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+    <label
+      className={classNames(styles['selection-checkbox'], {
+        [styles['disabled']]: props.disabled,
+      })}
+    >
       <input
+        {...props}
         type="checkbox"
         checked={checked}
         onChange={onChange}
@@ -29,10 +34,15 @@ const SelectionCell = memo(({ checked, onChange }) => (
 ));
 
 // Selection header cell
-const SelectionHeaderCell = memo(({ checked, onChange }) => (
-  <th style={{ textAlign: "center", width: "40px" }}>
-    <label className={styles["selection-checkbox"]}>
+const SelectionHeaderCell = memo(({ checked, onChange, ...props }) => (
+  <th style={{ textAlign: 'center', width: '40px' }}>
+    <label
+      className={classNames(styles['selection-checkbox'], {
+        [styles['disabled']]: props.disabled,
+      })}
+    >
       <input
+        {...props}
         type="checkbox"
         checked={checked}
         onChange={onChange}
@@ -50,6 +60,7 @@ const TableRow = memo(
     rowIndex,
     uniqueKey,
     onRowClick,
+    isRowSelectable,
     getRowStyles,
     handleMouseDown,
     handleMouseUp,
@@ -63,7 +74,7 @@ const TableRow = memo(
 
     const uniqueKeyValue = useMemo(() => {
       if (Array.isArray(uniqueKey)) {
-        return uniqueKey.map((key) => row[key]).join("-");
+        return uniqueKey.map((key) => row[key]).join('-');
       }
       return uniqueKey ? row[uniqueKey] : uuidv4();
     }, [row, uniqueKey]);
@@ -77,12 +88,17 @@ const TableRow = memo(
         onTouchEnd={handleMouseUp}
         style={{
           ...getRowStyles(row, rowIndex),
-          cursor: "pointer",
-          backgroundColor: selected ? "#f0f0f0" : "transparent",
-          transition: "background-color 0.2s ease",
-        }}>
+          cursor: 'pointer',
+          backgroundColor: selected ? '#f0f0f0' : 'transparent',
+          transition: 'background-color 0.2s ease',
+        }}
+      >
         {selectionEnabled && (
-          <SelectionCell checked={selected} onChange={() => onSelectRow(row)} />
+          <SelectionCell
+            checked={selected}
+            onChange={() => onSelectRow(row)}
+            disabled={!isRowSelectable(row)}
+          />
         )}
         {columns.map((column, colIndex) => (
           <TableCell
@@ -107,13 +123,14 @@ function Table(
     containerStyle = {},
     containerClass,
     selectionEnabled = false,
+    isRowSelectable = () => true,
     selectedRows = [], // <-- change here
     onSelectionChange = () => {},
     containerHeight = null,
     isLoading = false,
     showPivotColumn = false,
     scrollable = false,
-    scrollHeight = "calc(100vh - 450px)",
+    scrollHeight = 'calc(100vh - 450px)',
     getRowStyles = () => ({}),
     onRowClick = () => {},
   },
@@ -126,11 +143,11 @@ function Table(
     if (!showPivotColumn) return columns;
     return [
       {
-        key: "pivotId",
-        icon: "barCodeFilled",
-        title: "ID",
-        width: "2%",
-        cellStyle: { textAlign: "center" },
+        key: 'pivotId',
+        icon: 'barCodeFilled',
+        title: 'ID',
+        width: '2%',
+        cellStyle: { textAlign: 'center' },
         renderCell: (_, rowIndex) => rowIndex + 1,
       },
       ...columns,
@@ -160,7 +177,7 @@ function Table(
   const getRowKey = useCallback(
     (row) => {
       if (Array.isArray(uniqueKey)) {
-        return uniqueKey.map((key) => row[key]).join("-");
+        return uniqueKey.map((key) => row[key]).join('-');
       }
       return uniqueKey ? row[uniqueKey] : uuidv4();
     },
@@ -171,51 +188,55 @@ function Table(
   const isRowSelected = useCallback(
     (row) => {
       const key = Array.isArray(uniqueKey)
-        ? uniqueKey.map((k) => row[k]).join("-")
+        ? uniqueKey.map((k) => row[k]).join('-')
         : uniqueKey
-        ? row[uniqueKey]
-        : null;
+          ? row[uniqueKey]
+          : null;
       return selectedRows.some(
         (selected) =>
           (Array.isArray(uniqueKey)
-            ? uniqueKey.map((k) => selected[k]).join("-")
+            ? uniqueKey.map((k) => selected[k]).join('-')
             : uniqueKey
-            ? selected[uniqueKey]
-            : null) === key
+              ? selected[uniqueKey]
+              : null) === key
       );
     },
     [selectedRows, uniqueKey]
   );
 
   const allSelected = useMemo(() => {
-    if (!data?.length) return false;
-    return data.every((row) => isRowSelected(row));
+    const selectableRowsLength = data.filter(isRowSelectable).length;
+    if (!selectableRowsLength) return false;
+    return selectedRows.length === selectableRowsLength;
   }, [data, isRowSelected]);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
       onSelectionChange([]);
     } else {
-      onSelectionChange([...data]);
+      const filteredRows = data.filter((row) => isRowSelectable(row));
+      onSelectionChange([...filteredRows]);
     }
   }, [allSelected, data, onSelectionChange]);
 
   const handleSelectRow = useCallback(
     (row) => {
       if (isRowSelected(row)) {
-        onSelectionChange(selectedRows.filter(
-          (selected) =>
-            (Array.isArray(uniqueKey)
-              ? uniqueKey.map((k) => selected[k]).join("-")
-              : uniqueKey
-              ? selected[uniqueKey]
-              : null) !==
-            (Array.isArray(uniqueKey)
-              ? uniqueKey.map((k) => row[k]).join("-")
-              : uniqueKey
-              ? row[uniqueKey]
-              : null)
-        ));
+        onSelectionChange(
+          selectedRows.filter(
+            (selected) =>
+              (Array.isArray(uniqueKey)
+                ? uniqueKey.map((k) => selected[k]).join('-')
+                : uniqueKey
+                  ? selected[uniqueKey]
+                  : null) !==
+              (Array.isArray(uniqueKey)
+                ? uniqueKey.map((k) => row[k]).join('-')
+                : uniqueKey
+                  ? row[uniqueKey]
+                  : null)
+          )
+        );
       } else {
         onSelectionChange([...selectedRows, row]);
       }
@@ -226,10 +247,10 @@ function Table(
   const containerClassName = useMemo(
     () =>
       classNames(
-        styles["table-wrapper"],
+        styles['table-wrapper'],
         {
-          [styles["scrollable"]]: scrollable,
-          [styles["loading"]]: isLoading,
+          [styles['scrollable']]: scrollable,
+          [styles['loading']]: isLoading,
         },
         containerClass
       ),
@@ -239,28 +260,30 @@ function Table(
   const tableClassName = useMemo(
     () =>
       classNames(
-        styles["base-table"],
-        { [styles["loading"]]: isLoading },
+        styles['base-table'],
+        { [styles['loading']]: isLoading },
         className
       ),
     [isLoading, className]
   );
-
+  
   return (
     <div
       id="table-wrapper"
       data-testid="table-wrapper"
       style={{
-        height: scrollable ? scrollHeight : containerHeight || "auto",
+        height: scrollable ? scrollHeight : containerHeight || 'auto',
         ...containerStyle,
       }}
-      className={containerClassName}>
-      <div className={styles["table-container"]}>
+      className={containerClassName}
+    >
+      <div className={styles['table-container']}>
         <table ref={ref} className={tableClassName} style={style}>
           <thead>
             <tr>
               {selectionEnabled && (
                 <SelectionHeaderCell
+                  disabled={data.filter(isRowSelectable).length === 0}
                   checked={allSelected}
                   onChange={handleSelectAll}
                 />
@@ -269,11 +292,12 @@ function Table(
                 <th
                   key={`header-${column.key}-${colIndex}`}
                   style={{
-                    width: column.width || "auto",
-                    minWidth: column.minWidth || "initial",
-                    maxWidth: column.maxWidth || "initial",
-                  }}>
-                  <div className={styles["table-header-cell"]}>
+                    width: column.width || 'auto',
+                    minWidth: column.minWidth || 'initial',
+                    maxWidth: column.maxWidth || 'initial',
+                  }}
+                >
+                  <div className={styles['table-header-cell']}>
                     {column.icon && iconsMap[column.icon]} {column.title}
                   </div>
                 </th>
@@ -282,11 +306,12 @@ function Table(
           </thead>
           <tbody>
             {isLoading ? (
-              <tr className={styles["loading-row"]}>
+              <tr className={styles['loading-row']}>
                 <td
                   colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
-                  className={styles["empty-table"]}>
-                  <ClipLoader color={"#94A3B8"} size={26} />
+                  className={styles['empty-table']}
+                >
+                  <ClipLoader color={'#94A3B8'} size={26} />
                 </td>
               </tr>
             ) : data?.length > 0 ? (
@@ -297,6 +322,7 @@ function Table(
                   columns={finalColumns}
                   rowIndex={rowIndex}
                   uniqueKey={uniqueKey}
+                  isRowSelectable={isRowSelectable}
                   onRowClick={memoizedRowClick}
                   getRowStyles={getRowStyles}
                   handleMouseDown={handleMouseDown}
@@ -310,7 +336,8 @@ function Table(
               <tr>
                 <td
                   colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
-                  className={styles["empty-table"]}>
+                  className={styles['empty-table']}
+                >
                   Ma'lumot mavjud emas.
                 </td>
               </tr>

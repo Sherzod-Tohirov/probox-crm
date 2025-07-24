@@ -78,14 +78,13 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
         const ordered = orderByNearest(selectedRows, currentLocation);
         const url =
           'https://yandex.uz/maps/?rtext=' +
-          ordered
-            .map(
+          [
+            `${currentLocation.lat},${currentLocation.lng}`, // Start from current location
+            ...ordered.map(
               ({ location }) =>
-                `${location?.lat || random(41.311081, 42)},${
-                  location?.lng || random(69.240562, 70)
-                }`
-            )
-            .join('~') +
+                `${location?.lat || random(41.311081, 42)},${location?.lng || random(69.240562, 70)}`
+            ),
+          ].join('~') +
           '&rtt=auto';
 
         window.open(url, '_blank');
