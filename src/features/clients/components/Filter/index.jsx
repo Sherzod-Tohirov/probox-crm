@@ -281,107 +281,126 @@ export default function Filter({ onFilter }) {
       onSubmit={handleSubmit(handleFilter)}
       autoComplete="off"
     >
-      <Row direction={'row'} gutter={6.25}>
-        <Col gutter={4} flexGrow>
-          <Input
-            style={{ minWidth: '230px' }}
-            size={'full-grow'}
-            variant={'outlined'}
-            label={'IMEI | FIO'}
-            type={'search'}
-            placeholder={'4567890449494 | Ismi Sharif'}
-            placeholderColor={'secondary'}
-            searchText={watchedFields.search}
-            onFocus={() => {
-              setToggleSearchFields((prev) => ({ ...prev, search: true }));
-            }}
-            onSearch={query.onSearch}
-            onSearchSelect={(client) => {
-              handleSearchSelect(client.CardName, 'search');
-            }}
-            renderSearchItem={query.renderItem}
-            searchable={toggleSearchFields.search}
-            control={control}
-            {...register('search')}
-          />
-          <Input
-            type={'tel'}
-            size={'full-grow'}
-            variant={'outlined'}
-            label={'Telefon raqami'}
-            onSearch={phone.onSearch}
-            searchText={watchedFields.phone}
-            searchable={toggleSearchFields.phone}
-            onFocus={() => {
-              setToggleSearchFields((prev) => ({ ...prev, phone: true }));
-            }}
-            onSearchSelect={(client) => {
-              handleSearchSelect(client.Phone1, 'phone');
-            }}
-            renderSearchItem={phone.renderItem}
-            placeholder={'90 123 45 67'}
-            control={control}
-            name={'phone'}
-          />
-          <Input
-            id={'startDate'}
-            size={'full-grow'}
-            variant={'outlined'}
-            label={'Boshlanish vaqti'}
-            canClickIcon={false}
-            type={'date'}
-            control={control}
-            {...register('startDate')}
-          />
-          <Input
-            size={'full-grow'}
-            variant={'outlined'}
-            label={'Tugash vaqti'}
-            canClickIcon={false}
-            type={'date'}
-            datePickerOptions={{ minDate: watchedFields.startDate }}
-            error={errors?.endDate?.message}
-            control={control}
-            {...register('endDate')}
-          />
-          <Input
-            size={'full-grow'}
-            canClickIcon={false}
-            variant={'outlined'}
-            label={'Holati'}
-            type={'select'}
-            className={'paymentStatus'}
-            control={control}
-            options={statusOptions}
-            multipleSelect={true}
-            {...register('paymentStatus')}
-          />
-          <Input
-            type={'select'}
-            size={'full-grow'}
-            canClickIcon={false}
-            multipleSelect={true}
-            options={executorsOptions}
-            variant={'outlined'}
-            label={"Mas'ul ijrochi"}
-            isLoading={isExecutorsLoading}
-            control={control}
-            {...register('slpCode')}
-          />
-          <Input
-            type={'select'}
-            size={'full-grow'}
-            canClickIcon={false}
-            options={productOptions}
-            variant={'outlined'}
-            label={'Buyum'}
-            {...register('phoneConfiscated')}
-          />
+      <Row direction={'row'} gutter={6.25} wrap>
+        <Col flexGrow>
+          <Row direction={'row'} gutter={4} wrap>
+            <Col flexGrow>
+              <Input
+                style={{ minWidth: '230px' }}
+                size={'full-grow'}
+                variant={'outlined'}
+                label={'IMEI | FIO'}
+                type={'search'}
+                placeholder={'4567890449494 | Ismi Sharif'}
+                placeholderColor={'secondary'}
+                searchText={watchedFields.search}
+                onFocus={() => {
+                  setToggleSearchFields((prev) => ({ ...prev, search: true }));
+                }}
+                onSearch={query.onSearch}
+                onSearchSelect={(client) => {
+                  handleSearchSelect(client.CardName, 'search');
+                }}
+                renderSearchItem={query.renderItem}
+                searchable={toggleSearchFields.search}
+                control={control}
+                {...register('search')}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                type={'tel'}
+                size={'full-grow'}
+                variant={'outlined'}
+                label={'Telefon raqami'}
+                onSearch={phone.onSearch}
+                searchText={watchedFields.phone}
+                searchable={toggleSearchFields.phone}
+                onFocus={() => {
+                  setToggleSearchFields((prev) => ({ ...prev, phone: true }));
+                }}
+                onSearchSelect={(client) => {
+                  handleSearchSelect(client.Phone1, 'phone');
+                }}
+                renderSearchItem={phone.renderItem}
+                placeholder={'90 123 45 67'}
+                control={control}
+                name={'phone'}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                id={'startDate'}
+                size={'full-grow'}
+                variant={'outlined'}
+                label={'Boshlanish vaqti'}
+                canClickIcon={false}
+                type={'date'}
+                control={control}
+                {...register('startDate')}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                size={'full-grow'}
+                variant={'outlined'}
+                label={'Tugash vaqti'}
+                canClickIcon={false}
+                type={'date'}
+                datePickerOptions={{ minDate: watchedFields.startDate }}
+                error={errors?.endDate?.message}
+                control={control}
+                {...register('endDate')}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                size={'full-grow'}
+                style={{ minWidth: '160px' }}
+                canClickIcon={false}
+                variant={'outlined'}
+                label={'Holati'}
+                type={'select'}
+                className={'paymentStatus'}
+                control={control}
+                options={statusOptions}
+                multipleSelect={true}
+                {...register('paymentStatus')}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                type={'select'}
+                size={'full-grow'}
+                style={{ minWidth: '140px' }}
+                canClickIcon={false}
+                multipleSelect={true}
+                options={executorsOptions}
+                variant={'outlined'}
+                label={"Mas'ul ijrochi"}
+                isLoading={isExecutorsLoading}
+                control={control}
+                {...register('slpCode')}
+              />
+            </Col>
+            <Col flexGrow>
+              <Input
+                type={'select'}
+                size={'full-grow'}
+                canClickIcon={false}
+                options={productOptions}
+                variant={'outlined'}
+                label={'Buyum'}
+                {...register('phoneConfiscated')}
+              />
+            </Col>
+          </Row>
         </Col>
-        <Col style={{ marginTop: '25px' }}>
+        <Col flexGrow style={{ marginTop: '25px' }}>
           <Row direction="row" gutter={2}>
-            <Col>
+            <Col flexGrow>
               <Button
+                fullWidth
                 ref={refs.setReference}
                 className={classNames(styles['filter-btn'], styles['clear'])}
                 onClick={(e) => {
@@ -427,8 +446,9 @@ export default function Filter({ onFilter }) {
                 ) : null}
               </AnimatePresence>
             </Col>
-            <Col>
+            <Col flexGrow>
               <Button
+                fullWidth
                 className={styles['filter-btn']}
                 icon={'search'}
                 iconSize={18}

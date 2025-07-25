@@ -186,7 +186,7 @@
   @include m.flex-center;
   transform: translate(0, -50%);
   font-size: 3.8rem;
-  z-index: 1000;
+  z-index: 99;
   color: v.$filter-input-placeholder-color-secondary;
   & svg {
     width: 16px;
@@ -232,7 +232,7 @@
   position: absolute !important;
   top: 120% !important;
   bottom: 0;
-  z-index: 100;
+  z-index: 1000;
   width: 480px;
   min-height: 180px;
   max-height: 500px;
@@ -242,6 +242,10 @@
   border-radius: 10px;
   background-color: v.$primary-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+
+  @media (max-width: (v.$breakpoint-md - 1)) {
+    width: 100%;
+  }
 
   &-list {
     align-self: flex-start;
@@ -261,7 +265,9 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color v.$transition-time v.$transition-type;
-
+      @media (max-width: (v.$breakpoint-md - 1)) {
+        font-size: 2.7rem;
+      }
       &:hover {
         background-color: rgba(0, 0, 0, 0.05);
       }
@@ -313,7 +319,7 @@
 :global(.react-select__menu) {
   border-radius: 14px;
   padding: 0 !important;
-  z-index: 9999;
+  z-index: 1005;
   font-size: 3rem !important;
   & * {
     color: v.$filter-input-placeholder-color !important ;

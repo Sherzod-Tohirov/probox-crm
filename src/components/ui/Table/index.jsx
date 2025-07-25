@@ -4,6 +4,10 @@ import iconsMap from '@utils/iconsMap';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './table.module.scss';
+// import { breakpoints } from '../config/breakpoints'; // Import breakpoints
+
+// Utility to check if a prop is an object for responsive values
+const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
 // Memoized table cell component
 const TableCell = memo(({ column, row, rowIndex }) => {
@@ -124,13 +128,13 @@ function Table(
     containerClass,
     selectionEnabled = false,
     isRowSelectable = () => true,
-    selectedRows = [], // <-- change here
+    selectedRows = [],
     onSelectionChange = () => {},
-    containerHeight = null,
+    containerHeight = null, // Can be scalar or { xs: '200px', md: 'auto' }
     isLoading = false,
     showPivotColumn = false,
-    scrollable = false,
-    scrollHeight = 'calc(100vh - 450px)',
+    scrollable = false, // Can be scalar or { xs: true, md: false }
+    scrollHeight = { xs: 'calc(100vh - 200px)', md: 'calc(100vh - 450px)' }, // Responsive
     getRowStyles = () => ({}),
     onRowClick = () => {},
   },
@@ -139,18 +143,20 @@ function Table(
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
 
+  // Responsive column filtering
   const finalColumns = useMemo(() => {
-    if (!showPivotColumn) return columns;
+    const filteredColumns = columns.filter((col) => !col.hideOnMobile);
+    if (!showPivotColumn) return filteredColumns;
     return [
       {
         key: 'pivotId',
         icon: 'barCodeFilled',
         title: 'ID',
-        width: '2%',
+        width: { xs: '10%', md: '2%' }, // Responsive width
         cellStyle: { textAlign: 'center' },
         renderCell: (_, rowIndex) => rowIndex + 1,
       },
-      ...columns,
+      ...filteredColumns,
     ];
   }, [columns, showPivotColumn]);
 
@@ -184,7 +190,6 @@ function Table(
     [uniqueKey]
   );
 
-  // Helper to check if a row is selected
   const isRowSelected = useCallback(
     (row) => {
       const key = Array.isArray(uniqueKey)
@@ -249,13 +254,29 @@ function Table(
       classNames(
         styles['table-wrapper'],
         {
-          [styles['scrollable']]: scrollable,
+          [styles['scrollable']]: isResponsiveProp(scrollable)
+            ? scrollable.md
+            : scrollable,
           [styles['loading']]: isLoading,
         },
         containerClass
       ),
     [scrollable, isLoading, containerClass]
   );
+
+  // Resolve responsive containerHeight and scrollHeight
+  const resolvedContainerStyle = useMemo(() => {
+    const height = isResponsiveProp(containerHeight)
+      ? containerHeight.md || 'auto'
+      : containerHeight || 'auto';
+    const scroll = isResponsiveProp(scrollHeight)
+      ? scrollHeight.md || 'calc(100vh - 450px)'
+      : scrollHeight;
+    return {
+      height: scrollable ? scroll : height,
+      ...containerStyle,
+    };
+  }, [containerHeight, scrollHeight, scrollable, containerStyle]);
 
   const tableClassName = useMemo(
     () =>
@@ -266,15 +287,12 @@ function Table(
       ),
     [isLoading, className]
   );
-  
+
   return (
     <div
       id="table-wrapper"
       data-testid="table-wrapper"
-      style={{
-        height: scrollable ? scrollHeight : containerHeight || 'auto',
-        ...containerStyle,
-      }}
+      style={resolvedContainerStyle}
       className={containerClassName}
     >
       <div className={styles['table-container']}>
@@ -292,7 +310,9 @@ function Table(
                 <th
                   key={`header-${column.key}-${colIndex}`}
                   style={{
-                    width: column.width || 'auto',
+                    width: isResponsiveProp(column.width)
+                      ? column.width.md || 'auto'
+                      : column.width || 'auto',
                     minWidth: column.minWidth || 'initial',
                     maxWidth: column.maxWidth || 'initial',
                   }}

@@ -26,7 +26,7 @@
   display: block;
   &.minified {
     position: absolute;
-    z-index: -1000;
+    z-index: -100;
     opacity: 0;
   }
 }

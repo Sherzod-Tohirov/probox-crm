@@ -7,7 +7,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9999;
+  z-index: 1000;
   @include m.flex-center;
   background-color: rgb(245, 245, 245);
   backdrop-filter: blur(15px);
@@ -23,7 +23,7 @@
   width: 100%;
   min-height: 70vh;
   background-color: rgba(255, 255, 255, 0.614);
-  z-index: 9999;
+  z-index: 1000;
   animation: fadeIn 0.2s;
   backdrop-filter: blur(5px);
 

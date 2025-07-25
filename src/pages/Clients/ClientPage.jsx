@@ -149,7 +149,12 @@ export default function ClientPage() {
           </Row>
         </Col>
         <Col fullWidth>
-          <Row gutter={6} ref={screenshotRef} style={{ position: 'relative' }}>
+          <Row
+            gutter={6}
+            ref={screenshotRef}
+            style={{ position: 'relative' }}
+            wrap
+          >
             <Col fullWidth>
               <Row direction={'row'} gutter={6}>
                 <Col>

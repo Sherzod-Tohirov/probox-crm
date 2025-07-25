@@ -1,10 +1,11 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .sidebar {
   display: flex;
   position: sticky;
   top: 6.1rem;
+  
 }
 
 .sidebar-text {
@@ -58,5 +59,13 @@
   transition: all v.$transition-time v.$transition-type;
   &.minified {
     display: none;
+  }
+}
+
+.close-btn {
+  display: none !important;
+
+  @media (max-width: (v.$breakpoint-md - 1)) {
+    display: flex !important;
   }
 }

@@ -9,16 +9,21 @@
     pointer-events: none;
   }
   &.scrollable {
-    overflow: auto;
-    height: calc(100vh - 450px);
+    overflow-x: auto; // Enable horizontal scrolling on mobile
+    @media (min-width: v.$breakpoint-md) {
+      overflow: auto;
+      height: calc(100vh - 450px); // Default desktop height
+    }
+    @media (max-width: (v.$breakpoint-md - 1)) {
+      height: 400px !important; // Adjusted for mobile with drawer
+    }
     & .table-container {
       padding-top: 20px;
     }
-
     & table thead tr {
       position: sticky;
       top: 0;
-      z-index: 999;
+      z-index: 99;
     }
   }
 }
@@ -33,7 +38,7 @@
 
 .base-table {
   width: 100%;
-  font-size: 3.2rem;
+  font-size: 3.2rem; // Default for desktop
   color: #3c3f47;
   font-style: normal;
   font-weight: 600;
@@ -50,14 +55,22 @@
     opacity: 0.6;
   }
 
+  @media (max-width: (v.$breakpoint-md - 1)) {
+    font-size: 3rem; // Smaller font for mobile
+    min-width: 600px; // Ensure horizontal scrolling on mobile
+  }
+
   thead {
     th {
       text-align: start;
       border: v.$secondary-border-width v.$primary-border-type
         v.$primary-border-color;
-      padding: 3rem;
+      padding: 2rem; // Default for desktop
       flex: 1 0 0;
       background: v.$primary-table-header-bg;
+
+      @media (max-width: (v.$breakpoint-md - 1)) {
+      }
     }
 
     th:first-child {
@@ -73,8 +86,13 @@
     position: relative;
     & tr {
       cursor: pointer;
-      max-height: 50px !important;
-      height: 50px !important;
+      max-height: 40px !important; // Adjusted for mobile
+      height: 40px !important;
+
+      @media (min-width: v.$breakpoint-md) {
+        max-height: 50px !important; // Desktop height
+        height: 50px !important;
+      }
     }
   }
 
@@ -83,23 +101,34 @@
   }
 
   tr:first-child td {
-    padding-top: 5rem;
+    padding-top: 2rem; // Adjusted for mobile
+    @media (min-width: v.$breakpoint-md) {
+      padding-top: 3rem; // Desktop padding
+    }
   }
 
   td {
     position: relative;
-    padding: 3rem;
+    padding: 2rem; // Default for desktop
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;
+
+    @media (max-width: (v.$breakpoint-md - 1)) {
+      padding: 2rem; // Smaller padding for mobile
+    }
 
     &.empty-table {
       padding: 0 !important;
       text-align: center;
-      font-size: 3.5rem;
+      font-size: 1.8rem; // Adjusted for mobile
       font-weight: 500;
       line-height: normal;
       color: v.$secondary-color;
       border-bottom: none;
+
+      @media (min-width: v.$breakpoint-md) {
+        font-size: 3.5rem; // Desktop font size
+      }
 
       & span {
         display: flex !important;
@@ -110,18 +139,26 @@
 }
 
 .table-header-cell {
-  @include m.flex(center, start, 2rem);
+  @include m.flex(center, start, 1rem); // Smaller gap for mobile
+  @media (min-width: v.$breakpoint-md) {
+    @include m.flex(center, start, 2rem); // Desktop gap
+  }
 
   svg {
-    width: 5rem;
-    height: 5rem;
+    width: 3rem; // Smaller for mobile
+    height: 3rem;
     color: v.$secondary-color;
+    @media (min-width: v.$breakpoint-md) {
+      width: 5rem; // Desktop size
+      height: 5rem;
+    }
   }
 }
+
 .selection-checkbox {
   position: relative;
-  width: 17px;
-  height: 17px;
+  width: 20px; // Larger for touch targets on mobile
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,9 +184,13 @@
       &::after {
         content: '';
         position: absolute;
-        width: 1.5rem;
-        height: 1.5rem;
+        width: 1.2rem; // Adjusted for mobile
+        height: 1.2rem;
         background-size: cover;
+        @media (min-width: v.$breakpoint-md) {
+          width: 1.5rem; // Desktop size
+          height: 1.5rem;
+        }
       }
     }
   }

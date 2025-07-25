@@ -273,7 +273,7 @@ function ClientPageForm({
         }}
         onApply={handleFileUpload}
       />
-      <Row direction={'row'} gutter={6}>
+      <Row direction={'row'} gutter={6} wrap>
         <Col>
           <Row gutter={1}>
             <Col>
@@ -444,7 +444,7 @@ function ClientPageForm({
             </Col>
           </Row>
         </Col>
-        <Col>
+        <Col flexGrow>
           <YandexMap
             userCoords={currentClient.location}
             onChangeCoords={(coords) => {

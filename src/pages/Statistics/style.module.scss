@@ -1,4 +1,4 @@
-@use "@assets/styles/variables" as v;
+@use '@assets/styles/variables' as v;
 
 .sticky-col {
   position: sticky !important;
@@ -8,7 +8,7 @@
 
   &::before,
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: -26px;
     left: 0;

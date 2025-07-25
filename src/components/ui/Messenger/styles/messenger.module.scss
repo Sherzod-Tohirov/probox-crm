@@ -18,7 +18,7 @@
   // Remove overflow: auto from parent container
   display: flex;
   flex-direction: column;
-  z-index: 1000000;
+  z-index: 1000;
   overflow: hidden;
   backdrop-filter: blur(50px);
   &::-webkit-scrollbar {
@@ -346,7 +346,7 @@
   @include m.flex(stretch, stretch, 0, column);
   padding-left: 8px;
   padding-right: 8px;
-  z-index: 99999999;
+  z-index: 1000;
   width: 260px;
   height: 400px;
   min-height: 0;
@@ -398,7 +398,7 @@
   &-footer {
     position: sticky;
     bottom: 0;
-    z-index: 99999;
+    z-index: 1000;
     padding-top: 8px;
     padding-bottom: 8px;
     background-color: #fff;
@@ -415,7 +415,7 @@
   background-color: #fff;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
   opacity: 1;
-  z-index: 999999;
+  z-index: 1000;
   &-list {
     @include m.flex(start, center, 1rem, column);
     width: 95%;
