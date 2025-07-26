@@ -35,6 +35,14 @@
     line-height: 150%;
     color: v.$primary-color;
     border: none;
+
+    @include m.media-max(v.$breakpoint-md) {
+      font-size: 3.7rem !important;
+      svg {
+        width: 20px !important;
+        height: 20px !important;
+      }
+    }
   }
 
   &.filled {
@@ -48,6 +56,11 @@
     border: none;
     border-radius: 3rem;
     background-color: v.$button-bg;
+
+    @include m.media-max(v.$breakpoint-md) {
+      font-size: 3rem;
+      padding: 2rem 3rem;
+    }
   }
 
   //colors
@@ -77,6 +90,10 @@
   &.icon {
     width: 50rem;
     height: 50rem;
+    @include m.media-max(v.$breakpoint-md) {
+      width: 35rem !important;
+      height: 35rem !important;
+    }
   }
 
   &.icon-primary-color {

@@ -1,9 +1,8 @@
-import { Box } from '@components/ui';
-
+import styles from './style.module.scss';
 export default function InputGroup({ children, ...props }) {
   return (
-    <Box dir="row" style={{ width: '100%', flexGrow: 1 }} {...props}>
+    <div className={styles.inputGroup} {...props}>
       {children}
-    </Box>
+    </div>
   );
 }

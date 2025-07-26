@@ -1,5 +1,5 @@
-import iconsMap from "../../../../utils/iconsMap";
-import styles from "./clientPageForm.module.scss";
+import iconsMap from '@utils/iconsMap';
+import styles from './style.module.scss';
 
 export default function Label({ children, icon, ...props }) {
   return (

@@ -1,7 +1,15 @@
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
-.primary {
+.base-typography {
   font-size: 3.5rem;
   font-weight: 500;
+
+  @include m.media-max(v.$breakpoint-md) {
+    font-size: 2.8rem;
+  }
+}
+
+.primary {
   color: v.$secondary-color;
 }

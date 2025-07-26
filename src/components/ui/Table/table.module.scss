@@ -10,16 +10,20 @@
   }
   &.scrollable {
     overflow-x: auto; // Enable horizontal scrolling on mobile
+
     @media (min-width: v.$breakpoint-md) {
       overflow: auto;
       height: calc(100vh - 450px); // Default desktop height
     }
+
     @media (max-width: (v.$breakpoint-md - 1)) {
       height: 400px !important; // Adjusted for mobile with drawer
     }
+
     & .table-container {
       padding-top: 20px;
     }
+   
     & table thead tr {
       position: sticky;
       top: 0;
@@ -70,6 +74,7 @@
       background: v.$primary-table-header-bg;
 
       @media (max-width: (v.$breakpoint-md - 1)) {
+        font-size: 3rem;
       }
     }
 
@@ -145,8 +150,9 @@
   }
 
   svg {
-    width: 3rem; // Smaller for mobile
-    height: 3rem;
+    flex-shrink: 0;
+    width: 4rem; // Smaller for mobile
+    height: 4rem;
     color: v.$secondary-color;
     @media (min-width: v.$breakpoint-md) {
       width: 5rem; // Desktop size

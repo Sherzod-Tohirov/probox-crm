@@ -13,7 +13,7 @@ import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useMutateClientImages from '@hooks/data/clients/useMutateClientImages';
 import useMutateClientAddress from '@hooks/data/clients/useMutateClientAddress';
 
-import styles from './clientPageForm.module.scss';
+import styles from './style.module.scss';
 
 import selectOptionsCreator from '@utils/selectOptionsCreator';
 import formatterCurrency from '@utils/formatterCurrency';

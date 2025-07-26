@@ -1,20 +1,16 @@
 import { useEffect, useRef } from 'react';
 import loadYandexMaps from '@/utils/loadYandexMaps';
+import styles from './style.module.scss';
 
 const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
   const mapRef = useRef(null);
   const API_KEY = import.meta.env.VITE_YANDEX_API_KEY;
-  const DEFAULT_COORDS = [41.311081, 69.240562]; // Tashkent coordinates
-
+  const DEFAULT_COORDS = [41.311081, 69.240562];
+  const hasCoords = userCoords?.lat && userCoords?.long;
   useEffect(() => {
     loadYandexMaps(API_KEY).then((ymaps) => {
       if (!mapRef.current) return;
-      console.log([userCoords.lat, userCoords.long], 'user coords');
-      const hasCoords =
-        'lat' in userCoords &&
-        'long' in userCoords &&
-        userCoords.lat &&
-        userCoords.long;
+
       const coords = hasCoords
         ? [userCoords.lat, userCoords.long]
         : DEFAULT_COORDS;
@@ -51,7 +47,16 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
     });
   }, []);
 
-  return <div ref={mapRef} style={{ width: '480px', height: '290px' }} />;
+  return (
+    <div className={styles.map} ref={mapRef}>
+      {!hasCoords && (
+        <div className={styles['no-location']}>
+          ⚠️ Geolokatsiya aniqlanmadi, xaritada standart joylashuv (Toshkent)
+          ko‘rsatilmoqda.
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default YandexMap;

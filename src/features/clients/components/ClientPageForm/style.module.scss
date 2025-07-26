@@ -156,3 +156,10 @@
     height: 65px;
   }
 }
+
+.inputGroup {
+  @include m.flex(center, center);
+  @include m.media-max(v.$breakpoint-md) {
+    @include m.flex(start, start, 2rem, column);
+  }
+}

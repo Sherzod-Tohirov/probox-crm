@@ -71,9 +71,11 @@ export default function ClientPage() {
         'DD.MM.YYYY',
         'YYYY.MM.DD'
       );
+
       const formattedDueDate = moment(currentClient['DueDate']).format(
         'YYYY.MM.DD'
       );
+
       const phonePayload = {
         ...(data.telephone ? { Phone1: data.telephone } : {}),
         ...(data.additional_telephone
@@ -112,7 +114,13 @@ export default function ClientPage() {
         <Col fullWidth>
           <Row>
             <Col fullWidth>
-              <Row direction="row" align="center" justify="space-between">
+              <Row
+                direction="row"
+                align="center"
+                justify={{ xs: 'start', md: 'space-between' }}
+                gutter={3}
+                wrap
+              >
                 <Col>
                   <Navigation fallbackBackPath={'/clients'} />
                 </Col>
@@ -169,6 +177,7 @@ export default function ClientPage() {
 
             <Col fullWidth>
               <Table
+                scrollable
                 containerStyle={{
                   minHeight: 'calc(35dvh)',
                 }}
@@ -194,7 +203,7 @@ export default function ClientPage() {
       </Row>
       <Footer>
         <Row direction={'row'} align={'center'} justify={'space-between'}>
-          <Typography style={{ fontSize: '4rem' }} element={'span'}>
+          <Typography element={'span'}>
             Qolgan qarzdorlik summasi:{' '}
             {formatterCurrency(
               Number(currentClient['MaxDocTotal']) -

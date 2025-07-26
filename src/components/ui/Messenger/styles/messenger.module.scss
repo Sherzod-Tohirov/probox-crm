@@ -13,6 +13,9 @@
   padding-left: 24px;
   padding-right: 24px;
   overflow-x: hidden;
+  background-color: #fff;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   // Remove overflow: auto from parent container
@@ -20,7 +23,6 @@
   flex-direction: column;
   z-index: 1000;
   overflow: hidden;
-  backdrop-filter: blur(50px);
   &::-webkit-scrollbar {
     width: 10px;
   }

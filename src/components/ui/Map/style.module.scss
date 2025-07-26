@@ -1,0 +1,28 @@
+@use '@styles/mixins.scss' as m;
+@use '@styles/variables' as v;
+
+.map {
+  position: relative;
+  width: 480px;
+  height: 290px;
+
+  @include m.media-max(v.$breakpoint-lg) {
+    width: 560px;
+  }
+
+  @include m.media-max(v.$breakpoint-md) {
+    width: 320px;
+  }
+}
+
+.no-location {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  @include m.flex(centart, start);
+  font-size: 3rem;
+  font-weight: 500;
+  opacity: 0.8;
+  pointer-events: none;
+}

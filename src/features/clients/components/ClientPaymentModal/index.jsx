@@ -1,21 +1,21 @@
-import moment from "moment";
-import styles from "./clientPaymentModal.module.scss";
-import { AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { memo, useEffect, useMemo, useState } from "react";
-import { Modal, Input, Typography, Row, Col, Button } from "@components/ui";
-import RadioInput from "./RadioInput";
-import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import formatterCurrency from "@utils/formatterCurrency";
+import moment from 'moment';
+import styles from './clientPaymentModal.module.scss';
+import { AnimatePresence } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { Modal, Input, Typography, Row, Col, Button } from '@components/ui';
+import RadioInput from './RadioInput';
+import useFetchCurrency from '@hooks/data/useFetchCurrency';
+import formatterCurrency from '@utils/formatterCurrency';
 import {
   CURRENCY_MAP,
   PAYMENT_ACCOUNTS,
   CLIENT_PAYMENT_ERROR_MESSAGES,
-} from "@utils/constants";
-import useMutateClientPaymentModal from "@hooks/data/clients/useMutateClientPayment";
-import { useQueryClient } from "@tanstack/react-query";
-import { ClipLoader } from "react-spinners";
+} from '@utils/constants';
+import useMutateClientPaymentModal from '@hooks/data/clients/useMutateClientPayment';
+import { useQueryClient } from '@tanstack/react-query';
+import { ClipLoader } from 'react-spinners';
 
 const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => (
   <Row direction="row" align="center" justify="center" gutter={4}>
@@ -31,7 +31,8 @@ const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => (
         variant="filled"
         isLoading={isLoading}
         disabled={!isValid}
-        type="submit">
+        type="submit"
+      >
         Tasdiqlash
       </Button>
     </Col>
@@ -40,24 +41,24 @@ const ModalFooter = memo(({ onClose, isLoading = false, isValid = false }) => (
 
 export default function ClientPaymentModal({ isOpen, onClose }) {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
       sum: 0,
-      date: moment().format("DD.MM.YYYY"),
-      paymentType: "cash",
-      account: "5040",
+      date: moment().format('DD.MM.YYYY'),
+      paymentType: 'cash',
+      account: '5040',
     },
   });
 
   const [currencyDate, setCurrencyDate] = useState(
-    moment().format("YYYY.MM.DD")
+    moment().format('YYYY.MM.DD')
   );
   const [isValid, setIsValid] = useState(true);
   const [hasError, setHasError] = useState({ sum: false });
   const queryClient = useQueryClient();
-  const paymentType = watch("paymentType");
-  const sum = watch("sum");
-  const date = watch("date");
+  const paymentType = watch('paymentType');
+  const sum = watch('sum');
+  const date = watch('date');
   const { data: currencyData, isLoading: isCurrencyLoading } = useFetchCurrency(
     { date: currencyDate }
   );
@@ -67,21 +68,21 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   );
 
   useEffect(() => {
-    const formattedDate = moment(date, "DD.MM.YYYY").format("YYYY.MM.DD");
+    const formattedDate = moment(date, 'DD.MM.YYYY').format('YYYY.MM.DD');
     if (!moment(formattedDate).isSame(currencyDate)) {
       setCurrencyDate(formattedDate);
-      queryClient.invalidateQueries({ queryKey: ["currency", formattedDate] });
+      queryClient.invalidateQueries({ queryKey: ['currency', formattedDate] });
     }
   }, [date, queryClient]);
 
   useEffect(() => {
-    let currenctClientSum = Number(currenctClient["InsTotal"]);
-    if (!(paymentType === "cash" || paymentType === "visa")) {
-      currenctClientSum *= Number(currencyData?.["Rate"]);
+    let currenctClientSum = Number(currenctClient['InsTotal']);
+    if (!(paymentType === 'cash' || paymentType === 'visa')) {
+      currenctClientSum *= Number(currencyData?.['Rate']);
     }
 
     if (sum > currenctClientSum) {
-      setHasError((prev) => ({ ...prev, sum: "sumNotGreaterThanInsTotal" }));
+      setHasError((prev) => ({ ...prev, sum: 'sumNotGreaterThanInsTotal' }));
       setIsValid(false);
     } else {
       setHasError((prev) => ({ ...prev, sum: false }));
@@ -91,14 +92,14 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
 
   const branchOptions = useMemo(
     () => [
-      { value: "5040", label: "Qoratosh" },
-      { value: "5010", label: "Sag'bon" },
+      { value: '5040', label: 'Qoratosh' },
+      { value: '5010', label: "Sag'bon" },
     ],
     []
   );
 
   const currency = useMemo(
-    () => (paymentType === "cash" || paymentType === "visa" ? "USD" : "UZS"),
+    () => (paymentType === 'cash' || paymentType === 'visa' ? 'USD' : 'UZS'),
     [paymentType]
   );
 
@@ -122,28 +123,28 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
   // };
 
   const handlePriceChange = (e) => {
-    let value = e.target.value.replace(/[^0-9.,-]/g, "");
-    if (value === "" || value === "." || value === "-") {
-      setValue("sum", value);
+    let value = e.target.value.replace(/[^0-9.,-]/g, '');
+    if (value === '' || value === '.' || value === '-') {
+      setValue('sum', value);
       return;
     }
-    const numericValue = Number(value.replace(/,/g, ""));
-    setValue("sum", numericValue);
+    const numericValue = Number(value.replace(/,/g, ''));
+    setValue('sum', numericValue);
   };
 
   const onPaymentApply = (data) => {
-    const formattedDate = moment(data.date, "DD.MM.YYYY").format("YYYY-MM-DD");
+    const formattedDate = moment(data.date, 'DD.MM.YYYY').format('YYYY-MM-DD');
     const normalizedData = {
       CardCode: currenctClient?.CardCode,
       CashSum: data.sum,
       DocDate: formattedDate,
-      ...(data.paymentType !== "cash" && data.paymentType !== "visa"
+      ...(data.paymentType !== 'cash' && data.paymentType !== 'visa'
         ? {
             DocRate: currencyData?.Rate,
           }
         : {}),
       CashAccount:
-        paymentType === "cash"
+        paymentType === 'cash'
           ? data.account
           : PAYMENT_ACCOUNTS[data.paymentType],
       BankChargeAmount: 0,
@@ -170,18 +171,20 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
           onClose={onClose}
           isLoading={mutation.isPending}
         />
-      }>
+      }
+    >
       <form
         id="payment_form"
-        className={styles["modal-form"]}
-        onSubmit={handleSubmit(onPaymentApply)}>
-        <Row direction="row" gutter={4}>
-          <Col flexGrow>
+        className={styles['modal-form']}
+        onSubmit={handleSubmit(onPaymentApply)}
+      >
+        <Row direction={{ xs: 'column', md: 'row' }} gutter={4}>
+          <Col fullWidth>
             <Row gutter={1}>
-              <Col>
-                <Typography element="span" className={styles["modal-text"]}>
-                  <strong>Oylik to'lov:</strong>{" "}
-                  {formatterCurrency(currenctClient?.InsTotal || 0, "usd")}
+              <Col flexGrow>
+                <Typography element="span" className={styles['modal-text']}>
+                  <strong>Oylik to'lov:</strong>{' '}
+                  {formatterCurrency(currenctClient?.InsTotal || 0, 'usd')}
                 </Typography>
               </Col>
               <Col fullWidth>
@@ -190,15 +193,15 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   error={
                     hasError.sum
                       ? CLIENT_PAYMENT_ERROR_MESSAGES[
-                          hasError.sum || "sumNotGreaterThanInsTotal"
+                          hasError.sum || 'sumNotGreaterThanInsTotal'
                         ]
-                      : ""
+                      : ''
                   }
                   value={
-                    sum === ""
-                      ? ""
-                      : formatterCurrency(sum, "UZS")
-                          .replace(/UZS|USD/, "")
+                    sum === ''
+                      ? ''
+                      : formatterCurrency(sum, 'UZS')
+                          .replace(/UZS|USD/, '')
                           .trim()
                   }
                   onChange={handlePriceChange}
@@ -206,17 +209,17 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   variant="outlined"
                   iconText={CURRENCY_MAP[currency]}
                   placeholder="Miqdorni kiriting..."
-                  placeholderColor={"secondary"}
-                  name={"sum"}
+                  placeholderColor={'secondary'}
+                  name={'sum'}
                 />
               </Col>
             </Row>
           </Col>
-          <Col flexGrow>
+          <Col fullWidth>
             <Row gutter={1}>
               <Col>
-                <Typography element="span" className={styles["modal-text"]}>
-                  <strong> Kurs:</strong>{" "}
+                <Typography element="span" className={styles['modal-text']}>
+                  <strong> Kurs:</strong>{' '}
                   {isCurrencyLoading ? (
                     <ClipLoader size={12} />
                   ) : (
@@ -231,9 +234,9 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   control={control}
                   variant="outlined"
                   datePickerOptions={{
-                    maxDate: "today",
+                    maxDate: 'today',
                   }}
-                  {...register("date")}
+                  {...register('date')}
                 />
               </Col>
             </Row>
@@ -241,7 +244,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
         </Row>
         <Row align="center" justify="center" gutter={4}>
           <Col align="center" justify="center">
-            <Typography element="span" className={styles["modal-subtitle"]}>
+            <Typography element="span" className={styles['modal-subtitle']}>
               To'lov turi
             </Typography>
           </Col>
@@ -256,7 +259,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                       icon="walletFilled"
                       value="cash"
                       defaultChecked
-                      {...register("paymentType")}
+                      {...register('paymentType')}
                     />
                   </Col>
                   <Col fullWidth>
@@ -265,7 +268,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                       label="Karta"
                       icon="cardFilled"
                       value="card"
-                      {...register("paymentType")}
+                      {...register('paymentType')}
                     />
                   </Col>
                 </Row>
@@ -278,7 +281,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                       label="Visa"
                       icon="cardFilled"
                       value="visa"
-                      {...register("paymentType")}
+                      {...register('paymentType')}
                     />
                   </Col>
                   <Col fullWidth>
@@ -287,7 +290,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                       label="Terminal"
                       icon="cardFilled"
                       value="terminal"
-                      {...register("paymentType")}
+                      {...register('paymentType')}
                     />
                   </Col>
                 </Row>
@@ -296,18 +299,19 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
           </Col>
         </Row>
         <AnimatePresence mode="popLayout">
-          {paymentType === "cash" && (
+          {paymentType === 'cash' && (
             <Row
               align="center"
               justify="center"
               gutter={4}
               animated
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}>
+              transition={{ duration: 0.2 }}
+            >
               <Col align="center" justify="center">
-                <Typography element="span" className={styles["modal-subtitle"]}>
+                <Typography element="span" className={styles['modal-subtitle']}>
                   Filialni tanlang
                 </Typography>
               </Col>
@@ -319,7 +323,7 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   canClickIcon={false}
                   options={branchOptions}
                   placeholder="Filialni tanlang..."
-                  {...register("account")}
+                  {...register('account')}
                 />
               </Col>
             </Row>

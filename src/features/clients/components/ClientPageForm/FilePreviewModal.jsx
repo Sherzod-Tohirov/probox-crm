@@ -1,5 +1,5 @@
 import { Modal, Box, Typography, Button } from '@components/ui';
-import styles from './clientPageForm.module.scss';
+import styles from './style.module.scss';
 import iconsMap from '@utils/iconsMap';
 import classNames from 'classnames';
 import { memo, useState } from 'react';
