@@ -134,7 +134,10 @@ function Table(
     isLoading = false,
     showPivotColumn = false,
     scrollable = false, // Can be scalar or { xs: true, md: false }
-    scrollHeight = { xs: 'calc(100vh - 200px)', md: 'calc(100vh - 450px)' }, // Responsive
+    scrollHeight = {
+      xs: 'calc(100vh - 200px)',
+      md: columns.length > 10 ? 'calc(100vh - 450px)' : 'auto',
+    }, // Responsive
     getRowStyles = () => ({}),
     onRowClick = () => {},
   },
@@ -270,7 +273,7 @@ function Table(
       ? containerHeight.md || 'auto'
       : containerHeight || 'auto';
     const scroll = isResponsiveProp(scrollHeight)
-      ? scrollHeight.md || 'calc(100vh - 450px)'
+      ? scrollHeight.md || 'auto'
       : scrollHeight;
     return {
       height: scrollable ? scroll : height,

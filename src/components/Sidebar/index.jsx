@@ -4,13 +4,21 @@ import { Row, Col, List, Typography, Button } from '@components/ui';
 import useToggle from '@hooks/useToggle';
 import sidebarLinks from '@utils/sidebarLinks';
 import iconsMap from '@utils/iconsMap';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
+import useIsMobile from '@hooks/useIsMobile';
 
 export default function Sidebar() {
   const { pathname } = useLocation();
   const { isOpen, toggle } = useToggle('sidebar');
+  const isMobile = useIsMobile();
+  const location = useLocation();
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      toggle();
+    }
+  }, [location.pathname, isMobile]);
   const renderLinks = useCallback(
     (link) => {
       return (
@@ -28,6 +36,7 @@ export default function Sidebar() {
             element="span"
             className={classNames(styles['sidebar-link-title'], {
               [styles['minified']]: !isOpen,
+              [styles['mobile']]: isMobile,
             })}
           >
             {link.title}
@@ -42,7 +51,7 @@ export default function Sidebar() {
       <Col fullWidth>
         <Row direction={'row'} justify={'space-between'} align={'center'}>
           <Col>
-            <Logo isMinified={!isOpen} />
+            <Logo isMinified={!isOpen && !isMobile} />
           </Col>
           <Col>
             <Button
@@ -55,13 +64,14 @@ export default function Sidebar() {
         </Row>
       </Col>
       <Col>
-        <Row gutter={3} align={!isOpen ? 'center' : 'start'}>
+        <Row gutter={3} align={!isOpen && !isMobile ? 'center' : 'start'}>
           <Col>
             <Typography
               element="span"
               className={classNames(
                 styles['sidebar-text'],
-                !isOpen && styles['minified']
+                !isOpen && styles['minified'],
+                isMobile && styles['mobile']
               )}
             >
               MAIN

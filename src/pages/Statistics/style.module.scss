@@ -2,8 +2,8 @@
 
 .sticky-col {
   position: sticky !important;
-  top: 107px !important;
-  z-index: 1;
+  top: 100px !important;
+  z-index: 100;
   background-color: v.$primary-bg;
 
   &::before,

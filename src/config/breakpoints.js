@@ -1,7 +1,8 @@
+// breakpoints in pixels
 export const BREAKPOINTS = {
-  xs: '0px', // Mobile
-  sm: '576px', // Small
-  md: '768px', // Tablet
-  lg: '992px', // Desktop
-  xl: '1200px', // Large desktop (optional)
+  XS: 0, // Mobile
+  SM: 576, // Small
+  MD: 768, // Tablet
+  LG: 992, // Desktop
+  XL: 1200, // Large desktop (optional)
 };

@@ -197,6 +197,9 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
                   className={classNames(styles['message-audio'], styles[size])}
                   controls
                   preload="metadata"
+                  onLoadedMetadata={(e) => {
+                    console.log('Audio duratio:', e.target.duration);
+                  }}
                 />
               </div>
             );

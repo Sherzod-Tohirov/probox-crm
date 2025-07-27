@@ -18,14 +18,8 @@ const Filter = ({ onFilter, setParams }) => {
   const { executors } = useFilter();
   const { user } = useAuth();
   const dispatch = useDispatch();
-  console.log(executors, 'executors');
 
   const filterState = useSelector((state) => state.page.statistics.filter);
-  console.log(
-    filterState,
-    getSelectOptionsFromKeys(executors.options, filterState.slpCode),
-    'filterState in Filter component'
-  );
   const {
     setValue,
     register,
@@ -93,7 +87,7 @@ const Filter = ({ onFilter, setParams }) => {
       onSubmit={handleSubmit(onFilter)}
       autoComplete="off"
     >
-      <Row direction={'row'} gutter={6.25}>
+      <Row direction={'row'} gutter={6.25} wrap>
         <Col gutter={4} flexGrow>
           <Input
             id={'startDate'}
@@ -129,10 +123,11 @@ const Filter = ({ onFilter, setParams }) => {
             {...register('slpCode')}
           />
         </Col>
-        <Col style={{ marginTop: '25px' }}>
+        <Col style={{ marginTop: 'auto' }} flexGrow>
           <Row direction="row" gutter={2}>
-            <Col>
+            <Col flexGrow>
               <Button
+                fullWidth
                 className={classNames(styles['filter-btn'], styles['clear'])}
                 onClick={handleFilterClear}
                 icon={'delete'}
@@ -142,8 +137,9 @@ const Filter = ({ onFilter, setParams }) => {
                 Tozalash
               </Button>
             </Col>
-            <Col>
+            <Col flexGrow>
               <Button
+                fullWidth
                 className={styles['filter-btn']}
                 icon={'search'}
                 iconSize={18}

@@ -232,10 +232,8 @@ function ClientPageForm({
       id={formId}
       onSubmit={handleSubmit(async (data) => {
         await onSubmit(data);
-        console.log(userAddressCoords, 'coords');
         const hasCoords =
           'lat' in userAddressCoords && 'long' in userAddressCoords;
-        console.log(hasCoords, 'has coords');
         if (hasCoords) {
           await updateAddressMutation.mutate({
             cardCode: currentClient?.['CardCode'],

@@ -26,6 +26,7 @@ function Col(
     offset, // Scalar (e.g., 3) or object { xs: 0, md: 3 }
     gutter = 0, // Scalar (e.g., 0.5) or object { xs: 0.5, md: 1 }
     className,
+    wrap = false, // Whether to wrap children
     style,
     ...props
   },
@@ -92,6 +93,7 @@ function Col(
   const colStyle = {
     display: 'flex',
     boxSizing: 'border-box',
+
     // Apply default styles for scalar props
     ...(typeof span === 'number'
       ? { flex: `0 0 ${(span / 12) * 100}%`, maxWidth: `${(span / 12) * 100}%` }
@@ -100,6 +102,7 @@ function Col(
       ? { marginLeft: `${(offset / 12) * 100}%` }
       : {}),
     ...(typeof gutter === 'number' ? { gap: `${gutter}rem` } : {}),
+    flexWrap: wrap ? 'wrap' : 'nowrap',
     flexGrow: typeof flexGrow === 'boolean' ? (flexGrow ? 1 : 0) : undefined,
     alignSelf: typeof align === 'string' && align ? align : undefined,
     justifySelf: typeof justify === 'string' && justify ? justify : undefined,

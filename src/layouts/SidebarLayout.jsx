@@ -1,9 +1,8 @@
-import styles from '@assets/styles/modules/layout.module.scss';
-import useToggle from '../hooks/useToggle';
-import classNames from 'classnames';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { BREAKPOINTS } from '@config/breakpoints';
+import classNames from 'classnames';
+import useToggle from '@hooks/useToggle';
+import useIsMobile from '@hooks/useIsMobile';
+import styles from '@assets/styles/modules/layout.module.scss';
 const sidebarVariants = {
   hidden: {
     x: '-100%',
@@ -20,19 +19,7 @@ const sidebarVariants = {
 
 export default function SidebarLayout({ children }) {
   const { isOpen, toggle } = useToggle('sidebar');
-  const [isMobile, setIsMobile] = useState(false);
-  console.log(isMobile, 'isMobile');
-  // Watch for window resize to detect mobile
-  useEffect(() => {
-    const breakpoint = Number(BREAKPOINTS.md.replace('px', ''));
-    console.log(window.innerWidth, breakpoint);
-    const checkMobile = () => setIsMobile(window.innerWidth <= breakpoint);
-    checkMobile();
-
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
+  const isMobile = useIsMobile();
   return (
     <>
       {/* Mobile-only backdrop */}

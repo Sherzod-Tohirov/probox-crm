@@ -13,17 +13,17 @@
 
     @media (min-width: v.$breakpoint-md) {
       overflow: auto;
-      height: calc(100vh - 450px); // Default desktop height
+      height: auto; // Default desktop height
     }
 
     @media (max-width: (v.$breakpoint-md - 1)) {
-      height: 400px !important; // Adjusted for mobile with drawer
+      height: auto; // Adjusted for mobile with drawer
     }
 
     & .table-container {
       padding-top: 20px;
     }
-   
+
     & table thead tr {
       position: sticky;
       top: 0;

@@ -191,7 +191,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
           <Row
             direction="row"
             align="center"
-            justify="space-between"
+            justify={{ xs: 'start', md: 'space-between' }}
             className={styles['row-container']}
             wrap
             gutter={4}
@@ -214,7 +214,6 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                       dispatch(setClientsPageSize(Number(e.target.value)));
                     }}
                     canClickIcon={false}
-                    fullWidth
                   />
                 </Col>
                 <Col>

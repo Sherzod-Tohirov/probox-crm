@@ -122,7 +122,6 @@ export default function Filter({ onFilter }) {
 
   const handleStoreFilterLastAction = useCallback(() => {
     const clientsPageState = store.getState().page.clients;
-    console.log(clientsPageState, 'clientsPageState');
     try {
       const lastActions = Array.isArray(clientsPageState.lastAction)
         ? clientsPageState.lastAction

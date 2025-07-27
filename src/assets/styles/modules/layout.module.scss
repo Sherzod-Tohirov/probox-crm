@@ -1,7 +1,6 @@
 @use '../mixins' as m;
 @use '../variables' as v;
 
-
 .sidebar-layout {
   @include m.flex-direction(column);
   width: 64px !important;
@@ -22,7 +21,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    width: 300px !important;
+    width: 250px !important;
     height: 100%;
     z-index: 1005;
     transform: translateX(-100%);
@@ -32,7 +31,7 @@
 .backdrop {
   display: none;
 
-  @include m.media-max(575px) {
+  @include m.media-max(v.$breakpoint-lg) {
     display: block;
     position: fixed;
     inset: 0;

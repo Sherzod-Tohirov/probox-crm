@@ -28,7 +28,9 @@ const useStatisticsTableColumns = () => {
   const findExecutor = useCallback((column) => {
     if (column.SlpCode === null) return {};
     return (
-      executors?.find((executor) => executor.SlpCode === column.SlpCode) ?? {}
+      executors?.find(
+        (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
+      ) ?? {}
     );
   }, []);
 
@@ -111,6 +113,7 @@ const useStatisticsTableColumns = () => {
       icon: 'calendarFilled',
       renderCell: (column) => {
         const currentExecutor = findExecutor(column);
+        console.log(currentExecutor, 'currentExecutor', column);
         if (currentExecutor?.SlpName) {
           return currentExecutor.SlpName;
         }
