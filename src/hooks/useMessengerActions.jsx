@@ -7,21 +7,19 @@ const useMessengerActions = () => {
   const updateMessageMutation = useMutateMessages('update');
 
   const sendMessage = useCallback(async (data) => {
-    console.log(data, 'data in send msg');
     try {
       const files = new FormData();
       if (data.msgAudio) {
         const audioFile = new File([data.msgAudio], 'audio.mp3', {
-          type: 'audio/wav',
+          type: 'audio/webm',
         });
-        console.log(audioFile);
         files.append('audio', audioFile);
+        files.append('audioDuration', data.msgAudio.duration);
       }
 
-      if (data.msgPhoto && data.msgPhoto.length > 0) {
+      if (!files.has('audio') && data.msgPhoto && data.msgPhoto.length > 0) {
         for (let i = 0; i < data.msgPhoto.length; i++) {
           const file = data.msgPhoto[i];
-          console.log('ffffile', file);
           files.append('image', data.msgPhoto[i]);
         }
       }
@@ -31,11 +29,6 @@ const useMessengerActions = () => {
             Comments: data.msgText ?? null,
           }
         : null;
-
-      for (let pair of files.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-      console.log(files, 'files');
       await postMessageMutation.mutateAsync(payload ?? files);
     } catch (error) {
       console.log(error);

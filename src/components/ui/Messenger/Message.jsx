@@ -1,6 +1,6 @@
 import moment from 'moment';
 import classNames from 'classnames';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useFloating, shift, offset, autoUpdate } from '@floating-ui/react-dom';
 
@@ -11,8 +11,11 @@ import iconsMap from '@utils/iconsMap';
 import getMessageColorForUser from '@utils/getMessageColorForUser';
 import styles from './styles/messenger.module.scss';
 import { API_CLIENT_IMAGES } from '@utils/apiUtils';
+import AudioDuration from './AudioDuration';
+import AudioPlayer from './AudioPlayer';
 
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
+  const audioRef = useRef(null);
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
@@ -137,7 +140,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
           if (messageType === 'text') {
             return (
               <div
-                style={{ backgroundColor: msgColor.bg }}
+                style={{ backgroundColor: msgColor?.bg }}
                 className={styles['message-text-wrapper']}
               >
                 {editMode ? (
@@ -187,21 +190,11 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
           }
           if (messageType === 'audio') {
             return (
-              <div className={styles['message-audio-wrapper']}>
-                <audio
-                  style={{
-                    '--audio-bg-color': `${msgColor.bg}`,
-                    '--audio-color': `${msgColor.text}`,
-                  }}
-                  src={API_CLIENT_IMAGES + msg?.['Audio']}
-                  className={classNames(styles['message-audio'], styles[size])}
-                  controls
-                  preload="metadata"
-                  onLoadedMetadata={(e) => {
-                    console.log('Audio duratio:', e.target.duration);
-                  }}
-                />
-              </div>
+              <AudioPlayer
+                src={API_CLIENT_IMAGES + msg?.['Audio']?.['url']}
+                externalDuration={msg?.['Audio']?.['duration']}
+                color={msgColor}
+              />
             );
           }
         })()}

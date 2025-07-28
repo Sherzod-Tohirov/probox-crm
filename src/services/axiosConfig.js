@@ -1,14 +1,12 @@
-import axios from "axios";
-import { store } from "@store/store.js";
-import { logoutUser } from "@store/slices/authSlice.js";
-import { alert } from "../utils/globalAlert";
-const baseURL = import.meta.env.VITE_API_URL || "http://83.69.136.98:3019/api";
-console.log("Environment Variable VITE_API_URL:", import.meta.env);
-console.log("API Base URL:", baseURL);
+import axios from 'axios';
+import { store } from '@store/store.js';
+import { logoutUser } from '@store/slices/authSlice.js';
+import { alert } from '../utils/globalAlert';
+const baseURL = import.meta.env.VITE_API_URL || 'http://83.69.136.98:3019/api';
 const api = axios.create({
   baseURL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -23,12 +21,12 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    alert(error?.response?.data?.message || "Server bilan xatolik yuz berdi!", {
-      type: "error",
+    alert(error?.response?.data?.message || 'Server bilan xatolik yuz berdi!', {
+      type: 'error',
     });
     if (error.response?.status === 401) {
       store.dispatch(logoutUser());
-      window.location.href = "/login";
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

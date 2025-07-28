@@ -119,6 +119,7 @@ const TableRow = memo(
 
 function Table(
   {
+    id,
     uniqueKey = null,
     columns = [],
     data = [],
@@ -299,7 +300,7 @@ function Table(
       className={containerClassName}
     >
       <div className={styles['table-container']}>
-        <table ref={ref} className={tableClassName} style={style}>
+        <table id={id} ref={ref} className={tableClassName} style={style}>
           <thead>
             <tr>
               {selectionEnabled && (

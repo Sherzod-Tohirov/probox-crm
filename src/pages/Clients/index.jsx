@@ -1,10 +1,16 @@
 import _ from 'lodash';
 
-import { Col, Row, Navigation, Table } from '@components/ui';
+import { Col, Row, Navigation, Table, Button } from '@components/ui';
 import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
 import Filter from '@features/clients/components/Filter';
 
-import { useCallback, useLayoutEffect, useState, useRef } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { closeAllModals } from '@store/slices/toggleSlice';
@@ -16,11 +22,13 @@ import useClientsTableColumns from '@features/clients/hooks/useClientsTableColum
 import styles from './style.module.scss';
 import hasRole from '@utils/hasRole';
 import useAuth from '@hooks/useAuth';
+import useIsMobile from '@hooks/useIsMobile';
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const { user } = useAuth();
   const clientsTableRef = useRef(null);
   const { currentPage, filter, currentClient } = useSelector(
@@ -32,6 +40,7 @@ export default function Clients() {
     total: 0,
     data: [],
   });
+  const [toggleFilter, setToggleFilter] = useState(false);
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
@@ -105,6 +114,22 @@ export default function Clients() {
   useLayoutEffect(() => {
     dispatch(closeAllModals());
   }, [location.pathname]);
+  // Close all modals if scrolls table
+  useEffect(() => {
+    const tableWrapper = clientsTableRef.current.closest('#table-wrapper');
+    tableWrapper?.addEventListener(
+      'scroll',
+      () => {
+        dispatch(closeAllModals());
+      },
+      {
+        passive: true,
+      }
+    );
+    return () => {
+      tableWrapper?.removeEventListener('scroll', dispatch(closeAllModals()));
+    };
+  }, []);
 
   // Close all modal if click outside of modal or cell
 
@@ -113,16 +138,31 @@ export default function Clients() {
       <Row gutter={6} style={{ width: '100%', height: '100%' }}>
         <Col className={styles['sticky-column']} fullWidth>
           <Row gutter={6}>
-            <Col>
-              <Navigation fallbackBackPath={'/clients'} />
+            <Col fullWidth>
+              <Row direction="row" justify="space-between" align="center">
+                <Col>
+                  <Navigation fallbackBackPath={'/clients'} />
+                </Col>
+                {isMobile ? (
+                  <Col>
+                    <Button
+                      onClick={() => setToggleFilter((prev) => !prev)}
+                      icon={'filter'}
+                      iconColor={'secondary'}
+                      iconSize={'14'}
+                    ></Button>
+                  </Col>
+                ) : null}
+              </Row>
             </Col>
             <Col fullWidth>
-              <Filter onFilter={handleFilter} />
+              <Filter onFilter={handleFilter} isExpanded={toggleFilter} />
             </Col>
           </Row>
         </Col>
         <Col fullWidth>
           <Table
+            id={'clients-table'}
             scrollable
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}

@@ -3,9 +3,10 @@ import moment from 'moment';
 import classNames from 'classnames';
 import styles from './filter.module.scss';
 import { Button, Col, Input, Row } from '@components/ui';
+import { useForm } from 'react-hook-form';
 
 import useAlert from '@hooks/useAlert';
-import { useForm } from 'react-hook-form';
+import useIsMobile from '@hooks/useIsMobile';
 import { useDispatch, useSelector } from 'react-redux';
 import useFilter from '@features/clients/hooks/useFilter';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
@@ -29,11 +30,12 @@ import {
 } from '@store/slices/clientsPageSlice';
 
 import { AnimatePresence } from 'framer-motion';
+import Accordion from '../../../../components/ui/Accordion';
 
-export default function Filter({ onFilter }) {
+export default function Filter({ onFilter, isExpanded = false }) {
   const isFirstRender = useRef(true);
   const formRef = useRef(null);
-
+  const isMobile = useIsMobile();
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const { alert } = useAlert();
 
@@ -54,6 +56,7 @@ export default function Filter({ onFilter }) {
   const { query, phone } = useFilter();
   const { data: executors, isPending: isExecutorsLoading } =
     useFetchExecutors();
+
   const filterState = useSelector((state) => state.page.clients.filter);
   const clientsPageState = useSelector((state) => state.page.clients);
 
@@ -274,191 +277,200 @@ export default function Filter({ onFilter }) {
   }, [refs]);
 
   return (
-    <form
-      ref={formRef}
-      className={styles['filter-form']}
-      onSubmit={handleSubmit(handleFilter)}
-      autoComplete="off"
+    <Accordion
+      isOpen={isExpanded}
+      defaultOpen={isExpanded}
+      isEnabled={isMobile}
     >
-      <Row direction={'row'} gutter={6.25} wrap>
-        <Col flexGrow>
-          <Row direction={'row'} gutter={4} wrap>
-            <Col flexGrow>
-              <Input
-                style={{ minWidth: '230px' }}
-                size={'full-grow'}
-                variant={'outlined'}
-                label={'IMEI | FIO'}
-                type={'search'}
-                placeholder={'4567890449494 | Ismi Sharif'}
-                placeholderColor={'secondary'}
-                searchText={watchedFields.search}
-                onFocus={() => {
-                  setToggleSearchFields((prev) => ({ ...prev, search: true }));
-                }}
-                onSearch={query.onSearch}
-                onSearchSelect={(client) => {
-                  handleSearchSelect(client.CardName, 'search');
-                }}
-                renderSearchItem={query.renderItem}
-                searchable={toggleSearchFields.search}
-                control={control}
-                {...register('search')}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                type={'tel'}
-                size={'full-grow'}
-                variant={'outlined'}
-                label={'Telefon raqami'}
-                onSearch={phone.onSearch}
-                searchText={watchedFields.phone}
-                searchable={toggleSearchFields.phone}
-                onFocus={() => {
-                  setToggleSearchFields((prev) => ({ ...prev, phone: true }));
-                }}
-                onSearchSelect={(client) => {
-                  handleSearchSelect(client.Phone1, 'phone');
-                }}
-                renderSearchItem={phone.renderItem}
-                placeholder={'90 123 45 67'}
-                control={control}
-                name={'phone'}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                id={'startDate'}
-                size={'full-grow'}
-                variant={'outlined'}
-                label={'Boshlanish vaqti'}
-                canClickIcon={false}
-                type={'date'}
-                control={control}
-                {...register('startDate')}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                size={'full-grow'}
-                variant={'outlined'}
-                label={'Tugash vaqti'}
-                canClickIcon={false}
-                type={'date'}
-                datePickerOptions={{ minDate: watchedFields.startDate }}
-                error={errors?.endDate?.message}
-                control={control}
-                {...register('endDate')}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                size={'full-grow'}
-                style={{ minWidth: '160px' }}
-                canClickIcon={false}
-                variant={'outlined'}
-                label={'Holati'}
-                type={'select'}
-                className={'paymentStatus'}
-                control={control}
-                options={statusOptions}
-                multipleSelect={true}
-                {...register('paymentStatus')}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                type={'select'}
-                size={'full-grow'}
-                style={{ minWidth: '140px' }}
-                canClickIcon={false}
-                multipleSelect={true}
-                options={executorsOptions}
-                variant={'outlined'}
-                label={"Mas'ul ijrochi"}
-                isLoading={isExecutorsLoading}
-                control={control}
-                {...register('slpCode')}
-              />
-            </Col>
-            <Col flexGrow>
-              <Input
-                type={'select'}
-                size={'full-grow'}
-                canClickIcon={false}
-                options={productOptions}
-                variant={'outlined'}
-                label={'Buyum'}
-                {...register('phoneConfiscated')}
-              />
-            </Col>
-          </Row>
-        </Col>
-        <Col flexGrow style={{ marginTop: '25px' }}>
-          <Row direction="row" gutter={2}>
-            <Col flexGrow>
-              <Button
-                fullWidth
-                ref={refs.setReference}
-                className={classNames(styles['filter-btn'], styles['clear'])}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowFilterMenu((p) => !p);
-                }}
-                icon={'filter'}
-                iconSize={18}
-                animated={false}
-                variant={'filled'}
-              >
-                Filter
-              </Button>
-              <AnimatePresence initial={false}>
-                {showFilterMenu ? (
-                  <FilterMenu
-                    ref={refs.setFloating}
-                    floatingStyles={{
-                      ...floatingStyles,
-                      position: strategy,
-                      top: y ?? 0,
-                      left: x ?? 0,
-                    }}
-                    onClose={() => setShowFilterMenu(false)}
-                    menuList={[
-                      {
-                        label: 'Tozalash',
-                        icon: 'delete',
-                        onClick: (e) => {
-                          handleFilterClear();
-                          setTimeout(() => {
-                            formRef.current?.requestSubmit(); // native submit trigger
-                          }, 0); // ensure React state updates finish
+      <form
+        ref={formRef}
+        className={styles['filter-form']}
+        onSubmit={handleSubmit(handleFilter)}
+        autoComplete="off"
+      >
+        <Row direction={'row'} gutter={6.25} wrap>
+          <Col flexGrow>
+            <Row direction={'row'} gutter={4} wrap>
+              <Col flexGrow>
+                <Input
+                  style={{ minWidth: '230px' }}
+                  size={'full-grow'}
+                  variant={'outlined'}
+                  label={'IMEI | FIO'}
+                  type={'search'}
+                  placeholder={'4567890449494 | Ismi Sharif'}
+                  placeholderColor={'secondary'}
+                  searchText={watchedFields.search}
+                  onFocus={() => {
+                    setToggleSearchFields((prev) => ({
+                      ...prev,
+                      search: true,
+                    }));
+                  }}
+                  onSearch={query.onSearch}
+                  onSearchSelect={(client) => {
+                    handleSearchSelect(client.CardName, 'search');
+                  }}
+                  renderSearchItem={query.renderItem}
+                  searchable={toggleSearchFields.search}
+                  control={control}
+                  {...register('search')}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  type={'tel'}
+                  size={'full-grow'}
+                  variant={'outlined'}
+                  label={'Telefon raqami'}
+                  onSearch={phone.onSearch}
+                  searchText={watchedFields.phone}
+                  searchable={toggleSearchFields.phone}
+                  onFocus={() => {
+                    setToggleSearchFields((prev) => ({ ...prev, phone: true }));
+                  }}
+                  onSearchSelect={(client) => {
+                    handleSearchSelect(client.Phone1, 'phone');
+                  }}
+                  renderSearchItem={phone.renderItem}
+                  placeholder={'90 123 45 67'}
+                  control={control}
+                  name={'phone'}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  id={'startDate'}
+                  size={'full-grow'}
+                  variant={'outlined'}
+                  label={'Boshlanish vaqti'}
+                  canClickIcon={false}
+                  type={'date'}
+                  control={control}
+                  {...register('startDate')}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  size={'full-grow'}
+                  variant={'outlined'}
+                  label={'Tugash vaqti'}
+                  canClickIcon={false}
+                  type={'date'}
+                  datePickerOptions={{ minDate: watchedFields.startDate }}
+                  error={errors?.endDate?.message}
+                  control={control}
+                  {...register('endDate')}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  size={'full-grow'}
+                  style={{ minWidth: '160px' }}
+                  canClickIcon={false}
+                  variant={'outlined'}
+                  label={'Holati'}
+                  type={'select'}
+                  className={'paymentStatus'}
+                  control={control}
+                  options={statusOptions}
+                  multipleSelect={true}
+                  {...register('paymentStatus')}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  type={'select'}
+                  size={'full-grow'}
+                  style={{ minWidth: '140px' }}
+                  canClickIcon={false}
+                  multipleSelect={true}
+                  options={executorsOptions}
+                  variant={'outlined'}
+                  label={"Mas'ul ijrochi"}
+                  isLoading={isExecutorsLoading}
+                  control={control}
+                  {...register('slpCode')}
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  type={'select'}
+                  size={'full-grow'}
+                  canClickIcon={false}
+                  options={productOptions}
+                  variant={'outlined'}
+                  label={'Buyum'}
+                  {...register('phoneConfiscated')}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col flexGrow style={{ marginTop: '25px' }}>
+            <Row direction="row" gutter={2}>
+              <Col flexGrow>
+                <Button
+                  fullWidth
+                  ref={refs.setReference}
+                  className={classNames(styles['filter-btn'], styles['clear'])}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowFilterMenu((p) => !p);
+                  }}
+                  icon={'filter'}
+                  iconSize={18}
+                  animated={false}
+                  variant={'filled'}
+                >
+                  Filter
+                </Button>
+                <AnimatePresence initial={false}>
+                  {showFilterMenu ? (
+                    <FilterMenu
+                      ref={refs.setFloating}
+                      floatingStyles={{
+                        ...floatingStyles,
+                        position: strategy,
+                        top: y ?? 0,
+                        left: x ?? 0,
+                      }}
+                      onClose={() => setShowFilterMenu(false)}
+                      menuList={[
+                        {
+                          label: 'Tozalash',
+                          icon: 'delete',
+                          onClick: (e) => {
+                            handleFilterClear();
+                            setTimeout(() => {
+                              formRef.current?.requestSubmit(); // native submit trigger
+                            }, 0); // ensure React state updates finish
+                          },
                         },
-                      },
-                      {
-                        label: 'Eski holatiga qaytarish',
-                        icon: 'refresh',
-                        onClick: handleRollbackFilterLastAction,
-                      },
-                    ]}
-                  />
-                ) : null}
-              </AnimatePresence>
-            </Col>
-            <Col flexGrow>
-              <Button
-                fullWidth
-                className={styles['filter-btn']}
-                icon={'search'}
-                iconSize={18}
-                variant={'filled'}
-              >
-                Qidiruv
-              </Button>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </form>
+                        {
+                          label: 'Eski holatiga qaytarish',
+                          icon: 'refresh',
+                          onClick: handleRollbackFilterLastAction,
+                        },
+                      ]}
+                    />
+                  ) : null}
+                </AnimatePresence>
+              </Col>
+              <Col flexGrow>
+                <Button
+                  fullWidth
+                  className={styles['filter-btn']}
+                  icon={'search'}
+                  iconSize={18}
+                  variant={'filled'}
+                >
+                  Qidiruv
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </form>
+    </Accordion>
   );
 }

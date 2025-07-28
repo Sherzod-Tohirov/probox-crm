@@ -1,8 +1,8 @@
-import { Col, Row, Typography } from "@components/ui";
-import Chart from "./Chart";
+import { Col, Row, Typography } from '@components/ui';
+import Chart from './Chart';
 
-import styles from "./statistic.module.scss";
-import { ClipLoader } from "react-spinners";
+import styles from './statistic.module.scss';
+import { ClipLoader } from 'react-spinners';
 
 export default function StatisticChart({
   title,
@@ -11,17 +11,16 @@ export default function StatisticChart({
   date = {},
   isLoading = false,
 }) {
-  console.log(date, "date");
   return (
     <div className={styles.statistic}>
       <Row>
         <Col fullWidth>
-          <Row direction={"row"} justify={"space-between"}>
+          <Row direction={'row'} justify={'space-between'}>
             <Col>
               <Row>
                 <Col>
                   <Typography element="strong" className={styles.title}>
-                    {title ?? "Statistika"}
+                    {title ?? 'Statistika'}
                   </Typography>
                 </Col>
                 <Col>
@@ -39,14 +38,14 @@ export default function StatisticChart({
         </Col>
         <Col fullWidth>
           {isLoading ? (
-            <div className={styles["loader-wrapper"]}>
+            <div className={styles['loader-wrapper']}>
               <ClipLoader color="#8979FF" size={40} />
             </div>
           ) : data?.length > 0 ? (
             <Chart data={data} keys={keys} />
           ) : (
-            <div className={styles["loader-wrapper"]}>
-              <Typography element="span" className={styles["no-data"]}>
+            <div className={styles['loader-wrapper']}>
+              <Typography element="span" className={styles['no-data']}>
                 Ma'lumotlar mavjud emas
               </Typography>
             </div>

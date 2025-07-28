@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   isSidebarOpen: true,
   isMessengerOpen: false,
@@ -7,7 +7,7 @@ const initialState = {
 
 const loadState = () => {
   try {
-    const serializedState = localStorage.getItem("toggleState");
+    const serializedState = localStorage.getItem('toggleState');
     if (serializedState === null) {
       return initialState;
     }
@@ -31,11 +31,11 @@ const deleteModals = (state, action, isAll = false) => {
 };
 
 const saveState = (state) => {
-  localStorage.setItem("toggleState", JSON.stringify(state));
+  localStorage.setItem('toggleState', JSON.stringify(state));
 };
 
 const toggleSlice = createSlice({
-  name: "toggle",
+  name: 'toggle',
   initialState: loadState(),
   reducers: {
     toggleSidebar(state) {

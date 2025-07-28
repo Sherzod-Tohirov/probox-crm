@@ -113,7 +113,6 @@ const useStatisticsTableColumns = () => {
       icon: 'calendarFilled',
       renderCell: (column) => {
         const currentExecutor = findExecutor(column);
-        console.log(currentExecutor, 'currentExecutor', column);
         if (currentExecutor?.SlpName) {
           return currentExecutor.SlpName;
         }
@@ -187,7 +186,7 @@ const useStatisticsTableColumns = () => {
       key: 'kpiUZS',
       title: 'KPI (UZS)',
       width: '2%',
-      minWidth: '40px',
+      minWidth: '100px',
       icon: 'moneyAdd',
       renderCell: (column) => {
         if (column.SlpCode === null) return '-';
@@ -205,7 +204,7 @@ const useStatisticsTableColumns = () => {
       key: 'salary',
       title: 'Oylik (fiksa)',
       width: '2%',
-      minWidth: '40px',
+      minWidth: '120px',
       icon: 'income',
       renderCell: (column) => {
         if (column.SlpCode === null) return '-';

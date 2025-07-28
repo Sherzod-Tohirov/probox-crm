@@ -34,67 +34,65 @@ export default function Dashboard() {
         </DashboardStatistics>
       </Col>
       <Col fullWidth>
-        <Table columns={tableColumns} data={tableData} />
+        <Table scrollable columns={tableColumns} data={tableData} />
       </Col>
-      <Col>
-        <Box align={'stretch'} justify={'center'} gap={2} marginTop={2}>
-          <Button
-            variant={'filled'}
-            onClick={() => {
-              alert('This is success message', {
-                type: 'success',
-              });
-            }}
-          >
-            Alert Success
-          </Button>
-          <Button
-            variant={'filled'}
-            onClick={() => {
-              alert('This is a warning message', {
-                type: 'info',
-              });
-            }}
-          >
-            Alert Warning
-          </Button>
-          <Button
-            variant={'filled'}
-            onClick={() => {
-              alert('This is an error message', {
+      <Col align={'center'} justify={'center'} wrap gutter={3}>
+        <Button
+          variant={'filled'}
+          onClick={() => {
+            alert('This is success message', {
+              type: 'success',
+            });
+          }}
+        >
+          Alert Success
+        </Button>
+        <Button
+          variant={'filled'}
+          onClick={() => {
+            alert('This is a warning message', {
+              type: 'info',
+            });
+          }}
+        >
+          Alert Warning
+        </Button>
+        <Button
+          variant={'filled'}
+          onClick={() => {
+            alert('This is an error message', {
+              type: 'error',
+            });
+          }}
+        >
+          Alert Error
+        </Button>
+        <Button
+          variant={'filled'}
+          onClick={() => {
+            alert('This is default message', {
+              type: 'default',
+            });
+          }}
+        >
+          Alert Default
+        </Button>
+        <Button
+          variant={'filled'}
+          onClick={() => {
+            alert(
+              'This is a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet',
+              {
                 type: 'error',
-              });
-            }}
-          >
-            Alert Error
-          </Button>
-          <Button
-            variant={'filled'}
-            onClick={() => {
-              alert('This is default message', {
-                type: 'default',
-              });
-            }}
-          >
-            Alert Default
-          </Button>
-          <Button
-            variant={'filled'}
-            onClick={() => {
-              alert(
-                'This is a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet',
-                {
-                  type: 'error',
-                }
-              );
-            }}
-          >
-            Long Toast
-          </Button>
-          <Button variant={'filled'} onClick={() => setModal(true)}>
-            Open Modal
-          </Button>
-        </Box>
+              }
+            );
+          }}
+        >
+          Long Toast
+        </Button>
+        <Button variant={'filled'} onClick={() => setModal(true)}>
+          Open Modal
+        </Button>
       </Col>
       <Modal isOpen={modal} onClose={() => setModal(false)}>
         Hello

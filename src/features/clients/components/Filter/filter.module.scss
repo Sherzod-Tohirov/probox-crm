@@ -5,7 +5,7 @@
   @include m.flex(center, start, 4rem);
   width: 100%;
   @include m.media-max(v.$breakpoint-lg) {
-    max-width: 750px;
+    max-width: 100%;
   }
 }
 

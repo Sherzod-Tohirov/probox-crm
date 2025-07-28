@@ -83,10 +83,10 @@ const MessageForm = ({ onSubmit, size = '' }) => {
         setAudioBlob(null);
       })}
     >
-      <Row direction="column" gutter={2} style={{ height: '100%' }}>
-        <Col fullWidth flexGrow>
+      <Row direction="column" style={{ height: '100%' }}>
+        <Col fullWidth>
           <Row direction="row" align="start">
-            <Col flexGrow style={{ minHeight: '72px' }}>
+            <Col flexGrow style={{ minHeight: '64px' }}>
               {messageInputRenderer(
                 messageType,
                 { onSubmit, reset, register, isValid },
@@ -100,6 +100,7 @@ const MessageForm = ({ onSubmit, size = '' }) => {
               <Col>
                 <Button
                   icon={'close'}
+                  iconSize={'18'}
                   variant={'text'}
                   onClick={() => {
                     setMessageType('text');

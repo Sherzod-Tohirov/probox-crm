@@ -67,6 +67,24 @@ const ModalWrapper = ({
   );
 
   useEffect(() => {
+    containerRef.current.closest('#clients-table')?.addEventListener(
+      'scroll',
+      _.debounce(() => {
+        if (isModalOpen) {
+          dispatch(toggleModal(modalId));
+        }
+      }, 100),
+      { passive: true }
+    );
+    return () => {
+      window.removeEventListener(
+        'scroll',
+        _.debounce(() => {}, 100)
+      );
+    };
+  }, [modalId]);
+
+  useEffect(() => {
     // Only add the listener when the modal is open
     if (isModalOpen) {
       // Use capture phase to handle clicks before they reach other elements

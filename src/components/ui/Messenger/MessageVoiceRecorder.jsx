@@ -3,6 +3,7 @@ import useAudioRecorder from './useAudioRecorder';
 import { Button } from '@components/ui';
 import styles from './styles/messenger.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
+import _ from 'lodash';
 const MessageVoiceRecorder = ({ onRecordingComplete }) => {
   const {
     isRecording,
@@ -31,7 +32,14 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
         <Button
           type="button"
           iconColor={isRecording ? 'danger' : 'primary'}
-          onClick={isRecording ? stopRecording : startRecording}
+          onClick={_.debounce(() => {
+            if (isRecording) {
+              stopRecording();
+              return;
+            }
+            startRecording();
+          }, 300)}
+          
           variant={'text'}
           icon={isRecording ? 'stopCircleFilled' : 'micFilled'}
         ></Button>
