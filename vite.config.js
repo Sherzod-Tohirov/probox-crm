@@ -12,11 +12,6 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 export default defineConfig({
-  build: {
-    rollupOptions: {
-      external: ['haversine-distance', 'wavesurfer.js', 'lucide-react'],
-    },
-  },
   plugins: [react()],
   base: '/',
   server: {
