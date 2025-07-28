@@ -19,6 +19,7 @@ export default defineConfig({
         'react-dom',
         'react-router-dom',
         'haversine-distance',
+        'wavesurfer.js',
       ],
     },
   },
