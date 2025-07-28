@@ -20,6 +20,31 @@ export default defineConfig({
         'react-router-dom',
         'haversine-distance',
         'wavesurfer.js',
+        'lucide-react',
+        '@floating-ui/react',
+        '@floating-ui/react-dom',
+        'framer-motion',
+        'moment',
+        'lodash',
+        'react-hook-form',
+        '@hookform/resolvers/yup',
+        'yup',
+        'react-redux',
+        '@reduxjs/toolkit',
+        'classnames',
+        // Add chart libraries if you use them
+        'chart.js',
+        'react-chartjs-2',
+        // Add table libraries if you use them
+        'react-table',
+        '@tanstack/react-table',
+        // Add date libraries
+        'date-fns',
+        // Add form libraries
+        'formik',
+        // Add animation libraries
+        'react-spring',
+        'react-transition-group',
       ],
     },
   },
