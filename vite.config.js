@@ -12,6 +12,16 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        'haversine-distance',
+      ],
+    },
+  },
   plugins: [react()],
   base: '/',
   server: {

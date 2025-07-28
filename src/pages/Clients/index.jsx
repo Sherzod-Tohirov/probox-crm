@@ -135,9 +135,9 @@ export default function Clients() {
 
   return (
     <>
-      <Row gutter={6} style={{ width: '100%', height: '100%' }}>
+      <Row gutter={isMobile ? 2 : 6} style={{ width: '100%', height: '100%' }}>
         <Col className={styles['sticky-column']} fullWidth>
-          <Row gutter={6}>
+          <Row gutter={isMobile ? 4 : 6}>
             <Col fullWidth>
               <Row direction="row" justify="space-between" align="center">
                 <Col>
@@ -149,7 +149,7 @@ export default function Clients() {
                       onClick={() => setToggleFilter((prev) => !prev)}
                       icon={'filter'}
                       iconColor={'secondary'}
-                      iconSize={'14'}
+                      iconSize={'20'}
                     ></Button>
                   </Col>
                 ) : null}
