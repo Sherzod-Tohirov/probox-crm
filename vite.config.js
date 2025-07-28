@@ -15,9 +15,6 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: [
-        'react',
-        'react-dom',
-        'react-router-dom',
         'haversine-distance',
         'wavesurfer.js',
         'lucide-react',
