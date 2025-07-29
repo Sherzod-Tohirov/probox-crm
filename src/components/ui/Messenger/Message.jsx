@@ -191,6 +191,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
           if (messageType === 'audio') {
             return (
               <AudioPlayer
+                className={size}
                 src={API_CLIENT_IMAGES + msg?.['Audio']?.['url']}
                 externalDuration={msg?.['Audio']?.['duration']}
                 color={msgColor}

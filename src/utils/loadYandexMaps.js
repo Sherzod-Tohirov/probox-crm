@@ -7,7 +7,10 @@ function loadYandexMaps() {
     }
 
     const script = document.createElement('script');
-    script.src = 'https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=' + API_KEY;
+    script.src =
+      'https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=' +
+      API_KEY +
+      '&load=package.full';
     script.type = 'text/javascript';
     script.onload = () => window.ymaps.ready(() => resolve(window.ymaps));
     script.onerror = reject;

@@ -112,7 +112,7 @@ const MessageForm = ({ onSubmit, size = '' }) => {
             ) : null}
           </Row>
         </Col>
-        <Col fullWidth>
+        <Col flexGrow fullWidth>
           <Row
             style={{ marginTop: 'auto' }}
             direction="row"
@@ -120,7 +120,7 @@ const MessageForm = ({ onSubmit, size = '' }) => {
             justify="space-between"
           >
             <Col>
-              <Row direction="row" gutter={2} align="center">
+              <Row direction="row" gutter={2} align="end">
                 <Col>
                   <Box>
                     <label className={styles['file-input-label']}>

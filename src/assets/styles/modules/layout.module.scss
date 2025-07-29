@@ -1,6 +1,12 @@
 @use '../mixins' as m;
 @use '../variables' as v;
 
+.container {
+  @include m.flex(center, start);
+  width: 100%;
+  max-width: 1440px;
+}
+
 .sidebar-layout {
   @include m.flex-direction(column);
   width: 64px !important;

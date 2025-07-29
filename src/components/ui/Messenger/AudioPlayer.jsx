@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import styles from './styles/audioPlayer.module.scss';
 import { Play, Pause } from 'lucide-react'; // Optional: for nice icons
+import classNames from 'classnames';
 
 const formatTime = (seconds) => {
   const m = Math.floor(seconds / 60);
@@ -9,7 +10,7 @@ const formatTime = (seconds) => {
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
-const AudioPlayer = ({ src, externalDuration, color = {} }) => {
+const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -65,7 +66,7 @@ const AudioPlayer = ({ src, externalDuration, color = {} }) => {
 
   return (
     <div
-      className={styles.audioPlayer}
+      className={classNames(styles.audioPlayer, styles[className])}
       style={{ color: color.text, backgroundColor: color.bg }}
     >
       <button onClick={togglePlay} className={styles.playButton}>
