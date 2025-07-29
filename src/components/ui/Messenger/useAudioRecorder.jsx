@@ -1,6 +1,5 @@
-import { set } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import getAccurateDuration from '../../../utils/getAccurateDuration';
+import getAccurateDuration from '@utils/getAccurateDuration';
 
 const useAudioRecorder = ({
   sampleRate = 44100,

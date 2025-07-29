@@ -85,16 +85,19 @@ const TableRow = memo(
 
     return (
       <tr
+        className={classNames({
+          [styles['selected-row']]: !!getRowStyles(row, rowIndex),
+        })}
         onClick={handleClick}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
         style={{
-          ...getRowStyles(row, rowIndex),
-          cursor: 'pointer',
           backgroundColor: selected ? '#f0f0f0' : 'transparent',
+          cursor: 'pointer',
           transition: 'background-color 0.2s ease',
+          ...getRowStyles(row, rowIndex),
         }}
       >
         {selectionEnabled && (

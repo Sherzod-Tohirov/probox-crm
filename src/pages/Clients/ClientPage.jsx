@@ -186,7 +186,7 @@ export default function ClientPage() {
                 columns={clientPageTableColumns}
                 isLoading={isLoading}
                 data={clientEntries}
-                onSelecrtionChange={(selected) => {
+                onSelectionChange={(selected) => {
                   console.log('Selected Rows:', selected);
                 }}
                 getRowStyles={(row) => {

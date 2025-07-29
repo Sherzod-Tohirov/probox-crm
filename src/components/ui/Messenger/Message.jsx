@@ -73,8 +73,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   const handleClickOutside = (e) => {
     if (
       refs.floating.current &&
-      !refs.floating.current.contains(e.target) &&
-      !refs.reference.current.contains(e.target)
+      !refs.floating.current?.contains(e.target) &&
+      !refs.reference.current?.contains(e.target)
     ) {
       setShowMenu(false);
     }

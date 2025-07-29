@@ -261,7 +261,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (refs.reference && refs.reference.current.contains(event.target))
+      if (refs.reference && refs.reference.current?.contains(event.target))
         return;
       if (
         refs.floating.current &&
