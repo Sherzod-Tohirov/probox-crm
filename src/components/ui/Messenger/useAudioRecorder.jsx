@@ -18,6 +18,30 @@ const useAudioRecorder = ({
   const audioPlayerRef = useRef(null);
   const startRecording = useCallback(async () => {
     try {
+      // Check if the browser supports getUserMedia
+      if (!navigator?.mediaDevices?.getUserMedia) {
+        // For older browsers - fallback
+        const getUserMedia =
+          navigator?.getUserMedia ||
+          navigator?.webkitGetUserMedia ||
+          navigator?.mozGetUserMedia ||
+          navigator?.msGetUserMedia;
+
+        if (!getUserMedia) {
+          throw new Error('getUserMedia is not supported in this browser');
+        }
+      }
+
+      // Ensure we're in a secure context (HTTPS or localhost)
+      if (!window.isSecureContext) {
+        throw new Error(
+          'Media devices can only be accessed in secure contexts'
+        );
+      }
+
+      // Wait for mediaDevices to be ready
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           sampleRate,
@@ -75,6 +99,16 @@ const useAudioRecorder = ({
       setIsRecording(true);
     } catch (err) {
       console.error('Failed to start recording:', err);
+      // Provide more specific error messages
+      if (err.name === 'NotAllowedError') {
+        throw new Error('Microphone permission denied');
+      } else if (err.name === 'NotFoundError') {
+        throw new Error('No microphone found');
+      } else if (err.name === 'NotReadableError') {
+        throw new Error('Microphone is already in use');
+      } else {
+        throw new Error(`Recording failed: ${err.message}`);
+      }
     }
   }, [sampleRate, echoCancellation, noiseSuppression]);
 
