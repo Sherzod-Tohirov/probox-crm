@@ -16,6 +16,16 @@ export default defineConfig({
   base: '/',
   server: {
     port: process.env.PORT || 3000,
+    proxy: {
+      '/suggest-maps': {
+        target: 'https://suggest-maps.yandex.ru',
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
+    },
   },
   resolve: {
     alias: {

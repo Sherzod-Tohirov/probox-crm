@@ -145,7 +145,7 @@
   &.longer {
     width: 400px;
     @include m.media-max(v.$breakpoint-md) {
-      width: 320px;
+      width: 100%;
     }
   }
   &.full {

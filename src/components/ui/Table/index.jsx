@@ -139,7 +139,7 @@ function Table(
     showPivotColumn = false,
     scrollable = false, // Can be scalar or { xs: true, md: false }
     scrollHeight = {
-      xs: 'calc(100vh - 200px)',
+      xs: 'calc(100vh - 100px)',
       md: columns.length > 10 ? 'calc(100vh - 450px)' : 'auto',
     }, // Responsive
     getRowStyles = () => ({}),

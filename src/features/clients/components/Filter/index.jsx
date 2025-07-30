@@ -406,11 +406,11 @@ export default function Filter({ onFilter, isExpanded = false }) {
               </Col>
             </Row>
           </Col>
-          <Col flexGrow style={{ marginTop: '25px' }}>
+          <Col flexGrow={isMobile} style={{ marginTop: '25px' }}>
             <Row direction="row" gutter={2}>
-              <Col flexGrow>
+              <Col flexGrow={isMobile}>
                 <Button
-                  fullWidth
+                  fullWidth={isMobile}
                   ref={refs.setReference}
                   className={classNames(styles['filter-btn'], styles['clear'])}
                   onClick={(e) => {
@@ -458,7 +458,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
               </Col>
               <Col flexGrow>
                 <Button
-                  fullWidth
+                  fullWidth={isMobile}
                   className={styles['filter-btn']}
                   icon={'search'}
                   iconSize={18}

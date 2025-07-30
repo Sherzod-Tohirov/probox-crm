@@ -117,7 +117,7 @@ export default function ClientPage() {
               <Row
                 direction="row"
                 align="center"
-                justify={{ xs: 'start', md: 'space-between' }}
+                justify={'space-between'}
                 gutter={3}
                 wrap
               >
@@ -126,7 +126,7 @@ export default function ClientPage() {
                 </Col>
                 <Col>
                   <Row direction={'row'} gutter={3}>
-                    <Col>
+                    {/* <Col>
                       <Button
                         type={'button'}
                         className={styles['screenshot-btn']}
@@ -138,7 +138,7 @@ export default function ClientPage() {
                       >
                         Screenshot
                       </Button>
-                    </Col>
+                    </Col> */}
                     <Col>
                       <Button
                         disabled={isSaveButtonDisabled}

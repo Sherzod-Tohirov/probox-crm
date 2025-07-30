@@ -38,6 +38,10 @@
   display: flex;
   gap: 8px;
   margin-bottom: 10px;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .search-input {

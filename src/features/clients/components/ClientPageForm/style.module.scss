@@ -159,6 +159,7 @@
 
 .inputGroup {
   @include m.flex(center, center);
+  width: 100%;
   @include m.media-max(v.$breakpoint-md) {
     @include m.flex(start, start, 2rem, column);
   }

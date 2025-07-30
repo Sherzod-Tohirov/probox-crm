@@ -1,9 +1,9 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .pagination {
   @include m.flex(center, center, 1.25rem);
-  font-family: "Open Sans";
+  font-family: 'Open Sans';
   list-style: none;
 }
 
@@ -22,8 +22,13 @@
   border: v.$primary-border-width v.$primary-border-type
     v.$primary-button-border-color;
   background: v.$button-bg-secondary;
-
   cursor: pointer;
+
+  @include m.media-max(v.$breakpoint-md) {
+    width: 6rem;
+    height: 6rem;
+    font-size: 3rem;
+  }
 
   &.active {
     background-color: v.$button-bg;
@@ -38,6 +43,10 @@
   font-weight: 600;
   line-height: normal;
   cursor: pointer;
+
+  @include m.media-max(v.$breakpoint-md) {
+    font-size: 3rem;
+  }
 }
 
 .disabled {
