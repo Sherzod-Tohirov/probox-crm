@@ -443,18 +443,20 @@ function ClientPageForm({
             </Col>
           </Row>
         </Col>
-        <Col flexGrow>
-          <YandexMap
-            userCoords={currentClient.location}
-            onChangeCoords={(coords) => {
-              setUserAddressCoords({
-                lat: coords[0],
-                long: coords[1],
-              });
-              setIsSaveButtonDisabled(false);
-            }}
-          />
-        </Col>
+        {hasRole(user, ['Manager', 'Agent']) && (
+          <Col flexGrow>
+            <YandexMap
+              userCoords={currentClient.location}
+              onChangeCoords={(coords) => {
+                setUserAddressCoords({
+                  lat: coords[0],
+                  long: coords[1],
+                });
+                setIsSaveButtonDisabled(false);
+              }}
+            />
+          </Col>
+        )}
       </Row>
     </form>
   );
