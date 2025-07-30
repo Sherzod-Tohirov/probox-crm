@@ -17,6 +17,7 @@ import {
 import formatDate from '@utils/formatDate';
 import hasRole from '@utils/hasRole';
 import useAuth from '@hooks/useAuth';
+import useIsMobile from '@hooks/useIsMobile';
 import useMutateDistributeClients from '@hooks/data/clients/useMutateDistributeClients';
 import useFetchStatistics from '@hooks/data/statistics/useFetchStatistics';
 import formatterCurrency from '@utils/formatterCurrency';
@@ -29,6 +30,7 @@ import { random } from 'lodash';
 
 const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   const distributeMutation = useMutateDistributeClients();
+  const isMobile = useIsMobile();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
   );
@@ -242,7 +244,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
               />
             </Col>
             {hasRole(user, ['Manager']) ? (
-              <Col className={styles['button-wrapper']}>
+              <Col className={styles['button-wrapper']} fullWidth={isMobile}>
                 <Button
                   disabled={moment().date() !== 1}
                   variant="filled"

@@ -8,6 +8,7 @@ import Label from './Label';
 
 import useAuth from '@hooks/useAuth';
 import useAlert from '@hooks/useAlert';
+import useIsMobile from '@hooks/useIsMobile';
 
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useMutateClientImages from '@hooks/data/clients/useMutateClientImages';
@@ -45,7 +46,7 @@ function ClientPageForm({
   const updateMutation = useMutateClientImages('update');
   const deleteMutation = useMutateClientImages('delete');
   const updateAddressMutation = useMutateClientAddress();
-
+  const isMobile = useIsMobile();
   const clientFilesWithAPI = useMemo(
     () =>
       currentClient?.Images?.map(
@@ -272,9 +273,9 @@ function ClientPageForm({
         onApply={handleFileUpload}
       />
       <Row direction={'row'} gutter={6} wrap>
-        <Col>
+        <Col fullWidth={isMobile}>
           <Row gutter={1}>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="avatarFilled">FIO</Label>
                 <Input
@@ -287,7 +288,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="avatarFilled">Ijrochi</Label>
                 <Input
@@ -301,7 +302,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="photo" htmlFor={'file'}>
                   Fayllar
@@ -321,7 +322,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="telephoneFilled">Telefon raqami</Label>
                 <Input
@@ -335,7 +336,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="telephoneFilled">Telefon raqami 2</Label>
                 <Input
@@ -349,7 +350,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="barCodeFilled">Mijoz kodi</Label>
                 <Input
@@ -363,9 +364,9 @@ function ClientPageForm({
             </Col>
           </Row>
         </Col>
-        <Col>
+        <Col fullWidth={isMobile}>
           <Row gutter={1}>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="expense">Jami qarzdorlik</Label>
                 <Input
@@ -377,7 +378,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="products">Mahsulot nomi</Label>
                 <Input
@@ -389,7 +390,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="calendar">To'lov muddati</Label>
                 <Input
@@ -403,7 +404,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="calendar">Kelishilgan sana</Label>
                 <Input
@@ -416,7 +417,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="barCodeFilled">IMEI</Label>
                 <Input
@@ -428,7 +429,7 @@ function ClientPageForm({
                 />
               </InputGroup>
             </Col>
-            <Col>
+            <Col fullWidth>
               <InputGroup>
                 <Label icon="barCodeFilled">Passport seriyasi</Label>
                 <Input

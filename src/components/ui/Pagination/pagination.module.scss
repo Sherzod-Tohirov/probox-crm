@@ -25,8 +25,8 @@
   cursor: pointer;
 
   @include m.media-max(v.$breakpoint-md) {
-    width: 6rem;
-    height: 6rem;
+    width: 6.5rem;
+    height: 6.5rem;
     font-size: 3rem;
   }
 

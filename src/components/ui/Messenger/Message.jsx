@@ -91,6 +91,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
   const executor = executors?.find((e) => e?.['SlpCode'] === msg?.['SlpCode']);
   const timestamp = moment(msg?.['DocDate']).local().format('HH:mm');
+  console.log('Message rendered:', msg);
+  console.log(executors, 'Executors data');
   const msgColor = useMemo(
     () =>
       getMessageColorForUser(
@@ -204,7 +206,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       <Col>
         <Box dir="row" gap={1} align="center">
           <Typography
-            style={{ color: msgColor.text }}
+            style={{ color: msgColor?.text }}
             element="span"
             className={styles['message-avatar-icon']}
           >
@@ -215,7 +217,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             )}
           </Typography>
           <Typography
-            style={{ color: msgColor.text }}
+            style={{ color: msgColor?.text }}
             element="span"
             className={styles['message-author']}
           >

@@ -29,6 +29,11 @@
     border: v.$primary-border-width v.$primary-border-type
       v.$filter-input-border-color;
     background: v.$filter-input-bg;
+
+    @include m.media-max(v.$breakpoint-md) {
+      padding: 4px 10px 4px 12px;
+      min-width: 80px;
+    }
   }
 
   &.filled {

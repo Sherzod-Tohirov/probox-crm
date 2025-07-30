@@ -86,15 +86,22 @@ const MessageForm = ({ onSubmit, size = '' }) => {
       <Row direction="column" style={{ height: '100%' }}>
         <Col fullWidth>
           <Row direction="row" align="start">
-            <Col flexGrow style={{ minHeight: '64px' }}>
-              {messageInputRenderer(
-                messageType,
-                { onSubmit, reset, register, isValid },
-                {
-                  audioBlob,
-                  msgPhoto,
-                }
-              )}
+            <Col flexGrow>
+              <div
+                className={classNames(
+                  styles['message-input-wrapper'],
+                  styles[size]
+                )}
+              >
+                {messageInputRenderer(
+                  messageType,
+                  { onSubmit, reset, register, isValid },
+                  {
+                    audioBlob,
+                    msgPhoto,
+                  }
+                )}
+              </div>
             </Col>
             {messageType !== 'text' ? (
               <Col>

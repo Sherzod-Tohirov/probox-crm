@@ -183,11 +183,6 @@ export default function Clients() {
             onSelectionChange={setSelectedRows}
             showPivotColumn={true}
             getRowStyles={(row) => {
-              console.log(
-                row?.['DocEntry'] === currentClient?.['DocEntry'],
-                row,
-                currentClient
-              );
               if (row?.['DocEntry'] === currentClient?.['DocEntry']) {
                 return {
                   backgroundColor: 'rgba(206, 236, 249, 0.94)',

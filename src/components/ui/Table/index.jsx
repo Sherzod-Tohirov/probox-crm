@@ -140,7 +140,7 @@ function Table(
     scrollable = false, // Can be scalar or { xs: true, md: false }
     scrollHeight = {
       xs: 'calc(100vh - 100px)',
-      md: columns.length > 10 ? 'calc(100vh - 450px)' : 'auto',
+      md: columns.length > 10 ? 'calc(100vh - 350px)' : 'auto',
     }, // Responsive
     getRowStyles = () => ({}),
     onRowClick = () => {},
