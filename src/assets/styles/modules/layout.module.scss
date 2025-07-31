@@ -59,6 +59,11 @@
   flex: 1;
   padding: 6rem;
   padding-bottom: 68px;
+
+  @include m.media-max(v.$breakpoint-lg) {
+    padding: 4rem;
+    padding-bottom: 68px;
+  }
 }
 
 .main-layout {
