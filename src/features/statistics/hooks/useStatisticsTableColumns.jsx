@@ -25,14 +25,17 @@ const useStatisticsTableColumns = () => {
     });
   }, []);
 
-  const findExecutor = useCallback((column) => {
-    if (column.SlpCode === null) return {};
-    return (
-      executors?.find(
-        (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
-      ) ?? {}
-    );
-  }, []);
+  const findExecutor = useCallback(
+    (column) => {
+      if (column.SlpCode === null) return {};
+      return (
+        executors?.find(
+          (executor) => Number(executor.SlpCode) === Number(column.SlpCode)
+        ) ?? {}
+      );
+    },
+    [executors]
+  );
 
   const getFormattedSalary = useCallback((column) => {
     const foundExecutor = executors?.find(

@@ -32,6 +32,10 @@
     z-index: 1005;
     transform: translateX(-100%);
   }
+
+  &.mobile:not(.open) {
+    opacity: 0;
+  }
 }
 
 .backdrop {

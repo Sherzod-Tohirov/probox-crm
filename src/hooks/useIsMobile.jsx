@@ -9,6 +9,7 @@ const useIsMobile = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [window.innerWidth]);
+  console.log(isMobile, 'isMobile');
   return isMobile;
 };
 export default useIsMobile;

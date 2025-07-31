@@ -37,7 +37,9 @@ export default function SidebarLayout({ children }) {
 
       {isMobile ? (
         <motion.aside
-          className={classNames(styles['sidebar-layout'], styles['mobile'])}
+          className={classNames(styles['sidebar-layout'], styles['mobile'], {
+            [styles['open']]: isOpen,
+          })}
           initial="hidden"
           animate={isOpen ? 'visible' : 'hidden'}
           variants={sidebarVariants}
