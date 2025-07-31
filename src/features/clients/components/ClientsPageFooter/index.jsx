@@ -246,7 +246,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
             {hasRole(user, ['Manager']) ? (
               <Col className={styles['button-wrapper']} fullWidth={isMobile}>
                 <Button
-                  disabled={moment().date() !== 1}
+                  // disabled={moment().date() !== 1}
                   variant="filled"
                   onClick={handleDistributeClients}
                   isLoading={distributeMutation.isPending}
