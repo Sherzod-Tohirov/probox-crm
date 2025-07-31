@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import styles from './filter.module.scss';
-import { Button, Col, Input, Row } from '@components/ui';
+import { Button, Col, Input, Row, Accordion } from '@components/ui';
 import { useForm } from 'react-hook-form';
 
 import useAlert from '@hooks/useAlert';
@@ -30,7 +30,6 @@ import {
 } from '@store/slices/clientsPageSlice';
 
 import { AnimatePresence } from 'framer-motion';
-import Accordion from '../../../../components/ui/Accordion';
 
 export default function Filter({ onFilter, isExpanded = false }) {
   const isFirstRender = useRef(true);

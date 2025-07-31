@@ -1,23 +1,23 @@
-import moment from "moment";
-import { useCallback, useMemo } from "react";
-import { List, Box, Button } from "@components/ui";
+import moment from 'moment';
+import { useCallback, useMemo } from 'react';
+import { List, Box, Button } from '@components/ui';
 
-import useAuth from "@hooks/useAuth";
-import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useFetchExecutors from "@hooks/data/useFetchExecutors";
-import useMutatePartialPayment from "@hooks/data/clients/useMutatePartialPayment";
-import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
+import useAuth from '@hooks/useAuth';
+import useFetchCurrency from '@hooks/data/useFetchCurrency';
+import useFetchExecutors from '@hooks/data/useFetchExecutors';
+import useMutatePartialPayment from '@hooks/data/clients/useMutatePartialPayment';
+import useMutatePhoneConfiscated from '@hooks/data/clients/useMutatePhoneConfiscated';
 
-import formatDate from "@utils/formatDate";
-import formatterCurrency from "@utils/formatterCurrency";
-import { formatToReadablePhoneNumber } from "@utils/formatPhoneNumber";
+import formatDate from '@utils/formatDate';
+import formatterCurrency from '@utils/formatterCurrency';
+import { formatToReadablePhoneNumber } from '@utils/formatPhoneNumber';
 
-import MessengerCell from "@features/clients/components/TableCellHelpers/MessengerCell";
-import AgreementDateCell from "@features/clients/components/TableCellHelpers/AgreementDateCell";
-import ExecutorCell from "@features/clients/components/TableCellHelpers/ExecutorCell";
-import ProductCell from "@features/clients/components/TableCellHelpers/ProductCell";
-import ManualPaymentCell from "@features/clients/components/TableCellHelpers/ManualPaymentCell";
-import { useSelector } from "react-redux";
+import MessengerCell from '@features/clients/components/TableCellHelpers/MessengerCell';
+import AgreementDateCell from '@features/clients/components/TableCellHelpers/AgreementDateCell';
+import ExecutorCell from '@features/clients/components/TableCellHelpers/ExecutorCell';
+import ProductCell from '@features/clients/components/TableCellHelpers/ProductCell';
+import ManualPaymentCell from '@features/clients/components/TableCellHelpers/ManualPaymentCell';
+import { useSelector } from 'react-redux';
 
 const useClientsTableColumns = () => {
   const { data: executors } = useFetchExecutors();
@@ -30,21 +30,21 @@ const useClientsTableColumns = () => {
 
   const { user } = useAuth();
   const handleCancelPayment = useCallback(async ({ column, type }) => {
-    const formattedDueDate = moment(column.DueDate).format("YYYY.MM.DD");
+    const formattedDueDate = moment(column.DueDate).format('YYYY.MM.DD');
 
     try {
       const commonPayload = {
-        docEntry: currentClient?.["DocEntry"],
-        installmentId: column?.["InstlmntID"],
+        docEntry: currentClient?.['DocEntry'],
+        installmentId: column?.['InstlmntID'],
       };
-      if (type === "payment") {
+      if (type === 'payment') {
         const payload = {
           ...commonPayload,
           data: { DueDate: formattedDueDate, partial: false },
         };
         await paymentMutation.mutate(payload);
       }
-      if (type === "product") {
+      if (type === 'product') {
         const payload = {
           ...commonPayload,
           data: { DueDate: formattedDueDate, phoneConfiscated: false },
@@ -58,97 +58,97 @@ const useClientsTableColumns = () => {
   const clientsTableColumns = useMemo(
     () => [
       {
-        key: "CardCode",
-        title: "Kod",
-        width: "2%",
-        minWidth: "40px",
-        icon: "barCodeFilled",
+        key: 'CardCode',
+        title: 'Kod',
+        width: '200px',
+        minWidth: '40px',
+        icon: 'barCodeFilled',
       },
       {
-        key: "CardName",
-        title: "FIO",
-        width: "24%",
-        minWidth: "200px",
-        icon: "avatarFilled",
+        key: 'CardName',
+        title: 'FIO',
+        width: '24%',
+        minWidth: '200px',
+        icon: 'avatarFilled',
       },
       {
-        key: "Phone1",
-        title: "Telefon",
+        key: 'Phone1',
+        title: 'Telefon',
         renderCell: (column) => {
-          if (!column?.["Phone1"]) return "-";
-          return formatToReadablePhoneNumber(column["Phone1"]);
+          if (!column?.['Phone1']) return '-';
+          return formatToReadablePhoneNumber(column['Phone1']);
         },
-        width: "8%",
-        minWidth: "100px",
-        icon: "telephoneFilled",
+        width: '8%',
+        minWidth: '100px',
+        icon: 'telephoneFilled',
       },
-      { key: "Dscription", title: "Mahsulot", width: "18%", icon: "products" },
+      { key: 'Dscription', title: 'Mahsulot', width: '18%', icon: 'products' },
       {
-        key: "InsTotal",
+        key: 'InsTotal',
         title: "To'lov",
         renderCell: (column) => {
-          const SUM = column.InsTotal * currency?.["Rate"];
+          const SUM = column.InsTotal * currency?.['Rate'];
           return (
             (
               <Box gap={1}>
-                <span>{formatterCurrency(column.InsTotal, "USD")} </span>
-                <span style={{ fontWeight: 900, color: "steelblue" }}>
-                  ({formatterCurrency(SUM || 0, "UZS")})
+                <span>{formatterCurrency(column.InsTotal, 'USD')} </span>
+                <span style={{ fontWeight: 900, color: 'steelblue' }}>
+                  ({formatterCurrency(SUM || 0, 'UZS')})
                 </span>
               </Box>
-            ) || "Unknown"
+            ) || 'Unknown'
           );
         },
-        width: "14%",
-        minWidth: "120px",
-        icon: "income",
+        width: '14%',
+        minWidth: '120px',
+        icon: 'income',
       },
       {
-        key: "PaidToDate",
+        key: 'PaidToDate',
         title: "To'landi",
         renderCell: (column) => <ManualPaymentCell column={column} />,
-        width: "14%",
-        minWidth: "160px",
-        icon: "income",
+        width: '14%',
+        minWidth: '160px',
+        icon: 'income',
       },
       {
-        key: "status",
-        title: "Holati",
+        key: 'status',
+        title: 'Holati',
         renderCell: (column) => <ProductCell column={column} />,
-        width: "8%",
-        minWidth: "110px",
-        icon: "calendarFact",
+        width: '8%',
+        minWidth: '110px',
+        icon: 'calendarFact',
       },
       {
-        key: "term",
-        title: "Muddati",
+        key: 'term',
+        title: 'Muddati',
         renderCell: (column) => {
-          if (!column.DueDate) return "Unknown";
-          return moment(column.DueDate).format("DD.MM.YYYY");
+          if (!column.DueDate) return 'Unknown';
+          return moment(column.DueDate).format('DD.MM.YYYY');
         },
-        width: "6%",
-        icon: "calendar",
+        width: '6%',
+        icon: 'calendar',
       },
       {
-        key: "NewDueDate",
-        title: "Kelishildi",
-        width: "15%",
+        key: 'NewDueDate',
+        title: 'Kelishildi',
+        width: '15%',
         renderCell: (column) => <AgreementDateCell column={column} />,
-        icon: "calendar",
+        icon: 'calendar',
       },
 
       {
-        key: "comments",
-        title: "Xabarlar",
-        width: "2%",
+        key: 'comments',
+        title: 'Xabarlar',
+        width: '2%',
         renderCell: (column) => <MessengerCell column={column} />,
-        icon: "messengerFilled",
+        icon: 'messengerFilled',
       },
       {
-        key: "executor",
-        minWidth: "120px",
-        title: "Ijrochi",
-        icon: "avatarFilled",
+        key: 'executor',
+        minWidth: '120px',
+        title: 'Ijrochi',
+        icon: 'avatarFilled',
         renderCell: (column) => <ExecutorCell column={column} />,
       },
     ],
@@ -158,23 +158,23 @@ const useClientsTableColumns = () => {
   const clientPageTableColumns = useMemo(
     () => [
       {
-        key: "InstlmntID",
-        title: "ID",
-        width: "1%",
-        icon: "barCodeFilled",
+        key: 'InstlmntID',
+        title: 'ID',
+        width: '1%',
+        icon: 'barCodeFilled',
         cellStyle: {
-          textAlign: "center",
-          outline: "1px solid rgba(0,0,0,0.05)",
-          borderTopLeftRadius: "10px",
-          borderBottomLeftRadius: "10px",
+          textAlign: 'center',
+          outline: '1px solid rgba(0,0,0,0.05)',
+          borderTopLeftRadius: '10px',
+          borderBottomLeftRadius: '10px',
         },
       },
       {
-        key: "PaysList",
+        key: 'PaysList',
         title: "To'lovlar ro'yhati",
-        width: "18%",
+        width: '18%',
         renderCell: (column) => {
-          if (!column.PaysList) return "-";
+          if (!column.PaysList) return '-';
           return (
             <List
               // layout
@@ -196,70 +196,71 @@ const useClientsTableColumns = () => {
                     align="center"
                     justify="start"
                     style={{
-                      padding: "0.2rem",
-                    }}>
+                      padding: '0.2rem',
+                    }}
+                  >
                     {item.AcctName && item.SumApplied
                       ? `Sanasi: ${formatDate(item.DocDate)} => ${
                           item.AcctName
-                        } - ${formatterCurrency(item.SumApplied, "USD")}`
-                      : "-"}
+                        } - ${formatterCurrency(item.SumApplied, 'USD')}`
+                      : '-'}
                   </Box>
                 );
               }}
             />
           );
         },
-        icon: "calendarFact",
+        icon: 'calendarFact',
       },
 
       {
-        key: "InsTotal",
-        title: "Jami summa",
-        width: "7%",
+        key: 'InsTotal',
+        title: 'Jami summa',
+        width: '7%',
         renderCell: (column) => {
-          if (!column.InsTotal) return "0$";
-          return formatterCurrency(column.InsTotal, "USD");
+          if (!column.InsTotal) return '0$';
+          return formatterCurrency(column.InsTotal, 'USD');
         },
-        icon: "income",
+        icon: 'income',
       },
       {
-        key: "PaidToDate",
+        key: 'PaidToDate',
         title: "To'landi",
-        width: "7%",
+        width: '7%',
         renderCell: (column) => {
           return (
-            <span style={{ color: "red" }}>
-              {formatterCurrency(column.PaidToDate || 0, "USD")}
+            <span style={{ color: 'red' }}>
+              {formatterCurrency(column.PaidToDate || 0, 'USD')}
             </span>
           );
         },
-        icon: "income",
+        icon: 'income',
       },
       {
-        key: "DueDate",
-        title: "Muddati",
-        width: "10%",
+        key: 'DueDate',
+        title: 'Muddati',
+        width: '10%',
         renderCell: (column) => {
-          if (!column.DueDate) return "-";
-          if (moment(column.DueDate, "DD.MM.YYYY", true).isValid())
+          if (!column.DueDate) return '-';
+          if (moment(column.DueDate, 'DD.MM.YYYY', true).isValid())
             return column.DueDate;
           return formatDate(column.DueDate);
         },
-        icon: "calendar",
+        icon: 'calendar',
       },
       {
-        key: "DueDate",
+        key: 'DueDate',
         title: "To'lovdagi kechikish",
-        width: "10%",
+        width: '10%',
         renderCell: (column) => {
-          if (!column.DueDate) return "-";
+          if (!column.DueDate) return '-';
 
           const payslist = (column.PaysList || []).sort((a, b) => {
-            return moment(a.DocDate).diff(moment(b.DocDate), "days");
+            return moment(a.DocDate).diff(moment(b.DocDate), 'days');
           });
 
           const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
-          if (!lastPaymentDate) return "-";
+          if (!lastPaymentDate) return '-';
           if (column.partial || column.phoneConfiscated) {
             const isPartial = column.partial;
             return (
@@ -271,17 +272,18 @@ const useClientsTableColumns = () => {
                 onClick={() =>
                   handleCancelPayment({
                     column,
-                    type: isPartial ? "payment" : "product",
+                    type: isPartial ? 'payment' : 'product',
                   })
                 }
-                color={"danger"}>
-                Bekor qilish ({isPartial ? "To'lovni" : "Mahsulotni"}){" "}
+                color={'danger'}
+              >
+                Bekor qilish ({isPartial ? "To'lovni" : 'Mahsulotni'}){' '}
               </Button>
             );
           }
           const diff = moment(lastPaymentDate).diff(
             moment(column.DueDate),
-            "days"
+            'days'
           );
           const isAllPaid = payslist.reduce((acc, list) => {
             return acc + (Number(list.SumApplied) || 0);
@@ -293,7 +295,7 @@ const useClientsTableColumns = () => {
 
           if (diff <= 0) {
             return (
-              <span style={{ color: "#027243" }}>
+              <span style={{ color: '#027243' }}>
                 {diff < 0
                   ? `${Math.abs(diff)}-kun oldin to'landi`
                   : "O'z vaqtida to'landi"}
@@ -303,11 +305,12 @@ const useClientsTableColumns = () => {
           return (
             <span
               style={{
-                color: "#d51629",
-              }}>{`${diff}-kun kechikib to'landi`}</span>
+                color: '#d51629',
+              }}
+            >{`${diff}-kun kechikib to'landi`}</span>
           );
         },
-        icon: "calendar",
+        icon: 'calendar',
       },
     ],
     []

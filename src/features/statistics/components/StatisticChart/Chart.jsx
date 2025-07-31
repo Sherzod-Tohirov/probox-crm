@@ -30,7 +30,13 @@ export default function Chart({ data, keys = {} }) {
   );
 
   return (
-    <div style={{ width: '100%', minHeight: '400px', fontSize: '3rem' }}>
+    <div
+      style={{
+        width: '100%',
+        minHeight: '400px',
+        fontSize: '3rem',
+      }}
+    >
       <ResponsiveContainer width="100%" height={'100%'}>
         <LineChart
           data={validData} // Use validated data

@@ -65,6 +65,11 @@ export default function Clients() {
   );
 
   const handleFilter = useCallback((filterData) => {
+    
+    setTimeout(() => {
+      setToggleFilter(false);
+    }, 200);
+
     setParams(() => ({
       search: filterData.search,
       paymentStatus: _.map(filterData.paymentStatus, 'value').join(','),

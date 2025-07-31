@@ -443,7 +443,7 @@ function ClientPageForm({
             </Col>
           </Row>
         </Col>
-        {hasRole(user, ['Manager', 'Agent']) && (
+        {hasRole(user, ['Manager', 'Agent', 'CEO']) && (
           <Col flexGrow>
             <YandexMap
               userCoords={currentClient.location}

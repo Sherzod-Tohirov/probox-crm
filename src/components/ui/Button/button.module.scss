@@ -91,8 +91,8 @@
     width: 50rem;
     height: 50rem;
     @include m.media-max(v.$breakpoint-md) {
-      width: 35rem !important;
-      height: 35rem !important;
+      width: 40rem !important;
+      height: 40rem !important;
     }
   }
 
