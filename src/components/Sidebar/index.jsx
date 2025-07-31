@@ -4,7 +4,7 @@ import { Row, Col, List, Typography, Button } from '@components/ui';
 import useToggle from '@hooks/useToggle';
 import sidebarLinks from '@utils/sidebarLinks';
 import iconsMap from '@utils/iconsMap';
-import { useCallback, useEffect, useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import useIsMobile from '@hooks/useIsMobile';
@@ -15,11 +15,12 @@ export default function Sidebar() {
   const isMobile = useIsMobile();
   const location = useLocation();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isMobile && isOpen) {
       toggle();
     }
   }, [location.pathname, isMobile]);
+
   const renderLinks = useCallback(
     (link) => {
       return (

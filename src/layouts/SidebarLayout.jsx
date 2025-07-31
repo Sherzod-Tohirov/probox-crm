@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import useToggle from '@hooks/useToggle';
 import useIsMobile from '@hooks/useIsMobile';
 import styles from '@assets/styles/modules/layout.module.scss';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 const sidebarVariants = {
   hidden: {
     x: '-100%',
@@ -22,7 +22,7 @@ export default function SidebarLayout({ children }) {
   const { isOpen, toggle } = useToggle('sidebar');
   const isMobile = useIsMobile();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isMobile && !isOpen) {
       toggle();
     }
