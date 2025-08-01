@@ -3,9 +3,10 @@ import { useCallback, useMemo, useRef, forwardRef, memo } from 'react';
 import iconsMap from '@utils/iconsMap';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
+import { breakpoints, getBreakpointValue } from '@config/breakpoints';
 import styles from './table.module.scss';
-// import { breakpoints } from '../config/breakpoints'; // Import breakpoints
-
+import PropTypes from 'prop-types';
+import useIsMobile from '../../../hooks/useIsMobile';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
@@ -120,6 +121,14 @@ const TableRow = memo(
   }
 );
 
+const defaultScrollHeight = {
+  xs: `calc(100vh - ${breakpoints.xs + 100}px)`,
+  sm: `calc(100vh - ${breakpoints.sm / 4}px)`,
+  md: `calc(100vh - 250px)`,
+  lg: `calc(100vh - 250px)`,
+  xl: `calc(100vh - 400px)`,
+};
+
 function Table(
   {
     id,
@@ -134,14 +143,23 @@ function Table(
     isRowSelectable = () => true,
     selectedRows = [],
     onSelectionChange = () => {},
-    containerHeight = null, // Can be scalar or { xs: '200px', md: 'auto' }
+    containerHeight = {
+      xs: '300px',
+      sm: '400px',
+      md: '500px',
+      lg: '600px',
+      xl: 'auto',
+    },
     isLoading = false,
     showPivotColumn = false,
-    scrollable = false, // Can be scalar or { xs: true, md: false }
-    scrollHeight = {
-      xs: 'calc(100vh - 100px)',
-      md: columns.length > 10 ? 'calc(100vh - 350px)' : 'auto',
-    }, // Responsive
+    scrollable = {
+      xs: true,
+      sm: true,
+      md: true,
+      lg: false,
+      xl: false,
+    },
+    scrollHeight = defaultScrollHeight,
     getRowStyles = () => ({}),
     onRowClick = () => {},
   },
@@ -149,7 +167,7 @@ function Table(
 ) {
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
-
+  const isMobile = useIsMobile();
   // Responsive column filtering
   const finalColumns = useMemo(() => {
     const filteredColumns = columns.filter((col) => !col.hideOnMobile);
@@ -159,7 +177,7 @@ function Table(
         key: 'pivotId',
         icon: 'barCodeFilled',
         title: 'ID',
-        width: { xs: '10%', md: '2%' }, // Responsive width
+        width: { xs: '10%', md: '2%', xl: '2%' }, // Added xl breakpoint
         cellStyle: { textAlign: 'center' },
         renderCell: (_, rowIndex) => rowIndex + 1,
       },
@@ -273,14 +291,22 @@ function Table(
 
   // Resolve responsive containerHeight and scrollHeight
   const resolvedContainerStyle = useMemo(() => {
-    const height = isResponsiveProp(containerHeight)
-      ? containerHeight.md || 'auto'
-      : containerHeight || 'auto';
-    const scroll = isResponsiveProp(scrollHeight)
-      ? scrollHeight.md || 'auto'
-      : scrollHeight;
+    const height =
+      columns.length > 10
+        ? isMobile
+          ? containerHeight.md
+          : containerHeight.xl
+        : 'auto';
+    const scroll =
+      columns.length > 10
+        ? isMobile
+          ? scrollHeight.md
+          : scrollHeight.xl
+        : 'auto';
+    const isScrollable = getBreakpointValue(scrollable);
+
     return {
-      height: scrollable ? scroll : height,
+      height: isScrollable ? scroll : height,
       ...containerStyle,
     };
   }, [containerHeight, scrollHeight, scrollable, containerStyle]);
@@ -300,7 +326,9 @@ function Table(
       id="table-wrapper"
       data-testid="table-wrapper"
       style={resolvedContainerStyle}
-      className={containerClassName}
+      className={classNames(containerClassName, {
+        [styles[`breakpoint-${getBreakpointValue(scrollable)}`]]: true,
+      })}
     >
       <div className={styles['table-container']}>
         <table id={id} ref={ref} className={tableClassName} style={style}>
@@ -318,7 +346,7 @@ function Table(
                   key={`header-${column.key}-${colIndex}`}
                   style={{
                     width: isResponsiveProp(column.width)
-                      ? column.width.md || 'auto'
+                      ? column.width.xl || column.width.md || 'auto'
                       : column.width || 'auto',
                     minWidth: column.minWidth || 'initial',
                     maxWidth: column.maxWidth || 'initial',
@@ -375,5 +403,13 @@ function Table(
     </div>
   );
 }
+
+// Update prop types for better documentation
+Table.propTypes = {
+  containerHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  scrollable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  scrollHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  // ...other prop types...
+};
 
 export default memo(forwardRef(Table));

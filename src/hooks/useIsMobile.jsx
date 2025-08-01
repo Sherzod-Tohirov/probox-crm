@@ -1,10 +1,10 @@
-import { BREAKPOINTS } from '@config/breakpoints';
+import { breakpoints } from '@config/breakpoints';
 import { useLayoutEffect, useState } from 'react';
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
   useLayoutEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= BREAKPOINTS.LG);
+    const checkMobile = () => setIsMobile(window.innerWidth <= breakpoints.lg);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);

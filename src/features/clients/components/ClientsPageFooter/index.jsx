@@ -137,54 +137,44 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
             justify="space-between"
             className={styles['row-container']}
           >
-            <Col>
-              <Box gap={1} dir="column" align="start" justify="center">
-                <Typography
-                  className={styles['statistics-text']}
-                  variant="primary"
-                  element="span"
-                >
-                  <strong> To'liq summa: </strong>
-                  {isStatisticsLoading ? (
-                    <ClipLoader color="grey" size={12} />
-                  ) : (
-                    formatterCurrency(calculatedInsTotal, 'USD')
-                  )}
-                </Typography>
-                <Typography
-                  className={styles['statistics-text']}
-                  variant="primary"
-                  element="span"
-                >
-                  <strong> Qoplandi: </strong>
-                  {isStatisticsLoading ? (
-                    <ClipLoader color="grey" size={12} />
-                  ) : (
-                    <span style={{ color: 'green' }}>
-                      {formatterCurrency(
-                        statisticsData?.['SumApplied'] || 0,
-                        'USD'
-                      )}
-                    </span>
-                  )}{' '}
-                  <span
-                    style={{ color: percentageValue > 50 ? 'green' : 'red' }}
+            {!hasRole(user, ['Agent']) ? (
+              <Col>
+                <Box gap={1} dir="column" align="start" justify="center">
+                  <Typography
+                    className={styles['statistics-text']}
+                    variant="primary"
+                    element="span"
                   >
-                    {`(${percentageValue}%)`}
-                  </span>
-                </Typography>
-              </Box>
-            </Col>
-            {hasRole(user, ['Agent']) ? (
-              <Col className={styles['button-wrapper']}>
-                <Button
-                  disabled={selectedRows.length === 0}
-                  onClick={handleNavigateToRoute}
-                  color="info"
-                  fullWidth
-                >
-                  Marshrutga o'tish
-                </Button>
+                    <strong> To'liq summa: </strong>
+                    {isStatisticsLoading ? (
+                      <ClipLoader color="grey" size={12} />
+                    ) : (
+                      formatterCurrency(calculatedInsTotal, 'USD')
+                    )}
+                  </Typography>
+                  <Typography
+                    className={styles['statistics-text']}
+                    variant="primary"
+                    element="span"
+                  >
+                    <strong> Qoplandi: </strong>
+                    {isStatisticsLoading ? (
+                      <ClipLoader color="grey" size={12} />
+                    ) : (
+                      <span style={{ color: 'green' }}>
+                        {formatterCurrency(
+                          statisticsData?.['SumApplied'] || 0,
+                          'USD'
+                        )}
+                      </span>
+                    )}{' '}
+                    <span
+                      style={{ color: percentageValue > 50 ? 'green' : 'red' }}
+                    >
+                      {`(${percentageValue}%)`}
+                    </span>
+                  </Typography>
+                </Box>
               </Col>
             ) : null}
           </Row>
@@ -253,6 +243,18 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                   fullWidth
                 >
                   Mijozlarni taqsimlash
+                </Button>
+              </Col>
+            ) : null}
+            {hasRole(user, ['Agent']) ? (
+              <Col flexGrow={isMobile} className={styles['button-wrapper']}>
+                <Button
+                  fullWidth={isMobile}
+                  disabled={selectedRows.length === 0}
+                  onClick={handleNavigateToRoute}
+                  color="info"
+                >
+                  Marshrutga o'tish
                 </Button>
               </Col>
             ) : null}
