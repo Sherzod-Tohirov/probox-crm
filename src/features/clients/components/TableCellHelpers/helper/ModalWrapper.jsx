@@ -138,7 +138,7 @@ const ModalWrapper = ({
                 position: strategy,
                 top: y ? y - 5 : 0,
                 left: x ? x - 5 : 0,
-                zIndex: 999999,
+                zIndex: 1200,
                 pointerEvents: 'auto',
               }}
             >

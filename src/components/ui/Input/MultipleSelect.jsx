@@ -16,7 +16,6 @@ const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
   const handleChange = useCallback((selected, actionMeta, field) => {
     const allOptions = options.filter((opt) => opt.value !== 'all');
     let newSelected = selected;
-
     // Handle "Select All"
     if (selected.some((opt) => opt.value === 'all')) {
       newSelected = allOptions; // Select all options
