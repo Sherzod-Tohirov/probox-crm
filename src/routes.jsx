@@ -101,18 +101,6 @@ const router = createBrowserRouter([
     ),
     errorElement: <Error />,
   },
-  {
-    path: "/404",
-    element: (
-      <Suspense fallback={<PageLoader fullscreen={true} />}>
-        <NotFound />
-      </Suspense>
-    ),
-  },
-  {
-    path: "*",
-    element: <Navigate to="/404" />,
-  },
 ]);
 
 export default router;

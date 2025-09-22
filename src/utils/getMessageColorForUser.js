@@ -16,7 +16,6 @@ const userColors = [
 
 // Assume users are fixed (max 10)
 const getMessageColorForUser = (username, userList) => {
-  console.log(username, 'username', userList);
   const index = userList.indexOf(username);
   if (index === -1) {
     return {

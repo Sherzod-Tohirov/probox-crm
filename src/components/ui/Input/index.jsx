@@ -178,7 +178,7 @@ const Input = forwardRef(
             }}
           />
         ) : (
-          <select {...commonProps} {...props}>
+          <select {...commonProps} {...omit(['images', 'accept', 'multiple', 'control', 'datePickerOptions'], props)}>
             {options.map((option) => (
               <option
                 disabled={option.isNotSelectable}
@@ -197,9 +197,9 @@ const Input = forwardRef(
               type="file"
               multiple={props.multiple || true}
               {...commonProps}
-              {...props}
+              {...omit(['images', 'control', 'datePickerOptions'], props)}
             />
-            <label htmlFor={props.id || uniqueId} {...commonProps} {...props}>
+            <label htmlFor={props.id || uniqueId} {...omit(['type', 'multiple', 'accept', 'images', 'control', 'datePickerOptions', 'name', 'value', 'defaultValue'], commonProps)} {...omit(['type', 'multiple', 'accept', 'images', 'control', 'datePickerOptions', 'name', 'value', 'defaultValue'], props)}>
               <Row direction="row" align="center" gutter={1} wrap={true}>
                 {images.length > 0 ? (
                   images.map((image) => {
@@ -329,7 +329,7 @@ const Input = forwardRef(
             }}
           />
         ) : (
-          <input type={type} {...commonProps} {...props} />
+          <input type={type} {...commonProps} {...omit(['images', 'accept', 'multiple', 'control', 'datePickerOptions'], props)} />
         ),
       }),
       [props, type, options, commonProps, images, uniqueId]
@@ -344,7 +344,7 @@ const Input = forwardRef(
           <input
             type={type}
             className={classNames(styles['input'], styles['search-variant'])}
-            {...props}
+            {...omit(['images', 'accept', 'multiple', 'control', 'datePickerOptions'], props)}
           />
         </Box>
       );

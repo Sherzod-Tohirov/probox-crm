@@ -444,7 +444,7 @@ function ClientPageForm({
           </Row>
         </Col>
         {hasRole(user, ['Manager', 'Agent', 'CEO']) && (
-          <Col flexGrow>
+          <Col fullWidth>
             <YandexMap
               userCoords={currentClient.location}
               onChangeCoords={(coords) => {

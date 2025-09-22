@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import loadYandexMaps from '@/utils/loadYandexMaps';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
@@ -7,6 +7,7 @@ import useAuth from '@hooks/useAuth';
 import useToggle from '@hooks/useToggle';
 import useIsMobile from '@hooks/useIsMobile';
 import classNames from 'classnames';
+import { Button } from '@components/ui';
 const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
   const { alert } = useAlert();
   const { user } = useAuth();
@@ -18,78 +19,65 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
   const mapInstanceRef = useRef(null);
   const isManager = hasRole(user, ['Manager']);
   const [searchValue, setSearchValue] = useState('');
-  const API_KEY = import.meta.env.VITE_YANDEX_API_KEY;
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(null);
   const DEFAULT_COORDS = [41.311081, 69.240562];
   const hasCoords = userCoords?.lat && userCoords?.long;
 
-  useEffect(() => {
-    loadYandexMaps(API_KEY).then((ymaps) => {
-      if (!mapRef.current || !inputRef.current) return;
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    // Clean up resize observer
+    if (mapRef.current?._resizeObserver) {
+      mapRef.current._resizeObserver.disconnect();
+      mapRef.current._resizeObserver = null;
+    }
 
-      // Setup suggestions with debounced handler
-      const suggestView = new ymaps.SuggestView(inputRef.current, {
-        provider: {
-          suggest: (request, options) => {
-            // Add bounds to limit search area
-            const bounds = mapInstanceRef.current?.getBounds();
-            return ymaps
-              .suggest(request, {
-                boundedBy: bounds,
-                results: 5, // Limit results
-                ...options,
-              })
-              .then((items) => items.slice(0, 5)); // Additional safety limit
-          },
-        },
-        results: 5,
-        boundedBy: mapInstanceRef.current?.getBounds(),
-      });
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.destroy();
+      mapInstanceRef.current = null;
+    }
+    placemarkRef.current = null;
+    setIsMapLoaded(false);
+  }, []);
 
-      // Prevent recursive suggestions
-      let isProcessingSuggestion = false;
+  // Initialize map
+  const initializeMap = useCallback(async () => {
+    if (!mapRef.current) return;
 
-      suggestView.events.add('select', async (e) => {
-        if (isProcessingSuggestion) return;
+    try {
+      setLoadError(null);
+      const ymaps = await loadYandexMaps();
 
-        try {
-          isProcessingSuggestion = true;
-          const selected = e.get('item').value;
-          const res = await ymaps.geocode(selected);
-
-          const firstGeoObject = res.geoObjects.get(0);
-          if (!firstGeoObject) return;
-
-          const coords = firstGeoObject.geometry.getCoordinates();
-          const address = firstGeoObject.getAddressLine();
-
-          mapInstanceRef.current.setCenter(coords, 14, {
-            checkZoomRange: true,
-          });
-          placemarkRef.current.geometry.setCoordinates(coords);
-          placemarkRef.current.properties.set({
-            balloonContent: address,
-            hintContent: address,
-          });
-
-          onChangeCoords?.(coords, address);
-        } catch (error) {
-          console.error('Suggestion processing error:', error);
-        } finally {
-          isProcessingSuggestion = false;
-        }
-      });
+      if (!mapRef.current) return; // Component might have unmounted
 
       const coords = hasCoords
         ? [userCoords.lat, userCoords.long]
         : DEFAULT_COORDS;
 
-      const map = new ymaps.Map(mapRef.current, {
-        center: coords,
-        zoom: 12,
-        controls: ['zoomControl'],
-      });
+      const map = new ymaps.Map(
+        mapRef.current,
+        {
+          center: coords,
+          zoom: 12,
+          controls: ['zoomControl'],
+        },
+        {
+          // Map options to ensure proper sizing
+          autoFitToViewport: 'always',
+          avoidFractionalZoom: false,
+          exitFullscreenByEsc: true,
+          fullscreenUnavailable: true,
+        }
+      );
 
       mapInstanceRef.current = map;
+
+      // Force map to resize to container after initialization
+      setTimeout(() => {
+        if (map && mapRef.current) {
+          map.container.fitToViewport();
+        }
+      }, 100);
 
       const placemark = new ymaps.Placemark(
         coords,
@@ -104,15 +92,142 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
 
       placemark.events.add('dragend', () => {
         const newCoords = placemark.geometry.getCoordinates();
-        ymaps.geocode(newCoords).then((res) => {
-          const address = res.geoObjects.get(0)?.getAddressLine();
-          onChangeCoords?.(newCoords, address);
-        });
+        ymaps
+          .geocode(newCoords)
+          .then((res) => {
+            const address = res.geoObjects.get(0)?.getAddressLine();
+            onChangeCoords?.(newCoords, address);
+          })
+          .catch(console.error);
       });
 
       map.geoObjects.add(placemark);
-    });
-  }, [isSidebarOpen]);
+      setIsMapLoaded(true);
+
+      // Setup resize observer to handle container size changes
+      if (window.ResizeObserver && mapRef.current) {
+        const resizeObserver = new ResizeObserver(() => {
+          if (map && mapRef.current) {
+            // Trigger map resize when container size changes
+            setTimeout(() => {
+              map.container.fitToViewport();
+            }, 50);
+          }
+        });
+        resizeObserver.observe(mapRef.current);
+
+        // Store observer for cleanup
+        mapRef.current._resizeObserver = resizeObserver;
+      }
+
+      // Setup suggestions only if input exists and user is manager
+      if (inputRef.current && isManager) {
+        setupSuggestions(ymaps);
+      }
+    } catch (error) {
+      console.error('Map initialization error:', error);
+      setLoadError(error.message);
+    }
+  }, [hasCoords, userCoords, isManager, onChangeCoords]);
+
+  // Setup suggestions
+  const setupSuggestions = useCallback(
+    (ymaps) => {
+      if (!inputRef.current || !mapInstanceRef.current) return;
+
+      try {
+        const suggestView = new ymaps.SuggestView(inputRef.current, {
+          provider: {
+            suggest: (request, options) => {
+              const bounds = mapInstanceRef.current?.getBounds();
+              return ymaps
+                .suggest(request, {
+                  boundedBy: bounds,
+                  results: 5,
+                  ...options,
+                })
+                .then((items) => items.slice(0, 5))
+                .catch(() => []); // Handle suggestion errors gracefully
+            },
+          },
+          results: 5,
+          boundedBy: mapInstanceRef.current?.getBounds(),
+        });
+
+        let isProcessingSuggestion = false;
+
+        suggestView.events.add('select', async (e) => {
+          if (isProcessingSuggestion) return;
+
+          try {
+            isProcessingSuggestion = true;
+            const selected = e.get('item').value;
+            const res = await ymaps.geocode(selected);
+
+            const firstGeoObject = res.geoObjects.get(0);
+            if (!firstGeoObject) return;
+
+            const coords = firstGeoObject.geometry.getCoordinates();
+            const address = firstGeoObject.getAddressLine();
+
+            if (mapInstanceRef.current && placemarkRef.current) {
+              mapInstanceRef.current.setCenter(coords, 14, {
+                checkZoomRange: true,
+              });
+              placemarkRef.current.geometry.setCoordinates(coords);
+              placemarkRef.current.properties.set({
+                balloonContent: address,
+                hintContent: address,
+              });
+
+              onChangeCoords?.(coords, address);
+            }
+          } catch (error) {
+            console.error('Suggestion processing error:', error);
+          } finally {
+            isProcessingSuggestion = false;
+          }
+        });
+      } catch (error) {
+        console.error('Suggestions setup error:', error);
+      }
+    },
+    [onChangeCoords]
+  );
+
+  // Initialize map on mount
+  useEffect(() => {
+    initializeMap();
+    return cleanup;
+  }, []);
+
+  // Handle window resize for responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      if (mapInstanceRef.current && mapRef.current) {
+        // Force map to recalculate its size
+        setTimeout(() => {
+          mapInstanceRef.current.container.fitToViewport();
+        }, 100);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMapLoaded]);
+
+  // Update map when coordinates change
+  useEffect(() => {
+    if (!isMapLoaded || !mapInstanceRef.current || !placemarkRef.current)
+      return;
+
+    const coords = hasCoords
+      ? [userCoords.lat, userCoords.long]
+      : DEFAULT_COORDS;
+
+    mapInstanceRef.current.setCenter(coords, 12);
+    placemarkRef.current.geometry.setCoordinates(coords);
+  }, [userCoords, hasCoords, isMapLoaded]);
 
   const handleSearch = async () => {
     if (!window.ymaps || !searchValue || !mapInstanceRef.current) return;
@@ -122,7 +237,6 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
         boundedBy: mapInstanceRef.current.getBounds(),
         results: 1,
       });
-      console.log(res.geoObjects.get(0), 'response');
       const firstGeoObject = res.geoObjects.get(0);
       if (!firstGeoObject) {
         alert("Manzil topilmadi. Iltimos, to'g'ri manzil kiriting.", {
@@ -153,9 +267,11 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
 
   return (
     <div className={styles['yandex-map-container']}>
-      <div className={classNames(styles['search-container'], {
-        [styles["hidden"]]: !isManager
-      })}>
+      <div
+        className={classNames(styles['search-container'], {
+          [styles['hidden']]: !isManager,
+        })}
+      >
         <input
           ref={inputRef}
           type="text"
@@ -185,10 +301,26 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
       </div>
 
       <div className={styles.map} ref={mapRef}>
-        {!hasCoords && (
+        {loadError && (
+          <div className={styles['error-message']}>
+            ❌ Xarita yuklanmadi: {loadError}
+            <Button
+              variant={'danger'}
+              type="button"
+              onClick={initializeMap}
+              style={{ marginLeft: '10px', padding: '5px 10px' }}
+            >
+              Qayta urinish
+            </Button>
+          </div>
+        )}
+        {!isMapLoaded && !loadError && (
+          <div className={styles['loading']}>Xarita yuklanmoqda...</div>
+        )}
+        {!hasCoords && isMapLoaded && (
           <div className={styles['no-location']}>
             ⚠️ Geolokatsiya aniqlanmadi, xaritada standart joylashuv (Toshkent)
-            ko‘rsatilmoqda.
+            ko'rsatilmoqda.
           </div>
         )}
       </div>

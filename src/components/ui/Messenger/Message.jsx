@@ -91,8 +91,6 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
 
   const executor = executors?.find((e) => e?.['SlpCode'] === msg?.['SlpCode']);
   const timestamp = moment(msg?.['DocDate']).local().format('HH:mm');
-  console.log('Message rendered:', msg);
-  console.log(executors, 'Executors data');
   const msgColor = useMemo(
     () =>
       getMessageColorForUser(

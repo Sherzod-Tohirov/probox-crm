@@ -1,9 +1,9 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, forwardRef } from "react";
 import styles from "./box.module.scss";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 
-function Box({
+const Box = forwardRef(({
   children,
   dir = "row",
   align = "start",
@@ -29,7 +29,7 @@ function Box({
   className,
   component,
   ...props
-}) {
+}, ref) => {
   const boxStyle = useMemo(
     () => ({
       position: pos,
@@ -76,12 +76,13 @@ function Box({
   const Component = component || motion.div;
   return (
     <Component
+      ref={ref}
       style={{ ...boxStyle }}
       className={classNames(styles.box, className)}
       {...props}>
       {children}
     </Component>
   );
-}
+});
 
 export default memo(Box);

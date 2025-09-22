@@ -48,7 +48,6 @@ export default function Sidebar() {
     },
     [pathname, isOpen]
   );
-  console.log(isMobile, 'isMobile');
   return (
     <Row className={styles.sidebar} wrap gutter={8}>
       <Col fullWidth>

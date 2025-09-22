@@ -67,6 +67,7 @@
   thead {
     th {
       text-align: start;
+      white-space: nowrap;
       border: v.$secondary-border-width v.$primary-border-type
         v.$primary-border-color;
       padding: 2rem; // Default for desktop

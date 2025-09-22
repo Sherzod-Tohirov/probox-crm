@@ -10,7 +10,7 @@ import Typography from '../Typography';
 import Box from '../Box';
 import PropTypes from 'prop-types';
 
-Button.propTypes = {
+const buttonPropTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   variant: PropTypes.oneOf(['filled', 'text']),
@@ -106,4 +106,7 @@ function Button(
   );
 }
 
-export default memo(forwardRef(Button));
+const ForwardedButton = memo(forwardRef(Button));
+ForwardedButton.propTypes = buttonPropTypes;
+
+export default ForwardedButton;

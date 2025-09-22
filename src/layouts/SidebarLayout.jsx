@@ -22,7 +22,6 @@ export default function SidebarLayout({ children }) {
   const { isOpen, toggle } = useToggle('sidebar');
   const [hasMounted, setHasMounted] = useState(false);
   const isMobile = useIsMobile();
-  console.log(isOpen, 'isOpen', isMobile, 'isMobile');
   useLayoutEffect(() => {
     if (!isMobile && !isOpen) {
       toggle();

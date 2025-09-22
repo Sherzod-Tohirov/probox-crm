@@ -1,15 +1,17 @@
 import classNames from 'classnames';
-import { memo } from 'react';
+import { memo, forwardRef } from 'react';
 import styles from './typography.module.scss';
-function Typography({
+
+const Typography = forwardRef(({
   element: Element = 'p',
   className,
   children,
   variant,
   ...props
-}) {
+}, ref) => {
   return (
     <Element
+      ref={ref}
       className={classNames(
         styles['base-typography'],
         styles[variant],
@@ -20,6 +22,6 @@ function Typography({
       {children}
     </Element>
   );
-}
+});
 
 export default memo(Typography);
