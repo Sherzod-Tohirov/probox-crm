@@ -1,9 +1,10 @@
-@use "@styles/variables" as v;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 99999;
+  z-index: 999;
   padding: 6.5rem 6rem;
   border-bottom: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;

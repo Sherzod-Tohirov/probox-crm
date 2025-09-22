@@ -1,10 +1,10 @@
-import { memo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { setCurrentClient } from "@store/slices/clientsPageSlice";
-import _ from "lodash";
-import styles from "./style.module.scss";
+import { memo, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { setCurrentClient } from '@store/slices/clientsPageSlice';
+import _ from 'lodash';
+import styles from './style.module.scss';
 
 import {
   useFloating,
@@ -13,9 +13,9 @@ import {
   shift,
   autoUpdate,
   FloatingPortal,
-} from "@floating-ui/react";
-import classNames from "classnames";
-import { toggleModal } from "@store/slices/toggleSlice";
+} from '@floating-ui/react';
+import classNames from 'classnames';
+import { toggleModal } from '@store/slices/toggleSlice';
 
 const ModalWrapper = ({
   modalId,
@@ -30,7 +30,7 @@ const ModalWrapper = ({
   const floatingRef = useRef(null);
   const isModalOpen = useSelector((state) => state.toggle.modals?.[modalId]);
   const { x, y, strategy, refs, update } = useFloating({
-    placement: "top-end",
+    placement: 'top-end',
     middleware: [
       offset(10), // spacing from the button
       flip(), // flip to opposite side if not enough space
@@ -49,8 +49,8 @@ const ModalWrapper = ({
 
       // Check for common UI overlay elements
       const isClickInsidePopover =
-        event.target.closest(".flatpickr-calendar") || // Flatpickr calendar
-        event.target.closest(".select__menu") || // React-select menu
+        event.target.closest('.flatpickr-calendar') || // Flatpickr calendar
+        event.target.closest('.select__menu') || // React-select menu
         event.target.closest('[role="listbox"]') || // Generic listbox (dropdowns)
         event.target.closest('[role="dialog"]') || // Generic dialogs
         event.target.closest('[role="tooltip"]'); // Tooltips
@@ -67,12 +67,30 @@ const ModalWrapper = ({
   );
 
   useEffect(() => {
+    containerRef.current.closest('#clients-table')?.addEventListener(
+      'scroll',
+      _.debounce(() => {
+        if (isModalOpen) {
+          dispatch(toggleModal(modalId));
+        }
+      }, 100),
+      { passive: true }
+    );
+    return () => {
+      window.removeEventListener(
+        'scroll',
+        _.debounce(() => {}, 100)
+      );
+    };
+  }, [modalId]);
+
+  useEffect(() => {
     // Only add the listener when the modal is open
     if (isModalOpen) {
       // Use capture phase to handle clicks before they reach other elements
-      document.addEventListener("mousedown", handleClickOutside, true);
+      document.addEventListener('mousedown', handleClickOutside, true);
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside, true);
+        document.removeEventListener('mousedown', handleClickOutside, true);
       };
     }
   }, [isModalOpen, handleClickOutside]);
@@ -87,7 +105,9 @@ const ModalWrapper = ({
       if (!allowClick) {
         e.stopPropagation();
         dispatch(setCurrentClient(column));
-        dispatch(toggleModal(modalId));
+        setTimeout(() => {
+          dispatch(toggleModal(modalId));
+        }, 0);
       }
     },
     [column, dispatch, modalId]
@@ -97,9 +117,10 @@ const ModalWrapper = ({
     <div
       id={modalId}
       style={style}
-      className={classNames(styles["modal-wrapper"], "cell-modal")}
+      className={classNames(styles['modal-wrapper'], 'cell-modal')}
       onClick={handleClick}
-      ref={containerRef}>
+      ref={containerRef}
+    >
       <div ref={refs.setReference}>{title}</div>
       <AnimatePresence>
         {isModalOpen && (
@@ -117,9 +138,10 @@ const ModalWrapper = ({
                 position: strategy,
                 top: y ? y - 5 : 0,
                 left: x ? x - 5 : 0,
-                zIndex: 999999,
-                pointerEvents: "auto",
-              }}>
+                zIndex: 1200,
+                pointerEvents: 'auto',
+              }}
+            >
               {children}
             </motion.div>
           </FloatingPortal>

@@ -1,5 +1,11 @@
-@use "../mixins" as m;
-@use "../variables" as v;
+@use '../mixins' as m;
+@use '../variables' as v;
+
+.container {
+  @include m.flex(center, start);
+  width: 100%;
+  max-width: 1440px;
+}
 
 .sidebar-layout {
   @include m.flex-direction(column);
@@ -14,6 +20,37 @@
     width: clamp(200px, 220px, 220px) !important;
     padding: 6rem;
   }
+
+  &.mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 250px !important;
+    height: 100%;
+    z-index: 1005;
+    transform: translateX(-100%);
+  }
+
+  &.mobile:not(.open) {
+    opacity: 0;
+  }
+}
+
+.backdrop {
+  display: none;
+
+  @include m.media-max(v.$breakpoint-lg) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1004;
+  }
+}
+
+@include m.media-max(v.$breakpoint-md) {
 }
 
 .dashboard-layout {
@@ -22,6 +59,11 @@
   flex: 1;
   padding: 6rem;
   padding-bottom: 68px;
+
+  @include m.media-max(v.$breakpoint-lg) {
+    padding: 4rem;
+    padding-bottom: 68px;
+  }
 }
 
 .main-layout {

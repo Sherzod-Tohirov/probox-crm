@@ -1,5 +1,5 @@
 import moment from "moment";
-import styles from "./messenger.module.scss";
+import styles from "./styles/messenger.module.scss";
 import classNames from "classnames";
 
 export default function MessageDate({

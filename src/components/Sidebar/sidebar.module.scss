@@ -1,5 +1,5 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .sidebar {
   display: flex;
@@ -14,8 +14,7 @@
   font-weight: 600;
   line-height: 150%;
   color: v.$secondary-color;
-
-  &.minified {
+  &.minified:not(&.mobile) {
     @include m.flex(center, center, 0);
     padding: 0;
   }
@@ -56,7 +55,16 @@
 
 .sidebar-link-title {
   transition: all v.$transition-time v.$transition-type;
-  &.minified {
+  &.minified:not(&.mobile) {
     display: none;
+  }
+}
+
+.close-btn {
+  display: none !important;
+  margin-right: 10px;
+
+  @media (max-width: (v.$breakpoint-lg - 1)) {
+    display: flex !important;
   }
 }

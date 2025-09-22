@@ -5,17 +5,17 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-} from "recharts";
+} from 'recharts';
 
 export default function DashboardChart({ width }) {
   const data = [
-    { name: "Active Clients", value: 400 },
-    { name: "Pending Leads", value: 300 },
-    { name: "Completed Projects", value: 300 },
-    { name: "New Inquiries", value: 200 },
+    { name: 'Active Clients', value: 400 },
+    { name: 'Pending Leads', value: 300 },
+    { name: 'Completed Projects', value: 300 },
+    { name: 'New Inquiries', value: 200 },
   ];
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({
@@ -35,9 +35,10 @@ export default function DashboardChart({ width }) {
         x={x}
         y={y}
         fill="white"
-        textAnchor={x > cx ? "start" : "end"}
+        textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        fontSize="14px">
+        fontSize="14px"
+      >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
     );
@@ -45,8 +46,9 @@ export default function DashboardChart({ width }) {
 
   return (
     <div
-      style={{ width: width ? width : "100%", height: 400, fontSize: "3rem" }}>
-      <ResponsiveContainer>
+      style={{ width: width ? width : '100%', height: 400, fontSize: '3rem' }}
+    >
+      <ResponsiveContainer width={'100%'} height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -59,7 +61,8 @@ export default function DashboardChart({ width }) {
             paddingAngle={5}
             dataKey="value"
             animationBegin={0}
-            animationDuration={1500}>
+            animationDuration={1500}
+          >
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
@@ -70,10 +73,10 @@ export default function DashboardChart({ width }) {
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "8px",
-              border: "none",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '8px',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             }}
           />
           <Legend verticalAlign="bottom" height={36} iconType="circle" />

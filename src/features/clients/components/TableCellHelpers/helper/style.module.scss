@@ -1,11 +1,11 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .modal {
   @include m.flex(stretch, stretch, 0, column);
   padding-left: 12px;
   padding-right: 12px;
-  z-index: 99999999;
+  z-index: -1000;
   width: 260px;
   height: 200px;
   min-height: 0;
@@ -21,7 +21,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     padding: 3rem;
     @include m.flex(center, start, 0);
     width: 100%;

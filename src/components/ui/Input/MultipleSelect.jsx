@@ -1,26 +1,12 @@
-import { memo, useCallback, useMemo } from "react";
-import Select, { components } from "react-select";
-import { ClipLoader } from "react-spinners";
-
-const CustomValueContainer = ({ children, options, ...props }) => {
-  const selectedOptions = props.getValue();
-  const displayValue = selectedOptions
-    .filter((opt) => opt.value !== "all") // Exclude "Select All" from display
-    .map((opt) => opt.label)
-    .join(", ");
-
-  return (
-    <components.ValueContainer {...props}>
-      {displayValue || children[1]} {/* Fallback to placeholder or input */}
-    </components.ValueContainer>
-  );
-};
+import { memo, useCallback, useMemo } from 'react';
+import Select, { components } from 'react-select';
+import { ClipLoader } from 'react-spinners';
 
 const CustomOption = (props) => {
   const { isSelected, label } = props;
   return (
     <components.Option {...props}>
-      <span className={`checkbox ${isSelected ? "checked" : ""}`}></span>
+      <span className={`checkbox ${isSelected ? 'checked' : ''}`}></span>
       {label}
     </components.Option>
   );
@@ -28,21 +14,20 @@ const CustomOption = (props) => {
 
 const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
   const handleChange = useCallback((selected, actionMeta, field) => {
-    const allOptions = options.filter((opt) => opt.value !== "all");
+    const allOptions = options.filter((opt) => opt.value !== 'all');
     let newSelected = selected;
-
     // Handle "Select All"
-    if (selected.some((opt) => opt.value === "all")) {
+    if (selected.some((opt) => opt.value === 'all')) {
       newSelected = allOptions; // Select all options
     } else if (
-      actionMeta.action === "deselect-option" &&
-      actionMeta.option.value === "select-all"
+      actionMeta.action === 'deselect-option' &&
+      actionMeta.option.value === 'select-all'
     ) {
       newSelected = []; // Deselect all
     }
 
     // Update form field
-    field.onChange(newSelected.filter((opt) => opt.value !== "select-all")); // Exclude "Select All" from form value
+    field.onChange(newSelected.filter((opt) => opt.value !== 'select-all')); // Exclude "Select All" from form value
   }, []);
   return (
     <Select
@@ -51,26 +36,26 @@ const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
       openMenuOnClick={true}
       styles={{
         control: (baseStyles, state) => ({
-          width: "100%",
+          width: '100%',
           ...baseStyles,
           ...(props.style || {}),
         }),
         container: (baseStyles) => ({
           ...baseStyles,
-          width: "100%",
+          width: '100%',
         }),
         multiValue: (baseStyles) => ({
           ...baseStyles,
-          top: "0",
-          backgroundColor: "transparent",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-          padding: "2px 4px",
+          top: '0',
+          backgroundColor: 'transparent',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '2px 4px',
         }),
       }}
       classNamePrefix="react-select"
       isMulti
-      placeholder={"Tanlash"}
+      placeholder={'Tanlash'}
       options={options}
       closeMenuOnSelect={false} // Keep menu open for multiple selections
       hideSelectedOptions={false} // Keep selected options in the list
@@ -79,9 +64,9 @@ const MultipleSelect = ({ field, options = [], isLoading, ...props }) => {
         ValueContainer: ({ children, options, ...props }) => {
           const selectedOptions = props.getValue();
           const displayValue = selectedOptions
-            .filter((opt) => opt.value !== "all") // Exclude "Select All" from display
+            .filter((opt) => opt.value !== 'all') // Exclude "Select All" from display
             .map((opt) => opt.label)
-            .join(", ");
+            .join(', ');
 
           return (
             <components.ValueContainer {...props}>

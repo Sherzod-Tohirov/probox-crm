@@ -1,4 +1,4 @@
-@use "@styles/mixins" as m;
+@use '@styles/mixins' as m;
 
 .statistics-text {
   @include m.flex(center, center, 2rem);
@@ -7,3 +7,4 @@
 .total-text-wrapper {
   min-width: 170px;
 }
+

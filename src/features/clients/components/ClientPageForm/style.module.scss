@@ -1,5 +1,5 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .form {
   @include m.flex(center, start, 12px, column);
@@ -47,7 +47,7 @@
   object-fit: cover;
 
   &.active {
-    display: block;
+    display: block !important;
   }
 }
 
@@ -141,5 +141,26 @@
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.file-icon {
+  @include m.flex(center, center);
+  width: auto;
+  height: 65px;
+  color: v.$primary-color;
+  font-size: 2.5rem;
+  cursor: pointer;
+  & svg {
+    width: auto;
+    height: 65px;
+  }
+}
+
+.inputGroup {
+  @include m.flex(center, center);
+  width: 100%;
+  @include m.media-max(v.$breakpoint-md) {
+    @include m.flex(start, start, 2rem, column);
+  }
 }

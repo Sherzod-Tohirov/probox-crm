@@ -1,8 +1,9 @@
-@use "@styles/variables" as v;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .footer {
   position: sticky;
-  z-index: 99999;
+  z-index: 1000;
   margin-top: auto;
   bottom: 0;
   width: 100%;
@@ -13,7 +14,9 @@
     v.$secondary-border-color;
   background-color: v.$primary-footer-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
-
+  @include m.media-max(v.$breakpoint-md) {
+    padding: 2rem 3rem;
+  }
   &-text {
     font-size: 6rem;
     text-align: center;

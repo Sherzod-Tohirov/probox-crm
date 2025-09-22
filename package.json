@@ -10,6 +10,7 @@
     "preview": "vite preview --port 5646 --host"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
     "@floating-ui/react": "^0.27.8",
     "@floating-ui/react-dom": "^2.1.2",
     "@hookform/resolvers": "^4.0.0",
@@ -26,9 +27,12 @@
     "html-to-img": "^1.1.1",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.526.0",
     "moment": "^2.30.1",
     "ramda": "^0.30.1",
     "react": "^18.3.1",
+    "react-audio-visualize": "^1.2.0",
+    "react-audio-voice-recorder": "^2.2.0",
     "react-dom": "^18.3.1",
     "react-flatpickr": "^3.10.13",
     "react-hook-form": "^7.54.2",
@@ -45,10 +49,13 @@
     "react-spinners": "^0.15.0",
     "react-toastify": "^11.0.3",
     "react-transition-group": "^4.4.5",
+    "react-use": "^17.6.0",
     "react-window": "^1.8.11",
     "recharts": "^2.15.1",
+    "recordrtc": "^5.6.2",
     "sass": "^1.83.1",
     "uuid": "^11.0.5",
+    "wavesurfer.js": "^7.10.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {

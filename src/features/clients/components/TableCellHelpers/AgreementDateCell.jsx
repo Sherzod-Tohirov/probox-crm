@@ -1,24 +1,24 @@
-import moment from "moment";
-import { memo, useCallback, useState } from "react";
-import { Input } from "@components/ui";
-import { useForm } from "react-hook-form";
-import ModalCell from "./helper/ModalCell";
-import ModalWrapper from "./helper/ModalWrapper";
-import useMutateClientPageForm from "@hooks/data/clients/useMutateClientPageForm";
+import moment from 'moment';
+import { memo, useCallback, useState } from 'react';
+import { Input } from '@components/ui';
+import { useForm } from 'react-hook-form';
+import ModalCell from './helper/ModalCell';
+import ModalWrapper from './helper/ModalWrapper';
+import useMutateClientPageForm from '@hooks/data/clients/useMutateClientPageForm';
 
-import formatDate from "@utils/formatDate";
-import styles from "./style.module.scss";
+import formatDate from '@utils/formatDate';
+import styles from './style.module.scss';
 
-import { useQueryClient } from "@tanstack/react-query";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleModal } from "../../../../store/slices/toggleSlice";
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleModal } from '@store/slices/toggleSlice';
 const Title = ({ date }) => {
-  if (!date) return "-";
-  if (moment(date, "DD.MM.YYYY", true).isValid()) return date;
+  if (!date) return '-';
+  if (moment(date, 'DD.MM.YYYY', true).isValid()) return date;
   return formatDate(date);
 };
 const AgreementDateCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-agreement-date-modal`;
+  const modalId = `${column?.['DocEntry']}-agreement-date-modal`;
   const {
     reset,
     control,
@@ -38,19 +38,19 @@ const AgreementDateCell = ({ column }) => {
 
   const handleApply = useCallback(
     async (data) => {
-      const formattedDueDate = moment(currentClient["DueDate"]).format(
-        "YYYY.MM.DD"
+      const formattedDueDate = moment(currentClient['DueDate']).format(
+        'YYYY.MM.DD'
       );
 
       const formattedAgreementDate = formatDate(
         data?.agreementDate,
-        "DD.MM.YYYY",
-        "YYYY.MM.DD"
+        'DD.MM.YYYY',
+        'YYYY.MM.DD'
       );
 
       const payload = {
-        docEntry: currentClient?.["DocEntry"],
-        installmentId: currentClient?.["InstlmntID"],
+        docEntry: currentClient?.['DocEntry'],
+        installmentId: currentClient?.['InstlmntID'],
         data: {
           slpCode: column?.SlpCode,
           DueDate: formattedDueDate,
@@ -60,7 +60,7 @@ const AgreementDateCell = ({ column }) => {
       try {
         await mutation.mutateAsync(payload);
         queryClient.invalidateQueries({
-          queryKey: ["clients"],
+          queryKey: ['clients'],
         });
       } catch (error) {
         console.log(error);
@@ -74,7 +74,8 @@ const AgreementDateCell = ({ column }) => {
     <ModalWrapper
       modalId={modalId}
       column={column}
-      title={<Title date={column?.NewDueDate} />}>
+      title={<Title date={column?.NewDueDate} />}
+    >
       <ModalCell
         title={"Muddatni o'zgartirish"}
         onClose={() => {
@@ -85,16 +86,17 @@ const AgreementDateCell = ({ column }) => {
         applyButtonProps={{
           disabled: !isDirty,
           isLoading: mutation.isPending,
-        }}>
+        }}
+      >
         {column.SlpName}
         <Input
-          inputBoxClassName={styles["modal-input-wrapper"]}
-          className={styles["modal-input"]}
+          inputBoxClassName={styles['modal-input-wrapper']}
+          className={styles['modal-input']}
           type="date"
-          variant={"outlined"}
+          variant={'outlined'}
           canClickIcon={false}
           control={control}
-          {...register("agreementDate")}
+          {...register('agreementDate')}
         />
       </ModalCell>
     </ModalWrapper>

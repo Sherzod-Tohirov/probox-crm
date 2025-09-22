@@ -1,6 +1,6 @@
-import api from "./axiosConfig";
+import api from './axiosConfig';
 
-export const fetchData = async (apiUrl, apiName = "data", params = {}) => {
+export const fetchData = async (apiUrl, apiName = 'data', params = {}) => {
   try {
     const response = await api.get(apiUrl, { params });
     return response.data;
@@ -12,7 +12,12 @@ export const fetchData = async (apiUrl, apiName = "data", params = {}) => {
 
 export const postData = async (apiUrl, data) => {
   try {
-    const response = await api.post(apiUrl, data);
+    let config = {};
+    if (data instanceof FormData) {
+      // Let Axios set the correct headers for FormData
+      config.headers = {};
+    }
+    const response = await api.post(apiUrl, data, config);
     return response.data;
   } catch (error) {
     console.log(`Error while posting data to ${apiUrl}: `, error);

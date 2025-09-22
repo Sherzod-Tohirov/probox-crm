@@ -1,18 +1,18 @@
-import { groupBy } from "ramda";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Message from "./Message";
-import MessageDate from "./MessageDate";
-import styles from "./messenger.module.scss";
-import { Box, Button } from "@components/ui";
-import { AnimatePresence } from "framer-motion";
-import _ from "lodash";
-import moment from "moment";
+import _ from 'lodash';
+import moment from 'moment';
+import Message from './Message';
+import { groupBy } from 'ramda';
+import MessageDate from './MessageDate';
+import { Box, Button } from '@components/ui';
+import { AnimatePresence } from 'framer-motion';
+import styles from './styles/messenger.module.scss';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 const MessageRenderer = ({
   messages = [],
   onEditMessage,
   onDeleteMessage,
   hasToggleControl = true,
-  size = "",
+  size = '',
 }) => {
   const scrollRef = useRef(null);
   const [formattedMessages, setFormattedMessages] = useState([]);
@@ -28,7 +28,7 @@ const MessageRenderer = ({
     const now = moment();
     const filteredMessages = messages.filter((msg) => {
       const msgDate = moment(msg.created_at);
-      return !now.isSame(msgDate, "month");
+      return !now.isSame(msgDate, 'month');
     });
     setLastMonthMessages(filteredMessages);
   }, [messages]);
@@ -42,7 +42,7 @@ const MessageRenderer = ({
       const now = moment();
       const filteredMessages = messages.filter((msg) => {
         const msgDate = moment(msg.created_at);
-        return now.isSame(msgDate, "month");
+        return now.isSame(msgDate, 'month');
       });
       setFormattedMessages(filteredMessages);
     } else {
@@ -50,18 +50,19 @@ const MessageRenderer = ({
     }
   }, [messages, hasToggleControl, isToggleOpen]);
   return (
-    <div className={styles["messenger-messages"]} ref={scrollRef}>
+    <div className={styles['messenger-messages']} ref={scrollRef}>
       {hasToggleControl && lastMonthMessages.length > 0 ? (
-        <Box align={"center"} justify={"center"}>
+        <Box align={'center'} justify={'center'}>
           <Button
             onClick={(e) => {
               e.stopPropagation();
               setIsToggleOpen((p) => !p);
             }}
-            className={styles["messenger-messages-toggle-btn"]}
-            variant={"text"}
-            icon={isToggleOpen ? "arrowUp" : "arrowDown"}>
-            {isToggleOpen ? "Yopish" : "Hammasini ko'rish"}
+            className={styles['messenger-messages-toggle-btn']}
+            variant={'text'}
+            icon={isToggleOpen ? 'arrowUp' : 'arrowDown'}
+          >
+            {isToggleOpen ? 'Yopish' : "Hammasini ko'rish"}
           </Button>
         </Box>
       ) : null}
@@ -69,8 +70,8 @@ const MessageRenderer = ({
         {(formattedMessages.length > 0
           ? Object.entries(
               groupBy((msg) => {
-                const formattedDate = moment(msg?.["DocDate"]).format(
-                  "DD-MM-YYYY"
+                const formattedDate = moment(msg?.['DocDate']).format(
+                  'DD-MM-YYYY'
                 );
                 return formattedDate;
               }, formattedMessages)
@@ -83,7 +84,7 @@ const MessageRenderer = ({
               {messages.map((message) => (
                 <Message
                   msg={message}
-                  key={message?.["_id"]}
+                  key={message?.['_id']}
                   onEditMessage={onEditMessage}
                   onDeleteMessage={onDeleteMessage}
                   size={size}

@@ -1,7 +1,7 @@
-@use "@styles/variables" as v;
+@use '@styles/variables' as v;
 
 :root {
-  font-family: "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: 'Inter Tight', Arial, Helvetica, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-size: 4px;
@@ -19,12 +19,12 @@ html {
   // overflow-x: hidden;
 }
 
-body, #root {
+body,
+#root {
   // overflow-x: hidden;
   min-height: 100vh !important;
   height: auto !important;
 }
-
 
 button {
   will-change: transform;
@@ -36,7 +36,7 @@ button {
 .alert {
   width: clamp(100rem, 100%, 160rem) !important;
   padding: 4rem !important;
-  font-family: "Inter";
+  font-family: 'Inter';
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
   transition: opacity v.$transition-time v.$transition-type;
@@ -98,7 +98,9 @@ button {
   &-enter-active {
     transform: translateX(0);
     opacity: 1;
-    transition: transform 300ms ease, opacity 300ms ease;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
   }
   &-exit {
     transform: translateX(0);
@@ -107,14 +109,16 @@ button {
   &-exit-active {
     transform: translateX(100%);
     opacity: 0;
-    transition: transform 300ms ease, opacity 300ms ease;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
   }
 }
 
 // Custom styles for flatpickr
 
 .flatpickr-calendar {
-  z-index: 99999999 !important;
+  z-index: 1201 !important;
 }
 
 .flatpickr-day.selected,
@@ -156,6 +160,6 @@ button {
 
 .react-select__control {
   & * {
-    font-family: "Inter Tight", Arial, Helvetica, sans-serif;
+    font-family: 'Inter Tight', Arial, Helvetica, sans-serif;
   }
 }

@@ -1,5 +1,5 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .modal-overlay {
   @include m.overlay;
@@ -11,7 +11,7 @@
   width: 100%;
   background-color: v.$secondary-bg;
   border-radius: 10px;
-
+  margin: 15px;
   &-close-btn {
     margin-left: auto;
     font-size: 4rem !important;

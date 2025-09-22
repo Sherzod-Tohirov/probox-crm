@@ -1,4 +1,139 @@
 .row {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+
+  // Default styles for scalar props
+  &.direction-row {
+    flex-direction: row;
+  }
+  &.direction-column {
+    flex-direction: column;
+  }
+  &.justify-start {
+    justify-content: flex-start;
+  }
+  &.justify-center {
+    justify-content: center;
+  }
+  &.justify-end {
+    justify-content: flex-end;
+  }
+  &.justify-space-between {
+    justify-content: space-between;
+  }
+  &.justify-space-around {
+    justify-content: space-around;
+  }
+  &.align-start {
+    align-items: flex-start;
+  }
+  &.align-center {
+    align-items: center;
+  }
+  &.align-end {
+    align-items: flex-end;
+  }
+  &.wrap-wrap {
+    flex-wrap: wrap;
+  }
+  &.wrap-nowrap {
+    flex-wrap: nowrap;
+  }
+  &.flexGrow-true {
+    flex-grow: 1;
+  }
+  &.flexGrow-false {
+    flex-grow: 0;
+  }
+
+  // Responsive styles for each breakpoint
+  @each $bp, $minWidth in (xs: 0px, sm: 576px, md: 768px, lg: 992px) {
+    // Direction
+    &.direction-#{$bp}-row {
+      @media (min-width: #{$minWidth}) {
+        flex-direction: row;
+      }
+    }
+    &.direction-#{$bp}-column {
+      @media (min-width: #{$minWidth}) {
+        flex-direction: column;
+      }
+    }
+
+    // Justify
+    &.justify-#{$bp}-start {
+      @media (min-width: #{$minWidth}) {
+        justify-content: flex-start;
+      }
+    }
+    &.justify-#{$bp}-center {
+      @media (min-width: #{$minWidth}) {
+        justify-content: center;
+      }
+    }
+    &.justify-#{$bp}-end {
+      @media (min-width: #{$minWidth}) {
+        justify-content: flex-end;
+      }
+    }
+    &.justify-#{$bp}-space-between {
+      @media (min-width: #{$minWidth}) {
+        justify-content: space-between;
+      }
+    }
+    &.justify-#{$bp}-space-around {
+      @media (min-width: #{$minWidth}) {
+        justify-content: space-around;
+      }
+    }
+
+    // Align
+    &.align-#{$bp}-start {
+      @media (min-width: #{$minWidth}) {
+        align-items: flex-start;
+      }
+    }
+    &.align-#{$bp}-center {
+      @media (min-width: #{$minWidth}) {
+        align-items: center;
+      }
+    }
+    &.align-#{$bp}-end {
+      @media (min-width: #{$minWidth}) {
+        align-items: flex-end;
+      }
+    }
+
+    // Wrap
+    &.wrap-#{$bp}-wrap {
+      @media (min-width: #{$minWidth}) {
+        flex-wrap: wrap;
+      }
+    }
+    &.wrap-#{$bp}-nowrap {
+      @media (min-width: #{$minWidth}) {
+        flex-wrap: nowrap;
+      }
+    }
+
+    // Flex Grow
+    &.flexGrow-#{$bp}-true {
+      @media (min-width: #{$minWidth}) {
+        flex-grow: 1;
+      }
+    }
+    &.flexGrow-#{$bp}-false {
+      @media (min-width: #{$minWidth}) {
+        flex-grow: 0;
+      }
+    }
+
+    // Gutter (using CSS custom properties)
+    &[data-gutter-#{$bp}] {
+      @media (min-width: #{$minWidth}) {
+        gap: var(--gutter-#{$bp}, 0);
+      }
+    }
+  }
 }

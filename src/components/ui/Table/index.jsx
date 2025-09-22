@@ -1,9 +1,14 @@
-import { ClipLoader } from "react-spinners";
-import { useCallback, useMemo, useRef, forwardRef, memo } from "react";
-import iconsMap from "@utils/iconsMap";
-import classNames from "classnames";
-import { v4 as uuidv4 } from "uuid";
-import styles from "./table.module.scss";
+import { ClipLoader } from 'react-spinners';
+import { useCallback, useMemo, useRef, forwardRef, memo } from 'react';
+import iconsMap from '@utils/iconsMap';
+import classNames from 'classnames';
+import { v4 as uuidv4 } from 'uuid';
+import { breakpoints, getBreakpointValue } from '@config/breakpoints';
+import styles from './table.module.scss';
+import PropTypes from 'prop-types';
+import useIsMobile from '../../../hooks/useIsMobile';
+// Utility to check if a prop is an object for responsive values
+const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
 // Memoized table cell component
 const TableCell = memo(({ column, row, rowIndex }) => {
@@ -15,10 +20,15 @@ const TableCell = memo(({ column, row, rowIndex }) => {
 });
 
 // Selection checkbox cell
-const SelectionCell = memo(({ checked, onChange }) => (
-  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
-    <label className={styles["selection-checkbox"]}>
+const SelectionCell = memo(({ checked, onChange, ...props }) => (
+  <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+    <label
+      className={classNames(styles['selection-checkbox'], {
+        [styles['disabled']]: props.disabled,
+      })}
+    >
       <input
+        {...props}
         type="checkbox"
         checked={checked}
         onChange={onChange}
@@ -29,10 +39,15 @@ const SelectionCell = memo(({ checked, onChange }) => (
 ));
 
 // Selection header cell
-const SelectionHeaderCell = memo(({ checked, onChange }) => (
-  <th style={{ textAlign: "center", width: "40px" }}>
-    <label className={styles["selection-checkbox"]}>
+const SelectionHeaderCell = memo(({ checked, onChange, ...props }) => (
+  <th style={{ textAlign: 'center', width: '40px' }}>
+    <label
+      className={classNames(styles['selection-checkbox'], {
+        [styles['disabled']]: props.disabled,
+      })}
+    >
       <input
+        {...props}
         type="checkbox"
         checked={checked}
         onChange={onChange}
@@ -50,6 +65,7 @@ const TableRow = memo(
     rowIndex,
     uniqueKey,
     onRowClick,
+    isRowSelectable,
     getRowStyles,
     handleMouseDown,
     handleMouseUp,
@@ -63,26 +79,34 @@ const TableRow = memo(
 
     const uniqueKeyValue = useMemo(() => {
       if (Array.isArray(uniqueKey)) {
-        return uniqueKey.map((key) => row[key]).join("-");
+        return uniqueKey.map((key) => row[key]).join('-');
       }
       return uniqueKey ? row[uniqueKey] : uuidv4();
     }, [row, uniqueKey]);
 
     return (
       <tr
+        className={classNames({
+          [styles['selected-row']]: !!getRowStyles(row, rowIndex),
+        })}
         onClick={handleClick}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
         style={{
+          backgroundColor: selected ? '#f0f0f0' : 'transparent',
+          cursor: 'pointer',
+          transition: 'background-color 0.2s ease',
           ...getRowStyles(row, rowIndex),
-          cursor: "pointer",
-          backgroundColor: selected ? "#f0f0f0" : "transparent",
-          transition: "background-color 0.2s ease",
-        }}>
+        }}
+      >
         {selectionEnabled && (
-          <SelectionCell checked={selected} onChange={() => onSelectRow(row)} />
+          <SelectionCell
+            checked={selected}
+            onChange={() => onSelectRow(row)}
+            disabled={!isRowSelectable(row)}
+          />
         )}
         {columns.map((column, colIndex) => (
           <TableCell
@@ -97,8 +121,17 @@ const TableRow = memo(
   }
 );
 
+const defaultScrollHeight = {
+  xs: `calc(100vh - ${breakpoints.xs + 100}px)`,
+  sm: `calc(100vh - ${breakpoints.sm / 4}px)`,
+  md: `calc(100vh - 250px)`,
+  lg: `calc(100vh - 250px)`,
+  xl: `calc(100vh - 400px)`,
+};
+
 function Table(
   {
+    id,
     uniqueKey = null,
     columns = [],
     data = [],
@@ -107,13 +140,26 @@ function Table(
     containerStyle = {},
     containerClass,
     selectionEnabled = false,
-    selectedRows = [], // <-- change here
+    isRowSelectable = () => true,
+    selectedRows = [],
     onSelectionChange = () => {},
-    containerHeight = null,
+    containerHeight = {
+      xs: '300px',
+      sm: '400px',
+      md: '500px',
+      lg: '600px',
+      xl: 'auto',
+    },
     isLoading = false,
     showPivotColumn = false,
-    scrollable = false,
-    scrollHeight = "calc(100vh - 450px)",
+    scrollable = {
+      xs: true,
+      sm: true,
+      md: true,
+      lg: false,
+      xl: false,
+    },
+    scrollHeight = defaultScrollHeight,
     getRowStyles = () => ({}),
     onRowClick = () => {},
   },
@@ -121,19 +167,21 @@ function Table(
 ) {
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
-
+  const isMobile = useIsMobile();
+  // Responsive column filtering
   const finalColumns = useMemo(() => {
-    if (!showPivotColumn) return columns;
+    const filteredColumns = columns.filter((col) => !col.hideOnMobile);
+    if (!showPivotColumn) return filteredColumns;
     return [
       {
-        key: "pivotId",
-        icon: "barCodeFilled",
-        title: "ID",
-        width: "2%",
-        cellStyle: { textAlign: "center" },
+        key: 'pivotId',
+        icon: 'barCodeFilled',
+        title: 'ID',
+        width: { xs: '10%', md: '2%', xl: '2%' }, // Added xl breakpoint
+        cellStyle: { textAlign: 'center' },
         renderCell: (_, rowIndex) => rowIndex + 1,
       },
-      ...columns,
+      ...filteredColumns,
     ];
   }, [columns, showPivotColumn]);
 
@@ -160,62 +208,65 @@ function Table(
   const getRowKey = useCallback(
     (row) => {
       if (Array.isArray(uniqueKey)) {
-        return uniqueKey.map((key) => row[key]).join("-");
+        return uniqueKey.map((key) => row[key]).join('-');
       }
       return uniqueKey ? row[uniqueKey] : uuidv4();
     },
     [uniqueKey]
   );
 
-  // Helper to check if a row is selected
   const isRowSelected = useCallback(
     (row) => {
       const key = Array.isArray(uniqueKey)
-        ? uniqueKey.map((k) => row[k]).join("-")
+        ? uniqueKey.map((k) => row[k]).join('-')
         : uniqueKey
-        ? row[uniqueKey]
-        : null;
+          ? row[uniqueKey]
+          : null;
       return selectedRows.some(
         (selected) =>
           (Array.isArray(uniqueKey)
-            ? uniqueKey.map((k) => selected[k]).join("-")
+            ? uniqueKey.map((k) => selected[k]).join('-')
             : uniqueKey
-            ? selected[uniqueKey]
-            : null) === key
+              ? selected[uniqueKey]
+              : null) === key
       );
     },
     [selectedRows, uniqueKey]
   );
 
   const allSelected = useMemo(() => {
-    if (!data?.length) return false;
-    return data.every((row) => isRowSelected(row));
+    const selectableRowsLength = data.filter(isRowSelectable).length;
+    if (!selectableRowsLength) return false;
+    return selectedRows.length === selectableRowsLength;
   }, [data, isRowSelected]);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
       onSelectionChange([]);
     } else {
-      onSelectionChange([...data]);
+      const filteredRows = data.filter((row) => isRowSelectable(row));
+      onSelectionChange([...filteredRows]);
     }
   }, [allSelected, data, onSelectionChange]);
 
   const handleSelectRow = useCallback(
     (row) => {
       if (isRowSelected(row)) {
-        onSelectionChange(selectedRows.filter(
-          (selected) =>
-            (Array.isArray(uniqueKey)
-              ? uniqueKey.map((k) => selected[k]).join("-")
-              : uniqueKey
-              ? selected[uniqueKey]
-              : null) !==
-            (Array.isArray(uniqueKey)
-              ? uniqueKey.map((k) => row[k]).join("-")
-              : uniqueKey
-              ? row[uniqueKey]
-              : null)
-        ));
+        onSelectionChange(
+          selectedRows.filter(
+            (selected) =>
+              (Array.isArray(uniqueKey)
+                ? uniqueKey.map((k) => selected[k]).join('-')
+                : uniqueKey
+                  ? selected[uniqueKey]
+                  : null) !==
+              (Array.isArray(uniqueKey)
+                ? uniqueKey.map((k) => row[k]).join('-')
+                : uniqueKey
+                  ? row[uniqueKey]
+                  : null)
+          )
+        );
       } else {
         onSelectionChange([...selectedRows, row]);
       }
@@ -226,21 +277,45 @@ function Table(
   const containerClassName = useMemo(
     () =>
       classNames(
-        styles["table-wrapper"],
+        styles['table-wrapper'],
         {
-          [styles["scrollable"]]: scrollable,
-          [styles["loading"]]: isLoading,
+          [styles['scrollable']]: isResponsiveProp(scrollable)
+            ? scrollable.md
+            : scrollable,
+          [styles['loading']]: isLoading,
         },
         containerClass
       ),
     [scrollable, isLoading, containerClass]
   );
 
+  // Resolve responsive containerHeight and scrollHeight
+  const resolvedContainerStyle = useMemo(() => {
+    const height =
+      columns.length > 10
+        ? isMobile
+          ? containerHeight.md
+          : containerHeight.xl
+        : 'auto';
+    const scroll =
+      columns.length > 10
+        ? isMobile
+          ? scrollHeight.md
+          : scrollHeight.xl
+        : 'auto';
+    const isScrollable = getBreakpointValue(scrollable);
+
+    return {
+      height: isScrollable ? scroll : height,
+      ...containerStyle,
+    };
+  }, [containerHeight, scrollHeight, scrollable, containerStyle]);
+
   const tableClassName = useMemo(
     () =>
       classNames(
-        styles["base-table"],
-        { [styles["loading"]]: isLoading },
+        styles['base-table'],
+        { [styles['loading']]: isLoading },
         className
       ),
     [isLoading, className]
@@ -250,17 +325,18 @@ function Table(
     <div
       id="table-wrapper"
       data-testid="table-wrapper"
-      style={{
-        height: scrollable ? scrollHeight : containerHeight || "auto",
-        ...containerStyle,
-      }}
-      className={containerClassName}>
-      <div className={styles["table-container"]}>
-        <table ref={ref} className={tableClassName} style={style}>
+      style={resolvedContainerStyle}
+      className={classNames(containerClassName, {
+        [styles[`breakpoint-${getBreakpointValue(scrollable)}`]]: true,
+      })}
+    >
+      <div className={styles['table-container']}>
+        <table id={id} ref={ref} className={tableClassName} style={style}>
           <thead>
             <tr>
               {selectionEnabled && (
                 <SelectionHeaderCell
+                  disabled={data.filter(isRowSelectable).length === 0}
                   checked={allSelected}
                   onChange={handleSelectAll}
                 />
@@ -269,11 +345,14 @@ function Table(
                 <th
                   key={`header-${column.key}-${colIndex}`}
                   style={{
-                    width: column.width || "auto",
-                    minWidth: column.minWidth || "initial",
-                    maxWidth: column.maxWidth || "initial",
-                  }}>
-                  <div className={styles["table-header-cell"]}>
+                    width: isResponsiveProp(column.width)
+                      ? column.width.xl || column.width.md || 'auto'
+                      : column.width || 'auto',
+                    minWidth: column.minWidth || 'initial',
+                    maxWidth: column.maxWidth || 'initial',
+                  }}
+                >
+                  <div className={styles['table-header-cell']}>
                     {column.icon && iconsMap[column.icon]} {column.title}
                   </div>
                 </th>
@@ -282,11 +361,12 @@ function Table(
           </thead>
           <tbody>
             {isLoading ? (
-              <tr className={styles["loading-row"]}>
+              <tr className={styles['loading-row']}>
                 <td
                   colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
-                  className={styles["empty-table"]}>
-                  <ClipLoader color={"#94A3B8"} size={26} />
+                  className={styles['empty-table']}
+                >
+                  <ClipLoader color={'#94A3B8'} size={26} />
                 </td>
               </tr>
             ) : data?.length > 0 ? (
@@ -297,6 +377,7 @@ function Table(
                   columns={finalColumns}
                   rowIndex={rowIndex}
                   uniqueKey={uniqueKey}
+                  isRowSelectable={isRowSelectable}
                   onRowClick={memoizedRowClick}
                   getRowStyles={getRowStyles}
                   handleMouseDown={handleMouseDown}
@@ -310,7 +391,8 @@ function Table(
               <tr>
                 <td
                   colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
-                  className={styles["empty-table"]}>
+                  className={styles['empty-table']}
+                >
                   Ma'lumot mavjud emas.
                 </td>
               </tr>
@@ -321,5 +403,13 @@ function Table(
     </div>
   );
 }
+
+// Update prop types for better documentation
+Table.propTypes = {
+  containerHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  scrollable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  scrollHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  // ...other prop types...
+};
 
 export default memo(forwardRef(Table));

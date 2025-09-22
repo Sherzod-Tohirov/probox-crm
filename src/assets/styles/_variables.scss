@@ -66,3 +66,12 @@ $filter-input-color: #0f172a;
 $filter-input-placeholder-color: #0f172a;
 $filter-input-placeholder-color-secondary: #94a3b8;
 $filter-input-border-color: #cbd5e1;
+
+// Define breakpoints as a Sass map
+
+$breakpoint-xs: 0px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 1200px;
+$breakpoint-lg: 1300px;
+$breakpoint-xl: 1480px;
+$breakpoint-xxl: 1580px;

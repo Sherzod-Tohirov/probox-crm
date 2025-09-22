@@ -29,9 +29,9 @@ function Header() {
             <Col align="stretch">
               <Divider />
             </Col>
-            <Col>
+            {/* <Col>
               <Input type="search" variant={"search"} placeholder="Search" />
-            </Col>
+            </Col> */}
           </Row>
         </Col>
         <Col>

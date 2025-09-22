@@ -1,26 +1,28 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .messenger {
   position: fixed;
   top: 0;
   right: 0;
   min-height: 0;
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Open Sans', sans-serif;
   @include m.flex-direction(column);
   width: 356px;
   height: 100%;
   padding-left: 24px;
   padding-right: 24px;
   overflow-x: hidden;
+  background-color: #fff;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   // Remove overflow: auto from parent container
   display: flex;
   flex-direction: column;
-  z-index: 1000000;
+  z-index: 1000;
   overflow: hidden;
-  backdrop-filter: blur(50px);
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -114,8 +116,8 @@
 
 .text-input-form {
   @include m.flex(start, space-between, 0, column);
-  height: 114px;
-  padding: 0 12px 12px 12px;
+  height: 120px;
+  padding: 6px 12px 12px 12px;
   border-radius: 12px;
   background: v.$primary-chat-input-bg;
 }
@@ -123,7 +125,7 @@
 .text-input {
   padding-top: 10px !important;
   width: 100%;
-  height: 74px;
+  height: 72px;
   padding: 0 10px;
   border: none;
   background: transparent;
@@ -157,9 +159,9 @@
 }
 
 .text-input-form.small {
-  height: 90px;
+  height: 100px;
   padding: 8px;
-  padding-top: 2px;
+  padding-top: 6px;
 
   .text-input {
     height: 54px;
@@ -346,7 +348,7 @@
   @include m.flex(stretch, stretch, 0, column);
   padding-left: 8px;
   padding-right: 8px;
-  z-index: 99999999;
+  z-index: 1000;
   width: 260px;
   height: 400px;
   min-height: 0;
@@ -398,7 +400,7 @@
   &-footer {
     position: sticky;
     bottom: 0;
-    z-index: 99999;
+    z-index: 1000;
     padding-top: 8px;
     padding-bottom: 8px;
     background-color: #fff;
@@ -415,8 +417,7 @@
   background-color: #fff;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
   opacity: 1;
-  z-index: 999999;
-
+  z-index: 1000;
   &-list {
     @include m.flex(start, center, 1rem, column);
     width: 95%;
@@ -455,10 +456,140 @@
 
     color: v.$danger-color;
   }
-  &-btn.edit {
-    svg {
-      color: v.$fourth-color;
-    }
-    color: v.$fourth-color;
+}
+
+.file-input-label {
+  @include m.flex(center, center);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: v.$secondary-color;
+  font-size: 2.5rem;
+  color: v.$button-bg;
+  border-radius: 50%;
+  transition: all v.$transition-time v.$transition-type;
+  & svg {
+    width: 24px;
+    height: 24px;
   }
+}
+
+.mic-icon {
+  color: v.$button-bg;
+  cursor: pointer;
+  &.recording {
+    color: v.$danger-color;
+  }
+}
+
+.file-preview-photo {
+  width: 100px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.audio-recorder {
+  background-color: #fff !important;
+  &-status {
+    display: inline-flex;
+    flex-grow: 0 !important;
+    width: 80px !important;
+  }
+  &.recording {
+    width: 200px !important;
+  }
+}
+
+.voice-recorder-wrapper {
+  @include m.flex(center, center, 1rem);
+}
+
+.voice-recorder-timer {
+  font-size: 4rem;
+  font-weight: bold;
+  color: v.$button-bg;
+}
+
+.voice-recorder-controls {
+  display: flex;
+}
+
+.voice-recorder-pause {
+  @include m.flex-center;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 5rem !important;
+}
+
+.voice-recorder-button {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background-color: #007bff;
+  color: white;
+}
+
+.voice-recorder-button:hover {
+  background-color: #0056b3;
+}
+
+.voice-recorder-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.message-audio {
+  max-width: 95%;
+  height: 100%;
+  &.small {
+    transform-origin: left top;
+    width: 350px;
+  }
+  &-wrapper {
+    width: 100%;
+    height: 48px;
+
+    @include m.flex(start, start, 1rem);
+  }
+
+  &::-webkit-media-controls-panel {
+    background-color: var(--audio-bg-color, v.$secondary-bg) !important;
+  }
+
+  &::-webkit-media-controls-play-button,
+  &::-webkit-media-controls-timeline,
+  &::-webkit-media-controls-current-time-display,
+  &::-webkit-media-controls-time-remaining-display {
+    color: var(--audio-color, v.$primary-color); // Optional: better contrast
+  }
+}
+
+.message-image {
+  width: 90%;
+  height: auto;
+  border-radius: 10px;
+  &-wrapper {
+    width: 100%;
+    @include m.flex(center, start, 1rem);
+  }
+}
+
+.message-input-wrapper {
+  @include m.flex(start, start, 1rem);
+  width: 100%;
+  height: 100%;
+  min-height: 68px;
+  max-height: 80px;
+  overflow: auto;
+  &.small {
+    max-height: 70px;
+  }
+}
+
+.hidden {
+  display: none !important;
 }
