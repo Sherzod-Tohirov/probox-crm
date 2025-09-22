@@ -158,7 +158,7 @@ export default function FilePreviewModal({
                     className={styles["indicator-img"]}
                   />
                 )}
-                {() => {
+                {(() => {
                   if (img.originalFile.type.startsWith("image/")) {
                     return (
                       <motion.img
@@ -185,18 +185,18 @@ export default function FilePreviewModal({
                   ) {
                     return (
                       <Box>
-                          {iconsMap["PdfFile"]}
+                          {iconsMap["pdfFile"]}
                       </Box>
                     );
                   }
                   if(img.originalFile.type.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
                     return (
                       <Box>
-                        {iconsMap["ExcelFile"]}
+                        {iconsMap["excelFile"]}
                       </Box>
                     );
                   }
-                }}
+                })()}
                 <motion.span
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {

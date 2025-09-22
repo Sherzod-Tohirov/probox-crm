@@ -49,6 +49,7 @@ import {
   DeleteFilled,
   Edit,
   EditFilled,
+  ExcelFile,
   Eye,
   EyeClosed,
   Filter,
@@ -56,6 +57,7 @@ import {
   MenuDots,
   Messenger,
   MessengerFilled,
+  PdfFile,
   Pencil,
 } from "../assets/images/icons/Icons";
 
@@ -115,7 +117,9 @@ const iconsMap = {
   delete: <Delete />,
   deleteFilled: <DeleteFilled />,
   filter: <Filter />,
-  filterFilled: <FilterFilled />
+  filterFilled: <FilterFilled />,
+  pdfFile: <PdfFile />,
+  excelFile: <ExcelFile />,
 };
 
 export default iconsMap;
