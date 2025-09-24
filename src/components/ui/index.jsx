@@ -14,6 +14,7 @@ import Modal from './Modal';
 import Status from './Status';
 import Divider from './Divider';
 import Accordion from './Accordion';
+import YandexMap from './Map/YandexMap';
 export {
   Row,
   Col,
@@ -31,4 +32,5 @@ export {
   Status,
   Divider,
   Accordion,
+  YandexMap,
 };

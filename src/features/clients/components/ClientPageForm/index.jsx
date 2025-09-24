@@ -30,6 +30,7 @@ function ClientPageForm({
   formId,
   onSubmit,
   setIsSaveButtonDisabled,
+  isCompactLayout = false,
   ...props
 }) {
   const currentClient = store.getState().page.clients.currentClient;
@@ -236,7 +237,7 @@ function ClientPageForm({
         const hasCoords =
           'lat' in userAddressCoords && 'long' in userAddressCoords;
         if (hasCoords) {
-          await updateAddressMutation.mutate({
+          await updateAddressMutation.mutateAsync({
             cardCode: currentClient?.['CardCode'],
             data: userAddressCoords,
           });
@@ -272,174 +273,178 @@ function ClientPageForm({
         }}
         onApply={handleFileUpload}
       />
-      <Row direction={'row'} gutter={6} wrap>
-        <Col fullWidth={isMobile}>
-          <Row gutter={1}>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="avatarFilled">FIO</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  style={{ pointerEvents: 'all' }}
-                  {...register('name')}
-                />
-              </InputGroup>
+      <Row gutter={4} wrap>
+        <Col fullWidth>
+          <Row direction={{ xs: 'column', md: 'row' }} gutter={3}>
+            <Col span={{ xs: 24, md: 12 }} fullWidth>
+              <Row gutter={1}>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="avatarFilled">FIO</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      style={{ pointerEvents: 'all' }}
+                      {...register('name')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="avatarFilled">Ijrochi</Label>
+                    <Input
+                      type="select"
+                      variant={'filled'}
+                      options={executorsOptions}
+                      canClickIcon={false}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={!hasRole(user, ['Manager'])}
+                      {...register('executor')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="photo" htmlFor={'file'}>
+                      Fayllar
+                    </Label>
+                    <Input
+                      id={'file'}
+                      type="file"
+                      images={clientFilesWithAPI}
+                      accept={`.${allowedExtensions.join(', .')}`}
+                      multiple
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      className={styles.fileInput}
+                      onClick={handleFileInputClick}
+                      onChange={handleFileChange}
+                      name={'files'}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="telephoneFilled">Telefon raqami</Label>
+                    <Input
+                      type="tel"
+                      control={control}
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      hasIcon={false}
+                      style={{ cursor: 'auto' }}
+                      {...register('telephone')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="telephoneFilled">Telefon raqami 2</Label>
+                    <Input
+                      type="text"
+                      control={control}
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      hasIcon={false}
+                      style={{ cursor: 'auto' }}
+                      {...register('additional_telephone')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="barCodeFilled">Mijoz kodi</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      {...register('code')}
+                    />
+                  </InputGroup>
+                </Col>
+              </Row>
             </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="avatarFilled">Ijrochi</Label>
-                <Input
-                  type="select"
-                  variant={'filled'}
-                  options={executorsOptions}
-                  canClickIcon={false}
-                  size={'longer'}
-                  disabled={!hasRole(user, ['Manager'])}
-                  {...register('executor')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="photo" htmlFor={'file'}>
-                  Fayllar
-                </Label>
-                <Input
-                  id={'file'}
-                  type="file"
-                  images={clientFilesWithAPI}
-                  accept={`.${allowedExtensions.join(', .')}`}
-                  multiple
-                  variant={'filled'}
-                  size={'longer'}
-                  className={styles.fileInput}
-                  onClick={handleFileInputClick}
-                  onChange={handleFileChange}
-                  name={'files'}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="telephoneFilled">Telefon raqami</Label>
-                <Input
-                  type="tel"
-                  control={control}
-                  variant={'filled'}
-                  size={'longer'}
-                  hasIcon={false}
-                  style={{ cursor: 'auto' }}
-                  {...register('telephone')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="telephoneFilled">Telefon raqami 2</Label>
-                <Input
-                  type="text"
-                  control={control}
-                  variant={'filled'}
-                  size={'longer'}
-                  hasIcon={false}
-                  style={{ cursor: 'auto' }}
-                  {...register('additional_telephone')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="barCodeFilled">Mijoz kodi</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  {...register('code')}
-                />
-              </InputGroup>
-            </Col>
-          </Row>
-        </Col>
-        <Col fullWidth={isMobile}>
-          <Row gutter={1}>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="expense">Jami qarzdorlik</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  {...register('debtClient')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="products">Mahsulot nomi</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  {...register('product')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="calendar">To'lov muddati</Label>
-                <Input
-                  type="date"
-                  variant={'filled'}
-                  size={'longer'}
-                  control={control}
-                  hasIcon={false}
-                  disabled={true}
-                  {...register('deadline')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="calendar">Kelishilgan sana</Label>
-                <Input
-                  type="date"
-                  variant={'filled'}
-                  size={'longer'}
-                  control={control}
-                  hasIcon={false}
-                  {...register('agreementDate')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="barCodeFilled">IMEI</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  {...register('imei')}
-                />
-              </InputGroup>
-            </Col>
-            <Col fullWidth>
-              <InputGroup>
-                <Label icon="barCodeFilled">Passport seriyasi</Label>
-                <Input
-                  type="text"
-                  variant={'filled'}
-                  size={'longer'}
-                  disabled={true}
-                  {...register('passportSeries')}
-                />
-              </InputGroup>
+            <Col span={{ xs: 24, md: 12 }} fullWidth>
+              <Row gutter={1}>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="expense">Jami qarzdorlik</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      {...register('debtClient')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="products">Mahsulot nomi</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      {...register('product')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="calendar">To'lov muddati</Label>
+                    <Input
+                      type="date"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      control={control}
+                      hasIcon={false}
+                      disabled={true}
+                      {...register('deadline')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="calendar">Kelishilgan sana</Label>
+                    <Input
+                      type="date"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      control={control}
+                      hasIcon={false}
+                      {...register('agreementDate')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="barCodeFilled">IMEI</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      {...register('imei')}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col fullWidth>
+                  <InputGroup>
+                    <Label icon="barCodeFilled">Passport seriyasi</Label>
+                    <Input
+                      type="text"
+                      variant={'filled'}
+                      size={isMobile ? 'full' : 'long'}
+                      disabled={true}
+                      {...register('passportSeries')}
+                    />
+                  </InputGroup>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>
@@ -454,6 +459,7 @@ function ClientPageForm({
                 });
                 setIsSaveButtonDisabled(false);
               }}
+              isCompactLayout={true}
             />
           </Col>
         )}

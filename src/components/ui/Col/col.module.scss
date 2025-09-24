@@ -1,139 +1,42 @@
-.row {
+.col {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  flex-direction: column;
+}
 
-  // Default styles for scalar props
-  &.direction-row {
-    flex-direction: row;
+// Responsive span classes using CSS custom properties
+.col-responsive-span {
+  @media (min-width: 0px) {
+    flex: 0 0 var(--span-xs, auto);
+    max-width: var(--span-xs, none);
   }
-  &.direction-column {
-    flex-direction: column;
+  @media (min-width: 576px) {
+    flex: 0 0 var(--span-sm, var(--span-xs, auto));
+    max-width: var(--span-sm, var(--span-xs, none));
   }
-  &.justify-start {
-    justify-content: flex-start;
+  @media (min-width: 768px) {
+    flex: 0 0 var(--span-md, var(--span-sm, var(--span-xs, auto)));
+    max-width: var(--span-md, var(--span-sm, var(--span-xs, none)));
   }
-  &.justify-center {
-    justify-content: center;
+  @media (min-width: 992px) {
+    flex: 0 0 var(--span-lg, var(--span-md, var(--span-sm, var(--span-xs, auto))));
+    max-width: var(--span-lg, var(--span-md, var(--span-sm, var(--span-xs, none))));
   }
-  &.justify-end {
-    justify-content: flex-end;
-  }
-  &.justify-space-between {
-    justify-content: space-between;
-  }
-  &.justify-space-around {
-    justify-content: space-around;
-  }
-  &.align-start {
-    align-items: flex-start;
-  }
-  &.align-center {
-    align-items: center;
-  }
-  &.align-end {
-    align-items: flex-end;
-  }
-  &.wrap-wrap {
-    flex-wrap: wrap;
-  }
-  &.wrap-nowrap {
-    flex-wrap: nowrap;
-  }
-  &.flexGrow-true {
-    flex-grow: 1;
-  }
-  &.flexGrow-false {
-    flex-grow: 0;
-  }
+}
 
-  // Responsive styles for each breakpoint
-  @each $bp, $minWidth in (xs: 0px, sm: 576px, md: 768px, lg: 992px) {
-    // Direction
-    &.direction-#{$bp}-row {
-      @media (min-width: #{$minWidth}) {
-        flex-direction: row;
-      }
-    }
-    &.direction-#{$bp}-column {
-      @media (min-width: #{$minWidth}) {
-        flex-direction: column;
-      }
-    }
-
-    // Justify
-    &.justify-#{$bp}-start {
-      @media (min-width: #{$minWidth}) {
-        justify-content: flex-start;
-      }
-    }
-    &.justify-#{$bp}-center {
-      @media (min-width: #{$minWidth}) {
-        justify-content: center;
-      }
-    }
-    &.justify-#{$bp}-end {
-      @media (min-width: #{$minWidth}) {
-        justify-content: flex-end;
-      }
-    }
-    &.justify-#{$bp}-space-between {
-      @media (min-width: #{$minWidth}) {
-        justify-content: space-between;
-      }
-    }
-    &.justify-#{$bp}-space-around {
-      @media (min-width: #{$minWidth}) {
-        justify-content: space-around;
-      }
-    }
-
-    // Align
-    &.align-#{$bp}-start {
-      @media (min-width: #{$minWidth}) {
-        align-items: flex-start;
-      }
-    }
-    &.align-#{$bp}-center {
-      @media (min-width: #{$minWidth}) {
-        align-items: center;
-      }
-    }
-    &.align-#{$bp}-end {
-      @media (min-width: #{$minWidth}) {
-        align-items: flex-end;
-      }
-    }
-
-    // Wrap
-    &.wrap-#{$bp}-wrap {
-      @media (min-width: #{$minWidth}) {
-        flex-wrap: wrap;
-      }
-    }
-    &.wrap-#{$bp}-nowrap {
-      @media (min-width: #{$minWidth}) {
-        flex-wrap: nowrap;
-      }
-    }
-
-    // Flex Grow
-    &.flexGrow-#{$bp}-true {
-      @media (min-width: #{$minWidth}) {
-        flex-grow: 1;
-      }
-    }
-    &.flexGrow-#{$bp}-false {
-      @media (min-width: #{$minWidth}) {
-        flex-grow: 0;
-      }
-    }
-
-    // Gutter (using CSS custom properties)
-    &[data-gutter-#{$bp}] {
-      @media (min-width: #{$minWidth}) {
-        gap: var(--gutter-#{$bp}, 0);
-      }
-    }
+// Responsive offset classes using CSS custom properties
+.col-responsive-offset {
+  @media (min-width: 0px) {
+    margin-left: var(--offset-xs, 0);
+  }
+  @media (min-width: 576px) {
+    margin-left: var(--offset-sm, var(--offset-xs, 0));
+  }
+  @media (min-width: 768px) {
+    margin-left: var(--offset-md, var(--offset-sm, var(--offset-xs, 0)));
+  }
+  @media (min-width: 992px) {
+    margin-left: var(--offset-lg, var(--offset-md, var(--offset-sm, var(--offset-xs, 0))));
   }
 }

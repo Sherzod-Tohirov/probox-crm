@@ -1,7 +1,7 @@
 import { breakpoints } from '@config/breakpoints';
 import { useLayoutEffect, useState } from 'react';
 
-const useIsMobile = () => {
+const useIsMobile = (props = {}) => {
   const [isMobile, setIsMobile] = useState(false);
   useLayoutEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= breakpoints.lg);
@@ -9,6 +9,11 @@ const useIsMobile = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [window.innerWidth]);
-  return isMobile;
+  if (!props.withDetails) return isMobile;
+  return {
+    isMobile,
+    isTablet: window.innerWidth <= breakpoints.md,
+    isDesktop: window.innerWidth > breakpoints.md,
+  };
 };
 export default useIsMobile;

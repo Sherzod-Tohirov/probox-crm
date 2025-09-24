@@ -8,7 +8,7 @@ import useToggle from '@hooks/useToggle';
 import useIsMobile from '@hooks/useIsMobile';
 import classNames from 'classnames';
 import { Button } from '@components/ui';
-const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
+const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false }) => {
   const { alert } = useAlert();
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -266,10 +266,13 @@ const YandexMap = ({ userCoords = {}, onChangeCoords }) => {
   };
 
   return (
-    <div className={styles['yandex-map-container']}>
+    <div className={classNames(styles['yandex-map-container'], {
+      [styles['compact']]: isCompactLayout,
+    })}>
       <div
         className={classNames(styles['search-container'], {
           [styles['hidden']]: !isManager,
+          [styles['compact-search']]: isCompactLayout,
         })}
       >
         <input

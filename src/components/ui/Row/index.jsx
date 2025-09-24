@@ -14,16 +14,31 @@ const breakpoints = {
   lg: '992px', // Large (desktop)
 };
 
-// Row Component
+/**
+ * Row Component - Flexible row container with responsive support
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child elements
+ * @param {number|Object} props.gutter - Gap between children (rem units) or responsive object { xs: 0, sm: 1, md: 1.5 }
+ * @param {string|Object} props.direction - Flex direction ('row', 'column') or responsive object { xs: 'column', md: 'row' }
+ * @param {string|Object} props.justify - Justify content ('start', 'center', 'end', 'space-between', 'space-around') or responsive object
+ * @param {string|Object} props.align - Align items ('start', 'center', 'end') or responsive object
+ * @param {boolean|Object} props.flexGrow - Whether to grow or responsive object { xs: false, md: true }
+ * @param {boolean|Object} props.wrap - Whether to wrap children or responsive object { xs: true, md: false }
+ * @param {string} props.className - Additional CSS classes
+ * @param {Object} props.style - Inline styles
+ * @param {boolean} props.animated - Whether to animate with framer-motion
+ * @param {React.Ref} ref - Forwarded ref
+ * @returns {React.Component} Row component
+ */
 function Row(
   {
     children,
-    gutter = 0, // Scalar or object { xs: 0, sm: 1, md: 1.5 }
-    direction = 'column', // Scalar or object { xs: 'column', md: 'row' }
-    justify = 'start', // Scalar or object { xs: 'start', md: 'center' }
-    align = 'start', // Scalar or object { xs: 'start', md: 'center' }
-    flexGrow = false, // Scalar or object { xs: false, md: true }
-    wrap = false, // Scalar or object { xs: true, md: false }
+    gutter = 0,
+    direction = 'column',
+    justify = 'start',
+    align = 'start',
+    flexGrow = false,
+    wrap = false,
     className,
     style,
     animated = false,
@@ -64,12 +79,30 @@ function Row(
           return acc;
         }, {})
       : { [styles[`flexGrow-${flexGrow ? 'true' : 'false'}`]]: true },
-    gutter: isResponsiveProp(gutter)
-      ? Object.keys(gutter).reduce((acc, bp) => {
-          acc[styles[`gutter-${bp}-${gutter[bp]}rem`]] = true;
-          return acc;
-        }, {})
-      : { [styles[`gutter-${gutter}rem`]]: true },
+    gutter: {}, // Will be handled via CSS custom properties
+  };
+
+  // Handle responsive gutter with CSS custom properties
+  const getResponsiveGutterStyles = () => {
+    if (!isResponsiveProp(gutter)) return {};
+    
+    const responsiveStyles = {};
+    Object.keys(gutter).forEach((bp) => {
+      const gutterValue = gutter[bp];
+      responsiveStyles[`--gutter-${bp}`] = `${gutterValue}rem`;
+    });
+    return responsiveStyles;
+  };
+
+  // Build responsive gutter data attributes
+  const getGutterDataAttributes = () => {
+    if (!isResponsiveProp(gutter)) return {};
+    
+    const dataAttributes = {};
+    Object.keys(gutter).forEach((bp) => {
+      dataAttributes[`data-gutter-${bp}`] = true;
+    });
+    return dataAttributes;
   };
 
   // Build responsive gutter styles
@@ -78,6 +111,8 @@ function Row(
     width: '100%',
     // Apply default gutter if scalar, otherwise rely on CSS variables
     ...(typeof gutter === 'number' ? { gap: `${gutter}rem` } : {}),
+    // Add responsive custom properties
+    ...getResponsiveGutterStyles(),
     ...style,
   };
 
@@ -97,6 +132,7 @@ function Row(
         className
       )}
       style={rowStyle}
+      {...getGutterDataAttributes()}
       {...props}
     >
       {children}

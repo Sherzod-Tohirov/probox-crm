@@ -55,13 +55,13 @@ export default function Clients() {
   const hasRestoredScroll = useRef(false);
   const handleRowClick = useCallback(
     (row) => {
-      const tableWrapper = clientsTableRef.current.closest('#table-wrapper');
+      const tableWrapper = clientsTableRef.current?.closest('#table-wrapper');
       const scrollY = tableWrapper ? tableWrapper.scrollTop : 0;
       sessionStorage.setItem('scrollPositionClients', scrollY);
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
     },
-    [navigate]
+    [navigate, dispatch]
   );
 
   const handleFilter = useCallback((filterData) => {
@@ -121,20 +121,19 @@ export default function Clients() {
   }, [location.pathname]);
   // Close all modals if scrolls table
   useEffect(() => {
-    const tableWrapper = clientsTableRef.current.closest('#table-wrapper');
-    tableWrapper?.addEventListener(
-      'scroll',
-      () => {
-        dispatch(closeAllModals());
-      },
-      {
-        passive: true,
-      }
-    );
-    return () => {
-      tableWrapper?.removeEventListener('scroll', dispatch(closeAllModals()));
+    const tableWrapper = clientsTableRef.current?.closest('#table-wrapper');
+    const handleScroll = () => {
+      dispatch(closeAllModals());
     };
-  }, []);
+    
+    tableWrapper?.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+    
+    return () => {
+      tableWrapper?.removeEventListener('scroll', handleScroll);
+    };
+  }, [dispatch]);
 
   // Close all modal if click outside of modal or cell
 
@@ -171,7 +170,6 @@ export default function Clients() {
             scrollable
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}
-            style={{ marginTop: '-24px' }}
             isLoading={isLoading}
             columns={clientsTableColumns}
             data={clientsDetails.data}

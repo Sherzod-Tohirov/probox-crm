@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { List, Box, Button } from '@components/ui';
 
 import useAuth from '@hooks/useAuth';
@@ -18,10 +18,12 @@ import ExecutorCell from '@features/clients/components/TableCellHelpers/Executor
 import ProductCell from '@features/clients/components/TableCellHelpers/ProductCell';
 import ManualPaymentCell from '@features/clients/components/TableCellHelpers/ManualPaymentCell';
 import { useSelector } from 'react-redux';
+import PaysListInfoModal from '../components/PaysListInfoModal';
 
-const useClientsTableColumns = () => {
+const useClientsTableColumns = (props) => {
   const { data: executors } = useFetchExecutors();
   const { data: currency } = useFetchCurrency();
+
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
@@ -31,7 +33,6 @@ const useClientsTableColumns = () => {
   const { user } = useAuth();
   const handleCancelPayment = useCallback(async ({ column, type }) => {
     const formattedDueDate = moment(column.DueDate).format('YYYY.MM.DD');
-
     try {
       const commonPayload = {
         docEntry: currentClient?.['DocEntry'],
@@ -55,6 +56,7 @@ const useClientsTableColumns = () => {
       console.log(error);
     }
   }, []);
+
   const clientsTableColumns = useMemo(
     () => [
       {
@@ -169,49 +171,49 @@ const useClientsTableColumns = () => {
           borderBottomLeftRadius: '10px',
         },
       },
-      {
-        key: 'PaysList',
-        title: "To'lovlar ro'yhati",
-        width: '18%',
-        renderCell: (column) => {
-          if (!column.PaysList) return '-';
-          return (
-            <List
-              // layout
-              itemProps={
-                {
-                  // initial: { scale: 0 },
-                  // animate: { scale: 1 },
-                  // exit: { scale: 0 },
-                  // transition: { duration: 0.3, ease: "easeInOut", stiffness: 100000 },
-                }
-              }
-              items={column.PaysList}
-              isCollapsible={true}
-              renderItem={(item) => {
-                return (
-                  <Box
-                    // layout
-                    key={item.AcctName}
-                    align="center"
-                    justify="start"
-                    style={{
-                      padding: '0.2rem',
-                    }}
-                  >
-                    {item.AcctName && item.SumApplied
-                      ? `Sanasi: ${formatDate(item.DocDate)} => ${
-                          item.AcctName
-                        } - ${formatterCurrency(item.SumApplied, 'USD')}`
-                      : '-'}
-                  </Box>
-                );
-              }}
-            />
-          );
-        },
-        icon: 'calendarFact',
-      },
+      // {
+      //   key: 'PaysList',
+      //   title: "To'lovlar ro'yhati",
+      //   width: '18%',
+      //   renderCell: (column) => {
+      //     if (!column.PaysList) return '-';
+      //     return (
+      //       <List
+      //         // layout
+      //         itemProps={
+      //           {
+      //             // initial: { scale: 0 },
+      //             // animate: { scale: 1 },
+      //             // exit: { scale: 0 },
+      //             // transition: { duration: 0.3, ease: "easeInOut", stiffness: 100000 },
+      //           }
+      //         }
+      //         items={column.PaysList}
+      //         isCollapsible={true}
+      //         renderItem={(item) => {
+      //           return (
+      //             <Box
+      //               // layout
+      //               key={item.AcctName}
+      //               align="center"
+      //               justify="start"
+      //               style={{
+      //                 padding: '0.2rem',
+      //               }}
+      //             >
+      //               {item.AcctName && item.SumApplied
+      //                 ? `Sanasi: ${formatDate(item.DocDate)} => ${
+      //                     item.AcctName
+      //                   } - ${formatterCurrency(item.SumApplied, 'USD')}`
+      //                 : '-'}
+      //             </Box>
+      //           );
+      //         }}
+      //       />
+      //     );
+      //   },
+      //   icon: 'calendarFact',
+      // },
 
       {
         key: 'InsTotal',
@@ -249,68 +251,21 @@ const useClientsTableColumns = () => {
         icon: 'calendar',
       },
       {
-        key: 'DueDate',
-        title: "To'lovdagi kechikish",
-        width: '10%',
+        key: 'Actions',
+        icon: 'infoCircle',
+        title: 'Batafsil',
+        width: '1%',
         renderCell: (column) => {
-          if (!column.DueDate) return '-';
-
-          const payslist = (column.PaysList || []).sort((a, b) => {
-            return moment(a.DocDate).diff(moment(b.DocDate), 'days');
-          });
-
-          const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
-          if (!lastPaymentDate) return '-';
-          if (column.partial || column.phoneConfiscated) {
-            const isPartial = column.partial;
-            return (
-              <Button
-                isLoading={
-                  paymentMutation.isPending ||
-                  phoneConfiscatedMutation.isPending
-                }
-                onClick={() =>
-                  handleCancelPayment({
-                    column,
-                    type: isPartial ? 'payment' : 'product',
-                  })
-                }
-                color={'danger'}
-              >
-                Bekor qilish ({isPartial ? "To'lovni" : 'Mahsulotni'}){' '}
-              </Button>
-            );
-          }
-          const diff = moment(lastPaymentDate).diff(
-            moment(column.DueDate),
-            'days'
-          );
-          const isAllPaid = payslist.reduce((acc, list) => {
-            return acc + (Number(list.SumApplied) || 0);
-          }, 0);
-
-          if (isAllPaid < column.InsTotal) {
-            return <span>{`To'liq emas`}</span>;
-          }
-
-          if (diff <= 0) {
-            return (
-              <span style={{ color: '#027243' }}>
-                {diff < 0
-                  ? `${Math.abs(diff)}-kun oldin to'landi`
-                  : "O'z vaqtida to'landi"}
-              </span>
-            );
-          }
           return (
-            <span
-              style={{
-                color: '#d51629',
-              }}
-            >{`${diff}-kun kechikib to'landi`}</span>
+            <Box>
+              <Button
+                icon="infoCircle"
+                variant="text"
+                onClick={() => props?.onShowPaysListInfo?.(column)}
+              />
+            </Box>
           );
         },
-        icon: 'calendar',
       },
     ],
     []

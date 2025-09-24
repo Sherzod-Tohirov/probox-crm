@@ -255,3 +255,46 @@
     }
   }
 }
+
+// Compact layout styles for when map is in a row layout
+.yandex-map-container.compact {
+  padding: 12px;
+  min-height: calc(35dvh);
+  max-height: calc(70vh);
+  
+  @include m.media-max(v.$breakpoint-lg - 1px) {
+    padding: 10px;
+    min-height: calc(30dvh);
+    max-height: calc(60vh);
+  }
+  
+  @include m.media-max(v.$breakpoint-md - 1px) {
+    padding: 8px;
+    min-height: calc(25dvh);
+    max-height: calc(50vh);
+  }
+}
+
+.search-container.compact-search {
+  margin-bottom: 8px;
+  
+  @include m.media-max(v.$breakpoint-md - 1px) {
+    margin-bottom: 6px;
+  }
+}
+
+// Compact map adjustments
+.yandex-map-container.compact .map {
+  min-height: calc(30dvh);
+  max-height: calc(65vh);
+  
+  @include m.media-max(v.$breakpoint-lg - 1px) {
+    min-height: calc(25dvh);
+    max-height: calc(55vh);
+  }
+  
+  @include m.media-max(v.$breakpoint-md - 1px) {
+    min-height: calc(20dvh);
+    max-height: calc(45vh);
+  }
+}

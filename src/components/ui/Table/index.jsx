@@ -129,7 +129,7 @@ const defaultScrollHeight = {
   xl: `calc(100vh - 400px)`,
 };
 
-function Table(
+const Table = forwardRef(function Table(
   {
     id,
     uniqueKey = null,
@@ -402,7 +402,7 @@ function Table(
       </div>
     </div>
   );
-}
+});
 
 // Update prop types for better documentation
 Table.propTypes = {
@@ -412,4 +412,4 @@ Table.propTypes = {
   // ...other prop types...
 };
 
-export default memo(forwardRef(Table));
+export default memo(Table);

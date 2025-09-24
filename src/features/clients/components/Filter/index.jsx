@@ -462,6 +462,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   icon={'search'}
                   iconSize={18}
                   variant={'filled'}
+                  type="submit"
                 >
                   Qidiruv
                 </Button>

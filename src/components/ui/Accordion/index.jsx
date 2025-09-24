@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './style.module.scss';
 import { useState } from 'react';
+import Typography from '../Typography';
 
 const Accordion = ({
   title,
@@ -35,7 +36,8 @@ const Accordion = ({
       className={`${styles.accordionItem} ${isEnabled ? '' : styles.disabled}`}
     >
       {title && (
-        <div
+        <Typography
+          variant="body1"
           className={styles.accordionHeader}
           onClick={handleToggle}
           role="button"
@@ -49,7 +51,7 @@ const Accordion = ({
           >
             {isOpen ? '-' : '+'}
           </span>
-        </div>
+        </Typography>
       )}
 
       <AnimatePresence initial={false}>

@@ -42,8 +42,6 @@ import {
   Lock,
   Logout,
   LogoutFilled,
-} from '@assets/images/icons/Icons';
-import {
   CalendarFilled,
   Delete,
   DeleteFilled,
@@ -64,7 +62,9 @@ import {
   Pencil,
   StopCircle,
   StopCircleFilled,
-} from '../assets/images/icons/Icons';
+  Download,
+  DownloadFilled,
+} from '@assets/images/icons/Icons';
 
 const iconsMap = {
   dashboard: <Dashboard />,
@@ -130,6 +130,9 @@ const iconsMap = {
   stopCircle: <StopCircle />,
   stopCircleFilled: <StopCircleFilled />,
   pauseCircleFilled: <PauseCircleFilled />,
+  infoCircle: <InfoCircle />,
+  download: <Download />,
+  downloadFilled: <DownloadFilled />,
 };
 
 export default iconsMap;

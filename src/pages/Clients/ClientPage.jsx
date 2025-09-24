@@ -19,6 +19,7 @@ import Messenger from '@components/ui/Messenger';
 
 import ClientPageForm from '@features/clients/components/ClientPageForm';
 import ClientPaymentModal from '@features/clients/components/ClientPaymentModal';
+import ClientPaysListInfoModal from '@features/clients/components/PaysListInfoModal';
 import useSaveScreenshot from '@features/clients/hooks/useSaveScreenshot';
 
 import useAuth from '@hooks/useAuth';
@@ -33,10 +34,13 @@ import useFetchClientEntriesById from '@hooks/data/clients/useFetchClientEntries
 import hasRole from '@utils/hasRole';
 import formatDate from '@utils/formatDate';
 import formatterCurrency from '@utils/formatterCurrency';
+import useIsMobile from '@/hooks/useIsMobile';
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
+  const [paysListModalInfo, setPaysListModalInfo] = useState(null);
+
   const { user } = useAuth();
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -44,9 +48,12 @@ export default function ClientPage() {
   const messengerRef = useRef(null);
   const screenshotRef = useRef(null);
   const updateMutation = useMutateClientPageForm();
+  const isMobile = useIsMobile();
   const { handleSaveScreenshot } = useSaveScreenshot();
   const { isOpen, toggle } = useToggle('messenger');
-  const { clientPageTableColumns } = useClientsTableColumns();
+  const { clientPageTableColumns } = useClientsTableColumns({
+    onShowPaysListInfo: setPaysListModalInfo,
+  });
   const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
@@ -110,100 +117,110 @@ export default function ClientPage() {
 
   return (
     <>
-      <Row direction="column" gutter={6}>
-        <Col fullWidth>
-          <Row>
-            <Col fullWidth>
-              <Row
-                direction="row"
-                align="center"
-                justify={'space-between'}
-                gutter={3}
-                wrap
+      <div className={styles['page-container']}>
+        <Row direction="column" gutter={6}>
+          <Col fullWidth>
+            <Row>
+              <Col fullWidth>
+                <Row
+                  direction="row"
+                  align="center"
+                  justify={'space-between'}
+                  gutter={3}
+                  wrap
+                >
+                  <Col>
+                    <Navigation fallbackBackPath={'/clients'} />
+                  </Col>
+                  <Col>
+                    <Row direction={'row'} gutter={3}>
+                      {/* <Col>
+                        <Button
+                          type={'button'}
+                          className={styles['screenshot-btn']}
+                          onClick={() =>
+                            _.debounce(handleSaveScreenshot, 200)(screenshotRef)
+                          }
+                          form={'clientForm'}
+                          variant={'filled'}
+                        >
+                          Screenshot
+                        </Button>
+                      </Col> */}
+                      <Col>
+                        <Button
+                          disabled={isSaveButtonDisabled}
+                          isLoading={updateMutation.isPending}
+                          type={'submit'}
+                          form={'clientForm'}
+                          variant={'filled'}
+                        >
+                          Saqlash
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Col>
+          <Col fullWidth>
+            <Row
+              direction={{ xs: 'column', md: 'row' }}
+              align={{ xs: 'stretch', md: 'start' }}
+              gutter={{ xs: 4, sm: 6, md: 8, lg: 8 }}
+              ref={screenshotRef}
+              style={{ position: 'relative', minWidth: 0 }}
+              wrap
+            >
+              {/* Form Section - Takes 12/24 on desktop (50% - includes map) */}
+              <Col
+                fullWidth={isMobile}
+                span={{ xs: 24, md: 12 }}
+                style={{ minWidth: 0 }}
               >
-                <Col>
-                  <Navigation fallbackBackPath={'/clients'} />
-                </Col>
-                <Col>
-                  <Row direction={'row'} gutter={3}>
-                    {/* <Col>
-                      <Button
-                        type={'button'}
-                        className={styles['screenshot-btn']}
-                        onClick={() =>
-                          _.debounce(handleSaveScreenshot, 200)(screenshotRef)
-                        }
-                        form={'clientForm'}
-                        variant={'filled'}
-                      >
-                        Screenshot
-                      </Button>
-                    </Col> */}
-                    <Col>
-                      <Button
-                        disabled={isSaveButtonDisabled}
-                        isLoading={updateMutation.isPending}
-                        type={'submit'}
-                        form={'clientForm'}
-                        variant={'filled'}
-                      >
-                        Saqlash
-                      </Button>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-        <Col fullWidth>
-          <Row
-            gutter={6}
-            ref={screenshotRef}
-            style={{ position: 'relative' }}
-            wrap
-          >
-            <Col fullWidth>
-              <Row direction={'row'} gutter={6}>
-                <Col>
-                  <ClientPageForm
-                    setIsSaveButtonDisabled={setIsSaveButtonDisabled}
-                    onSubmit={handleClientPageSubmit}
-                    formId={'clientForm'}
-                  />
-                </Col>
-              </Row>
-            </Col>
+                <ClientPageForm
+                  setIsSaveButtonDisabled={setIsSaveButtonDisabled}
+                  onSubmit={handleClientPageSubmit}
+                  isCompactLayout={true}
+                />
+              </Col>
 
-            <Col fullWidth>
-              <Table
-                scrollable
-                containerStyle={{
-                  minHeight: 'calc(35dvh)',
-                }}
-                uniqueKey={'InstlmntID'}
-                style={{ fontSize: '3.7rem' }}
-                columns={clientPageTableColumns}
-                isLoading={isLoading}
-                data={clientEntries}
-                onSelectionChange={(selected) => {
-                  console.log('Selected Rows:', selected);
-                }}
-                getRowStyles={(row) => {
-                  return {
-                    ...(row['InstlmntID'] === currentClient['InstlmntID']
-                      ? { backgroundColor: 'rgba(0,0,0,0.1)' }
-                      : {}),
-                  };
-                }}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+              {/* Table Section - Takes 12/24 on desktop (50%) */}
+              <Col fullWidth={isMobile} span={{ xs: 24, md: 12 }} flexGrow>
+                <div className={styles['table-container']}>
+                  <Table
+                    scrollable
+                    containerStyle={{
+                      minHeight: 'calc(35dvh)',
+                      maxHeight: 'calc(70vh)',
+                      width: '100%',
+                    }}
+                    uniqueKey={'InstlmntID'}
+                    style={{ fontSize: '3.2rem' }}
+                    columns={clientPageTableColumns}
+                    isLoading={isLoading}
+                    data={clientEntries}
+                    onSelectionChange={(selected) => {
+                      console.log('Selected Rows:', selected);
+                    }}
+                    getRowStyles={(row) => {
+                      return {
+                        ...(row['InstlmntID'] === currentClient['InstlmntID']
+                          ? { backgroundColor: 'rgba(0,0,0,0.1)' }
+                          : {}),
+                      };
+                    }}
+                  />
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </div>
       <Footer>
         <Row direction={'row'} align={'center'} justify={'space-between'}>
-          <Typography element={'span'}>
+          <Typography variant={isMobile ? 'body2' : 'body1'} element={'span'}>
             Qolgan qarzdorlik summasi:{' '}
             {formatterCurrency(
               Number(currentClient['MaxDocTotal']) -
@@ -227,6 +244,11 @@ export default function ClientPage() {
         <ClientPaymentModal
           isOpen={paymentModal}
           onClose={() => setPaymentModal(false)}
+        />
+        <ClientPaysListInfoModal
+          isOpen={!!paysListModalInfo}
+          onClose={() => setPaysListModalInfo(null)}
+          data={paysListModalInfo}
         />
       </Footer>
       <Messenger

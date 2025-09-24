@@ -5,6 +5,8 @@
   position: relative;
   scroll-behavior: smooth;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   &.loading {
     pointer-events: none;
   }
@@ -18,10 +20,6 @@
 
     @media (max-width: (v.$breakpoint-md - 1)) {
       height: auto; // Adjusted for mobile with drawer
-    }
-
-    & .table-container {
-      padding-top: 20px;
     }
 
     & table thead tr {

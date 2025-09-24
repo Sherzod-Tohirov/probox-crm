@@ -142,7 +142,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                 <Box gap={1} dir="column" align="start" justify="center">
                   <Typography
                     className={styles['statistics-text']}
-                    variant="primary"
+                    variant={isMobile ? 'body2' : 'body1'}
                     element="span"
                   >
                     <strong> To'liq summa: </strong>
@@ -154,7 +154,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                   </Typography>
                   <Typography
                     className={styles['statistics-text']}
-                    variant="primary"
+                    variant={isMobile ? 'body2' : 'body1'}
                     element="span"
                   >
                     <strong> Qoplandi: </strong>
@@ -210,7 +210,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                 </Col>
                 <Col>
                   <Box className={styles['total-text-wrapper']}>
-                    <Typography variant="primary" element="span">
+                    <Typography variant={isMobile ? 'body2' : 'body1'} element="span">
                       {clientsDetails.total > 0
                         ? currentPage * pageSize + 1
                         : 0}

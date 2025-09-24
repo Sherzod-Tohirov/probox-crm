@@ -11,7 +11,7 @@ import {
 import { useMemo } from 'react';
 import formatterCurrency from '@utils/formatterCurrency'; // Import your currency formatter
 
-export default function Chart({ data, keys = {} }) {
+export default function Chart({ data, keys = {}, isCompact = false }) {
   // Add formatter function
   const formatValue = (value) => {
     if (!value && value !== 0) return '';
@@ -29,15 +29,25 @@ export default function Chart({ data, keys = {} }) {
     [data, keys.firstLine, keys.secondLine]
   );
 
+  const dataPointWidth = isCompact ? 40 : 20;
+  const computedWidth = isCompact
+    ? Math.max(600, validData.length * dataPointWidth)
+    : null;
+
   return (
     <div
       style={{
-        width: '100%',
-        minHeight: '400px',
+        width: isCompact ? `${computedWidth}px` : '100%',
+        minWidth: isCompact ? `${computedWidth}px` : '100%',
+        minHeight: isCompact ? '280px' : '400px',
         fontSize: '3rem',
       }}
     >
-      <ResponsiveContainer width="100%" height={'100%'}>
+      <ResponsiveContainer
+        width="100%"
+        height={'100%'}
+        minHeight={isCompact ? 280 : 400}
+      >
         <LineChart
           data={validData} // Use validated data
           margin={{
