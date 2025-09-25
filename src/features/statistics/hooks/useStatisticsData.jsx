@@ -4,6 +4,9 @@ import { useCallback } from 'react';
 import formatDate from '@utils/formatDate';
 import { insTotalCalculator } from '@utils/calculator';
 import useFetchClients from '@/hooks/data/clients/useFetchClients';
+
+const CLIENTS_LIMIT = 10000;
+
 const useStatisticsData = (params) => {
   const { data: monthlyStatisticsData, isLoading: isMonthlyStatisticsLoading } =
     useFetchMonthlyStatistics(params);
@@ -31,7 +34,7 @@ const useStatisticsData = (params) => {
     refetch: refetchClients,
     queryParams: clientsQueryParams,
   } = useFetchClients({
-    limit: 50,
+    limit: CLIENTS_LIMIT,
     page: 1,
     enabled: false,
     params,

@@ -130,7 +130,6 @@ const iconsMap = {
   stopCircle: <StopCircle />,
   stopCircleFilled: <StopCircleFilled />,
   pauseCircleFilled: <PauseCircleFilled />,
-  infoCircle: <InfoCircle />,
   download: <Download />,
   downloadFilled: <DownloadFilled />,
 };

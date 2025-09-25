@@ -31,9 +31,9 @@ export default function Chart({ data, keys = {}, isCompact = false }) {
 
   const dataPointWidth = isCompact ? 40 : 20;
   const computedWidth = isCompact
-    ? Math.max(600, validData.length * dataPointWidth)
+    ? Math.max(1200, validData.length * dataPointWidth)
     : null;
-
+  console.log(computedWidth, 'computedWidth');
   return (
     <div
       style={{

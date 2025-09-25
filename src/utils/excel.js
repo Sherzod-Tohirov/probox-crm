@@ -29,6 +29,21 @@ const DEFAULT_TOTAL_STYLE = {
   },
 };
 
+const getColumnLetter = (columnNumber = 1) => {
+  if (columnNumber < 1) return 'A';
+
+  let temp = columnNumber;
+  let letters = '';
+
+  while (temp > 0) {
+    const remainder = (temp - 1) % 26;
+    letters = String.fromCharCode(65 + remainder) + letters;
+    temp = Math.floor((temp - 1) / 26);
+  }
+
+  return letters;
+};
+
 const toTitleCase = (key = '') =>
   key
     .replace(/[_-]+/g, ' ')
@@ -86,6 +101,7 @@ const normalizeColumns = (
             valueGetter: col.valueGetter,
             alignment: col.alignment,
             defaultValue: col.defaultValue,
+            cellStyle: col.cellStyle,
           }
     );
   } else {
@@ -231,9 +247,33 @@ export async function exportTableToExcel({
     workbook.properties = { ...workbook.properties, ...metadata.properties };
   }
 
-  const worksheet = workbook.addWorksheet(sheetName, {
-    views: freezeHeader ? [{ state: 'frozen', ySplit: 1 }] : undefined,
-  });
+  const worksheet = workbook.addWorksheet(sheetName);
+
+  const freezeConfig =
+    typeof freezeHeader === 'object' && freezeHeader !== null
+      ? freezeHeader
+      : freezeHeader
+      ? { ySplit: 1 }
+      : null;
+
+  if (freezeConfig) {
+    const { xSplit = 0, ySplit = 0, topLeftCell } = freezeConfig;
+    let resolvedTopLeft = topLeftCell;
+
+    if (!resolvedTopLeft && (xSplit > 0 || ySplit > 0)) {
+      const columnLetter = getColumnLetter(xSplit + 1);
+      resolvedTopLeft = `${columnLetter}${ySplit + 1}`;
+    }
+
+    worksheet.views = [
+      {
+        state: 'frozen',
+        xSplit,
+        ySplit,
+        ...(resolvedTopLeft ? { topLeftCell: resolvedTopLeft } : {}),
+      },
+    ];
+  }
 
   worksheet.columns = normalizedColumns.map((column) => ({
     header: column.header,
@@ -267,13 +307,39 @@ export async function exportTableToExcel({
 
     const addedRow = worksheet.addRow(rowValues);
     applyStyle(addedRow, DEFAULT_ROW_STYLE);
-    applyStyle(addedRow, rowStyle);
+
+    if (typeof rowStyle === 'function') {
+      rowStyle({
+        row: addedRow,
+        item,
+        index,
+        worksheet,
+        columns: normalizedColumns,
+      });
+    } else {
+      applyStyle(addedRow, rowStyle);
+    }
 
     normalizedColumns.forEach((column, columnIndex) => {
       const cell = addedRow.getCell(columnIndex + 1);
       if (column.alignment) {
         cell.alignment = { ...cell.alignment, ...column.alignment };
       }
+
+      const resolvedCellStyle =
+        typeof column.cellStyle === 'function'
+          ? column.cellStyle({
+              cell,
+              value: rowValues[column.key],
+              item,
+              index,
+              column,
+              row: addedRow,
+              worksheet,
+            })
+          : column.cellStyle;
+
+      applyStyle(cell, resolvedCellStyle);
     });
   });
 

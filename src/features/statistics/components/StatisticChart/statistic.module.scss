@@ -125,7 +125,7 @@
   display: inline-block;
 
   &[data-compact='true'] {
-    min-width: 600px;
+    min-width: 1200px;
   }
 
   @media (max-width: 1023px) {
