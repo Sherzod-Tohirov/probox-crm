@@ -180,6 +180,7 @@ export default function ClientPage() {
                 style={{ minWidth: 0 }}
               >
                 <ClientPageForm
+                  formId={'clientForm'}
                   setIsSaveButtonDisabled={setIsSaveButtonDisabled}
                   onSubmit={handleClientPageSubmit}
                   isCompactLayout={true}
@@ -207,8 +208,8 @@ export default function ClientPage() {
                     getRowStyles={(row) => {
                       return {
                         ...(row['InstlmntID'] === currentClient['InstlmntID']
-                          ? { backgroundColor: 'rgba(0,0,0,0.1)' }
-                          : {}),
+                          ? { backgroundColor: 'rgba(194, 194, 194, 0.66)' }
+                          : { backgroundColor: '#f7f8f9' }),
                       };
                     }}
                   />

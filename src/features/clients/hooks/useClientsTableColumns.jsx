@@ -163,6 +163,7 @@ const useClientsTableColumns = (props) => {
         title: 'ID',
         width: '1%',
         icon: 'barCodeFilled',
+        renderCell: (column) => <span style={{ color: 'green' }}>{column.InstlmntID}</span>,
         cellStyle: {
           textAlign: 'center',
           outline: '1px solid rgba(0,0,0,0.05)',
@@ -220,7 +221,11 @@ const useClientsTableColumns = (props) => {
         width: '7%',
         renderCell: (column) => {
           if (!column.InsTotal) return '0$';
-          return formatterCurrency(column.InsTotal, 'USD');
+          return (
+            <span style={{ color: 'green' }}>
+              {formatterCurrency(column.InsTotal, 'USD')}
+            </span>
+          );
         },
         icon: 'income',
       },
@@ -245,7 +250,7 @@ const useClientsTableColumns = (props) => {
           if (!column.DueDate) return '-';
           if (moment(column.DueDate, 'DD.MM.YYYY', true).isValid())
             return column.DueDate;
-          return formatDate(column.DueDate);
+          return <span style={{ color: 'green' }}>{formatDate(column.DueDate)}</span>;
         },
         icon: 'calendar',
       },
