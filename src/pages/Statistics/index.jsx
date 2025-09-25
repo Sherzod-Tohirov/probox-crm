@@ -41,6 +41,7 @@ export default function Statistics() {
     },
     [user?.slpCode]
   );
+  
   useEffect(() => {
     if (monthly?.data?.length) {
       const formattedData = utils.formatMonthlyData(monthly.data);

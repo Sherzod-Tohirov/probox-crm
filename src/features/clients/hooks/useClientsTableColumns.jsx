@@ -18,7 +18,6 @@ import ExecutorCell from '@features/clients/components/TableCellHelpers/Executor
 import ProductCell from '@features/clients/components/TableCellHelpers/ProductCell';
 import ManualPaymentCell from '@features/clients/components/TableCellHelpers/ManualPaymentCell';
 import { useSelector } from 'react-redux';
-import PaysListInfoModal from '../components/PaysListInfoModal';
 
 const useClientsTableColumns = (props) => {
   const { data: executors } = useFetchExecutors();
@@ -247,6 +246,68 @@ const useClientsTableColumns = (props) => {
           if (moment(column.DueDate, 'DD.MM.YYYY', true).isValid())
             return column.DueDate;
           return formatDate(column.DueDate);
+        },
+        icon: 'calendar',
+      },
+      {
+        key: 'DueDate',
+        title: 'Kechikish',
+        width: '10%',
+        renderCell: (column) => {
+          if (!column.DueDate) return '-';
+
+          const payslist = (column.PaysList || []).sort((a, b) => {
+            return moment(a.DocDate).diff(moment(b.DocDate), 'days');
+          });
+
+          const lastPaymentDate = payslist[payslist.length - 1]?.DocDate;
+          if (!lastPaymentDate) return '-';
+          if (column.partial || column.phoneConfiscated) {
+            const isPartial = column.partial;
+            return (
+              <Button
+                isLoading={
+                  paymentMutation.isPending ||
+                  phoneConfiscatedMutation.isPending
+                }
+                onClick={() =>
+                  handleCancelPayment({
+                    column,
+                    type: isPartial ? 'payment' : 'product',
+                  })
+                }
+                color={'danger'}
+              >
+                Bekor qilish ({isPartial ? "To'lovni" : 'Mahsulotni'}){' '}
+              </Button>
+            );
+          }
+          const diff = moment(lastPaymentDate).diff(
+            moment(column.DueDate),
+            'days'
+          );
+          const isAllPaid = payslist.reduce((acc, list) => {
+            return acc + (Number(list.SumApplied) || 0);
+          }, 0);
+
+          if (isAllPaid < column.InsTotal) {
+            return <span>{`To'liq emas`}</span>;
+          }
+
+          if (diff <= 0) {
+            return (
+              <span style={{ color: '#027243' }}>
+                {diff < 0 ? `-${Math.abs(diff)}` : '0'}
+              </span>
+            );
+          }
+          return (
+            <span
+              style={{
+                color: '#d51629',
+              }}
+            >{`${diff}`}</span>
+          );
         },
         icon: 'calendar',
       },
