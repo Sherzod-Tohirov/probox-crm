@@ -119,6 +119,12 @@ const Input = forwardRef(
       [variant, type, disabled, className, error]
     );
 
+    // Do not show overlay icon for react-select multi
+    const showIcon = useMemo(
+      () => hasIcon && !(type === 'select' && multipleSelect),
+      [hasIcon, type, multipleSelect]
+    );
+
     const commonProps = useMemo(
       () => ({
         id: id || uniqueId,
@@ -146,6 +152,8 @@ const Input = forwardRef(
                   defaultDate: field.value || props.defaultValue || new Date(),
                   dateFormat: 'd.m.Y', // Custom date format
                   locale: { firstDayOfWeek: 1 },
+                  // Force Flatpickr on mobile to avoid native input with down icon
+                  disableMobile: true,
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
@@ -155,7 +163,7 @@ const Input = forwardRef(
                     : '';
                   field.onChange(formatted);
                 }}
-                {...omit(props, ['datePickerOptions'])}
+                {...omit(['datePickerOptions'], props)}
               />
             )}
           />
@@ -172,7 +180,16 @@ const Input = forwardRef(
                   options={options}
                   isLoading={isLoading}
                   onClick={commonProps.onClick}
-                  {...props}
+                  {...omit([
+                    'onChange',
+                    'onBlur',
+                    'ref',
+                    'name',
+                    'value',
+                    'defaultValue',
+                    'inputRef',
+                    'control',
+                  ], props)}
                 />
               );
             }}
@@ -374,7 +391,7 @@ const Input = forwardRef(
               )}
             >
               {inputTypeMatcher[type] || inputTypeMatcher.default}
-              {hasIcon ? (
+              {showIcon ? (
                 <Typography
                   style={{
                     cursor: onIconClick ? 'pointer' : 'default',

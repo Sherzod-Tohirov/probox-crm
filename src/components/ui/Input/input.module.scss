@@ -142,7 +142,7 @@
     width: 310px;
   }
   &.outlined {
-    width: fit-content;
+    width: 100%;
   }
   &.small {
     width: 257px;
@@ -306,14 +306,22 @@
   display: none;
 }
 
+:global(.react-select__container) {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
 :global(.react-select__control) {
-  min-height: auto !important;
-  height: 100%;
+  min-height: 35px !important;
+  height: 35px !important;
   max-height: 35px !important;
+  min-width: 0 !important; // allow shrink inside flex
+  overflow: hidden !important; // prevent content from expanding control visually
   color: v.$filter-input-color !important;
   width: 100%;
   max-width: 100%;
-  padding: 8px 30px 8px 12px !important;
+  padding: 4px 30px 4px 12px !important;
   line-height: 14px !important;
   border-radius: 6px !important;
   border: v.$primary-border-width v.$primary-border-type
@@ -343,15 +351,24 @@
 }
 
 :global(.react-select__value-container) {
-  position: absolute !important;
-  height: inherit;
+  position: relative !important;
+  height: 100% !important;
   margin: 0 !important;
-  overflow-y: auto !important;
   padding: 0 !important;
-  padding-right: 60px !important;
+  padding-right: 60px !important; // keep room for clear indicator
   line-height: 100% !important;
   font-size: 13px;
   color: v.$filter-input-placeholder-color !important;
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  touch-action: pan-x !important;
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     width: 7px;
@@ -365,22 +382,40 @@
   }
 }
 
+:global(.react-select__indicators) {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 2;
+  pointer-events: auto !important;
+}
+
+:global(.react-select__clear-indicator) {
+  cursor: pointer !important;
+  padding: 0 !important;
+  color: v.$filter-input-placeholder-color !important;
+  & svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
 :global(.react-select__indicator) {
   padding: 0 !important;
-
+  display: flex !important;
+  align-items: center !important;
   & svg {
-    position: absolute !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    right: 35px !important;
-    width: 16px !important;
-    height: 16px !important;
+    position: static !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 }
 
 :global(.react-select__input-container) {
   margin: 0 !important;
   padding: 0 !important;
+  flex: 0 0 auto !important;
 }
 
 :global(.react-select__option) {

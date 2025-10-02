@@ -118,7 +118,6 @@ const ProductCell = ({ column }) => {
             disabled: !isDirty,
             isLoading: mutation.isPending,
           }}>
-          {column.SlpName}
           <Input
             type={"select"}
             size={"full-grow"}
