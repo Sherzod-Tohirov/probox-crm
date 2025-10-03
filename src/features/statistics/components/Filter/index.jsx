@@ -54,18 +54,23 @@ const Filter = ({ onFilter, setParams }) => {
   }, [initialStatisticsFilterState, executors.options]);
 
   useEffect(() => {
+    if (!watchedFields.startDate || !watchedFields.endDate) return;
+
     const startDate = moment(watchedFields.startDate, 'DD.MM.YYYY');
     const endDate = moment(watchedFields.endDate, 'DD.MM.YYYY');
 
-    const isSameMonth = startDate.isSame(endDate, 'month');
-    if (watchedFields.startDate && !isSameMonth) {
-      let newEndDate = startDate.clone().endOf('month');
-      if (newEndDate.date() !== startDate.date()) {
-        newEndDate = newEndDate.endOf('month');
-      }
-      setValue('endDate', newEndDate.format('DD.MM.YYYY'));
+    if (!startDate.isValid() || !endDate.isValid()) return;
+
+    // Only enforce: endDate cannot be before startDate
+    const isEndBeforeStart = endDate.isBefore(startDate, 'day');
+
+    if (isEndBeforeStart) {
+      // Set endDate to match startDate
+      setValue('endDate', startDate.format('DD.MM.YYYY'), {
+        shouldValidate: true,
+      });
     }
-  }, [watchedFields.startDate, setValue]);
+  }, [watchedFields.startDate, watchedFields.endDate, setValue]);
 
   useEffect(() => {
     if (_.isEmpty(executors.options)) return;
@@ -119,7 +124,11 @@ const Filter = ({ onFilter, setParams }) => {
               label={'Tugash vaqti'}
               canClickIcon={false}
               type={'date'}
-              datePickerOptions={{ minDate: watchedFields.startDate }}
+              // datePickerOptions={{
+              //   minDate: watchedFields.startDate
+              //     ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+              //     : undefined,
+              // }}
               error={errors?.endDate?.message}
               control={control}
               {...register('endDate')}

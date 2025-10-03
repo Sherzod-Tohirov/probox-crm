@@ -200,6 +200,9 @@ export default function Filter({ onFilter, isExpanded = false }) {
     const startDate = moment(watchedFields.startDate, 'DD.MM.YYYY');
     const endDate = moment(watchedFields.endDate, 'DD.MM.YYYY');
 
+    if (!startDate.isValid() || !endDate.isValid()) return;
+
+    // Only enforce: endDate cannot be before startDate
     const isSameMonth = startDate.isSame(endDate, 'month');
     if (watchedFields.startDate && !isSameMonth) {
       let newEndDate = startDate.clone().endOf('month');
@@ -274,7 +277,11 @@ export default function Filter({ onFilter, isExpanded = false }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [refs]);
-
+ console.log(
+   watchedFields.startDate
+     ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+     : undefined
+ , 'watchedFields.startDate');
   return (
     <Accordion
       isOpen={isExpanded}
@@ -356,7 +363,11 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   label={'Tugash vaqti'}
                   canClickIcon={false}
                   type={'date'}
-                  datePickerOptions={{ minDate: watchedFields.startDate }}
+                  // datePickerOptions={{
+                  //   minDate: watchedFields.startDate
+                  //     ? formatDate(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+                  //     : undefined,
+                  // }}
                   error={errors?.endDate?.message}
                   control={control}
                   {...register('endDate')}

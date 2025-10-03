@@ -47,20 +47,43 @@ export default function StickyFooterPortal({ children }) {
   }, []);
 
   useEffect(() => {
-    update();
+    // Initial update with small delay to ensure sidebar is rendered
+    const initialUpdate = () => {
+      requestAnimationFrame(() => {
+        update();
+        // Double-check after a brief moment in case sidebar animates in
+        setTimeout(update, 100);
+      });
+    };
+
+    // Run immediately and after DOM is ready
+    if (document.readyState === 'complete') {
+      initialUpdate();
+    } else {
+      window.addEventListener('load', initialUpdate);
+    }
+    
+    // Also run on any layout shift
+    initialUpdate();
+    
     const onResize = () => requestAnimationFrame(update);
     window.addEventListener('resize', onResize, { passive: true });
     window.addEventListener('scroll', onResize, { passive: true });
+    
     // Sidebar may toggle width; observe DOM mutations to remeasure
-    const sidebar = document.querySelector('.sidebar-layout');
+    const sidebar =
+      document.querySelector('[class*="sidebar-layout"]') ||
+      document.querySelector('.sidebar-layout');
     let observer;
     if (sidebar && 'ResizeObserver' in window) {
       observer = new ResizeObserver(() => requestAnimationFrame(update));
       observer.observe(sidebar);
     }
+    
     return () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onResize);
+      window.removeEventListener('load', initialUpdate);
       if (observer) observer.disconnect();
     };
   }, [update]);
