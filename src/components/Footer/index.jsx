@@ -1,5 +1,8 @@
-import styles from "./footer.module.scss";
+import classNames from 'classnames';
+import styles from './footer.module.scss';
 
-export default function Footer({ children }) {
-  return <footer className={styles["footer"]}>{children}</footer>;
+export default function Footer({ children, className }) {
+  return (
+    <footer className={classNames(styles['footer'], className)}>{children}</footer>
+  );
 }

@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Col,
   Row,
@@ -122,7 +123,12 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
     ).toFixed(2);
   }, [statisticsData, calculatedInsTotal]);
 
-  return (
+  const portalRoot =
+    typeof document !== 'undefined'
+      ? document.getElementById('footer-root')
+      : null;
+
+  const footerNode = (
     <Footer className={styles['footer-container']}>
       <Row
         direction="column"
@@ -263,6 +269,8 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
       </Row>
     </Footer>
   );
+
+  return portalRoot ? createPortal(footerNode, portalRoot) : footerNode;
 };
 
 export default memo(ClientsFooter);

@@ -43,7 +43,11 @@ export default function Clients() {
   const [toggleFilter, setToggleFilter] = useState(false);
   const [tableDensity, setTableDensity] = useState('normal'); // 'xxcompact' | 'xcompact' | 'compact' | 'normal' | 'large' | 'xlarge'
   const densityLevels = ['xxcompact', 'xcompact', 'compact', 'normal', 'large', 'xlarge'];
-
+  // Global UI zoom controls
+  const MIN_UI_SCALE = 0.5;
+  const MAX_UI_SCALE = 2;
+  const UI_SCALE_STEP = 0.1;
+  const [uiScale, setUiScale] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
 
@@ -89,6 +93,33 @@ export default function Clients() {
       setTableDensity(saved);
     }
   }, []);
+
+  // Initialize global UI scale from localStorage and update CSS var
+  useEffect(() => {
+    const saved = localStorage.getItem('uiScale');
+    const initial = saved ? parseFloat(saved) : 1;
+    const clamped = Math.min(MAX_UI_SCALE, Math.max(MIN_UI_SCALE, Number.isFinite(initial) ? initial : 1));
+    setUiScale(clamped);
+    document.documentElement.style.setProperty('--ui-scale', String(clamped));
+  }, []);
+
+  const setGlobalScale = useCallback((value) => {
+    const raw = typeof value === 'number' ? value : parseFloat(value);
+    const clamped = Math.min(MAX_UI_SCALE, Math.max(MIN_UI_SCALE, Number.isFinite(raw) ? raw : 1));
+    setUiScale(clamped);
+    document.documentElement.style.setProperty('--ui-scale', String(clamped));
+    localStorage.setItem('uiScale', String(clamped));
+  }, []);
+
+  const increaseUiScale = useCallback(() => {
+    setGlobalScale(uiScale + UI_SCALE_STEP);
+  }, [uiScale, setGlobalScale]);
+
+  const decreaseUiScale = useCallback(() => {
+    setGlobalScale(uiScale - UI_SCALE_STEP);
+  }, [uiScale, setGlobalScale]);
+
+  const resetUiScale = useCallback(() => setGlobalScale(1), [setGlobalScale]);
 
   useEffect(() => {
     sessionStorage.setItem('clientsTableDensity', tableDensity);
@@ -184,6 +215,34 @@ export default function Clients() {
                   <div
                     style={{ display: 'flex', alignItems: 'center', gap: 8 }}
                   >
+                    <Button
+                      variant="text"
+                      color="secondary"
+                      aria-label="Global zoom out"
+                      onClick={decreaseUiScale}
+                      disabled={uiScale <= MIN_UI_SCALE}
+                    >
+                      -
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="secondary"
+                      aria-label="Reset global zoom"
+                      onClick={resetUiScale}
+                      disabled={uiScale === 1}
+                    >
+                      100%
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="secondary"
+                      aria-label="Global zoom in"
+                      onClick={increaseUiScale}
+                      disabled={uiScale >= MAX_UI_SCALE}
+                    >
+                      +
+                    </Button>
+                    <span style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.08)' }} />
                     <Button
                       variant="text"
                       color="secondary"
