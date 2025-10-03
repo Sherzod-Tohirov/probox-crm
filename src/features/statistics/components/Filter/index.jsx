@@ -131,6 +131,7 @@ const Filter = ({ onFilter, setParams }) => {
               size={'full-grow'}
               canClickIcon={false}
               multipleSelect={true}
+              showAvatars={true}
               options={executors.options}
               variant={'outlined'}
               label={"Mas'ul ijrochi"}

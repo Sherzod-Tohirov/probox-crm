@@ -391,41 +391,6 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   control={control}
                   showAvatars={true}
                   avatarSize={22}
-                  renderAvatar={(opt) => {
-                    if (opt?.avatarUrl) {
-                      return (
-                        <img
-                          src={opt.avatarUrl}
-                          alt={opt.label}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      );
-                    }
-                    const name = (opt?.label || '').trim();
-                    const parts = name.split(/\s+/);
-                    const initials = parts
-                      .slice(0, 2)
-                      .map((p) => (p && p[0] ? p[0].toUpperCase() : ''))
-                      .join('');
-                    return (
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: '#e6f4ff',
-                          color: '#1677ff',
-                          fontSize: 10,
-                          fontWeight: 700,
-                        }}
-                        title={opt?.label}
-                      >
-                        {initials || 'U'}
-                      </div>
-                    );
-                  }}
                   {...register('slpCode')}
                 />
               </Col>

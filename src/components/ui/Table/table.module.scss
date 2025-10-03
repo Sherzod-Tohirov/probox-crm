@@ -7,6 +7,7 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  -webkit-overflow-scrolling: touch;
   &.loading {
     pointer-events: none;
   }
@@ -199,4 +200,91 @@
       }
     }
   }
+}
+
+// Global density classes to simulate zoom levels via font and spacing
+:global(.table-density-compact) table {
+  font-size: 2.6rem !important; // ~10.4px given root 4px
+}
+
+:global(.table-density-compact) table td,
+:global(.table-density-compact) table th {
+  padding: 1.2rem !important;
+}
+
+:global(.table-density-compact) table tbody tr {
+  max-height: 36px !important;
+  height: 36px !important;
+}
+
+:global(.table-density-normal) table {
+  font-size: 3rem !important; // ~12px
+}
+
+:global(.table-density-normal) table td,
+:global(.table-density-normal) table th {
+  padding: 1.6rem !important;
+}
+
+:global(.table-density-normal) table tbody tr {
+  max-height: 44px !important;
+  height: 44px !important;
+}
+
+:global(.table-density-large) table {
+  font-size: 3.6rem !important; // ~14.4px
+}
+
+:global(.table-density-large) table td,
+:global(.table-density-large) table th {
+  padding: 2.4rem !important;
+}
+
+:global(.table-density-large) table tbody tr {
+  max-height: 56px !important;
+  height: 56px !important;
+}
+
+// Extra compact densities (smaller than compact)
+:global(.table-density-xcompact) table {
+  font-size: 2.4rem !important; // ~9.6px
+}
+
+:global(.table-density-xcompact) table td,
+:global(.table-density-xcompact) table th {
+  padding: 1rem !important;
+}
+
+:global(.table-density-xcompact) table tbody tr {
+  max-height: 34px !important;
+  height: 34px !important;
+}
+
+:global(.table-density-xxcompact) table {
+  font-size: 2.2rem !important; // ~8.8px
+}
+
+:global(.table-density-xxcompact) table td,
+:global(.table-density-xxcompact) table th {
+  padding: 0.9rem !important;
+}
+
+:global(.table-density-xxcompact) table tbody tr {
+  max-height: 32px !important;
+  height: 32px !important;
+}
+
+// Extra large density (bigger than large)
+:global(.table-density-xlarge) table {
+  font-size: 4rem !important; // ~16px
+}
+
+:global(.table-density-xlarge) table td,
+:global(.table-density-xlarge) table th {
+  padding: 3rem !important;
+}
+
+:global(.table-density-xlarge) table tbody tr {
+  max-height: 64px !important;
+  height: 64px !important;
 }

@@ -53,6 +53,18 @@ const MultipleSelect = ({
           minWidth: 0,
           flex: '1 1 auto',
           overflow: 'hidden',
+          // Match other inputs: blue border on focus, no glow shadow
+          border:
+            state.isFocused || state.menuIsOpen
+              ? '#0a4d68'
+              : baseStyles.borderColor,
+          boxShadow: 'none',
+          '&:hover': {
+            borderColor:
+              state.isFocused || state.menuIsOpen
+                ? '#0a4d68'
+                : baseStyles.borderColor,
+          },
           ...(props.style || {}),
         }),
         container: (baseStyles) => ({
@@ -67,17 +79,18 @@ const MultipleSelect = ({
           maxWidth: '100%',
           overflowX: 'auto',
           overflowY: 'hidden',
+          paddingRight: '10px',
           whiteSpace: 'nowrap',
           '&::-webkit-scrollbar': {
             width: '5px',
-            height: '5px'
+            height: '5px',
           },
           '&::-webkit-scrollbar-track': {
-            background: 'transparent'
+            background: 'transparent',
           },
           '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(0,0,0,0.2)'
-          }
+            background: 'rgba(0,0,0,0.2)',
+          },
         }),
         menuPortal: (base) => ({ ...base, zIndex: 1006 }),
         multiValue: (baseStyles) => ({
@@ -143,9 +156,48 @@ const MultipleSelect = ({
         },
         MultiValueLabel: (mvProps) => {
           const opt = mvProps.data;
+          const defaultAvatar = (option) => {
+            if (option?.avatarUrl) {
+              return (
+                <img
+                  src={option.avatarUrl}
+                  alt={option.label}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              );
+            }
+            const name = (option?.label || '').trim();
+            const parts = name.split(/\s+/);
+            const initials = parts
+              .slice(0, 2)
+              .map((p) => (p && p[0] ? p[0].toUpperCase() : ''))
+              .join('');
+            return (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#e6f4ff',
+                  color: '#1677ff',
+                  fontSize: 10,
+                  fontWeight: 700,
+                }}
+                title={option?.label}
+              >
+                {initials || 'U'}
+              </div>
+            );
+          };
+
+          const avatarNode =
+            typeof renderAvatar === 'function' ? renderAvatar(opt) : defaultAvatar(opt);
+
           return (
             <components.MultiValueLabel {...mvProps}>
-              {showAvatars && typeof renderAvatar === 'function' ? (
+              {showAvatars ? (
                 <span
                   style={{
                     width: avatarSize,
@@ -161,7 +213,7 @@ const MultipleSelect = ({
                     background: '#fff',
                   }}
                 >
-                  {renderAvatar(opt)}
+                  {avatarNode}
                 </span>
               ) : (
                 mvProps.children

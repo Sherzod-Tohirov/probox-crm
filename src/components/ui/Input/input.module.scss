@@ -332,6 +332,14 @@
   }
 }
 
+// Focus and menu-open states: use brand blue OUTLINE (not border), remove glow
+:global(.react-select__control--is-focused),
+:global(.react-select__control--menu-is-open) {
+  outline: v.$secondary-border-width solid v.$fourth-color !important; // 0.5rem ring
+  outline-offset: -0.2rem !important; // tuck closer to the control
+  box-shadow: none !important;
+}
+
 :global(.react-select__menu) {
   border-radius: 14px;
   padding: 0 !important;
@@ -355,14 +363,13 @@
   height: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  padding-right: 60px !important; // keep room for clear indicator
+  min-width: 140px !important;
   line-height: 100% !important;
   font-size: 13px;
   color: v.$filter-input-placeholder-color !important;
   display: flex !important;
   align-items: center !important;
   flex: 1 1 auto !important;
-  min-width: 0 !important;
   flex-wrap: nowrap !important;
   white-space: nowrap !important;
   overflow-x: auto !important;

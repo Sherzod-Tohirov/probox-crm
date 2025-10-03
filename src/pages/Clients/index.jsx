@@ -41,6 +41,8 @@ export default function Clients() {
     data: [],
   });
   const [toggleFilter, setToggleFilter] = useState(false);
+  const [tableDensity, setTableDensity] = useState('normal'); // 'xxcompact' | 'xcompact' | 'compact' | 'normal' | 'large' | 'xlarge'
+  const densityLevels = ['xxcompact', 'xcompact', 'compact', 'normal', 'large', 'xlarge'];
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
@@ -65,7 +67,6 @@ export default function Clients() {
   );
 
   const handleFilter = useCallback((filterData) => {
-    
     setTimeout(() => {
       setToggleFilter(false);
     }, 200);
@@ -80,6 +81,38 @@ export default function Clients() {
       phoneConfiscated: filterData.phoneConfiscated,
     }));
   }, []);
+
+  // Restore persisted table density
+  useEffect(() => {
+    const saved = sessionStorage.getItem('clientsTableDensity');
+    if (saved && densityLevels.includes(saved)) {
+      setTableDensity(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem('clientsTableDensity', tableDensity);
+  }, [tableDensity]);
+
+  const increaseDensity = useCallback(() => {
+    setTableDensity((prev) => {
+      const idx = densityLevels.indexOf(prev);
+      if (idx === -1) return 'normal';
+      return densityLevels[Math.min(idx + 1, densityLevels.length - 1)];
+    });
+  }, []);
+
+  const decreaseDensity = useCallback(() => {
+    setTableDensity((prev) => {
+      const idx = densityLevels.indexOf(prev);
+      if (idx === -1) return 'normal';
+      return densityLevels[Math.max(idx - 1, 0)];
+    });
+  }, []);
+
+  const resetDensity = useCallback(() => setTableDensity('normal'), []);
+
+  const tableDensityClass = `table-density-${tableDensity}`;
 
   useLayoutEffect(() => {
     if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
@@ -125,11 +158,11 @@ export default function Clients() {
     const handleScroll = () => {
       dispatch(closeAllModals());
     };
-    
+
     tableWrapper?.addEventListener('scroll', handleScroll, {
       passive: true,
     });
-    
+
     return () => {
       tableWrapper?.removeEventListener('scroll', handleScroll);
     };
@@ -147,16 +180,48 @@ export default function Clients() {
                 <Col>
                   <Navigation fallbackBackPath={'/clients'} />
                 </Col>
-                {isMobile ? (
-                  <Col>
+                <Col>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                  >
                     <Button
-                      onClick={() => setToggleFilter((prev) => !prev)}
-                      icon={'filter'}
-                      iconColor={'secondary'}
-                      iconSize={'20'}
-                    ></Button>
-                  </Col>
-                ) : null}
+                      variant="text"
+                      color="secondary"
+                      aria-label="Zoom out table"
+                      onClick={decreaseDensity}
+                      disabled={tableDensity === 'xxcompact'}
+                    >
+                      A-
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="secondary"
+                      aria-label="Reset table zoom"
+                      onClick={resetDensity}
+                      disabled={tableDensity === 'normal'}
+                    >
+                      A
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="secondary"
+                      aria-label="Zoom in table"
+                      onClick={increaseDensity}
+                      disabled={tableDensity === 'xlarge'}
+                    >
+                      A+
+                    </Button>
+                    {isMobile ? (
+                      <Button
+                        onClick={() => setToggleFilter((prev) => !prev)}
+                        icon={'filter'}
+                        iconColor={'secondary'}
+                        iconSize={'20'}
+                        aria-label="Filter"
+                      />
+                    ) : null}
+                  </div>
+                </Col>
               </Row>
             </Col>
             <Col fullWidth>
@@ -174,6 +239,7 @@ export default function Clients() {
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
+            containerClass={tableDensityClass}
             isRowSelectable={(row) => {
               return (
                 typeof row.location === 'object' &&

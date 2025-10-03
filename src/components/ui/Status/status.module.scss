@@ -1,5 +1,5 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .status {
   @include m.flex-center;
@@ -11,6 +11,11 @@
   line-height: 150%;
   text-align: center;
   color: v.$tertiary-color !important;
+
+  @media (max-width: v.$breakpoint-md) {
+    padding: 7px 12px;
+    font-size: 2.8rem;
+  }
 
   &.paid {
     color: v.$success-color;
