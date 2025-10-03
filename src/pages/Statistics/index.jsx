@@ -8,11 +8,8 @@ import Filter from '@features/statistics/components/Filter';
 import StatisticChart from '@features/statistics/components/StatisticChart';
 import useStatisticsData from '@features/statistics/hooks/useStatisticsData';
 import useStatisticsTableColumns from '@features/statistics/hooks/useStatisticsTableColumns';
-
 import useAuth from '@hooks/useAuth';
-
 import formatDate from '@utils/formatDate';
-
 import styles from './style.module.scss';
 import Footer from '@/components/Footer';
 import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';
