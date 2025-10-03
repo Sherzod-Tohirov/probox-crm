@@ -15,6 +15,7 @@ import formatDate from '@utils/formatDate';
 
 import styles from './style.module.scss';
 import Footer from '@/components/Footer';
+import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';
 import hasRole from '@/utils/hasRole';
 import useStatisticsExcelExport from '@features/statistics/hooks/useStatisticsExcelExport';
 
@@ -106,21 +107,23 @@ export default function Statistics() {
         </Col>
       </Row>
       {hasRole(user, ['Manager', 'CEO']) && (
-        <Footer>
-          <Row direction={'row'} justify={'end'}>
-            <Col>
-              <Button
-                onClick={handleDownloadClientExcel}
-                variant="filled"
-                icon="download"
-                iconColor="secondary"
-                isLoading={isExportingClient || clients?.isFetching}
-              >
-                Excelni yuklash
-              </Button>
-            </Col>
-          </Row>
-        </Footer>
+        <StickyFooterPortal>
+          <Footer className={styles['footer-container']}>
+            <Row direction={'row'} justify={'end'}>
+              <Col>
+                <Button
+                  onClick={handleDownloadClientExcel}
+                  variant="filled"
+                  icon="download"
+                  iconColor="secondary"
+                  isLoading={isExportingClient || clients?.isFetching}
+                >
+                  Excelni yuklash
+                </Button>
+              </Col>
+            </Row>
+          </Footer>
+        </StickyFooterPortal>
       )}
     </>
   );

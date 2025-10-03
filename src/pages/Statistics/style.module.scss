@@ -23,3 +23,21 @@
     bottom: -12px;
   }
 }
+
+.footer-container {
+  // Override default footer spacing to look good inside portal
+  margin-bottom: 0 !important;
+  border-radius: 16px 16px 0 0;
+  @media (max-width: (v.$breakpoint-lg - 1)) {
+    padding: 2rem 3rem !important;
+    border-radius: 14px 14px 0 0;
+  }
+  @media (max-width: (v.$breakpoint-md - 1)) {
+    padding: 1.6rem 2rem !important;
+    border-radius: 12px 12px 0 0;
+  }
+  @media (max-width: (v.$breakpoint-sm - 1)) {
+    padding: 1.2rem 1.6rem !important;
+    border-radius: 10px 10px 0 0;
+  }
+}

@@ -11,13 +11,9 @@
 
 
 .footer-container {
-  position: fixed !important;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  // Positioned by StickyFooterPortal; only visuals here
   margin-bottom: 0 !important;
   border-radius: 16px 16px 0 0;
-  z-index: 1005;
 
   // Tighter paddings for tablets and mobiles
   @include m.media-max(v.$breakpoint-lg) {

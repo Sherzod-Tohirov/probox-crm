@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }) {
   }, []);
 
   return (
-    <main className={styles['dashboard-layout']}>
+    <main id="dashboard-layout-main" className={styles['dashboard-layout']}>
       <div className={styles['ui-scale-outer']}>
         <div className={styles['ui-scale-inner']}>{children}</div>
       </div>

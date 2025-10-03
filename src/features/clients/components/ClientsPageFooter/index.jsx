@@ -1,5 +1,4 @@
 import { memo, useCallback, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import {
   Col,
   Row,
@@ -10,6 +9,7 @@ import {
   Typography,
 } from '@components/ui';
 import Footer from '@components/Footer';
+import StickyFooterPortal from '@components/Footer/StickyFooterPortal';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setClientsCurrentPage,
@@ -123,13 +123,9 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
     ).toFixed(2);
   }, [statisticsData, calculatedInsTotal]);
 
-  const portalRoot =
-    typeof document !== 'undefined'
-      ? document.getElementById('footer-root')
-      : null;
-
-  const footerNode = (
-    <Footer className={styles['footer-container']}>
+  return (
+    <StickyFooterPortal>
+      <Footer className={styles['footer-container']}>
       <Row
         direction="column"
         justify="space-between"
@@ -267,10 +263,10 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
           </Row>
         </Col>
       </Row>
-    </Footer>
+        </Footer>
+    </StickyFooterPortal>
+    
   );
-
-  return portalRoot ? createPortal(footerNode, portalRoot) : footerNode;
 };
 
 export default memo(ClientsFooter);

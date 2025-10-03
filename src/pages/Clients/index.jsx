@@ -295,6 +295,7 @@ export default function Clients() {
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}
             isLoading={isLoading}
+            
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}

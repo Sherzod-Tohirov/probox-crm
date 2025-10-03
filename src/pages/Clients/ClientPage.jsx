@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import Footer from '@components/Footer';
+import StickyFooterPortal from '@components/Footer/StickyFooterPortal';
 import Messenger from '@components/ui/Messenger';
 
 import ClientPageForm from '@features/clients/components/ClientPageForm';
@@ -219,8 +220,9 @@ export default function ClientPage() {
           </Col>
         </Row>
       </div>
-      <Footer>
-        <Row direction={'row'} align={'center'} justify={'space-between'}>
+      <StickyFooterPortal>
+        <Footer className={styles['footer-container']}>
+          <Row direction={'row'} align={'center'} justify={'space-between'}>
           <Typography variant={isMobile ? 'body2' : 'body1'} element={'span'}>
             Qolgan qarzdorlik summasi:{' '}
             {formatterCurrency(
@@ -241,17 +243,18 @@ export default function ClientPage() {
               ) : null
             ) : null}
           </Col>
-        </Row>
-        <ClientPaymentModal
-          isOpen={paymentModal}
-          onClose={() => setPaymentModal(false)}
-        />
-        <ClientPaysListInfoModal
-          isOpen={!!paysListModalInfo}
-          onClose={() => setPaysListModalInfo(null)}
-          data={paysListModalInfo}
-        />
-      </Footer>
+          </Row>
+          <ClientPaymentModal
+            isOpen={paymentModal}
+            onClose={() => setPaymentModal(false)}
+          />
+          <ClientPaysListInfoModal
+            isOpen={!!paysListModalInfo}
+            onClose={() => setPaysListModalInfo(null)}
+            data={paysListModalInfo}
+          />
+        </Footer>
+      </StickyFooterPortal>
       <Messenger
         ref={messengerRef}
         messages={messages}
