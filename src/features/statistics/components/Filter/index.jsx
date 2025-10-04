@@ -73,21 +73,26 @@ const Filter = ({ onFilter, setParams }) => {
   }, [watchedFields.startDate, watchedFields.endDate, setValue]);
 
   useEffect(() => {
-    if (_.isEmpty(executors.options)) return;
+    if (watchedFields.startDate !== filterState.startDate) {
+      dispatch(
+        setStatisticsFilter({
+          ...filterState,
+          startDate: watchedFields.startDate,
+        })
+      );
+    }
+  }, [watchedFields.startDate, filterState.startDate, dispatch]);
 
-    reset({
-      ...filterState,
-      slpCode: getSelectOptionsFromKeys(
-        executors.options,
-        filterState.slpCode ? filterState.slpCode : String(user?.SlpCode) || ''
-      ),
-    });
-    setParams({
-      startDate: formatDate(filterState.startDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
-      endDate: formatDate(filterState.endDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
-      slpCode: filterState.slpCode || String(user?.SlpCode) || '',
-    });
-  }, [executors.options, reset]);
+  useEffect(() => {
+    if (watchedFields.endDate !== filterState.endDate) {
+      dispatch(
+        setStatisticsFilter({
+          ...filterState,
+          endDate: watchedFields.endDate,
+        })
+      );
+    }
+  }, [watchedFields.endDate, filterState.endDate, dispatch]);
 
   return (
     <Accordion
@@ -113,6 +118,11 @@ const Filter = ({ onFilter, setParams }) => {
               label={'Boshlanish vaqti'}
               canClickIcon={false}
               type={'date'}
+              datePickerOptions={{
+                maxDate: watchedFields.endDate
+                  ? moment(watchedFields.endDate, 'DD.MM.YYYY').toDate()
+                  : undefined,
+              }}
               control={control}
               {...register('startDate')}
             />
@@ -124,11 +134,11 @@ const Filter = ({ onFilter, setParams }) => {
               label={'Tugash vaqti'}
               canClickIcon={false}
               type={'date'}
-              // datePickerOptions={{
-              //   minDate: watchedFields.startDate
-              //     ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
-              //     : undefined,
-              // }}
+              datePickerOptions={{
+                minDate: watchedFields.startDate
+                  ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+                  : undefined,
+              }}
               error={errors?.endDate?.message}
               control={control}
               {...register('endDate')}

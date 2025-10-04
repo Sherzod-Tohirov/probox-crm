@@ -16,12 +16,12 @@ html {
   min-height: 100%;
   height: auto;
   scroll-behavior: smooth;
-  // overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 body,
 #root {
-  // overflow-x: hidden;
+  overflow-x: hidden;
   min-height: 100vh !important;
   height: auto !important;
 }

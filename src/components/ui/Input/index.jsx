@@ -152,8 +152,6 @@ const Input = forwardRef(
                   defaultDate: field.value || props.defaultValue || new Date(),
                   dateFormat: 'd.m.Y', // Custom date format
                   locale: { firstDayOfWeek: 1 },
-                  // Force Flatpickr on mobile to avoid native input with down icon
-                  disableMobile: true,
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
@@ -163,7 +161,7 @@ const Input = forwardRef(
                     : '';
                   field.onChange(formatted);
                 }}
-                {...omit(['datePickerOptions'], props)}
+                {...omit(props, ['datePickerOptions'])}
               />
             )}
           />

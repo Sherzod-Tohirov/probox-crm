@@ -196,20 +196,30 @@ export default function Filter({ onFilter, isExpanded = false }) {
     }
   }, [clientsPageState, statusOptions, executorsOptions]);
 
+  // Track if end date was manually changed
+  const endDateManuallyChanged = useRef(false);
+
+  // Handle date changes
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, 'DD.MM.YYYY');
     const endDate = moment(watchedFields.endDate, 'DD.MM.YYYY');
 
-    if (!startDate.isValid() || !endDate.isValid()) return;
+    if (!startDate.isValid()) return;
 
-    // Only enforce: endDate cannot be before startDate
-    const isSameMonth = startDate.isSame(endDate, 'month');
-    if (watchedFields.startDate && !isSameMonth) {
-      let newEndDate = startDate.clone().endOf('month');
-      if (newEndDate.date() !== startDate.date()) {
-        newEndDate = newEndDate.endOf('month');
-      }
-      setValue('endDate', newEndDate.format('DD.MM.YYYY'));
+    // When start date changes and end date hasn't been manually changed
+    if (startDate.isValid() && !endDateManuallyChanged.current) {
+      setValue(
+        'endDate',
+        moment(startDate).endOf('month').format('DD.MM.YYYY'),
+        { shouldValidate: true }
+      );
+      return;
+    }
+    // If end date is before start date (manual change)
+    if (endDate.isValid() && endDate.isBefore(startDate, 'day')) {
+      setValue('endDate', startDate.format('DD.MM.YYYY'), {
+        shouldValidate: true,
+      });
     }
   }, [watchedFields.startDate, setValue]);
 
@@ -256,10 +266,26 @@ export default function Filter({ onFilter, isExpanded = false }) {
       return;
     }
 
-    if (!watchedFields.search) {
-      setValue('phone', '998');
+    dispatch(
+      setClientsFilter({
+        ...filterState,
+        startDate: watchedFields.startDate,
+      })
+    );
+  }, [watchedFields.startDate, dispatch]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }, [watchedFields.search]);
+    dispatch(
+      setClientsFilter({
+        ...filterState,
+        endDate: watchedFields.endDate,
+      })
+    );
+  }, [watchedFields.endDate, dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -277,11 +303,12 @@ export default function Filter({ onFilter, isExpanded = false }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [refs]);
- console.log(
-   watchedFields.startDate
-     ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
-     : undefined
- , 'watchedFields.startDate');
+  console.log(
+    watchedFields.startDate
+      ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+      : undefined,
+    'watchedFields.startDate'
+  );
   return (
     <Accordion
       isOpen={isExpanded}
@@ -352,6 +379,11 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   label={'Boshlanish vaqti'}
                   canClickIcon={false}
                   type={'date'}
+                  datePickerOptions={{
+                    maxDate: watchedFields.endDate
+                      ? moment(watchedFields.endDate, 'DD.MM.YYYY').toDate()
+                      : undefined,
+                  }}
                   control={control}
                   {...register('startDate')}
                 />
@@ -363,11 +395,11 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   label={'Tugash vaqti'}
                   canClickIcon={false}
                   type={'date'}
-                  // datePickerOptions={{
-                  //   minDate: watchedFields.startDate
-                  //     ? formatDate(watchedFields.startDate, 'DD.MM.YYYY').toDate()
-                  //     : undefined,
-                  // }}
+                  datePickerOptions={{
+                    minDate: watchedFields.startDate
+                      ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
+                      : undefined,
+                  }}
                   error={errors?.endDate?.message}
                   control={control}
                   {...register('endDate')}
