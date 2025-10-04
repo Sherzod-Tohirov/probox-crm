@@ -126,7 +126,7 @@ const defaultScrollHeight = {
   sm: `calc(100vh - ${breakpoints.sm / 4}px)`,
   md: `calc(100vh - 250px)`,
   lg: `calc(100vh - 250px)`,
-  xl: `calc(100vh - 300px)`,
+  xl: `calc(100vh - 420px)`,
 };
 
 const Table = forwardRef(function Table(
