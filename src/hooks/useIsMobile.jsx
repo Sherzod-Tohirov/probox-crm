@@ -13,7 +13,8 @@ const useIsMobile = (props = {}) => {
   return {
     isMobile,
     isTablet: window.innerWidth <= breakpoints.md,
-    isDesktop: window.innerWidth > breakpoints.md,
+    isDesktop: window.innerWidth > breakpoints.lg,
+    isLargeDesktop: window.innerWidth > breakpoints.xl,
   };
 };
 export default useIsMobile;

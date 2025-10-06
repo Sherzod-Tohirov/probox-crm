@@ -207,19 +207,12 @@ export default function Filter({ onFilter, isExpanded = false }) {
     if (!startDate.isValid()) return;
 
     // When start date changes and end date hasn't been manually changed
-    if (startDate.isValid() && !endDateManuallyChanged.current) {
-      setValue(
-        'endDate',
-        moment(startDate).endOf('month').format('DD.MM.YYYY'),
-        { shouldValidate: true }
-      );
-      return;
+    if(startDate.isValid() && !endDateManuallyChanged.current) {
+      setValue('endDate', moment(startDate).endOf('month').format('DD.'))
     }
     // If end date is before start date (manual change)
     if (endDate.isValid() && endDate.isBefore(startDate, 'day')) {
-      setValue('endDate', startDate.format('DD.MM.YYYY'), {
-        shouldValidate: true,
-      });
+      setValue('endDate', startDate.format('DD.MM.YYYY'), { shouldValidate: true });
     }
   }, [watchedFields.startDate, setValue]);
 
@@ -321,9 +314,9 @@ export default function Filter({ onFilter, isExpanded = false }) {
         onSubmit={handleSubmit(handleFilter)}
         autoComplete="off"
       >
-        <Row direction={'row'} gutter={6.25} wrap>
+        <Row direction={'row'} gutter={6.25}>
           <Col flexGrow>
-            <Row direction={'row'} gutter={4} wrap>
+            <Row direction={'row'} gutter={4}>
               <Col flexGrow>
                 <Input
                   style={{ minWidth: '230px' }}
