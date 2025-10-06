@@ -1,6 +1,6 @@
 import moment from "moment";
 import { useForm } from "react-hook-form";
-import { Input, Box } from "@components/ui";
+import { Input, Box, Typography } from "@components/ui";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -149,7 +149,6 @@ const ManualPaymentCell = ({ column }) => {
             disabled: !isDirty,
             isLoading: mutation.isPending,
           }}>
-          {column.SlpName}
           <Input
             type={"select"}
             size={"full-grow"}

@@ -88,7 +88,6 @@ const AgreementDateCell = ({ column }) => {
           isLoading: mutation.isPending,
         }}
       >
-        {column.SlpName}
         <Input
           inputBoxClassName={styles['modal-input-wrapper']}
           className={styles['modal-input']}

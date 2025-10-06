@@ -126,146 +126,152 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   return (
     <StickyFooterPortal>
       <Footer className={styles['footer-container']}>
-      <Row
-        direction="column"
-        justify="space-between"
-        gutter={3}
-        className={styles['row-container']}
-      >
-        <Col fullWidth>
-          <Row
-            direction="row"
-            align="center"
-            justify="space-between"
-            className={styles['row-container']}
-          >
-            {!hasRole(user, ['Agent']) ? (
-              <Col>
-                <Box gap={1} dir="column" align="start" justify="center">
-                  <Typography
-                    className={styles['statistics-text']}
-                    variant={isMobile ? 'body2' : 'body1'}
-                    element="span"
-                  >
-                    <strong> To'liq summa: </strong>
-                    {isStatisticsLoading ? (
-                      <ClipLoader color="grey" size={12} />
-                    ) : (
-                      formatterCurrency(calculatedInsTotal, 'USD')
-                    )}
-                  </Typography>
-                  <Typography
-                    className={styles['statistics-text']}
-                    variant={isMobile ? 'body2' : 'body1'}
-                    element="span"
-                  >
-                    <strong> Qoplandi: </strong>
-                    {isStatisticsLoading ? (
-                      <ClipLoader color="grey" size={12} />
-                    ) : (
-                      <span style={{ color: 'green' }}>
-                        {formatterCurrency(
-                          statisticsData?.['SumApplied'] || 0,
-                          'USD'
-                        )}
-                      </span>
-                    )}{' '}
-                    <span
-                      style={{ color: percentageValue > 50 ? 'green' : 'red' }}
-                    >
-                      {`(${percentageValue}%)`}
-                    </span>
-                  </Typography>
-                </Box>
-              </Col>
-            ) : null}
-          </Row>
-        </Col>
-        <Col fullWidth>
-          <Row
-            direction="row"
-            align="center"
-            justify={{ xs: 'start', md: 'space-between' }}
-            className={styles['row-container']}
-            wrap
-            gutter={4}
-          >
-            <Col>
-              <Row
-                direction="row"
-                align="center"
-                justify="space-between"
-                gutter={2}
-                className={styles['row-container']}
-              >
-                <Col className={styles['input-wrapper']}>
-                  <Input
-                    variant="outlined"
-                    type="select"
-                    options={tableSizeSelectOptions}
-                    defaultValue={Number(pageSize)}
-                    onChange={(e) => {
-                      dispatch(setClientsPageSize(Number(e.target.value)));
-                    }}
-                    canClickIcon={false}
-                  />
-                </Col>
+        <Row
+          direction="column"
+          justify="space-between"
+          gutter={3}
+          className={styles['row-container']}
+        >
+          <Col fullWidth>
+            <Row
+              direction="row"
+              align="center"
+              justify="space-between"
+              className={styles['row-container']}
+            >
+              {!hasRole(user, ['Agent']) ? (
                 <Col>
-                  <Box className={styles['total-text-wrapper']}>
-                    <Typography variant={isMobile ? 'body2' : 'body1'} element="span">
-                      {clientsDetails.total > 0
-                        ? currentPage * pageSize + 1
-                        : 0}
-                      {'-'}
-                      {(currentPage + 1) * pageSize > data?.total
-                        ? data.total
-                        : currentPage * pageSize + pageSize}{' '}
-                      gacha {clientsDetails.total}ta dan
+                  <Box gap={1} dir={isMobile ? 'column' : 'row'} align="start" justify="center">
+                    <Typography
+                      className={styles['statistics-text']}
+                      variant={isMobile ? 'body2' : 'body1'}
+                      element="span"
+                    >
+                      <strong> To'liq summa: </strong>
+                      {isStatisticsLoading ? (
+                        <ClipLoader color="grey" size={12} />
+                      ) : (
+                        formatterCurrency(calculatedInsTotal, 'USD') + ' =>'
+                      )}
+                    </Typography>
+                    <Typography
+                      className={styles['statistics-text']}
+                      variant={isMobile ? 'body2' : 'body1'}
+                      element="span"
+                    >
+                      <strong>Qoplandi: {''}</strong>
+                      {isStatisticsLoading ? (
+                        <ClipLoader color="grey" size={12} />
+                      ) : (
+                        <>
+                          <span style={{ color: 'green' }}>
+                            {formatterCurrency(
+                              statisticsData?.['SumApplied'] || 0,
+                              'USD'
+                            )}
+                          </span>
+                          <span
+                            style={{
+                              color: percentageValue > 50 ? 'green' : 'red',
+                            }}
+                          >
+                            {`(${percentageValue}%)`}
+                          </span>
+                        </>
+                      )}{' '}
                     </Typography>
                   </Box>
                 </Col>
-              </Row>
-            </Col>
-            <Col className={styles['pagination-wrapper']}>
-              <Pagination
-                pageCount={clientsDetails.totalPages}
-                activePage={currentPage}
-                onPageChange={(page) =>
-                  dispatch(setClientsCurrentPage(page.selected))
-                }
-              />
-            </Col>
-            {hasRole(user, ['Manager']) ? (
-              <Col className={styles['button-wrapper']} fullWidth={isMobile}>
-                <Button
-                  // disabled={moment().date() !== 1}
-                  variant="filled"
-                  onClick={handleDistributeClients}
-                  isLoading={distributeMutation.isPending}
-                  fullWidth
+              ) : null}
+            </Row>
+          </Col>
+          <Col fullWidth>
+            <Row
+              direction="row"
+              align="center"
+              justify={{ xs: 'start', md: 'space-between' }}
+              className={styles['row-container']}
+              wrap
+              gutter={4}
+            >
+              <Col>
+                <Row
+                  direction="row"
+                  align="center"
+                  justify="space-between"
+                  gutter={2}
+                  className={styles['row-container']}
                 >
-                  Mijozlarni taqsimlash
-                </Button>
+                  <Col className={styles['input-wrapper']}>
+                    <Input
+                      variant="outlined"
+                      type="select"
+                      options={tableSizeSelectOptions}
+                      defaultValue={Number(pageSize)}
+                      onChange={(e) => {
+                        dispatch(setClientsPageSize(Number(e.target.value)));
+                      }}
+                      canClickIcon={false}
+                    />
+                  </Col>
+                  <Col>
+                    <Box className={styles['total-text-wrapper']}>
+                      <Typography
+                        variant={isMobile ? 'body2' : 'body1'}
+                        element="span"
+                      >
+                        {clientsDetails.total > 0
+                          ? currentPage * pageSize + 1
+                          : 0}
+                        {'-'}
+                        {(currentPage + 1) * pageSize > data?.total
+                          ? data.total
+                          : currentPage * pageSize + pageSize}{' '}
+                        gacha {clientsDetails.total}ta dan
+                      </Typography>
+                    </Box>
+                  </Col>
+                </Row>
               </Col>
-            ) : null}
-            {hasRole(user, ['Agent']) ? (
-              <Col flexGrow={isMobile} className={styles['button-wrapper']}>
-                <Button
-                  fullWidth={isMobile}
-                  disabled={selectedRows.length === 0}
-                  onClick={handleNavigateToRoute}
-                  color="info"
-                >
-                  Marshrutga o'tish
-                </Button>
+              <Col className={styles['pagination-wrapper']}>
+                <Pagination
+                  pageCount={clientsDetails.totalPages}
+                  activePage={currentPage}
+                  onPageChange={(page) =>
+                    dispatch(setClientsCurrentPage(page.selected))
+                  }
+                />
               </Col>
-            ) : null}
-          </Row>
-        </Col>
-      </Row>
-        </Footer>
+              {hasRole(user, ['Manager']) ? (
+                <Col className={styles['button-wrapper']} fullWidth={isMobile}>
+                  <Button
+                    // disabled={moment().date() !== 1}
+                    variant="filled"
+                    onClick={handleDistributeClients}
+                    isLoading={distributeMutation.isPending}
+                    fullWidth
+                  >
+                    Mijozlarni taqsimlash
+                  </Button>
+                </Col>
+              ) : null}
+              {hasRole(user, ['Agent']) ? (
+                <Col flexGrow={isMobile} className={styles['button-wrapper']}>
+                  <Button
+                    fullWidth={isMobile}
+                    disabled={selectedRows.length === 0}
+                    onClick={handleNavigateToRoute}
+                    color="info"
+                  >
+                    Marshrutga o'tish
+                  </Button>
+                </Col>
+              ) : null}
+            </Row>
+          </Col>
+        </Row>
+      </Footer>
     </StickyFooterPortal>
-    
   );
 };
 

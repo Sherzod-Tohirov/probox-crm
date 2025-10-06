@@ -24,6 +24,16 @@ import hasRole from '@utils/hasRole';
 import useAuth from '@hooks/useAuth';
 import useIsMobile from '@hooks/useIsMobile';
 // import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
+
+const TABLE_DENSITY_OPTIONS = [
+  'xxcompact',
+  'xcompact',
+  'compact',
+  'normal',
+  'large',
+  'xlarge',
+];
+
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -41,13 +51,19 @@ export default function Clients() {
     data: [],
   });
   const [toggleFilter, setToggleFilter] = useState(false);
-  const [tableDensity, setTableDensity] = useState('normal'); // 'xxcompact' | 'xcompact' | 'compact' | 'normal' | 'large' | 'xlarge'
-  const densityLevels = ['xxcompact', 'xcompact', 'compact', 'normal', 'large', 'xlarge'];
+  const [tableDensity, setTableDensity] = useState(() => {
+    const saved = sessionStorage.getItem('clientsTableDensity');
+    if (saved && TABLE_DENSITY_OPTIONS.includes(saved)) {
+      return saved;
+    }
+    return 'normal';
+  }); // 'xxcompact' | 'xcompact' | 'compact' | 'normal' | 'large' | 'xlarge'
+
   // Global UI zoom controls
   const MIN_UI_SCALE = 0.5;
   const MAX_UI_SCALE = 2;
   const UI_SCALE_STEP = 0.1;
-  const [uiScale, setUiScale] = useState(1);
+  const [uiScale, setUiScale] = useState(1); // Just use 1 as default, CSS var is set in main.jsx
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
 
@@ -89,25 +105,21 @@ export default function Clients() {
   // Restore persisted table density
   useEffect(() => {
     const saved = sessionStorage.getItem('clientsTableDensity');
-    if (saved && densityLevels.includes(saved)) {
+    if (saved && TABLE_DENSITY_OPTIONS.includes(saved)) {
       setTableDensity(saved);
     }
   }, []);
 
-  // Initialize global UI scale from localStorage and update CSS var
-  useEffect(() => {
-    const saved = localStorage.getItem('uiScale');
-    const initial = saved ? parseFloat(saved) : 1;
-    const clamped = Math.min(MAX_UI_SCALE, Math.max(MIN_UI_SCALE, Number.isFinite(initial) ? initial : 1));
-    setUiScale(clamped);
-    document.documentElement.style.setProperty('--ui-scale', String(clamped));
-  }, []);
-
   const setGlobalScale = useCallback((value) => {
     const raw = typeof value === 'number' ? value : parseFloat(value);
-    const clamped = Math.min(MAX_UI_SCALE, Math.max(MIN_UI_SCALE, Number.isFinite(raw) ? raw : 1));
+    const clamped = Math.min(
+      MAX_UI_SCALE,
+      Math.max(MIN_UI_SCALE, Number.isFinite(raw) ? raw : 1)
+    );
     setUiScale(clamped);
-    document.documentElement.style.setProperty('--ui-scale', String(clamped));
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--ui-scale', String(clamped));
+    }
     localStorage.setItem('uiScale', String(clamped));
   }, []);
 
@@ -127,17 +139,19 @@ export default function Clients() {
 
   const increaseDensity = useCallback(() => {
     setTableDensity((prev) => {
-      const idx = densityLevels.indexOf(prev);
+      const idx = TABLE_DENSITY_OPTIONS.indexOf(prev);
       if (idx === -1) return 'normal';
-      return densityLevels[Math.min(idx + 1, densityLevels.length - 1)];
+      return TABLE_DENSITY_OPTIONS[
+        Math.min(idx + 1, TABLE_DENSITY_OPTIONS.length - 1)
+      ];
     });
   }, []);
 
   const decreaseDensity = useCallback(() => {
     setTableDensity((prev) => {
-      const idx = densityLevels.indexOf(prev);
+      const idx = TABLE_DENSITY_OPTIONS.indexOf(prev);
       if (idx === -1) return 'normal';
-      return densityLevels[Math.max(idx - 1, 0)];
+      return TABLE_DENSITY_OPTIONS[Math.max(idx - 1, 0)];
     });
   }, []);
 
@@ -242,7 +256,13 @@ export default function Clients() {
                     >
                       +
                     </Button>
-                    <span style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.08)' }} />
+                    <span
+                      style={{
+                        width: 1,
+                        height: 20,
+                        background: 'rgba(0,0,0,0.08)',
+                      }}
+                    />
                     <Button
                       variant="text"
                       color="secondary"
@@ -295,7 +315,6 @@ export default function Clients() {
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}
             isLoading={isLoading}
-            
             columns={clientsTableColumns}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
