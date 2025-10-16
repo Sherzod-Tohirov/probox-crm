@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import loadYandexMaps, { createThemedMap, setupThemeListener, updateMapTheme } from '@/utils/loadYandexMaps';
+import loadYandexMaps, {
+  createThemedMap,
+  setupThemeListener,
+} from '@/utils/loadYandexMaps';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
 import useAlert from '@hooks/useAlert';
 import useAuth from '@hooks/useAuth';
-import useToggle from '@hooks/useToggle';
-import useIsMobile from '@hooks/useIsMobile';
 import useTheme from '@hooks/useTheme';
 import classNames from 'classnames';
 import { Button } from '@components/ui';
-const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false }) => {
+const YandexMap = ({
+  userCoords = {},
+  onChangeCoords,
+  isCompactLayout = false,
+}) => {
   const { alert } = useAlert();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -53,7 +58,7 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
 
     try {
       setLoadError(null);
-      
+
       if (!mapRef.current) return; // Component might have unmounted
 
       const coords = hasCoords
@@ -83,7 +88,7 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
 
       // Get ymaps from loadYandexMaps for placemark creation
       const ymaps = await loadYandexMaps();
-      
+
       const placemark = new ymaps.Placemark(
         coords,
         {
@@ -205,11 +210,14 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
     initializeMap();
     return cleanup;
   }, []);
-  
+
   // Update map color scheme when theme changes (without recreating map)
   useEffect(() => {
     if (mapInstanceRef.current && isMapLoaded) {
-      mapInstanceRef.current.options.set('scheme', currentTheme === 'dark' ? 'dark' : 'light');
+      mapInstanceRef.current.options.set(
+        'scheme',
+        currentTheme === 'dark' ? 'dark' : 'light'
+      );
     }
   }, [currentTheme, isMapLoaded]);
 
@@ -278,9 +286,11 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
   };
 
   return (
-    <div className={classNames(styles['yandex-map-container'], {
-      [styles['compact']]: isCompactLayout,
-    })}>
+    <div
+      className={classNames(styles['yandex-map-container'], {
+        [styles['compact']]: isCompactLayout,
+      })}
+    >
       <div
         className={classNames(styles['search-container'], {
           [styles['hidden']]: !isManager,
@@ -329,9 +339,9 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
             </Button>
           </div>
         )}
-        {!isMapLoaded && !loadError && (
+        {/* {!isMapLoaded && !loadError && (
           <div className={styles['loading']}>Xarita yuklanmoqda...</div>
-        )}
+        )} */}
         {!hasCoords && isMapLoaded && (
           <div className={styles['no-location']}>
             ⚠️ Geolokatsiya aniqlanmadi, xaritada standart joylashuv (Toshkent)

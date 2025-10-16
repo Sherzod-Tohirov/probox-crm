@@ -143,7 +143,13 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
   }
 
   // Separate map state options from constructor options
-  const { autoFitToViewport, avoidFractionalZoom, exitFullscreenByEsc, fullscreenUnavailable, ...mapStateOptions } = mapOptions;
+  const {
+    autoFitToViewport,
+    avoidFractionalZoom,
+    exitFullscreenByEsc,
+    fullscreenUnavailable,
+    ...mapStateOptions
+  } = mapOptions;
 
   // Merge theme configuration with user options for map constructor
   const finalOptions = {
@@ -162,10 +168,14 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
   });
 
   // Apply state options after map is ready
-  if (autoFitToViewport !== undefined) map.options.set('autoFitToViewport', autoFitToViewport);
-  if (avoidFractionalZoom !== undefined) map.options.set('avoidFractionalZoom', avoidFractionalZoom);
-  if (exitFullscreenByEsc !== undefined) map.options.set('exitFullscreenByEsc', exitFullscreenByEsc);
-  if (fullscreenUnavailable !== undefined) map.options.set('fullscreenUnavailable', fullscreenUnavailable);
+  if (autoFitToViewport !== undefined)
+    map.options.set('autoFitToViewport', autoFitToViewport);
+  if (avoidFractionalZoom !== undefined)
+    map.options.set('avoidFractionalZoom', avoidFractionalZoom);
+  if (exitFullscreenByEsc !== undefined)
+    map.options.set('exitFullscreenByEsc', exitFullscreenByEsc);
+  if (fullscreenUnavailable !== undefined)
+    map.options.set('fullscreenUnavailable', fullscreenUnavailable);
 
   // Apply theme styling after map is ready
   if (themeConfig.theme === 'dark') {
