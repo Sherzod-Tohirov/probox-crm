@@ -1,0 +1,137 @@
+// Light theme (default)
+:root,
+[data-theme='light'] {
+  // Main color variables
+  --primary-bg: #ffffff;
+  --secondary-bg: #fdfdfd;
+  --tertiary-bg: #e9e9e9;
+  --fourth-bg: #f4f5f6;
+  --fifth-bg: #f7f7f7;
+  --primary-color: #3c3f47;
+  --secondary-color: #8e97a9;
+  --tertiary-color: #000000;
+  --fourth-color: #0a4d68;
+  --fifth-color: #2b2b2b;
+  --sixth-color: #333333;
+  --seventh-color: #0f172a;
+  --primary-label-color: #0f172a;
+  --primary-border-color: #e9e9e9;
+  --secondary-border-color: #f3f4f2;
+  --tertiary-border-color: #cbd5e1;
+  --primary-table-bg: #ffffff;
+  --primary-table-hover-bg: #f7f8f9;
+  --primary-table-header-bg: #f7f8f9;
+  --primary-footer-bg: #f7f8f9;
+  --primary-disabled-color: #ccc;
+  --primary-chat-input-bg: #f7f8f9;
+
+  // Success colors
+  --success-bg: #f0ffef;
+  --success-color: #027243;
+
+  // Info colors
+  --info-bg: #fefae8;
+  --info-color: #d4bb18;
+
+  // Danger colors
+  --danger-bg: #ffefef;
+  --danger-color: #d51629;
+
+  // Button colors
+  --button-bg: #0a4d68;
+  --button-hover-bg: #2d5f74;
+  --button-bg-secondary: #ffffff;
+  --button-color: #ffffff;
+  --text-button-color: #0a4d68;
+  --text-button-color-secondary: #8e97a9;
+  --primary-button-border-color: #cbd5e1;
+
+  // Input colors
+  --primary-input-bg: #f3f4f2;
+  --filter-input-bg: #ffffff;
+  --filter-input-color: #0f172a;
+  --filter-input-placeholder-color: #0f172a;
+  --filter-input-placeholder-color-secondary: #94a3b8;
+  --filter-input-border-color: #cbd5e1;
+}
+
+// Dark theme - High contrast and visibility
+[data-theme='dark'] {
+  // Main color variables - much lighter for better visibility
+  --primary-bg: #1e2127;
+  --secondary-bg: #252932;
+  --tertiary-bg: #2f3542;
+  --fourth-bg: #2a2e35;
+  --fifth-bg: #272c35;
+  --primary-color: #f3f4f6;
+  --secondary-color: #b4b9c5;
+  --tertiary-color: #ffffff;
+  --fourth-color: #60a5fa;
+  --fifth-color: #e5e7eb;
+  --sixth-color: #f3f4f6;
+  --seventh-color: #ffffff;
+  --primary-label-color: #f9fafb;
+  --primary-border-color: #3f4654;
+  --secondary-border-color: #353b48;
+  --tertiary-border-color: #525866;
+  --primary-table-bg: #2a2e35;
+  --primary-table-hover-bg: #353b48;
+  --primary-table-header-bg: #252932;
+  --primary-footer-bg: #252932;
+  --primary-disabled-color: #6b7280;
+  --primary-chat-input-bg: #2f3542;
+
+  // Success colors
+  --success-bg: #1e3a29;
+  --success-color: #34d399;
+
+  // Info colors
+  --info-bg: #3a3320;
+  --info-color: #fbbf24;
+
+  // Danger colors
+  --danger-bg: #3a1f1f;
+  --danger-color: #f87171;
+
+  // Button colors
+  --button-bg: #3b82f6;
+  --button-hover-bg: #60a5fa;
+  --button-bg-secondary: #2f3542;
+  --button-color: #ffffff;
+  --text-button-color: #60a5fa;
+  --text-button-color-secondary: #b4b9c5;
+  --primary-button-border-color: #525866;
+
+  // Input colors
+  --primary-input-bg: #2f3542;
+  --filter-input-bg: #2a2e35;
+  --filter-input-color: #f3f4f6;
+  --filter-input-placeholder-color: #f3f4f6;
+  --filter-input-placeholder-color-secondary: #b4b9c5;
+  --filter-input-border-color: #525866;
+}
+
+// Apply smooth transitions for theme changes
+body,
+button,
+input,
+select,
+textarea,
+div:not([class*="motion"]):not([class*="animate"]),
+span,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+
+// Global body background
+body {
+  background-color: var(--primary-bg);
+  color: var(--primary-color);
+}

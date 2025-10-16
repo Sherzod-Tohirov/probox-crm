@@ -50,5 +50,9 @@ export const getValue = (percent, role) => {
 
 export const calculateKPI = (percentage, sumApplied, role = 'Assistant') => {
   const value = getValue(percentage, role);
+  console.log(value, 'value');
+  console.log(sumApplied, 'sumApplied');
+  console.log(role, 'role');
+  console.log(parseFloat((sumApplied / 100) * value).toFixed(2), 'kpi');
   return parseFloat((sumApplied / 100) * value).toFixed(2);
 };

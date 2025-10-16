@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateClientExecutor } from "@services/clientsService";
 import { setCurrentClient } from "@store/slices/clientsPageSlice";
 import useAlert from "@hooks/useAlert";
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 const useMutateClientPageForm = () => {
   const { alert } = useAlert();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const currentClient = useSelector(
     (state) => state.page.clients.currentClient
   );
@@ -27,6 +28,8 @@ const useMutateClientPageForm = () => {
             : {}),
         })
       );
+      // Invalidate clients list query to refresh data when navigating back
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
       alert("Ma'lumotlar muvaffaqiyatli yangilandi!");
     },
   });

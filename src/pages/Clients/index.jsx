@@ -1,89 +1,97 @@
 import _ from 'lodash';
-
-import { Col, Row, Navigation, Table, Button } from '@components/ui';
-import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
-import Filter from '@features/clients/components/Filter';
-
-import {
-  useCallback,
-  useLayoutEffect,
-  useState,
-  useRef,
-  useEffect,
-} from 'react';
+import { useCallback, useLayoutEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { closeAllModals } from '@store/slices/toggleSlice';
+import { useNavigate } from 'react-router-dom';
+
+import { Col, Row, Table } from '@components/ui';
+import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
+import ClientsToolbar from '@features/clients/components/ClientsToolbar';
+import Filter from '@features/clients/components/Filter';
 
 import { setCurrentClient } from '@store/slices/clientsPageSlice';
 
 import useFetchClients from '@hooks/data/clients/useFetchClients';
-import useClientsTableColumns from '@features/clients/hooks/useClientsTableColumns';
-import styles from './style.module.scss';
-import hasRole from '@utils/hasRole';
 import useAuth from '@hooks/useAuth';
 import useIsMobile from '@hooks/useIsMobile';
-// import VirtualizedTable from "../../components/ui/Table/VirtualizedTable";
+import useTheme from '@hooks/useTheme';
 
-const TABLE_DENSITY_OPTIONS = [
-  'xxcompact',
-  'xcompact',
-  'compact',
-  'normal',
-  'large',
-  'xlarge',
-];
+import useClientsTableColumns from '@features/clients/hooks/useClientsTableColumns';
+import useUIScale from '@/features/clients/hooks/useUIScale';
+import useTableDensity from '@/features/clients/hooks/useTableDensity';
+import useScrollRestoration from '@/features/clients/hooks/useScrollRestoration';
+import useModalAutoClose from '@features/clients/hooks/useModalAutoClose';
+
+import hasRole from '@utils/hasRole';
+import styles from './style.module.scss';
 
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
   const isMobile = useIsMobile();
+  const { currentTheme } = useTheme();
   const { user } = useAuth();
+  
+  // Refs
   const clientsTableRef = useRef(null);
+  
+  // Redux state
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
   );
 
+  // Local state
   const [clientsDetails, setClientsDetails] = useState({
     totalPages: 0,
     total: 0,
     data: [],
   });
   const [toggleFilter, setToggleFilter] = useState(false);
-  const [tableDensity, setTableDensity] = useState(() => {
-    const saved = sessionStorage.getItem('clientsTableDensity');
-    if (saved && TABLE_DENSITY_OPTIONS.includes(saved)) {
-      return saved;
-    }
-    return 'normal';
-  }); // 'xxcompact' | 'xcompact' | 'compact' | 'normal' | 'large' | 'xlarge'
-
-  // Global UI zoom controls
-  const MIN_UI_SCALE = 0.5;
-  const MAX_UI_SCALE = 2;
-  const UI_SCALE_STEP = 0.1;
-  const [uiScale, setUiScale] = useState(1); // Just use 1 as default, CSS var is set in main.jsx
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
 
+  // Custom hooks
   const { data, isLoading } = useFetchClients({
     page: currentPage + 1,
     params,
   });
-
   const { clientsTableColumns } = useClientsTableColumns();
+  
+  const {
+    uiScale,
+    increaseScale,
+    decreaseScale,
+    resetScale,
+    canIncrease,
+    canDecrease,
+    isDefault: isDefaultUI,
+  } = useUIScale();
+  
+  const {
+    tableDensityClass,
+    increaseDensity,
+    decreaseDensity,
+    resetDensity,
+    isMinDensity,
+    isMaxDensity,
+    isDefaultDensity,
+  } = useTableDensity('clientsTableDensity');
+  
+  const { saveScrollPosition } = useScrollRestoration({
+    scrollContainerRef: clientsTableRef,
+    storageKey: 'scrollPositionClients',
+    hasData: data?.data?.length > 0,
+  });
+  
+  useModalAutoClose(clientsTableRef);
 
-  const hasRestoredScroll = useRef(false);
+  // Handlers
   const handleRowClick = useCallback(
     (row) => {
-      const tableWrapper = clientsTableRef.current?.closest('#table-wrapper');
-      const scrollY = tableWrapper ? tableWrapper.scrollTop : 0;
-      sessionStorage.setItem('scrollPositionClients', scrollY);
+      saveScrollPosition();
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
     },
-    [navigate, dispatch]
+    [navigate, dispatch, saveScrollPosition]
   );
 
   const handleFilter = useCallback((filterData) => {
@@ -102,63 +110,7 @@ export default function Clients() {
     }));
   }, []);
 
-  // Restore persisted table density
-  useEffect(() => {
-    const saved = sessionStorage.getItem('clientsTableDensity');
-    if (saved && TABLE_DENSITY_OPTIONS.includes(saved)) {
-      setTableDensity(saved);
-    }
-  }, []);
-
-  const setGlobalScale = useCallback((value) => {
-    const raw = typeof value === 'number' ? value : parseFloat(value);
-    const clamped = Math.min(
-      MAX_UI_SCALE,
-      Math.max(MIN_UI_SCALE, Number.isFinite(raw) ? raw : 1)
-    );
-    setUiScale(clamped);
-    if (typeof document !== 'undefined') {
-      document.documentElement.style.setProperty('--ui-scale', String(clamped));
-    }
-    localStorage.setItem('uiScale', String(clamped));
-  }, []);
-
-  const increaseUiScale = useCallback(() => {
-    setGlobalScale(uiScale + UI_SCALE_STEP);
-  }, [uiScale, setGlobalScale]);
-
-  const decreaseUiScale = useCallback(() => {
-    setGlobalScale(uiScale - UI_SCALE_STEP);
-  }, [uiScale, setGlobalScale]);
-
-  const resetUiScale = useCallback(() => setGlobalScale(1), [setGlobalScale]);
-
-  useEffect(() => {
-    sessionStorage.setItem('clientsTableDensity', tableDensity);
-  }, [tableDensity]);
-
-  const increaseDensity = useCallback(() => {
-    setTableDensity((prev) => {
-      const idx = TABLE_DENSITY_OPTIONS.indexOf(prev);
-      if (idx === -1) return 'normal';
-      return TABLE_DENSITY_OPTIONS[
-        Math.min(idx + 1, TABLE_DENSITY_OPTIONS.length - 1)
-      ];
-    });
-  }, []);
-
-  const decreaseDensity = useCallback(() => {
-    setTableDensity((prev) => {
-      const idx = TABLE_DENSITY_OPTIONS.indexOf(prev);
-      if (idx === -1) return 'normal';
-      return TABLE_DENSITY_OPTIONS[Math.max(idx - 1, 0)];
-    });
-  }, []);
-
-  const resetDensity = useCallback(() => setTableDensity('normal'), []);
-
-  const tableDensityClass = `table-density-${tableDensity}`;
-
+  // Sync data with local state
   useLayoutEffect(() => {
     if (data?.totalPages && clientsDetails.totalPages !== data?.totalPages) {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
@@ -171,49 +123,7 @@ export default function Clients() {
     if (clientsDetails.total !== data?.total) {
       setClientsDetails((p) => ({ ...p, total: data?.total || 0 }));
     }
-  }, [data]);
-
-  //Adjust scroll position as user exits from clients page
-  useLayoutEffect(() => {
-    if (
-      data &&
-      data.data &&
-      data.data.length > 0 &&
-      !hasRestoredScroll.current
-    ) {
-      const tableWrapper = clientsTableRef.current.closest('#table-wrapper');
-      requestAnimationFrame(() => {
-        const savedY = sessionStorage.getItem('scrollPositionClients');
-        if (savedY && !isNaN(parseInt(savedY))) {
-          tableWrapper.scrollTop = parseInt(savedY);
-          sessionStorage.removeItem('scrollPositionClients');
-          hasRestoredScroll.current = true;
-        }
-      });
-    }
-  }, [data]);
-
-  // Close all modals if route changes
-  useLayoutEffect(() => {
-    dispatch(closeAllModals());
-  }, [location.pathname]);
-  // Close all modals if scrolls table
-  useEffect(() => {
-    const tableWrapper = clientsTableRef.current?.closest('#table-wrapper');
-    const handleScroll = () => {
-      dispatch(closeAllModals());
-    };
-
-    tableWrapper?.addEventListener('scroll', handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      tableWrapper?.removeEventListener('scroll', handleScroll);
-    };
-  }, [dispatch]);
-
-  // Close all modal if click outside of modal or cell
+  }, [data, clientsDetails.total, clientsDetails.totalPages]);
 
   return (
     <>
@@ -221,87 +131,23 @@ export default function Clients() {
         <Col className={styles['sticky-column']} fullWidth>
           <Row gutter={isMobile ? 4 : 6}>
             <Col fullWidth>
-              <Row direction="row" justify="space-between" align="center">
-                <Col>
-                  <Navigation fallbackBackPath={'/clients'} />
-                </Col>
-                <Col>
-                  <div
-                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}
-                  >
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Global zoom out"
-                      onClick={decreaseUiScale}
-                      disabled={uiScale <= MIN_UI_SCALE}
-                    >
-                      -
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Reset global zoom"
-                      onClick={resetUiScale}
-                      disabled={uiScale === 1}
-                    >
-                      100%
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Global zoom in"
-                      onClick={increaseUiScale}
-                      disabled={uiScale >= MAX_UI_SCALE}
-                    >
-                      +
-                    </Button>
-                    <span
-                      style={{
-                        width: 1,
-                        height: 20,
-                        background: 'rgba(0,0,0,0.08)',
-                      }}
-                    />
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Zoom out table"
-                      onClick={decreaseDensity}
-                      disabled={tableDensity === 'xxcompact'}
-                    >
-                      A-
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Reset table zoom"
-                      onClick={resetDensity}
-                      disabled={tableDensity === 'normal'}
-                    >
-                      A
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      aria-label="Zoom in table"
-                      onClick={increaseDensity}
-                      disabled={tableDensity === 'xlarge'}
-                    >
-                      A+
-                    </Button>
-                    {isMobile ? (
-                      <Button
-                        onClick={() => setToggleFilter((prev) => !prev)}
-                        icon={'filter'}
-                        iconColor={'secondary'}
-                        iconSize={'20'}
-                        aria-label="Filter"
-                      />
-                    ) : null}
-                  </div>
-                </Col>
-              </Row>
+              <ClientsToolbar
+                uiScale={uiScale}
+                onIncreaseUIScale={increaseScale}
+                onDecreaseUIScale={decreaseScale}
+                onResetUIScale={resetScale}
+                onIncreaseDensity={increaseDensity}
+                onDecreaseDensity={decreaseDensity}
+                onResetDensity={resetDensity}
+                onToggleFilter={() => setToggleFilter((prev) => !prev)}
+                isMobile={isMobile}
+                canIncreaseUI={canIncrease}
+                canDecreaseUI={canDecrease}
+                isDefaultUI={isDefaultUI}
+                isMinDensity={isMinDensity}
+                isMaxDensity={isMaxDensity}
+                isDefaultDensity={isDefaultDensity}
+              />
             </Col>
             <Col fullWidth>
               <Filter onFilter={handleFilter} isExpanded={toggleFilter} />
@@ -333,7 +179,10 @@ export default function Clients() {
             getRowStyles={(row) => {
               if (row?.['DocEntry'] === currentClient?.['DocEntry']) {
                 return {
-                  backgroundColor: 'rgba(206, 236, 249, 0.94)',
+                  backgroundColor:
+                    currentTheme === 'dark'
+                      ? 'rgba(96, 165, 250, 0.15)'
+                      : 'rgba(206, 236, 249, 0.94)',
                 };
               }
             }}

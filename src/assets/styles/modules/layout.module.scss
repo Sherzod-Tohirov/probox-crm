@@ -27,7 +27,7 @@
   @include m.flex-direction(column);
   width: 64px !important;
   padding: 6rem 2.5rem;
-  border-right: 1px solid #f3f4f2;
+  border-right: 1px solid v.$secondary-border-color;
   background: v.$secondary-bg;
   transition: all v.$transition-time v.$transition-type;
   will-change: width;

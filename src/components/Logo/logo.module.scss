@@ -29,9 +29,19 @@
     z-index: -100;
     opacity: 0;
   }
+  
+  // Dark mode filter for logo
+  [data-theme='dark'] & {
+    filter: brightness(0) invert(1);
+  }
 }
 
 .logo-small-img {
   width: 36px;
   height: 36px;
+  
+  // Dark mode filter for logo
+  [data-theme='dark'] & {
+    filter: brightness(0) invert(1);
+  }
 }

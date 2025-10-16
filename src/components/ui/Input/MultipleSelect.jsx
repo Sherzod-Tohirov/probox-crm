@@ -1,3 +1,4 @@
+import useTheme from '@/hooks/useTheme';
 import { memo, useCallback } from 'react';
 import Select, { components } from 'react-select';
 import { ClipLoader } from 'react-spinners';
@@ -18,10 +19,11 @@ const MultipleSelect = ({
   isLoading,
   showAvatars = false,
   renderAvatar, // (option) => ReactNode
-  avatarSize = 20,
+  avatarSize = 22,
   enableClearAll = true,
   ...props
 }) => {
+  const { currentTheme } = useTheme();
   const handleChange = useCallback((selected, actionMeta, field) => {
     // selected can be null when clearing
     const safeSelected = Array.isArray(selected) ? selected : [];
@@ -103,13 +105,13 @@ const MultipleSelect = ({
           backgroundColor: 'transparent',
           border: showAvatars ? 'none' : '1px solid #ccc',
           borderRadius: showAvatars ? '999px' : '6px',
-          padding: showAvatars ? 0 : '2px 4px',
-          // Chip width equals avatar size when showing avatars
-          minWidth: showAvatars ? avatarSize : undefined,
-          maxWidth: showAvatars ? avatarSize : 140,
+          padding: showAvatars ? '1px' : '2px 4px',
+          // Chip width includes avatar + spacing for remove button
+          minWidth: showAvatars ? avatarSize + 2 : undefined,
+          maxWidth: showAvatars ? avatarSize + 2 : 140,
           overflow: showAvatars ? 'visible' : 'hidden',
           flex: '0 0 auto',
-          marginRight: 6,
+          marginRight: showAvatars ? 6 : 6,
           boxSizing: 'border-box',
         }),
         multiValueLabel: (base) => ({
@@ -182,7 +184,7 @@ const MultipleSelect = ({
                   justifyContent: 'center',
                   background: '#e6f4ff',
                   color: '#1677ff',
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: 700,
                 }}
                 title={option?.label}
@@ -193,7 +195,9 @@ const MultipleSelect = ({
           };
 
           const avatarNode =
-            typeof renderAvatar === 'function' ? renderAvatar(opt) : defaultAvatar(opt);
+            typeof renderAvatar === 'function'
+              ? renderAvatar(opt)
+              : defaultAvatar(opt);
 
           return (
             <components.MultiValueLabel {...mvProps}>
@@ -210,7 +214,7 @@ const MultipleSelect = ({
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: '#fff',
+                    background: 'transparent',
                   }}
                 >
                   {avatarNode}
@@ -234,18 +238,21 @@ const MultipleSelect = ({
                 width: 14,
                 height: 14,
                 borderRadius: '50%',
-                background: '#fff',
+                background: currentTheme === 'dark' ? 'red' : '#fff',
                 border: '1px solid rgba(0,0,0,0.2)',
                 boxSizing: 'border-box',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 0,
-                zIndex: 1,
+                zIndex: 2,
+                cursor: 'pointer',
               },
             }}
           >
-            <span style={{ fontSize: 10, lineHeight: 1 }}>×</span>
+            <span style={{ fontSize: 10, lineHeight: 1, fontWeight: 600 }}>
+              ×
+            </span>
           </components.MultiValueRemove>
         ),
         MenuList: (menuProps) => {

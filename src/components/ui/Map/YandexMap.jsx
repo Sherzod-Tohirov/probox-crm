@@ -1,22 +1,23 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import loadYandexMaps from '@/utils/loadYandexMaps';
+import loadYandexMaps, { createThemedMap, setupThemeListener, updateMapTheme } from '@/utils/loadYandexMaps';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
 import useAlert from '@hooks/useAlert';
 import useAuth from '@hooks/useAuth';
 import useToggle from '@hooks/useToggle';
 import useIsMobile from '@hooks/useIsMobile';
+import useTheme from '@hooks/useTheme';
 import classNames from 'classnames';
 import { Button } from '@components/ui';
 const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false }) => {
   const { alert } = useAlert();
   const { user } = useAuth();
-  const isMobile = useIsMobile();
-  const { isOpen: isSidebarOpen } = useToggle('sidebar');
+  const { currentTheme } = useTheme();
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const placemarkRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const themeListenerRef = useRef(null);
   const isManager = hasRole(user, ['Manager']);
   const [searchValue, setSearchValue] = useState('');
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -30,6 +31,12 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
     if (mapRef.current?._resizeObserver) {
       mapRef.current._resizeObserver.disconnect();
       mapRef.current._resizeObserver = null;
+    }
+
+    // Clean up theme listener
+    if (themeListenerRef.current) {
+      themeListenerRef.current();
+      themeListenerRef.current = null;
     }
 
     if (mapInstanceRef.current) {
@@ -46,39 +53,37 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
 
     try {
       setLoadError(null);
-      const ymaps = await loadYandexMaps();
-
+      
       if (!mapRef.current) return; // Component might have unmounted
 
       const coords = hasCoords
         ? [userCoords.lat, userCoords.long]
         : DEFAULT_COORDS;
 
-      const map = new ymaps.Map(
+      // Use the new theme-aware map creation
+      const map = await createThemedMap(
         mapRef.current,
         {
           center: coords,
           zoom: 12,
           controls: ['zoomControl'],
-        },
-        {
-          // Map options to ensure proper sizing
+          // Map state options
           autoFitToViewport: 'always',
           avoidFractionalZoom: false,
           exitFullscreenByEsc: true,
           fullscreenUnavailable: true,
-        }
+        },
+        currentTheme
       );
 
       mapInstanceRef.current = map;
 
-      // Force map to resize to container after initialization
-      setTimeout(() => {
-        if (map && mapRef.current) {
-          map.container.fitToViewport();
-        }
-      }, 100);
+      // Setup theme change listener for automatic theme switching
+      themeListenerRef.current = setupThemeListener(map);
 
+      // Get ymaps from loadYandexMaps for placemark creation
+      const ymaps = await loadYandexMaps();
+      
       const placemark = new ymaps.Placemark(
         coords,
         {
@@ -128,7 +133,7 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
       console.error('Map initialization error:', error);
       setLoadError(error.message);
     }
-  }, [hasCoords, userCoords, isManager, onChangeCoords]);
+  }, [hasCoords, userCoords, isManager, onChangeCoords, currentTheme]);
 
   // Setup suggestions
   const setupSuggestions = useCallback(
@@ -195,11 +200,18 @@ const YandexMap = ({ userCoords = {}, onChangeCoords, isCompactLayout = false })
     [onChangeCoords]
   );
 
-  // Initialize map on mount
+  // Initialize map on mount and when theme changes
   useEffect(() => {
     initializeMap();
     return cleanup;
   }, []);
+  
+  // Update map color scheme when theme changes (without recreating map)
+  useEffect(() => {
+    if (mapInstanceRef.current && isMapLoaded) {
+      mapInstanceRef.current.options.set('scheme', currentTheme === 'dark' ? 'dark' : 'light');
+    }
+  }, [currentTheme, isMapLoaded]);
 
   // Handle window resize for responsive behavior
   useEffect(() => {

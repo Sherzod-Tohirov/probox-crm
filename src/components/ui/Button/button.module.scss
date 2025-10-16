@@ -35,7 +35,9 @@
     line-height: 150%;
     color: v.$primary-color;
     border: none;
-
+    [data-theme='dark'] & {
+      color: v.$primary-color;
+    }
     @include m.media-max(v.$breakpoint-md) {
       font-size: 3.7rem !important;
       svg {
@@ -63,6 +65,36 @@
     }
   }
 
+  &.outlined {
+    background-color: transparent;
+    color: v.$button-bg;
+    padding: 2.5rem 4rem;
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: 143%;
+    border: 2px solid v.$button-bg;
+    border-radius: 3rem;
+    transition: all 0.3s ease;
+
+    [data-theme='dark'] & {
+      color: v.$button-bg;
+      border-color: v.$button-bg;
+    }
+
+    &:hover:not(.disabled):not(.loading) {
+      background-color: rgba(v.$button-bg, 0.1);
+
+      [data-theme='dark'] & {
+        background-color: rgba(v.$button-bg, 0.15);
+      }
+    }
+
+    @include m.media-max(v.$breakpoint-md) {
+      font-size: 3rem;
+      padding: 2rem 3rem;
+    }
+  }
+
   //colors
 
   &.primary {
@@ -76,12 +108,45 @@
   &.info {
     background-color: v.$info-color !important;
     color: #fff !important;
+
+    &.outlined {
+      background-color: transparent !important;
+      color: v.$info-color !important;
+      border-color: v.$info-color !important;
+
+      &:hover:not(.disabled):not(.loading) {
+        background-color: rgba(v.$info-color, 0.1) !important;
+
+        [data-theme='dark'] & {
+          background-color: rgba(v.$info-color, 0.15) !important;
+        }
+      }
+    }
   }
 
   &.danger {
     background-color: v.$danger-color !important;
+    color: #fff !important;
     svg {
       color: #fff;
+    }
+
+    &.outlined {
+      background-color: transparent !important;
+      color: v.$danger-color !important;
+      border-color: v.$danger-color !important;
+
+      svg {
+        color: v.$danger-color;
+      }
+
+      &:hover:not(.disabled):not(.loading) {
+        background-color: rgba(v.$danger-color, 0.1) !important;
+
+        [data-theme='dark'] & {
+          background-color: rgba(v.$danger-color, 0.15) !important;
+        }
+      }
     }
   }
 

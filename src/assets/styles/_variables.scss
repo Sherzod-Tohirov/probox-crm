@@ -1,38 +1,38 @@
-// Main color variables
-$primary-bg: #ffffff;
-$secondary-bg: #fdfdfd;
-$tertiary-bg: #e9e9e9;
-$fourth-bg: #f4f5f6;
-$fifth-bg: #f7f7f7;
-$primary-color: #3c3f47;
-$secondary-color: #8e97a9;
-$tertiary-color: #000000;
-$fourth-color: #0a4d68;
-$fifth-color: #2b2b2b;
-$sixth-color: #333333;
-$seventh-color: #0f172a;
-$primary-label-color: #0f172a;
-$primary-border-color: #e9e9e9;
-$secondary-border-color: #f3f4f2;
-$tertiary-border-color: #cbd5e1;
-$primary-table-bg: #ffffff;
-$primary-table-hover-bg: #f7f8f9;
-$primary-table-header-bg: #f7f8f9;
-$primary-footer-bg: #f7f8f9;
-$primary-disabled-color: #ccc;
-$primary-chat-input-bg: #f7f8f9;
+// Main color variables (using CSS custom properties for theme support)
+$primary-bg: var(--primary-bg);
+$secondary-bg: var(--secondary-bg);
+$tertiary-bg: var(--tertiary-bg);
+$fourth-bg: var(--fourth-bg);
+$fifth-bg: var(--fifth-bg);
+$primary-color: var(--primary-color);
+$secondary-color: var(--secondary-color);
+$tertiary-color: var(--tertiary-color);
+$fourth-color: var(--fourth-color);
+$fifth-color: var(--fifth-color);
+$sixth-color: var(--sixth-color);
+$seventh-color: var(--seventh-color);
+$primary-label-color: var(--primary-label-color);
+$primary-border-color: var(--primary-border-color);
+$secondary-border-color: var(--secondary-border-color);
+$tertiary-border-color: var(--tertiary-border-color);
+$primary-table-bg: var(--primary-table-bg);
+$primary-table-hover-bg: var(--primary-table-hover-bg);
+$primary-table-header-bg: var(--primary-table-header-bg);
+$primary-footer-bg: var(--primary-footer-bg);
+$primary-disabled-color: var(--primary-disabled-color);
+$primary-chat-input-bg: var(--primary-chat-input-bg);
 
 // Success colors
-$success-bg: #f0ffef;
-$success-color: #027243;
+$success-bg: var(--success-bg);
+$success-color: var(--success-color);
 
 // Info colors
-$info-bg: #fefae8;
-$info-color: #d4bb18;
+$info-bg: var(--info-bg);
+$info-color: var(--info-color);
 
 // Danger colors
-$danger-bg: #ffefef;
-$danger-color: #d51629;
+$danger-bg: var(--danger-bg);
+$danger-color: var(--danger-color);
 
 // Spacing variables
 $spacing-sm: 2rem;
@@ -52,21 +52,21 @@ $secondary-border-width: 0.5rem;
 // -- Element colors --
 
 // Button colors
-$button-bg: #0a4d68;
-$button-hover-bg: #2d5f74;
-$button-bg-secondary: #ffffff;
-$button-color: #ffffff;
-$text-button-color: #0a4d68;
-$text-button-color-secondary: #8e97a9;
-$primary-button-border-color: #cbd5e1;
+$button-bg: var(--button-bg);
+$button-hover-bg: var(--button-hover-bg);
+$button-bg-secondary: var(--button-bg-secondary);
+$button-color: var(--button-color);
+$text-button-color: var(--text-button-color);
+$text-button-color-secondary: var(--text-button-color-secondary);
+$primary-button-border-color: var(--primary-button-border-color);
 
 // Input colors
-$primary-input-bg: #f3f4f2;
-$filter-input-bg: #ffffff;
-$filter-input-color: #0f172a;
-$filter-input-placeholder-color: #0f172a;
-$filter-input-placeholder-color-secondary: #94a3b8;
-$filter-input-border-color: #cbd5e1;
+$primary-input-bg: var(--primary-input-bg);
+$filter-input-bg: var(--filter-input-bg);
+$filter-input-color: var(--filter-input-color);
+$filter-input-placeholder-color: var(--filter-input-placeholder-color);
+$filter-input-placeholder-color-secondary: var(--filter-input-placeholder-color-secondary);
+$filter-input-border-color: var(--filter-input-border-color);
 
 // Define breakpoints as a Sass map
 

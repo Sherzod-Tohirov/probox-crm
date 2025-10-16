@@ -6,9 +6,11 @@ import { Button, Col, Row, Table } from '@components/ui';
 
 import Filter from '@features/statistics/components/Filter';
 import StatisticChart from '@features/statistics/components/StatisticChart';
+import StatisticsToolbar from '@features/statistics/components/StatisticsToolbar';
 import useStatisticsData from '@features/statistics/hooks/useStatisticsData';
 import useStatisticsTableColumns from '@features/statistics/hooks/useStatisticsTableColumns';
 import useAuth from '@hooks/useAuth';
+import useIsMobile from '@hooks/useIsMobile';
 import formatDate from '@utils/formatDate';
 import styles from './style.module.scss';
 import Footer from '@/components/Footer';
@@ -19,6 +21,8 @@ import useStatisticsExcelExport from '@features/statistics/hooks/useStatisticsEx
 export default function Statistics() {
   const filterState = useSelector((state) => state.page.statistics.filter);
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const [filterExpanded, setFilterExpanded] = useState(false);
   const { monthlyStatisticsColumns, salesPersonStatisticsColumns } =
     useStatisticsTableColumns();
   const [params, setParams] = useState(() => ({
@@ -39,7 +43,7 @@ export default function Statistics() {
     },
     [user?.slpCode]
   );
-  
+
   useEffect(() => {
     if (monthly?.data?.length) {
       const formattedData = utils.formatMonthlyData(monthly.data);
@@ -61,8 +65,18 @@ export default function Statistics() {
   return (
     <>
       <Row gutter={8}>
+        <Col fullWidth>
+          <StatisticsToolbar
+            onToggleFilter={() => setFilterExpanded((prev) => !prev)}
+            isMobile={isMobile}
+          />
+        </Col>
         <Col fullWidth className={styles['sticky-col']}>
-          <Filter onFilter={handleFilter} setParams={setParams} />
+          <Filter
+            onFilter={handleFilter}
+            setParams={setParams}
+            isExpanded={filterExpanded}
+          />
         </Col>
         <Col fullWidth>
           <Table

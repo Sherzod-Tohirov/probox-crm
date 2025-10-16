@@ -64,6 +64,9 @@ import {
   StopCircleFilled,
   Download,
   DownloadFilled,
+  Sun,
+  Moon,
+  Monitor,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -132,6 +135,9 @@ const iconsMap = {
   pauseCircleFilled: <PauseCircleFilled />,
   download: <Download />,
   downloadFilled: <DownloadFilled />,
+  sun: <Sun />,
+  moon: <Moon />,
+  monitor: <Monitor />,
 };
 
 export default iconsMap;

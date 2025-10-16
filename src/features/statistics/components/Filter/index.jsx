@@ -1,7 +1,6 @@
 import classNames from 'classnames';
-import useAuth from '@hooks/useAuth';
 import { useForm } from 'react-hook-form';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Input, Button, Accordion } from '@components/ui';
 import useFilter from '@features/statistics/hooks/useFilter';
@@ -9,18 +8,15 @@ import getSelectOptionsFromKeys from '@utils/getSelectOptionsFromKeys';
 import useWatchedFields from '@features/statistics/hooks/useWatchedFields';
 import { initialStatisticsFilterState } from '@utils/store/initialStates';
 import { setStatisticsFilter } from '@store/slices/statisticsPageSlice';
-import formatDate from '@utils/formatDate';
 import styles from './style.module.scss';
 import _ from 'lodash';
 import moment from 'moment';
 import useIsMobile from '@/hooks/useIsMobile';
 
-const Filter = ({ onFilter, setParams }) => {
+const Filter = ({ onFilter, setParams, isExpanded = false }) => {
   const { executors } = useFilter();
-  const { user } = useAuth();
   const isMobile = useIsMobile();
   const dispatch = useDispatch();
-  const [filterToggle, setFilterToggle] = useState(false);
   const filterState = useSelector((state) => state.page.statistics.filter);
   const {
     setValue,
@@ -72,6 +68,15 @@ const Filter = ({ onFilter, setParams }) => {
     }
   }, [watchedFields.startDate, watchedFields.endDate, setValue]);
 
+  // When startDate is set/changed, auto-set endDate to the end of that month
+  useEffect(() => {
+    if (!watchedFields.startDate) return;
+    const startDate = moment(watchedFields.startDate, 'DD.MM.YYYY');
+    if (!startDate.isValid()) return;
+    const endOfMonth = startDate.clone().endOf('month').format('DD.MM.YYYY');
+    setValue('endDate', endOfMonth, { shouldValidate: true });
+  }, [watchedFields.startDate, setValue]);
+
   useEffect(() => {
     if (watchedFields.startDate !== filterState.startDate) {
       dispatch(
@@ -95,16 +100,10 @@ const Filter = ({ onFilter, setParams }) => {
   }, [watchedFields.endDate, filterState.endDate, dispatch]);
 
   return (
-    <Accordion
-      title="Filter"
-      isEnabled={isMobile}
-      isOpen={filterToggle}
-      onToggle={() => setFilterToggle((prev) => !prev)}
-    >
+    <Accordion isEnabled={isMobile} isOpen={isExpanded}>
       <form
         className={styles['filter-form']}
         onSubmit={handleSubmit((data) => {
-          setFilterToggle(false);
           onFilter(data);
         })}
         autoComplete="off"
@@ -173,6 +172,7 @@ const Filter = ({ onFilter, setParams }) => {
                   icon={'delete'}
                   iconSize={18}
                   variant={'filled'}
+                  type="submit"
                 >
                   Tozalash
                 </Button>

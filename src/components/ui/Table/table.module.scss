@@ -42,7 +42,7 @@
 .base-table {
   width: 100%;
   font-size: 3.2rem; // Default for desktop
-  color: #3c3f47;
+  color: v.$primary-color;
   font-style: normal;
   font-weight: 600;
   line-height: 150%;
@@ -72,6 +72,8 @@
       padding: 2rem; // Default for desktop
       flex: 1 0 0;
       background: v.$primary-table-header-bg;
+      color: v.$primary-color;
+      font-weight: 600;
 
       @media (max-width: (v.$breakpoint-md - 1)) {
         font-size: 3rem;

@@ -3,14 +3,18 @@
 
 .status {
   @include m.flex-center;
-  width: 92px;
+  min-width: 92px;
+  max-width: 93px;
   padding: 8px 14px;
   border-radius: 32px;
   font-size: 3.2rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 150%;
   text-align: center;
-  color: v.$tertiary-color !important;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: all v.$transition-time v.$transition-type;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   @media (max-width: v.$breakpoint-md) {
     padding: 7px 12px;
@@ -18,26 +22,62 @@
   }
 
   &.paid {
-    color: v.$success-color;
-    background: rgba(v.$success-color, 0.6);
+    color: #000 !important;
+    background: #02724399;
+    border: 1px solid rgba(v.$success-color, 0.5);
+
+    [data-theme='dark'] & {
+      background: rgba(v.$success-color, 0.15);
+      color: #34d399 !important;
+      border-color: rgba(52, 211, 153, 0.4);
+    }
   }
 
   &.manual_paid {
-    color: v.$success-color;
-    background: rgba(v.$success-color, 0.4);
+    color: #000 !important;
+    background: #027243be;
+    border: 1px solid rgba(v.$success-color, 0.4);
+
+    [data-theme='dark'] & {
+      background: rgba(v.$success-color, 0.1);
+      color: #34d399 !important;
+      border-color: rgba(52, 211, 153, 0.3);
+    }
   }
 
   &.partial {
-    color: rgba(v.$info-color, 0.8);
-    background: rgba(v.$info-color, 0.6);
+    color: #000 !important;
+    background: #d4bb1899;
+    border: 1px solid rgba(v.$info-color, 0.5);
+
+    [data-theme='dark'] & {
+      background: rgba(v.$info-color, 0.15);
+      color: #fbbf24 !important;
+      border-color: rgba(251, 191, 36, 0.4);
+    }
   }
 
   &.unpaid {
-    color: v.$danger-color;
-    background: rgba(v.$danger-color, 0.6);
+    color: #000 !important;
+    background: #d5162999;
+    border: 1px solid rgba(v.$danger-color, 0.5);
+
+    [data-theme='dark'] & {
+      background: rgba(v.$danger-color, 0.15);
+      color: #f87171 !important;
+      border-color: rgba(248, 113, 113, 0.4);
+    }
   }
 
   &.product {
-    background-color: rgb(97, 168, 227);
+    background-color: v.$button-bg;
+    color: v.$button-color !important;
+    border: 1px solid v.$button-bg;
+
+    [data-theme='dark'] & {
+      background-color: v.$button-bg;
+      color: v.$button-color !important;
+      border-color: v.$button-bg;
+    }
   }
 }

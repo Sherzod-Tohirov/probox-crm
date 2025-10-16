@@ -3,6 +3,7 @@
 
 .filter-form {
   width: 100%;
+  background: v.$primary-bg;
 }
 
 .filter-btn {
@@ -17,6 +18,7 @@
     color: #fff;
   }
 }
+
 
 .sticky-col {
   position: sticky !important;

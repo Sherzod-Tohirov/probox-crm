@@ -152,6 +152,9 @@ const Input = forwardRef(
                   defaultDate: field.value || props.defaultValue || new Date(),
                   dateFormat: 'd.m.Y', // Custom date format
                   locale: { firstDayOfWeek: 1 },
+                  clickOpens: true,
+                  allowInput: false,
+                  static: false, // Ensures calendar appends to body and closes on outside clicks
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {

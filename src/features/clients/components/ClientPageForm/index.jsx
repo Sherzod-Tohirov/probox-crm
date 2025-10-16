@@ -25,6 +25,8 @@ import hasRole from '@utils/hasRole';
 import { store } from '@store/store';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
+import { formatterPayment } from '@/utils/formatterPayment';
 
 function ClientPageForm({
   formId,
@@ -40,7 +42,7 @@ function ClientPageForm({
   const [uploadedFile, setUploadedFile] = useState([]);
   const [isFileSaveButtonDisabled, setFileSaveButtonDisabled] = useState(true);
   const { data: executors } = useFetchExecutors();
-
+  const { data: rate } = useFetchCurrency();
   const { user } = useAuth();
   const { alert } = useAlert();
 
@@ -227,6 +229,19 @@ function ClientPageForm({
     );
     setAllFiles(() => filesWithApi);
   }, [currentClient]);
+
+  useEffect(() => {
+    if (rate) {
+      setValue(
+        'debtClient',
+        formatterPayment(
+          currentClient?.['MaxDocTotal'],
+          currentClient?.['DocCur'],
+          rate?.Rate
+        )
+      );
+    }
+  }, [rate]);
 
   return (
     <form

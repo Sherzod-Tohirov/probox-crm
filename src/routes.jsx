@@ -110,6 +110,10 @@ const router = createBrowserRouter([
     },
   },
   {
+    path: '*',
+    element: <Navigate to="/404" />,
+  },
+  {
     path: '/404',
     element: (
       <Suspense fallback={<PageLoader fullscreen={true} />}>

@@ -25,12 +25,13 @@ import formatterCurrency from '@utils/formatterCurrency';
 import { ClipLoader } from 'react-spinners';
 import styles from './style.module.scss';
 import { insTotalCalculator } from '@utils/calculator';
-import moment from 'moment';
 import orderByNearest from '@utils/orderByNearest';
 import { random } from 'lodash';
+import useFetchCurrency from '@hooks/data/useFetchCurrency';
 
 const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   const distributeMutation = useMutateDistributeClients();
+  const { data: rate } = useFetchCurrency();
   const isMobile = useIsMobile();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
@@ -122,7 +123,6 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
       Number(statisticsData?.['SumApplied'] / calculatedInsTotal) * 100 || 0
     ).toFixed(2);
   }, [statisticsData, calculatedInsTotal]);
-
   return (
     <StickyFooterPortal>
       <Footer className={styles['footer-container']}>
@@ -141,7 +141,12 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
             >
               {!hasRole(user, ['Agent']) ? (
                 <Col>
-                  <Box gap={1} dir={isMobile ? 'column' : 'row'} align="start" justify="center">
+                  <Box
+                    gap={1}
+                    dir={isMobile ? 'column' : 'row'}
+                    align="start"
+                    justify="center"
+                  >
                     <Typography
                       className={styles['statistics-text']}
                       variant={isMobile ? 'body2' : 'body1'}
@@ -151,7 +156,10 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                       {isStatisticsLoading ? (
                         <ClipLoader color="grey" size={12} />
                       ) : (
-                        formatterCurrency(calculatedInsTotal, 'USD') + ' =>'
+                        formatterCurrency(
+                          calculatedInsTotal * (rate?.Rate ?? 1),
+                          'UZS'
+                        ) + ' =>'
                       )}
                     </Typography>
                     <Typography
@@ -166,8 +174,9 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                         <>
                           <span style={{ color: 'green' }}>
                             {formatterCurrency(
-                              statisticsData?.['SumApplied'] || 0,
-                              'USD'
+                              statisticsData?.['SumApplied'] *
+                                (rate?.Rate ?? 1) || 0,
+                              'UZS'
                             )}
                           </span>
                           <span

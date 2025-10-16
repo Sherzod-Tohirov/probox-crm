@@ -9,8 +9,11 @@ import useAuth from "@hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import useTheme from "@hooks/useTheme";
 
 export default function Login() {
+  // Ensure theme is applied on the login route as well
+  useTheme();
   const { isAuthenticated, handleLogin, loginState } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const {

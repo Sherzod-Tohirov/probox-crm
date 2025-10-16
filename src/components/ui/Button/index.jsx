@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 const buttonPropTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  variant: PropTypes.oneOf(['filled', 'text']),
+  variant: PropTypes.oneOf(['filled', 'outlined', 'text']),
   color: PropTypes.oneOf(['primary', 'secondary', 'info', 'danger']),
   icon: PropTypes.string,
   iconPosition: PropTypes.oneOf(['left', 'right']),
@@ -44,7 +44,7 @@ const buttonPropTypes = {
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Button content (text, elements)
  * @param {string} [props.className] - Additional CSS classes
- * @param {'filled'|'text'} [props.variant='filled'] - Button style variant
+ * @param {'filled'|'outlined'|'text'} [props.variant='filled'] - Button style variant
  * @param {'primary'|'secondary'|'info'|'danger'} [props.color] - Button color theme
  * @param {string} [props.icon] - Icon name from iconsMap
  * @param {'left'|'right'} [props.iconPosition='left'] - Icon position relative to text
@@ -92,6 +92,16 @@ const buttonPropTypes = {
  *   onClick={handleDelete}
  * >
  *   Delete Item
+ * </Button>
+ * 
+ * @example
+ * // Outlined button with icon
+ * <Button 
+ *   variant="outlined" 
+ *   icon="home"
+ *   onClick={handleHome}
+ * >
+ *   Go Home
  * </Button>
  */
 function Button(

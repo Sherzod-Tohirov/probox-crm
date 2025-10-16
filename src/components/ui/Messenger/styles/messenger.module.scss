@@ -15,8 +15,12 @@
   padding-left: 24px;
   padding-right: 24px;
   overflow-x: hidden;
-  background-color: #fff;
+  background-color: v.$primary-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  
+  [data-theme='dark'] & {
+    box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.4);
+  }
 
   border-left: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
@@ -153,7 +157,8 @@
   }
 
   &::placeholder {
-    color: rgba(60, 63, 71, 0.4);
+    color: v.$secondary-color;
+    opacity: 0.6;
   }
 
   &:focus {
@@ -191,8 +196,14 @@
     font-weight: 500;
     line-height: 143%;
     border-radius: 24px 29px 29px 0px;
-    background: #e6f0ff;
+    background: v.$tertiary-bg;
     transition: all v.$transition-time v.$transition-type;
+    
+    // Ensure text is always visible on colored backgrounds
+    p {
+      color: inherit;
+      mix-blend-mode: normal;
+    }
     &-menu {
       position: absolute;
       top: 0;
@@ -209,9 +220,13 @@
       &-menu-open {
         display: flex;
         opacity: 1;
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(5px);
         border-radius: 24px 29px 29px 0px;
+        
+        [data-theme='dark'] & {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
       }
     }
 
@@ -221,9 +236,13 @@
   }
 
   &-text {
-    color: inherit;
+    color: v.$primary-color;
     font-size: 4rem;
     font-weight: 800;
+    
+    [data-theme='dark'] & {
+      color: v.$seventh-color;
+    }
   }
 
   &-edit-submit-btn {
@@ -251,6 +270,10 @@
     border: none;
     outline: none;
     resize: vertical;
+    
+    [data-theme='dark'] & {
+      color: v.$seventh-color;
+    }
     &::-webkit-scrollbar {
       width: 6px;
     }
@@ -277,6 +300,10 @@
     font-weight: 700;
     line-height: 150%;
     letter-spacing: 1.1px;
+    
+    [data-theme='dark'] & {
+      color: v.$sixth-color;
+    }
   }
 
   &-time {
@@ -288,12 +315,21 @@
     font-weight: 600;
     line-height: 17px;
     color: v.$tertiary-color;
+    
+    [data-theme='dark'] & {
+      color: v.$sixth-color;
+    }
   }
 
   &-avatar-icon {
     @include m.flex-center;
     font-size: 14px;
     color: v.$tertiary-color;
+    
+    [data-theme='dark'] & {
+      color: v.$sixth-color;
+    }
+    
     svg {
       width: 14px;
       height: 14px;
@@ -320,6 +356,10 @@
   line-height: 17px;
   border-radius: 10px;
   color: v.$secondary-color;
+  
+  [data-theme='dark'] & {
+    color: v.$sixth-color;
+  }
 
   &.small {
     font-size: 3rem;
@@ -359,9 +399,13 @@
   // overflow: hidden;
   background-color: v.$secondary-bg;
   box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  
+  [data-theme='dark'] & {
+    box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.4);
+  }
 
   &-header {
-    background-color: #fff;
+    background-color: v.$primary-bg;
     padding-top: 20px;
     padding-bottom: 10px;
     border-bottom: v.$primary-border-width v.$primary-border-type
@@ -406,7 +450,7 @@
     z-index: 1000;
     padding-top: 8px;
     padding-bottom: 8px;
-    background-color: #fff;
+    background-color: v.$primary-bg;
     border-top: v.$primary-border-width v.$primary-border-type
       v.$primary-border-color;
   }
@@ -417,8 +461,12 @@
   width: 110px;
   height: 62px;
   border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  background-color: v.$secondary-bg;
+  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.15);
+  
+  [data-theme='dark'] & {
+    box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.4);
+  }
   opacity: 1;
   z-index: 1000;
   &-list {
@@ -437,6 +485,10 @@
     color: v.$primary-color;
 
     cursor: pointer;
+    
+    [data-theme='dark'] & {
+      color: v.$seventh-color;
+    }
 
     & svg {
       width: 18px !important;
@@ -445,7 +497,7 @@
   }
 
   &-list-item:first-child {
-    border-bottom: 1px solid #e9ebf0;
+    border-bottom: 1px solid v.$primary-border-color;
   }
 
   &-btn {
@@ -493,7 +545,7 @@
 }
 
 .audio-recorder {
-  background-color: #fff !important;
+  background-color: v.$primary-bg !important;
   &-status {
     display: inline-flex;
     flex-grow: 0 !important;

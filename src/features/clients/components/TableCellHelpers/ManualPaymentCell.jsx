@@ -1,34 +1,53 @@
-import moment from "moment";
-import { useForm } from "react-hook-form";
-import { Input, Box, Typography } from "@components/ui";
-import { memo, useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import moment from 'moment';
+import { useForm } from 'react-hook-form';
+import { Input, Box, Typography } from '@components/ui';
+import { memo, useCallback, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import useAuth from "@hooks/useAuth";
-import useFetchCurrency from "@hooks/data/useFetchCurrency";
-import useMutatePartialPayment from "@hooks/data/clients/useMutatePartialPayment";
+import useAuth from '@hooks/useAuth';
+import useFetchCurrency from '@hooks/data/useFetchCurrency';
+import useMutatePartialPayment from '@hooks/data/clients/useMutatePartialPayment';
 
-import hasRole from "@utils/hasRole";
-import ModalCell from "./helper/ModalCell";
-import ModalWrapper from "./helper/ModalWrapper";
-import { toggleModal } from "@store/slices/toggleSlice";
-import formatterCurrency from "@utils/formatterCurrency";
+import hasRole from '@utils/hasRole';
+import ModalCell from './helper/ModalCell';
+import ModalWrapper from './helper/ModalWrapper';
+import { toggleModal } from '@store/slices/toggleSlice';
+import formatterCurrency from '@utils/formatterCurrency';
+import useTheme from '@/hooks/useTheme';
 
 const Title = ({ column }) => {
   const { data: currency } = useFetchCurrency();
+  const { currentTheme } = useTheme();
 
-  const SUM = column.PaidToDate * currency?.["Rate"];
+  // Safe number parsing with fallback
+  const paidToDate = parseFloat(column.PaidToDate) || 0;
+  const paidToDateFC = parseFloat(column.PaidToDateFC) || 0;
+  const rate = parseFloat(currency?.['Rate']) || 0;
+
+  const value = column?.DocCur === 'USD' ? paidToDate * rate : paidToDateFC;
   return (
     (
       <Box gap={1}>
-        <span style={{ color: "red" }}>
-          {formatterCurrency(column.PaidToDate, "USD")}{" "}
+        <span
+          style={{
+            fontWeight: 900,
+            color: currentTheme === 'dark' ? 'steelblue' : 'red',
+          }}
+        >
+          {formatterCurrency(value, 'UZS')}{' '}
         </span>
-        <span style={{ fontWeight: 900, color: "red" }}>
-          ({formatterCurrency(SUM || 0, "UZS")})
-        </span>
+        {column?.DocCur === 'USD' && (
+          <span
+            style={{
+              fontWeight: 900,
+              color: currentTheme === 'dark' ? '#fff' : 'red',
+            }}
+          >
+            ({formatterCurrency(Math.round(paidToDate), 'USD')})
+          </span>
+        )}
       </Box>
-    ) || "Unknown"
+    ) || 'Unknown'
   );
 };
 
@@ -42,13 +61,13 @@ const useManualPaymentCell = (column) => {
       },
       {
         value: false,
-        label: "Belgilanmagan",
+        label: 'Belgilanmagan',
       },
     ],
     []
   );
   const canUserModify =
-    hasRole(user, ["Manager", "Cashier"]) && !column.phoneConfiscated;
+    hasRole(user, ['Manager', 'Cashier']) && !column.phoneConfiscated;
   const isStatusPaid = useMemo(() => {
     const statusCalc =
       parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
@@ -60,7 +79,7 @@ const useManualPaymentCell = (column) => {
 };
 
 const ManualPaymentCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-manual-payment-modal`;
+  const modalId = `${column?.['DocEntry']}-manual-payment-modal`;
   const {
     reset,
     register,
@@ -70,7 +89,7 @@ const ManualPaymentCell = ({ column }) => {
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      partial: Boolean(column?.["partial"]), // Convert to boolean
+      partial: Boolean(column?.['partial']), // Convert to boolean
     },
   });
 
@@ -79,7 +98,7 @@ const ManualPaymentCell = ({ column }) => {
 
   const dispatch = useDispatch();
   const mutation = useMutatePartialPayment();
-  const partialField = watch("partial");
+  const partialField = watch('partial');
 
   const { paymentOptions, canUserModify, isStatusPaid } =
     useManualPaymentCell(column);
@@ -87,34 +106,34 @@ const ManualPaymentCell = ({ column }) => {
 
   // Sync form with column changes
   useEffect(() => {
-    if (column?.["partial"] !== undefined) {
-      setValue("partial", Boolean(column["partial"]), {
+    if (column?.['partial'] !== undefined) {
+      setValue('partial', Boolean(column['partial']), {
         shouldDirty: false,
         shouldTouch: false,
       });
     }
-  }, [column?.["partial"], setValue]);
+  }, [column?.['partial'], setValue]);
 
   // Reset form when modal closes
   useEffect(() => {
     if (!isModalOpen) {
       reset({
-        partial: Boolean(column?.["partial"]),
+        partial: Boolean(column?.['partial']),
       });
     }
   }, [isModalOpen, column, reset]);
 
   const handleApply = useCallback(
     async (data) => {
-      const formattedDueDate = moment(currentClient["DueDate"]).format(
-        "YYYY.MM.DD"
+      const formattedDueDate = moment(currentClient['DueDate']).format(
+        'YYYY.MM.DD'
       );
 
       const payload = {
-        docEntry: currentClient?.["DocEntry"],
-        installmentId: currentClient?.["InstlmntID"],
+        docEntry: currentClient?.['DocEntry'],
+        installmentId: currentClient?.['InstlmntID'],
         data: {
-          partial: data.partial === "true", // Ensure boolean
+          partial: data.partial === 'true', // Ensure boolean
           DueDate: formattedDueDate,
         },
       };
@@ -123,7 +142,7 @@ const ManualPaymentCell = ({ column }) => {
         await mutation.mutateAsync(payload);
         dispatch(toggleModal(modalId));
       } catch (error) {
-        console.error("Payment update failed:", error);
+        console.error('Payment update failed:', error);
       }
     },
     [currentClient, modalId, mutation, dispatch]
@@ -139,7 +158,8 @@ const ManualPaymentCell = ({ column }) => {
       allowClick={!canUserModify || isStatusPaid}
       modalId={modalId}
       column={column}
-      title={<Title column={column} />}>
+      title={<Title column={column} />}
+    >
       {canUserModify && !isStatusPaid ? (
         <ModalCell
           title={"To'lov holatini o'zgartirish"}
@@ -148,15 +168,16 @@ const ManualPaymentCell = ({ column }) => {
           applyButtonProps={{
             disabled: !isDirty,
             isLoading: mutation.isPending,
-          }}>
+          }}
+        >
           <Input
-            type={"select"}
-            size={"full-grow"}
+            type={'select'}
+            size={'full-grow'}
             canClickIcon={false}
             options={paymentOptions}
-            variant={"outlined"}
+            variant={'outlined'}
             value={partialField} // Add controlled value
-            {...register("partial")}
+            {...register('partial')}
           />
         </ModalCell>
       ) : null}

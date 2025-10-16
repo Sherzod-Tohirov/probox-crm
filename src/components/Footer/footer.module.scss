@@ -13,7 +13,12 @@
   border-top: v.$primary-border-width v.$primary-border-type
     v.$secondary-border-color;
   background-color: v.$primary-footer-bg;
-  box-shadow: 2px 7px 11px 1px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+  
+  [data-theme='dark'] & {
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
   @include m.media-max(v.$breakpoint-md) {
     padding: 2rem 3rem;
   }

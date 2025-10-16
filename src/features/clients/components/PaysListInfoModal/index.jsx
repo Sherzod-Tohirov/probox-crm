@@ -3,9 +3,12 @@ import formatterCurrency from '@/utils/formatterCurrency';
 import { Modal, Box, Col, Row, Typography, Table } from '@components/ui';
 import { useMemo } from 'react';
 import styles from './style.module.scss';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
+import useTheme from '@hooks/useTheme';
 
 export default function PaysListInfoModal({ isOpen, onClose, data }) {
-  console.log(data, 'modal data');
+  const { data: currency } = useFetchCurrency();
+  const { currentTheme } = useTheme();
   const paysListTableColumns = useMemo(
     () => [
       {
@@ -26,22 +29,43 @@ export default function PaysListInfoModal({ isOpen, onClose, data }) {
             {item?.AcctName || 'Belgilanmagan'}
           </Typography>
         ),
-        width: '70%',
+        width: '60%',
       },
       {
         key: 'SumApplied',
         title: 'Summa',
-        renderCell: (item) => (
-          <Typography align="left" className={styles.tableAmountText}>
-            {item?.SumApplied
-              ? formatterCurrency(item.SumApplied, 'USD')
-              : '0.00 USD'}
-          </Typography>
-        ),
-        width: '35%',
+        renderCell: (item) => {
+          // Safe number parsing with fallback
+          const sumApplied = parseFloat(item.SumApplied) || 0;
+          const sumAppliedFC = parseFloat(item.SumAppliedFC) || 0;
+          const rate = parseFloat(currency?.['Rate']) || 0;
+          
+          const value =
+            item.Currency === 'USD'
+              ? sumApplied * rate
+              : sumAppliedFC;
+          return (
+            <Typography align="left" className={styles.tableAmountText}>
+              {formatterCurrency(value, 'UZS')}
+
+              {item.Currency === 'USD' && (
+                <span
+                  style={{
+                    fontWeight: 900,
+                    color: currentTheme === 'dark' ? 'steelblue' : 'steelblue',
+                  }}
+                >
+                  {' '}
+                  ({formatterCurrency(Math.round(sumApplied), 'USD')})
+                </span>
+              )}
+            </Typography>
+          );
+        },
+        width: '25%',
       },
     ],
-    []
+    [currency, currentTheme]
   );
 
   return (

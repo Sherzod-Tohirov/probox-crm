@@ -41,7 +41,7 @@ export default function StickyFooterPortal({ children }) {
       left: `${left}px`,
       width: `${width}px`,
       bottom: 0,
-      zIndex: 1005,
+      zIndex: 999,
       pointerEvents: 'auto',
     });
   }, []);

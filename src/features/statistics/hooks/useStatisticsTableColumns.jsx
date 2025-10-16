@@ -37,16 +37,19 @@ const useStatisticsTableColumns = () => {
     [executors]
   );
 
-  const getFormattedSalary = useCallback((column) => {
-    const foundExecutor = executors?.find(
-      (executor) => executor.SlpCode === column.SlpCode
-    );
-    let salary = 2000000;
-    if (foundExecutor && foundExecutor?.['U_summa']) {
-      salary = Number(String(foundExecutor?.['U_summa']).replaceAll(' ', ''));
-    }
-    return salary;
-  }, []);
+  const getFormattedSalary = useCallback(
+    (column) => {
+      const foundExecutor = executors?.find(
+        (executor) => executor.SlpCode === column.SlpCode
+      );
+      let salary = 2000000;
+      if (foundExecutor && foundExecutor?.['U_summa']) {
+        salary = Number(String(foundExecutor?.['U_summa']).replaceAll(' ', ''));
+      }
+      return salary;
+    },
+    [executors]
+  );
 
   const monthlyStatisticsColumns = useMemo(() => [
     {
@@ -181,7 +184,11 @@ const useStatisticsTableColumns = () => {
         }
         const insTotal = calculateInsTotal(column);
         const percentage = ((column.SumApplied / insTotal) * 100).toFixed(2);
-        const kpi = calculateKPI(percentage, column.SumApplied, user['U_role']);
+        const kpi = calculateKPI(
+          percentage,
+          column.SumApplied,
+          currentExecutor?.['U_role']
+        );
         return formatterCurrency(kpi, 'USD');
       },
     },
@@ -192,6 +199,7 @@ const useStatisticsTableColumns = () => {
       minWidth: '100px',
       icon: 'moneyAdd',
       renderCell: (column) => {
+        console.log(column, 'column');
         if (column.SlpCode === null) return '-';
         const currentExecutor = findExecutor(column);
         if (currentExecutor?.['U_role'] === 'Manager' && !hasGlobalPermission) {
@@ -199,7 +207,11 @@ const useStatisticsTableColumns = () => {
         }
         const insTotal = calculateInsTotal(column);
         const percentage = ((column.SumApplied / insTotal) * 100).toFixed(2);
-        const kpi = calculateKPI(percentage, column.SumApplied, user['U_role']);
+        const kpi = calculateKPI(
+          percentage,
+          column.SumApplied,
+          currentExecutor?.['U_role']
+        );
         return formatterCurrency(kpi * (currency?.Rate || 1), 'UZS');
       },
     },
@@ -234,7 +246,11 @@ const useStatisticsTableColumns = () => {
         const salary = getFormattedSalary(column);
         const insTotal = calculateInsTotal(column);
         const percentage = ((column.SumApplied / insTotal) * 100).toFixed(2);
-        const kpi = calculateKPI(percentage, column.SumApplied, user['U_role']);
+        const kpi = calculateKPI(
+          percentage,
+          column.SumApplied,
+          currentExecutor['U_role']
+        );
         const kpiUZS = kpi * (currency?.Rate || 1);
         const calculatedSalary = salary + kpiUZS;
         return formatterCurrency(calculatedSalary);

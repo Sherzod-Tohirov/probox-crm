@@ -1,23 +1,51 @@
 import moment from 'moment';
 import classNames from 'classnames';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useFloating, shift, offset, autoUpdate } from '@floating-ui/react-dom';
 
 import { Col, Button, Typography, Box } from '@components/ui';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useAuth from '@hooks/useAuth';
+import useTheme from '@hooks/useTheme';
 import iconsMap from '@utils/iconsMap';
 import getMessageColorForUser from '@utils/getMessageColorForUser';
 import styles from './styles/messenger.module.scss';
 import { API_CLIENT_IMAGES } from '@utils/apiUtils';
-import AudioDuration from './AudioDuration';
 import AudioPlayer from './AudioPlayer';
 
+// Helper: ensure colored bubbles look good in dark/light themes
+const toRgba = (color, alpha = 1) => {
+  if (!color) return '';
+  // rgba(a,b,c,d)
+  const rgbaMatch = color.match(/^rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/i);
+  if (rgbaMatch) {
+    const [, r, g, b] = rgbaMatch;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  // #RRGGBB or #RGB
+  const hex = color.trim();
+  if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+    let r, g, b;
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else {
+      r = parseInt(hex.slice(1, 3), 16);
+      g = parseInt(hex.slice(3, 5), 16);
+      b = parseInt(hex.slice(5, 7), 16);
+    }
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  // Fallback: return as-is
+  return color;
+};
+
 export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
-  const audioRef = useRef(null);
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
+  const { currentTheme } = useTheme();
   const [showMenu, setShowMenu] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,15 +67,15 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     setEditText(msg?.['Comments']);
   }, [msg?.['Comments']]);
 
-  const handleContextMenu = (e) => {
+  const handleContextMenu = useCallback((e) => {
     e.preventDefault();
     if (msg?.['SlpCode'] === user?.SlpCode) {
       setShowMenu(true);
       update();
     }
-  };
+  }, [msg?.['SlpCode'], user?.SlpCode, update]);
 
-  const handleEditSubmit = async () => {
+  const handleEditSubmit = useCallback(async () => {
     try {
       setIsSubmitting(true);
       if (editText === '') {
@@ -68,9 +96,9 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       setIsSubmitting(false);
       setEditMode(false);
     }
-  };
+  }, [editText, msg?._id, msg?.['Comments'], onEditMessage, onDeleteMessage]);
 
-  const handleClickOutside = (e) => {
+  const handleClickOutside = useCallback((e) => {
     if (
       refs.floating.current &&
       !refs.floating.current?.contains(e.target) &&
@@ -78,7 +106,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     ) {
       setShowMenu(false);
     }
-  };
+  }, [refs.floating, refs.reference]);
 
   useEffect(() => {
     if (showMenu) {
@@ -87,29 +115,44 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       document.removeEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMenu]);
+  }, [showMenu, handleClickOutside]);
 
-  const executor = executors?.find((e) => e?.['SlpCode'] === msg?.['SlpCode']);
-  const timestamp = moment(msg?.['DocDate']).local().format('HH:mm');
+  // Memoize expensive computations
+  const executor = useMemo(
+    () => executors?.find((e) => e?.['SlpCode'] === msg?.['SlpCode']),
+    [executors, msg?.['SlpCode']]
+  );
+  
+  const timestamp = useMemo(
+    () => moment(msg?.['DocDate']).local().format('HH:mm'),
+    [msg?.['DocDate']]
+  );
+  
   const msgColor = useMemo(
-    () =>
-      getMessageColorForUser(
-        msg?.['SlpCode'],
-        executors?.map((e) => e?.['SlpCode']) || []
-      ),
+    () => getMessageColorForUser(
+      msg?.['SlpCode'],
+      executors?.map((e) => e?.['SlpCode']) || []
+    ),
     [msg?.['SlpCode'], executors]
   );
+  
   const messageType = useMemo(() => {
-    if (msg?.['Comments'] !== null) {
-      return 'text';
-    }
-    if (msg?.['Image'] !== null) {
-      return 'image';
-    }
-    if (msg?.['Audio'] !== null) {
-      return 'audio';
-    }
+    if (msg?.['Comments'] !== null) return 'text';
+    if (msg?.['Image'] !== null) return 'image';
+    if (msg?.['Audio'] !== null) return 'audio';
+    return null;
   }, [msg]);
+
+  // Theme-aware bubble background to keep readable contrast in dark mode
+  const bubbleBg = useMemo(() => {
+    if (!msgColor?.bg) return undefined;
+    return currentTheme === 'dark' ? toRgba(msgColor.bg, 0.25) : msgColor.bg;
+  }, [msgColor?.bg, currentTheme]);
+
+  // Theme-aware accent color for author/icon
+  const accentColor = useMemo(() => {
+    return currentTheme === 'dark' ? '#e5e7eb' : msgColor?.text;
+  }, [currentTheme, msgColor?.text]);
   useEffect(() => {
     if (!msg?.['Audio']) return;
 
@@ -140,7 +183,11 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
           if (messageType === 'text') {
             return (
               <div
-                style={{ backgroundColor: msgColor?.bg }}
+                style={{
+                  backgroundColor: bubbleBg,
+                  border: currentTheme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)',
+                  boxShadow: currentTheme === 'dark' ? '0 1px 2px rgba(0,0,0,0.6)' : undefined,
+                }}
                 className={styles['message-text-wrapper']}
               >
                 {editMode ? (
@@ -182,8 +229,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             const url = API_CLIENT_IMAGES + msg?.['Image'];
             return (
               <div className={styles['message-image-wrapper']}>
-                <a href={url} target="_blank" download>
-                  <img src={url} className={styles['message-image']} />
+                <a href={url} target="_blank" rel="noopener noreferrer" download>
+                  <img src={url} className={styles['message-image']} alt="message image" loading="lazy" />
                 </a>
               </div>
             );
@@ -204,18 +251,18 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       <Col>
         <Box dir="row" gap={1} align="center">
           <Typography
-            style={{ color: msgColor?.text }}
+            style={{ color: accentColor }}
             element="span"
             className={styles['message-avatar-icon']}
           >
             {msg.avatar ? (
-              <img src={msg.avatar} width={50} height={50} />
+              <img src={msg.avatar} width={50} height={50} alt="avatar" loading="lazy" />
             ) : (
               iconsMap['avatarFilled']
             )}
           </Typography>
           <Typography
-            style={{ color: msgColor?.text }}
+            style={{ color: accentColor }}
             element="span"
             className={styles['message-author']}
           >

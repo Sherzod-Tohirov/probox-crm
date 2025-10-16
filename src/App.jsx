@@ -1,23 +1,24 @@
-import "@assets/styles/globals.scss";
-import "react-loading-skeleton/dist/skeleton.css";
+import '@assets/styles/globals.scss';
+import 'react-loading-skeleton/dist/skeleton.css';
 
-import { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useEffect } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import SidebarLayout from "@layouts/SidebarLayout";
-import MainLayout from "@layouts/MainLayout";
-import DashboardLayout from "@layouts/DashboardLayout";
-import PrimaryLayout from "@layouts/PrimaryLayout";
+import SidebarLayout from '@layouts/SidebarLayout';
+import MainLayout from '@layouts/MainLayout';
+import DashboardLayout from '@layouts/DashboardLayout';
+import PrimaryLayout from '@layouts/PrimaryLayout';
 
-import Sidebar from "@components/Sidebar";
-import Header from "@components/Header";
+import Sidebar from '@components/Sidebar';
+import Header from '@components/Header';
 
-import useAuth from "@hooks/useAuth";
-import useAlert from "@hooks/useAlert";
-import useToggle from "@hooks/useToggle";
+import useAuth from '@hooks/useAuth';
+import useAlert from '@hooks/useAlert';
+import useToggle from '@hooks/useToggle';
+import useTheme from '@hooks/useTheme';
 
-import { isMessengerRoute } from "@utils/routesConfig";
-import { setGlobalAlert } from "@utils/globalAlert";
+import { isMessengerRoute } from '@utils/routesConfig';
+import { setGlobalAlert } from '@utils/globalAlert';
 
 // import { scan } from "react-scan/dist/index";
 // scan({
@@ -27,8 +28,12 @@ import { setGlobalAlert } from "@utils/globalAlert";
 function App() {
   const { AlertContainer, alert } = useAlert();
   const { isAuthenticated } = useAuth();
-  const { isOpen, toggle } = useToggle("messenger");
+  const { isOpen, toggle } = useToggle('messenger');
   const { pathname } = useLocation();
+
+  // Initialize theme on app mount
+  useTheme();
+
   useEffect(() => {
     // Toggle off messenger when route changes
     if (!isMessengerRoute(pathname) && isOpen) toggle();

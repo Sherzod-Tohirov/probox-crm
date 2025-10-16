@@ -9,7 +9,7 @@
   bottom: 0;
   z-index: 1000;
   @include m.flex-center;
-  background-color: rgb(245, 245, 245);
+  background-color: v.$primary-bg;
   backdrop-filter: blur(15px);
 }
 
@@ -22,7 +22,8 @@
   @include m.flex-center;
   width: 100%;
   min-height: 70vh;
-  background-color: rgba(255, 255, 255, 0.614);
+  background-color: v.$primary-bg;
+  opacity: 0.95;
   z-index: 1000;
   animation: fadeIn 0.2s;
   backdrop-filter: blur(5px);

@@ -10,7 +10,7 @@ import {
   Table,
 } from '@components/ui';
 import styles from './style.module.scss';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -21,7 +21,6 @@ import Messenger from '@components/ui/Messenger';
 import ClientPageForm from '@features/clients/components/ClientPageForm';
 import ClientPaymentModal from '@features/clients/components/ClientPaymentModal';
 import ClientPaysListInfoModal from '@features/clients/components/PaysListInfoModal';
-import useSaveScreenshot from '@features/clients/hooks/useSaveScreenshot';
 
 import useAuth from '@hooks/useAuth';
 import useToggle from '@hooks/useToggle';
@@ -44,13 +43,10 @@ export default function ClientPage() {
 
   const { user } = useAuth();
   const { id } = useParams();
-  const dispatch = useDispatch();
-
   const messengerRef = useRef(null);
   const screenshotRef = useRef(null);
   const updateMutation = useMutateClientPageForm();
   const isMobile = useIsMobile();
-  const { handleSaveScreenshot } = useSaveScreenshot();
   const { isOpen, toggle } = useToggle('messenger');
   const { clientPageTableColumns } = useClientsTableColumns({
     onShowPaysListInfo: setPaysListModalInfo,
@@ -66,7 +62,7 @@ export default function ClientPage() {
   });
 
   const { data: clientEntries, isLoading } = useFetchClientEntriesById(id);
-
+  console.log(clientEntries, 'client entries');
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
 
@@ -115,6 +111,20 @@ export default function ClientPage() {
     },
     [currentClient, updateMutation]
   );
+
+  const remainingAmount = useMemo(() => {
+    const insTotal = parseFloat(currentClient?.['InsTotal']) || 0;
+    const insTotalFC = parseFloat(currentClient?.['InsTotalFC']) || 0;
+    const rate = parseFloat(currency?.['Rate']) || 0;
+    const value =
+      currentClient?.DocCur === 'USD' ? insTotal * rate : insTotalFC;
+    return (
+      `${formatterCurrency(value, 'UZS')}` +
+      (currentClient?.DocCur === 'USD'
+        ? ` (${formatterCurrency(Math.round(insTotal), 'USD')})`
+        : '')
+    );
+  }, [currentClient, currency]);
 
   return (
     <>
@@ -207,10 +217,18 @@ export default function ClientPage() {
                       console.log('Selected Rows:', selected);
                     }}
                     getRowStyles={(row) => {
+                      const isDark =
+                        document.documentElement.getAttribute('data-theme') ===
+                        'dark';
                       return {
                         ...(row['InstlmntID'] === currentClient['InstlmntID']
-                          ? { backgroundColor: 'rgba(194, 194, 194, 0.66)' }
-                          : { backgroundColor: '#f7f8f9' }),
+                          ? {
+                              backgroundColor: isDark
+                                ? 'rgba(96, 165, 250, 0.15)'
+                                : 'rgba(10, 77, 104, 0.1)',
+                              borderLeft: isDark ? '3px solid #60a5fa' : '3px solid #0a4d68',
+                            }
+                          : {}),
                       };
                     }}
                   />
@@ -223,26 +241,21 @@ export default function ClientPage() {
       <StickyFooterPortal>
         <Footer className={styles['footer-container']}>
           <Row direction={'row'} align={'center'} justify={'space-between'}>
-          <Typography variant={isMobile ? 'body2' : 'body1'} element={'span'}>
-            Qolgan qarzdorlik summasi:{' '}
-            {formatterCurrency(
-              Number(currentClient['MaxDocTotal']) -
-                Number(currentClient['MaxTotalPaidToDate']) || 0,
-              'USD'
-            )}
-          </Typography>
-          <Col>
-            {_.get(currency, 'Rate', 0) > 0 ? (
-              hasRole(user, ['Manager', 'Cashier']) ? (
-                <Button
-                  variant={'filled'}
-                  onClick={() => setPaymentModal(true)}
-                >
-                  To'lov qo'shish
-                </Button>
-              ) : null
-            ) : null}
-          </Col>
+            <Typography variant={isMobile ? 'body2' : 'body1'} element={'span'}>
+              Qolgan qarzdorlik summasi: {remainingAmount}
+            </Typography>
+            <Col>
+              {_.get(currency, 'Rate', 0) > 0 ? (
+                hasRole(user, ['Manager', 'Cashier']) ? (
+                  <Button
+                    variant={'filled'}
+                    onClick={() => setPaymentModal(true)}
+                  >
+                    To'lov qo'shish
+                  </Button>
+                ) : null
+              ) : null}
+            </Col>
           </Row>
           <ClientPaymentModal
             isOpen={paymentModal}

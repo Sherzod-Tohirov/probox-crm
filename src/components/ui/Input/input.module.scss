@@ -74,17 +74,9 @@
   }
 
   &.date {
-    color: v.$filter-input-placeholder-color !important;
+    color: v.$filter-input-color !important;
     cursor: pointer;
   }
-
-  &.filled.date {
-    color: inherit !important;
-  }
-
-  // &.disabled {
-  //   pointer-events: none;
-  // }
 
   &.error {
     border-color: v.$danger-color !important;
@@ -94,6 +86,19 @@
   &.date::-webkit-calendar-picker-indicator {
     display: none;
     -webkit-appearance: none;
+  }
+
+  // Input number spinner buttons (dark mode support)
+  &[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
   }
 }
 
@@ -130,6 +135,10 @@
   border: v.$primary-border-width v.$primary-border-type
     v.$filter-input-border-color !important;
   background: v.$filter-input-bg !important;
+  [data-theme='dark'] & {
+    border-color: v.$primary-border-color !important;
+    color: v.$filter-input-color !important;
+  }
 }
 
 .input-box {
@@ -160,8 +169,6 @@
     & input,
     select {
       width: 100%;
-      padding: 12px !important;
-      font-size: 4rem !important;
     }
   }
 
@@ -185,6 +192,10 @@
   background-color: '' !important;
   border: 1px solid transparent !important;
   transition: all v.$transition-time v.$transition-type !important;
+
+  &::placeholder {
+    color: v.$filter-input-placeholder-color-secondary !important;
+  }
 }
 
 .icon {
@@ -314,10 +325,10 @@
 
 :global(.react-select__control) {
   min-height: 35px !important;
-  height: 35px !important;
-  max-height: 35px !important;
+  height: auto !important;
+  max-height: none !important;
   min-width: 0 !important; // allow shrink inside flex
-  overflow: hidden !important; // prevent content from expanding control visually
+  overflow: visible !important; // allow avatar chips and remove buttons to be fully visible
   color: v.$filter-input-color !important;
   width: 100%;
   max-width: 100%;
@@ -345,6 +356,14 @@
   padding: 0 !important;
   z-index: 1005;
   font-size: 3rem !important;
+  background-color: v.$filter-input-bg !important;
+  border: 1px solid v.$primary-border-color !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+
+  [data-theme='dark'] & {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+
   & * {
     color: v.$filter-input-placeholder-color !important ;
   }
@@ -381,11 +400,19 @@
     width: 7px;
     background-color: rgba(0, 0, 0, 0.1);
     overflow: hidden;
+
+    [data-theme='dark'] & {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 7px;
+
+    [data-theme='dark'] & {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
   }
 }
 
@@ -405,6 +432,168 @@
   & svg {
     width: 14px !important;
     height: 14px !important;
+  }
+}
+
+:global(.react-select__option) {
+  background-color: v.$filter-input-bg !important;
+  color: v.$filter-input-color !important;
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+
+  &:hover {
+    background-color: v.$tertiary-bg !important;
+  }
+}
+
+:global(.react-select__option--is-focused) {
+  background-color: v.$tertiary-bg !important;
+}
+
+:global(.react-select__option--is-selected) {
+  background-color: v.$button-bg !important;
+  color: v.$button-color !important;
+}
+
+:global(.react-select__multi-value) {
+  background-color: transparent;
+  border-radius: 4px !important;
+}
+
+:global(.react-select__multi-value__label) {
+  color: v.$primary-color !important;
+}
+
+:global(.react-select__multi-value__remove) {
+  color: v.$primary-color !important;
+
+  &:hover {
+    background-color: v.$danger-color !important;
+    color: v.$button-color !important;
+  }
+}
+
+// Flatpickr Dark Mode Support
+:global(.flatpickr-calendar) {
+  background: v.$secondary-bg !important;
+  border: 1px solid v.$primary-border-color !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+
+  [data-theme='dark'] & {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+:global(.flatpickr-months) {
+  background: v.$secondary-bg !important;
+
+  :global(.flatpickr-month),
+  :global(.flatpickr-current-month),
+  :global(.flatpickr-monthDropdown-months) {
+    background: v.$secondary-bg !important;
+    color: v.$primary-color !important;
+  }
+}
+
+:global(.flatpickr-current-month) {
+  :global(.flatpickr-monthDropdown-months) {
+    background: v.$secondary-bg !important;
+    color: v.$primary-color !important;
+
+    option {
+      background: v.$secondary-bg !important;
+      color: v.$primary-color !important;
+    }
+  }
+
+  input {
+    background: v.$secondary-bg !important;
+    color: v.$primary-color !important;
+  }
+}
+
+:global(.flatpickr-weekdays) {
+  background: v.$secondary-bg !important;
+}
+
+:global(.flatpickr-weekday) {
+  background: v.$secondary-bg !important;
+  color: v.$primary-color !important;
+}
+
+:global(.flatpickr-day) {
+  color: v.$primary-color;
+
+  [data-theme='dark'] & {
+    color: #fff;
+  }
+
+  &:hover {
+    background: v.$tertiary-bg !important;
+    border-color: v.$tertiary-bg !important;
+  }
+
+  &.today {
+    border-color: v.$button-bg !important;
+
+    &:hover {
+      background: v.$button-bg !important;
+      color: v.$button-color !important;
+    }
+  }
+
+  &.startRange,
+  &.endRange,
+  &.inRange {
+    color: #fff !important;
+  }
+
+  &.prevMonthDay,
+  &.nextMonthDay {
+    color: v.$secondary-color !important;
+  }
+
+  &.disabled {
+    color: v.$primary-disabled-color !important;
+  }
+}
+
+:global(.flatpickr-time) {
+  background: v.$secondary-bg !important;
+  border-top: 1px solid v.$primary-border-color !important;
+
+  input {
+    background: v.$secondary-bg !important;
+    color: v.$primary-color !important;
+
+    &:hover,
+    &:focus {
+      background: v.$tertiary-bg !important;
+    }
+  }
+}
+
+:global(.flatpickr-am-pm) {
+  background: v.$secondary-bg !important;
+  color: v.$primary-color !important;
+
+  &:hover {
+    background: v.$tertiary-bg !important;
+  }
+}
+
+:global(.numInputWrapper) {
+  span {
+    border-color: v.$primary-border-color !important;
+
+    &:hover {
+      background: v.$tertiary-bg !important;
+    }
+
+    &.arrowUp:after,
+    &.arrowDown:after {
+      border-bottom-color: v.$primary-color !important;
+    }
   }
 }
 
@@ -451,8 +640,9 @@
   flex-direction: row !important;
   align-items: center;
   background-color: transparent !important;
+  color: v.$filter-input-color !important;
   &::after {
-    content: '✅';
+    content: '✓';
     @include m.flex-center;
     width: 14px;
     height: 14px;
@@ -484,5 +674,59 @@
   &:hover {
     opacity: 1;
     cursor: pointer;
+  }
+}
+
+// React Phone Input Dark Mode Support
+:global(.react-tel-input) {
+  .form-control {
+    background: v.$primary-input-bg !important;
+    color: v.$primary-color !important;
+    border-color: transparent !important;
+
+    &::placeholder {
+      color: v.$filter-input-placeholder-color-secondary !important;
+    }
+  }
+
+  .flag-dropdown {
+    background: v.$primary-input-bg !important;
+    border-color: transparent !important;
+  }
+
+  .selected-flag {
+    background: v.$primary-input-bg !important;
+
+    &:hover,
+    &:focus {
+      background: v.$tertiary-bg !important;
+    }
+  }
+
+  .country-list {
+    background: v.$filter-input-bg !important;
+    border: 1px solid v.$primary-border-color !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+
+    [data-theme='dark'] & {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .country {
+      color: v.$primary-color !important;
+
+      &:hover {
+        background: v.$tertiary-bg !important;
+      }
+
+      &.highlight {
+        background: v.$tertiary-bg !important;
+      }
+    }
+
+    .country-name,
+    .dial-code {
+      color: v.$primary-color !important;
+    }
   }
 }

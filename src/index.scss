@@ -129,6 +129,11 @@ button {
   border-color: v.$fourth-color !important; /* Border color for selected date */
 }
 
+/* Ensure in-range text remains visible (keep background as provided by theme) */
+.flatpickr-day.inRange {
+  color: #fff !important;
+}
+
 .flatpickr-day.today {
   &:hover {
     background-color: v.$secondary-color !important;
