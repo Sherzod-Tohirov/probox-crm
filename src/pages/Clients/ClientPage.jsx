@@ -63,7 +63,6 @@ export default function ClientPage() {
   });
 
   const { data: clientEntries, isLoading } = useFetchClientEntriesById(id);
-  console.log(clientEntries, 'client entries');
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
 

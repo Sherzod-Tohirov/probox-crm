@@ -1,10 +1,9 @@
 import moment from 'moment';
-import { useCallback, useMemo, useState } from 'react';
-import { List, Box, Button } from '@components/ui';
+import { useCallback } from 'react';
+import { Box, Button } from '@components/ui';
 
 import useAuth from '@hooks/useAuth';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
-import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useMutatePartialPayment from '@hooks/data/clients/useMutatePartialPayment';
 import useMutatePhoneConfiscated from '@hooks/data/clients/useMutatePhoneConfiscated';
 
@@ -21,7 +20,6 @@ import { useSelector } from 'react-redux';
 import useTheme from '@/hooks/useTheme';
 
 const useClientsTableColumns = (props) => {
-  const { data: executors } = useFetchExecutors();
   const { data: currency } = useFetchCurrency();
   const { currentTheme } = useTheme();
   const currentClient = useSelector(
@@ -97,14 +95,6 @@ const useClientsTableColumns = (props) => {
         return (
           (
             <Box gap={1}>
-              <span
-                style={{
-                  fontWeight: 900,
-                  color: currentTheme === 'dark' ? '#F87171' : 'steelblue',
-                }}
-              >
-                {formatterCurrency(value, 'UZS')}{' '}
-              </span>
               {column?.DocCur === 'USD' && (
                 <span
                   style={{
@@ -115,6 +105,14 @@ const useClientsTableColumns = (props) => {
                   ({formatterCurrency(Math.round(insTotal), 'USD')})
                 </span>
               )}
+              <span
+                style={{
+                  fontWeight: 900,
+                  color: currentTheme === 'dark' ? '#F87171' : 'steelblue',
+                }}
+              >
+                {formatterCurrency(value, 'UZS')}{' '}
+              </span>
             </Box>
           ) || 'Unknown'
         );
@@ -252,7 +250,7 @@ const useClientsTableColumns = (props) => {
               <span
                 style={{
                   fontWeight: 900,
-                  color: currentTheme === 'dark' ? '#fff' : 'darkgreen',
+                  color: currentTheme === 'dark' ? '#fff' : 'steelblue',
                 }}
               >
                 {formatterCurrency(value, 'UZS')}{' '}
@@ -261,7 +259,7 @@ const useClientsTableColumns = (props) => {
                 <span
                   style={{
                     fontWeight: 900,
-                    color: currentTheme === 'dark' ? 'steelblue' : 'steelblue',
+                    color: currentTheme === 'dark' ? '#F87171' : 'red',
                   }}
                 >
                   ({formatterCurrency(Math.round(insTotal), 'USD')})
@@ -291,13 +289,18 @@ const useClientsTableColumns = (props) => {
               <span
                 style={{
                   fontWeight: 900,
-                  color: currentTheme === 'dark' ? '#fff' : 'darkgreen',
+                  color: currentTheme === 'dark' ? '#fff' : 'steelblue',
                 }}
               >
                 {formatterCurrency(value, 'UZS')}{' '}
               </span>
               {column?.DocCur === 'USD' && (
-                <span style={{ fontWeight: 900, color: 'steelblue' }}>
+                <span
+                  style={{
+                    fontWeight: 900,
+                    color: currentTheme === 'dark' ? '#F87171' : 'red',
+                  }}
+                >
                   ({formatterCurrency(Math.round(paidToDate), 'USD')})
                 </span>
               )}

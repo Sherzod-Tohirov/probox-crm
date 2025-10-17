@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
-import { Input, Box, Typography } from '@components/ui';
+import { Input, Box } from '@components/ui';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,14 +28,6 @@ const Title = ({ column }) => {
   return (
     (
       <Box gap={1}>
-        <span
-          style={{
-            fontWeight: 900,
-            color: currentTheme === 'dark' ? '#F87171' : 'red',
-          }}
-        >
-          {formatterCurrency(value, 'UZS')}{' '}
-        </span>
         {column?.DocCur === 'USD' && (
           <span
             style={{
@@ -46,6 +38,14 @@ const Title = ({ column }) => {
             ({formatterCurrency(Math.round(paidToDate), 'USD')})
           </span>
         )}
+        <span
+          style={{
+            fontWeight: 900,
+            color: currentTheme === 'dark' ? '#F87171' : 'steelblue',
+          }}
+        >
+          {formatterCurrency(value, 'UZS')}{' '}
+        </span>
       </Box>
     ) || 'Unknown'
   );
