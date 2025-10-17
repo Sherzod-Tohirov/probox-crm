@@ -232,14 +232,16 @@ function ClientPageForm({
 
   useEffect(() => {
     if (rate) {
-      setValue(
-        'debtClient',
-        formatterPayment(
-          currentClient?.['MaxDocTotal'],
-          currentClient?.['DocCur'],
-          rate?.Rate
-        )
+      const docCurrency = currentClient?.DocCur;
+      let value = '';
+      value = formatterPayment(
+        currentClient?.[
+          docCurrency === 'USD' ? 'MaxDocTotal' : 'MaxDocTotalFC'
+        ],
+        docCurrency,
+        rate?.Rate
       );
+      setValue('debtClient', value);
     }
   }, [rate]);
 
