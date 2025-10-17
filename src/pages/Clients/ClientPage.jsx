@@ -11,7 +11,7 @@ import {
 } from '@components/ui';
 import styles from './style.module.scss';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import Footer from '@components/Footer';
@@ -35,6 +35,7 @@ import hasRole from '@utils/hasRole';
 import formatDate from '@utils/formatDate';
 import formatterCurrency from '@utils/formatterCurrency';
 import useIsMobile from '@/hooks/useIsMobile';
+import { ClipLoader } from 'react-spinners';
 
 export default function ClientPage() {
   const [paymentModal, setPaymentModal] = useState(false);
@@ -66,7 +67,7 @@ export default function ClientPage() {
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
 
-  const { data: currency } = useFetchCurrency();
+  const { data: currency, isLoading: isCurrencyLoading } = useFetchCurrency();
 
   const handleClientPageSubmit = useCallback(
     async (data) => {
@@ -113,17 +114,28 @@ export default function ClientPage() {
   );
 
   const remainingAmount = useMemo(() => {
-    const insTotal = parseFloat(currentClient?.['InsTotal']) || 0;
-    const insTotalFC = parseFloat(currentClient?.['InsTotalFC']) || 0;
+    if (isCurrencyLoading) return <ClipLoader color="grey" size={12} />;
+    const docCurrency = currentClient?.DocCur;
+    const maxTotal = parseFloat(currentClient?.['MaxDocTotal']) || 0;
+    const maxTotalFC = parseFloat(currentClient?.['MaxDocTotalFC']) || 0;
+
+    const maxTotalPaidToDate =
+      parseFloat(currentClient?.['MaxTotalPaidToDate']) || 0;
+    const maxTotalPaidToDateFC =
+      parseFloat(currentClient?.['MaxTotalPaidToDateFC']) || 0;
+
     const rate = parseFloat(currency?.['Rate']) || 0;
-    const value =
-      currentClient?.DocCur === 'USD' ? insTotal * rate : insTotalFC;
-    return (
-      `${formatterCurrency(value, 'UZS')}` +
-      (currentClient?.DocCur === 'USD'
-        ? ` (${formatterCurrency(Math.round(insTotal), 'USD')})`
-        : '')
-    );
+    const remainingUZS = maxTotalFC - maxTotalPaidToDateFC;
+    const remainingUSD = maxTotal - maxTotalPaidToDate;
+
+    if (docCurrency === 'USD') {
+      return (
+        `${formatterCurrency(remainingUSD * rate, 'UZS')}` +
+        ` (${formatterCurrency(Math.round(remainingUSD), 'USD')})`
+      );
+    }
+
+    return `${formatterCurrency(remainingUZS, 'UZS')}`;
   }, [currentClient, currency]);
 
   return (
@@ -226,7 +238,9 @@ export default function ClientPage() {
                               backgroundColor: isDark
                                 ? 'rgba(96, 165, 250, 0.15)'
                                 : 'rgba(10, 77, 104, 0.1)',
-                              borderLeft: isDark ? '3px solid #60a5fa' : '3px solid #0a4d68',
+                              borderLeft: isDark
+                                ? '3px solid #60a5fa'
+                                : '3px solid #0a4d68',
                             }
                           : {}),
                       };

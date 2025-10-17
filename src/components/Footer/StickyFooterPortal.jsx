@@ -79,12 +79,20 @@ export default function StickyFooterPortal({ children }) {
       observer = new ResizeObserver(() => requestAnimationFrame(update));
       observer.observe(sidebar);
     }
+
+    const mainEl = document.getElementById('dashboard-layout-main');
+    let mainObserver;
+    if (mainEl && 'ResizeObserver' in window) {
+      mainObserver = new ResizeObserver(() => requestAnimationFrame(update));
+      mainObserver.observe(mainEl);
+    }
     
     return () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onResize);
       window.removeEventListener('load', initialUpdate);
       if (observer) observer.disconnect();
+      if (mainObserver) mainObserver.disconnect();
     };
   }, [update]);
 

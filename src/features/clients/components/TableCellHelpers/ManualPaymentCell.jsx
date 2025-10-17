@@ -31,7 +31,7 @@ const Title = ({ column }) => {
         <span
           style={{
             fontWeight: 900,
-            color: currentTheme === 'dark' ? 'steelblue' : 'red',
+            color: currentTheme === 'dark' ? '#F87171' : 'red',
           }}
         >
           {formatterCurrency(value, 'UZS')}{' '}

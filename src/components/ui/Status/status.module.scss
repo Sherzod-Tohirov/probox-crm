@@ -15,69 +15,38 @@
   text-overflow: ellipsis;
   transition: all v.$transition-time v.$transition-type;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
+  color: #000;
+  [data-theme='dark'] & {
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
   @media (max-width: v.$breakpoint-md) {
     padding: 7px 12px;
     font-size: 2.8rem;
   }
 
   &.paid {
-    color: #000 !important;
     background: #02724399;
     border: 1px solid rgba(v.$success-color, 0.5);
-
-    [data-theme='dark'] & {
-      background: rgba(v.$success-color, 0.15);
-      color: #34d399 !important;
-      border-color: rgba(52, 211, 153, 0.4);
-    }
   }
 
   &.manual_paid {
-    color: #000 !important;
     background: #027243be;
     border: 1px solid rgba(v.$success-color, 0.4);
-
-    [data-theme='dark'] & {
-      background: rgba(v.$success-color, 0.1);
-      color: #34d399 !important;
-      border-color: rgba(52, 211, 153, 0.3);
-    }
   }
 
   &.partial {
-    color: #000 !important;
     background: #d4bb1899;
     border: 1px solid rgba(v.$info-color, 0.5);
-
-    [data-theme='dark'] & {
-      background: rgba(v.$info-color, 0.15);
-      color: #fbbf24 !important;
-      border-color: rgba(251, 191, 36, 0.4);
-    }
   }
 
   &.unpaid {
-    color: #000 !important;
     background: #d5162999;
     border: 1px solid rgba(v.$danger-color, 0.5);
-
-    [data-theme='dark'] & {
-      background: rgba(v.$danger-color, 0.15);
-      color: #f87171 !important;
-      border-color: rgba(248, 113, 113, 0.4);
-    }
   }
 
   &.product {
     background-color: v.$button-bg;
-    color: v.$button-color !important;
     border: 1px solid v.$button-bg;
-
-    [data-theme='dark'] & {
-      background-color: v.$button-bg;
-      color: v.$button-color !important;
-      border-color: v.$button-bg;
-    }
   }
 }

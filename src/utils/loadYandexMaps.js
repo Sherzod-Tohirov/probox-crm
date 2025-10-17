@@ -117,6 +117,26 @@ function loadYandexMaps() {
   return yandexMapsPromise;
 }
 
+function waitForContainerReady(containerElement, maxWaitMs = 2000) {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    const check = () => {
+      const attached = document.body && document.body.contains(containerElement);
+      const sized = containerElement && containerElement.offsetWidth > 0 && containerElement.offsetHeight > 0;
+      if (!containerElement || (attached && sized)) {
+        resolve();
+        return;
+      }
+      if (Date.now() - start >= maxWaitMs) {
+        resolve();
+        return;
+      }
+      setTimeout(check, 50);
+    };
+    check();
+  });
+}
+
 /**
  * Create a theme-aware Yandex Map instance
  * @param {string|HTMLElement} container - ID of the container element or the element itself
@@ -142,6 +162,8 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
     }
   }
 
+  await waitForContainerReady(containerElement);
+
   // Separate map state options from constructor options
   const {
     autoFitToViewport,
@@ -162,28 +184,34 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
   // Create the map
   const map = new ymaps.Map(containerElement, finalOptions);
 
-  // Wait for map to be fully initialized
+  // Defer to next frame to ensure map is initialized/rendered
   await new Promise((resolve) => {
-    map.events.once('ready', resolve);
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => resolve());
+    } else {
+      setTimeout(resolve, 0);
+    }
   });
 
-  // Apply state options after map is ready
-  if (autoFitToViewport !== undefined)
-    map.options.set('autoFitToViewport', autoFitToViewport);
-  if (avoidFractionalZoom !== undefined)
-    map.options.set('avoidFractionalZoom', avoidFractionalZoom);
-  if (exitFullscreenByEsc !== undefined)
-    map.options.set('exitFullscreenByEsc', exitFullscreenByEsc);
-  if (fullscreenUnavailable !== undefined)
-    map.options.set('fullscreenUnavailable', fullscreenUnavailable);
-
-  // Apply theme styling after map is ready
-  if (themeConfig.theme === 'dark') {
-    // Set dark map style
-    map.setType('yandex#dark');
-  } else {
-    // Set light map style (default)
-    map.setType('yandex#map');
+  // Apply state options after map is ready; if early, retry once shortly after
+  const applyOptions = () => {
+    if (autoFitToViewport !== undefined)
+      map.options.set('autoFitToViewport', autoFitToViewport);
+    if (avoidFractionalZoom !== undefined)
+      map.options.set('avoidFractionalZoom', avoidFractionalZoom);
+    if (exitFullscreenByEsc !== undefined)
+      map.options.set('exitFullscreenByEsc', exitFullscreenByEsc);
+    if (fullscreenUnavailable !== undefined)
+      map.options.set('fullscreenUnavailable', fullscreenUnavailable);
+  };
+  try {
+    applyOptions();
+  } catch (e) {
+    setTimeout(() => {
+      try {
+        applyOptions();
+      } catch (_) {}
+    }, 50);
   }
 
   return map;
@@ -196,11 +224,21 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
  */
 export function updateMapTheme(map, theme = getCurrentTheme()) {
   if (!map) return;
-
-  if (theme === 'dark') {
-    map.setType('yandex#dark');
-  } else {
-    map.setType('yandex#map');
+  let targetType = theme === 'dark' ? 'yandex#dark' : 'yandex#map';
+  const ymaps = typeof window !== 'undefined' ? window.ymaps : null;
+  const isAvailable = ymaps?.mapType?.storage?.get?.(targetType);
+  if (!isAvailable) {
+    targetType = 'yandex#map';
+  }
+  try {
+    map.setType(targetType);
+  } catch (e) {
+    // If called too early, retry briefly after
+    setTimeout(() => {
+      try {
+        map.setType(targetType);
+      } catch (_) {}
+    }, 50);
   }
 }
 

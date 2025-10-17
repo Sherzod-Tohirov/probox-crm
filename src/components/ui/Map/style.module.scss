@@ -110,6 +110,9 @@
   font-weight: 500;
   opacity: 0.8;
   pointer-events: none;
+  [data-theme='dark'] & {
+    color: #000;
+  }
   @include m.media-max(v.$breakpoint-md) {
     font-size: 3rem;
   }

@@ -42,7 +42,7 @@
     }
   }
   &.danger {
-    color: rgba(v.$danger-color, 0.8);
+    color: v.$danger-color;
   }
 
   &:hover {

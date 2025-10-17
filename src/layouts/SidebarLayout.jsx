@@ -23,9 +23,6 @@ export default function SidebarLayout({ children }) {
   const [hasMounted, setHasMounted] = useState(false);
   const isMobile = useIsMobile();
   useLayoutEffect(() => {
-    if (!isMobile && !isOpen) {
-      toggle();
-    }
     setHasMounted(true);
   }, [isMobile]);
 

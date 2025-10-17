@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import loadYandexMaps, {
   createThemedMap,
   setupThemeListener,
+  updateMapTheme,
 } from '@/utils/loadYandexMaps';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
@@ -29,7 +30,6 @@ const YandexMap = ({
   const [loadError, setLoadError] = useState(null);
   const DEFAULT_COORDS = [41.311081, 69.240562];
   const hasCoords = userCoords?.lat && userCoords?.long;
-
   // Cleanup function
   const cleanup = useCallback(() => {
     // Clean up resize observer
@@ -214,10 +214,7 @@ const YandexMap = ({
   // Update map color scheme when theme changes (without recreating map)
   useEffect(() => {
     if (mapInstanceRef.current && isMapLoaded) {
-      mapInstanceRef.current.options.set(
-        'scheme',
-        currentTheme === 'dark' ? 'dark' : 'light'
-      );
+      updateMapTheme(mapInstanceRef.current, currentTheme);
     }
   }, [currentTheme, isMapLoaded]);
 
@@ -339,9 +336,9 @@ const YandexMap = ({
             </Button>
           </div>
         )}
-        {/* {!isMapLoaded && !loadError && (
+        {!isMapLoaded && !loadError && (
           <div className={styles['loading']}>Xarita yuklanmoqda...</div>
-        )} */}
+        )}
         {!hasCoords && isMapLoaded && (
           <div className={styles['no-location']}>
             ⚠️ Geolokatsiya aniqlanmadi, xaritada standart joylashuv (Toshkent)

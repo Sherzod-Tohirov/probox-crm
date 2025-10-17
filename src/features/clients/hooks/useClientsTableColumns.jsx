@@ -97,7 +97,12 @@ const useClientsTableColumns = (props) => {
         return (
           (
             <Box gap={1}>
-              <span style={{ fontWeight: 900, color: 'steelblue' }}>
+              <span
+                style={{
+                  fontWeight: 900,
+                  color: currentTheme === 'dark' ? '#F87171' : 'steelblue',
+                }}
+              >
                 {formatterCurrency(value, 'UZS')}{' '}
               </span>
               {column?.DocCur === 'USD' && (

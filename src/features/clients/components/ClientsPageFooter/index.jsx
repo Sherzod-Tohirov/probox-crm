@@ -28,11 +28,13 @@ import { insTotalCalculator } from '@utils/calculator';
 import orderByNearest from '@utils/orderByNearest';
 import { random } from 'lodash';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
+import useTheme from '@/hooks/useTheme';
 
 const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
   const distributeMutation = useMutateDistributeClients();
   const { data: rate } = useFetchCurrency();
   const isMobile = useIsMobile();
+  const { currentTheme } = useTheme();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.clients
   );
@@ -172,7 +174,14 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                         <ClipLoader color="grey" size={12} />
                       ) : (
                         <>
-                          <span style={{ color: 'green' }}>
+                          <span
+                            style={{
+                              color:
+                                currentTheme === 'dark'
+                                  ? 'lightgreen'
+                                  : 'green',
+                            }}
+                          >
                             {formatterCurrency(
                               statisticsData?.['SumApplied'] *
                                 (rate?.Rate ?? 1) || 0,
@@ -181,7 +190,12 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                           </span>
                           <span
                             style={{
-                              color: percentageValue > 50 ? 'green' : 'red',
+                              color:
+                                percentageValue > 50
+                                  ? currentTheme === 'dark'
+                                    ? 'lightgreen'
+                                    : 'green'
+                                  : 'red',
                             }}
                           >
                             {`(${percentageValue}%)`}
