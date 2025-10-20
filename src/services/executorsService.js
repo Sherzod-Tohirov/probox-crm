@@ -1,6 +1,6 @@
-import { fetchData } from "./utilities";
+import { fetchData } from './utilities';
 
-export const getExecutors = async () => {
-  const response = await fetchData("/executors", "executors");
+export const getExecutors = async (params) => {
+  const response = await fetchData('/executors', 'executors', params);
   return response.data;
 };

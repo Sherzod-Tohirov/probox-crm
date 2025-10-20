@@ -41,7 +41,11 @@ function ClientPageForm({
   const [softDeletedFileIds, setSoftDeletedFileIds] = useState([]);
   const [uploadedFile, setUploadedFile] = useState([]);
   const [isFileSaveButtonDisabled, setFileSaveButtonDisabled] = useState(true);
-  const { data: executors } = useFetchExecutors();
+
+  const { data: executors } = useFetchExecutors({
+    exclude_role: ['Operator1', 'Operator2', 'CEO'],
+  });
+
   const { data: rate } = useFetchCurrency();
   const { user } = useAuth();
   const { alert } = useAlert();

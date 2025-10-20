@@ -3,17 +3,26 @@ import styles from './sidebar.module.scss';
 import { Row, Col, List, Typography, Button } from '@components/ui';
 import useToggle from '@hooks/useToggle';
 import sidebarLinks from '@utils/sidebarLinks';
+import filterSidebarLinks from '@utils/filterSidebarLinks';
 import iconsMap from '@utils/iconsMap';
-import { useCallback, useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import useIsMobile from '@hooks/useIsMobile';
+import useAuth from '@hooks/useAuth';
 
 export default function Sidebar() {
   const { pathname } = useLocation();
   const { isOpen, toggle } = useToggle('sidebar');
   const isMobile = useIsMobile();
   const location = useLocation();
+  const { user } = useAuth();
+
+  // Filter sidebar links based on user role
+  const filteredLinks = useMemo(
+    () => filterSidebarLinks(sidebarLinks, user),
+    [user]
+  );
 
   useLayoutEffect(() => {
     if (isMobile && isOpen) {
@@ -82,7 +91,7 @@ export default function Sidebar() {
           <Col>
             <List
               gutter={1}
-              items={sidebarLinks}
+              items={filteredLinks}
               itemProps={{
                 animated: true,
               }}

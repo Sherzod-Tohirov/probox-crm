@@ -199,7 +199,6 @@ const useStatisticsTableColumns = () => {
       minWidth: '100px',
       icon: 'moneyAdd',
       renderCell: (column) => {
-        console.log(column, 'column');
         if (column.SlpCode === null) return '-';
         const currentExecutor = findExecutor(column);
         if (currentExecutor?.['U_role'] === 'Manager' && !hasGlobalPermission) {

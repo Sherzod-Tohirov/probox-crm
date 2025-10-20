@@ -40,7 +40,7 @@ const buttonPropTypes = {
 
 /**
  * Button Component - Flexible button with multiple variants, icons, and states
- * 
+ *
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Button content (text, elements)
  * @param {string} [props.className] - Additional CSS classes
@@ -67,37 +67,37 @@ const buttonPropTypes = {
  * @param {string} [props.aria-label] - Accessibility label
  * @param {string} [props.aria-describedby] - Accessibility description reference
  * @param {string} [props.data-testid] - Test ID for testing frameworks
- * 
+ *
  * @example
  * // Basic button
  * <Button>Click me</Button>
- * 
+ *
  * @example
  * // Button with icon and loading state
- * <Button 
- *   icon="save" 
+ * <Button
+ *   icon="save"
  *   iconPosition="left"
  *   isLoading={saving}
  *   onClick={handleSave}
  * >
  *   Save Changes
  * </Button>
- * 
+ *
  * @example
  * // Danger variant with full width
- * <Button 
- *   variant="filled" 
- *   color="danger" 
+ * <Button
+ *   variant="filled"
+ *   color="danger"
  *   fullWidth
  *   onClick={handleDelete}
  * >
  *   Delete Item
  * </Button>
- * 
+ *
  * @example
  * // Outlined button with icon
- * <Button 
- *   variant="outlined" 
+ * <Button
+ *   variant="outlined"
  *   icon="home"
  *   onClick={handleHome}
  * >
@@ -141,14 +141,19 @@ function Button(
         fullWidth && styles['full-width'],
         { icon }
       )}
-      whileTap={{ scale: 0.95 }}
-      whileHover={{ scale: 1.05 }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 15,
-        duration: 0.1,
-      }}
+      {...(animated
+        ? {
+            whileTap: { scale: 0.95 },
+            whileHover: { scale: 1.05 },
+            animate: { scale: animated ? 1 : 0 },
+            transition: {
+              type: 'spring',
+              stiffness: 300,
+              damping: 15,
+              duration: 0.1,
+            },
+          }
+        : {})}
       disabled={isLoading}
       {...props}
     >

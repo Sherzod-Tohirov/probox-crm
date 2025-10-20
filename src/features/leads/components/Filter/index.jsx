@@ -9,15 +9,16 @@ import {
 } from '@store/slices/leadsPageSlice';
 import useIsMobile from '@/hooks/useIsMobile';
 import styles from './style.module.scss';
+import { AVAILABLE_LEAD_SOURCES } from '@features/leads/utils/constants';
 
 const sourceOptions = [
   { value: '', label: 'Barchasi' },
-  { value: 'Manychat', label: 'Manychat' },
-  { value: 'Meta', label: 'Meta' },
-  { value: 'Organika', label: 'Organika' },
-  { value: 'Kiruvchi qongiroq', label: 'Kiruvchi qongiroq' },
-  { value: 'Community', label: 'Community' },
+  ...AVAILABLE_LEAD_SOURCES.map((source) => ({
+    value: source,
+    label: source,
+  })),
 ];
+
 export default function LeadsFilter({
   onFilter = () => {},
   isExpanded = false,

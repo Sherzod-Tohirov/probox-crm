@@ -53,8 +53,9 @@ export default function Filter({ onFilter, isExpanded = false }) {
 
   const dispatch = useDispatch(); // Add dispatch
   const { query, phone } = useFilter();
-  const { data: executors, isPending: isExecutorsLoading } =
-    useFetchExecutors();
+  const { data: executors, isPending: isExecutorsLoading } = useFetchExecutors({
+    exclude_role: ['Operator1', 'Operator2', 'CEO'],
+  });
 
   const filterState = useSelector((state) => state.page.clients.filter);
   const clientsPageState = useSelector((state) => state.page.clients);
@@ -289,7 +290,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
     const handleClickOutside = (event) => {
       // Ignore clicks on Flatpickr calendar
       if (event.target.closest('.flatpickr-calendar')) return;
-      
+
       if (refs.reference && refs.reference.current?.contains(event.target))
         return;
       if (
@@ -304,12 +305,6 @@ export default function Filter({ onFilter, isExpanded = false }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [refs]);
-  console.log(
-    watchedFields.startDate
-      ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
-      : undefined,
-    'watchedFields.startDate'
-  );
   return (
     <Accordion
       isOpen={isExpanded}
