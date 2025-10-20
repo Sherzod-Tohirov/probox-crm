@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { breakpoints, getBreakpointValue } from '@config/breakpoints';
 import styles from './table.module.scss';
 import PropTypes from 'prop-types';
-import useIsMobile from '../../../hooks/useIsMobile';
+import useIsMobile from '@hooks/useIsMobile';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
@@ -16,7 +16,7 @@ const TableCell = memo(({ column, row, rowIndex }) => {
     ? column.renderCell(row, rowIndex)
     : row[column.key];
 
-  return <td style={column?.cellStyle || {}}>{content}</td>;
+  return <td style={column?.cellStyle || {}}>{content || '-'}</td>;
 });
 
 // Selection checkbox cell

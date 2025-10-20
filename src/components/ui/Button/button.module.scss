@@ -5,6 +5,7 @@
   @include m.flex-center;
   position: relative;
   gap: 2rem;
+  max-height: 40px;
   cursor: pointer;
   transform: scale(1);
   transform-origin: center;

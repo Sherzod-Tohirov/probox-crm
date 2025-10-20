@@ -31,10 +31,17 @@ export default function StickyFooterPortal({ children }) {
 
     // Base left is content's left edge (exclude sidebar), then add a small gap
     const GAP_MIN = 0; // small side gap
-    const left = Math.max(mainRect.left + paddingLeft, sidebarRight) + GAP_MIN;
+    let left = Math.max(mainRect.left + paddingLeft, sidebarRight) + GAP_MIN;
     // Width should end before main right padding and keep a small right gap
-    const rightEdge = mainRect.right - paddingRight - GAP_MIN;
-    const width = Math.max(0, rightEdge - left);
+    let rightEdge = mainRect.right - paddingRight - GAP_MIN;
+    let width = Math.max(0, rightEdge - left);
+
+    // Fallback: if width collapses (e.g., async layout), use main content box
+    if (width < 40) {
+      left = mainRect.left + paddingLeft;
+      rightEdge = mainRect.right - paddingRight;
+      width = Math.max(0, rightEdge - left);
+    }
 
     setStyle({
       position: 'fixed',

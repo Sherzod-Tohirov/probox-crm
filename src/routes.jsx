@@ -6,6 +6,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Clients = lazy(() => import('./pages/Clients'));
 const ClientPage = lazy(() => import('./pages/Clients/ClientPage'));
 const Statistics = lazy(() => import('./pages/Statistics'));
+const Leads = lazy(() => import('./pages/Leads'));
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
 const Error = lazy(() => import('./pages/helper/Error'));
@@ -78,7 +79,12 @@ const router = createBrowserRouter([
       },
       {
         path: '/leads',
-        element: <h2 style={{ fontSize: '5rem' }}>Leads</h2>,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Leads />
+          </Suspense>
+        ),
+        errorElement: <Error />,
       },
     ],
     errorElement: <Error />,
