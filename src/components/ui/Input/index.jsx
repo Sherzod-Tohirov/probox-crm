@@ -101,8 +101,16 @@ const Input = forwardRef(
       () => ({
         ...(width ? { width } : {}),
         ...style,
+        // Automatically apply disabled styling
+        ...(disabled
+          ? {
+              opacity: 0.3,
+              pointerEvents: 'none',
+              cursor: 'not-allowed',
+            }
+          : {}),
       }),
-      [width, style]
+      [width, style, disabled]
     );
     const classes = useMemo(
       () =>
@@ -421,7 +429,11 @@ const Input = forwardRef(
       <Row className={styles['input-wrapper']} gutter={1.5}>
         {label && (
           <Col>
-            <Typography element="label" className={styles['label']}>
+            <Typography
+              element="label"
+              className={styles['label']}
+              disabled={disabled}
+            >
               {label}
             </Typography>
           </Col>
@@ -450,6 +462,7 @@ const Input = forwardRef(
                   element="span"
                   className={styles['icon']}
                   {...(onIconClick ? { onClick: onIconClick } : {})}
+                  disabled={disabled}
                 >
                   {iconText || iconsMap[icon || inputIcons[type]]}
                 </Typography>

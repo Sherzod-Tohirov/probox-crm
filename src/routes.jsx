@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import ProtectedRoute from './hocs/ProtectedRoute';
 
 const App = lazy(() => import('./App'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -67,9 +68,11 @@ const router = createBrowserRouter([
       {
         path: '/statistics',
         element: (
-          <Suspense fallback={<PageLoader />}>
-            <Statistics />
-          </Suspense>
+          <ProtectedRoute excludedRoles={['Operator1', 'Operator2']}>
+            <Suspense fallback={<PageLoader />}>
+              <Statistics />
+            </Suspense>
+          </ProtectedRoute>
         ),
         errorElement: <Error />,
       },
@@ -80,9 +83,11 @@ const router = createBrowserRouter([
       {
         path: '/leads',
         element: (
-          <Suspense fallback={<PageLoader />}>
-            <Leads />
-          </Suspense>
+          <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
+            <Suspense fallback={<PageLoader />}>
+              <Leads />
+            </Suspense>
+          </ProtectedRoute>
         ),
         errorElement: <Error />,
       },

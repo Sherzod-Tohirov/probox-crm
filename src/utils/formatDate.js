@@ -6,7 +6,7 @@ const formatDate = (
   outputFormat = "DD.MM.YYYY"
 ) => {
   try {
-    if (!dateString) return "";
+    if (!dateString) return "-";
     return moment(dateString, inputFormat).format(outputFormat);
   } catch (error) {
     console.error("Error formatting date:", error);

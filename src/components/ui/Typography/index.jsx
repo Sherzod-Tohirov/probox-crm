@@ -33,6 +33,7 @@ import styles from './typography.module.scss';
  * @property {Function} [onKeyDown] - Key down event handler
  * @property {Function} [onKeyUp] - Key up event handler
  * @property {Function} [onKeyPress] - Key press event handler
+ * @property {boolean} [disabled=false] - Apply disabled styling (reduced opacity)
  */
 
 const typographyPropTypes = {
@@ -64,6 +65,7 @@ const typographyPropTypes = {
   onKeyDown: PropTypes.func,
   onKeyUp: PropTypes.func,
   onKeyPress: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 /**
@@ -98,6 +100,7 @@ const typographyPropTypes = {
  * @param {Function} [props.onKeyDown] - Key down event handler
  * @param {Function} [props.onKeyUp] - Key up event handler
  * @param {Function} [props.onKeyPress] - Key press event handler
+ * @param {boolean} [props.disabled=false] - Apply disabled styling (reduced opacity)
  * 
  * @example
  * // Basic heading
@@ -139,6 +142,7 @@ const Typography = forwardRef(({
   gutterBottom = false,
   noWrap = false,
   paragraph = false,
+  disabled = false,
   ...props
 }, ref) => {
   return (
@@ -154,9 +158,18 @@ const Typography = forwardRef(({
           [styles['gutter-bottom']]: gutterBottom,
           [styles['no-wrap']]: noWrap,
           [styles['paragraph']]: paragraph,
+          [styles['disabled']]: disabled,
         },
         className
       )}
+      style={{
+        ...props.style,
+        ...(disabled ? {
+          opacity: 0.3,
+          pointerEvents: 'none',
+          cursor: 'not-allowed',
+        } : {}),
+      }}
       {...props}
     >
       {children}
@@ -175,6 +188,7 @@ ForwardedTypography.defaultProps = {
   gutterBottom: false,
   noWrap: false,
   paragraph: false,
+  disabled: false,
   contentEditable: false,
   tabIndex: undefined,
 };

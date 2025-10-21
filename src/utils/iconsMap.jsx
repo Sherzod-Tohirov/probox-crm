@@ -67,6 +67,11 @@ import {
   Sun,
   Moon,
   Monitor,
+  ChatBubble,
+  Facebook,
+  Leaf,
+  Users,
+  Globe,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -138,6 +143,11 @@ const iconsMap = {
   sun: <Sun />,
   moon: <Moon />,
   monitor: <Monitor />,
+  chatBubble: <ChatBubble />,
+  facebook: <Facebook />,
+  leaf: <Leaf />,
+  users: <Users />,
+  globe: <Globe />,
 };
 
 export default iconsMap;

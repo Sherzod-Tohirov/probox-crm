@@ -1,56 +1,53 @@
+import { getRoutePermissions } from './routePermissions';
+
 /**
- * Sidebar navigation links configuration with role-based access control
- *
- * Each link can have:
- * - allowedRoles: Array of roles that can see this link. If not specified, all roles can see it.
- * - excludedRoles: Array of roles that cannot see this link. Takes precedence over allowedRoles.
- *
- * Priority: excludedRoles > allowedRoles > default (visible to all)
+ * Sidebar navigation links configuration
+ * 
+ * Role-based access control is managed centrally in routePermissions.js
+ * This ensures sidebar visibility and route access use the same rules
  */
 const sidebarLinks = [
   {
     title: "Asosiy",
     icon: "dashboard",
     path: "/dashboard",
-    // Visible to all roles
+    ...getRoutePermissions('/dashboard'),
   },
   {
     title: "Mijozlar",
     icon: "clients",
     path: "/clients",
-    // Visible to all roles
+    ...getRoutePermissions('/clients'),
   },
   {
     title: "Kalendar",
     icon: "calendar",
     path: "/calendar",
-    // Visible to all roles
+    ...getRoutePermissions('/calendar'),
   },
   {
     title: "Statistika",
     icon: "presentationChart",
     path: "/statistics",
-    excludedRoles: ['Operator1', 'Operator2'], // Operators cannot see statistics
+    ...getRoutePermissions('/statistics'),
   },
   {
     title: "Mahsulotlar",
     icon: "products",
     path: "/products",
-    // Visible to all roles
+    ...getRoutePermissions('/products'),
   },
   {
     title: "Leadlar",
     icon: "leads",
     path: "/leads",
-    allowedRoles: ['Operator1', 'Operator2', 'CEO'], // Only Admin and Manager can see leads
-    // Visible to all roles
+    ...getRoutePermissions('/leads'),
   },
   {
     title: "Chiqish",
     icon: "logoutFilled",
     path: "/logout",
     color: "danger",
-    // Visible to all roles
   },
 ];
 

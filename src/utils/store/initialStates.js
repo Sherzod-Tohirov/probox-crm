@@ -22,4 +22,10 @@ export const initialStatisticsFilterState = {
 export const initialLeadsFilterState = {
   search: '',
   source: '',
+  branch: [],
+  operator: [],
+  operator2: [],
+  meetingDateStart: '',
+  meetingDateEnd: '',
+  enableMeetingDateFilter: false,
 };
