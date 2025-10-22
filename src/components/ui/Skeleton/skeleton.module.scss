@@ -1,0 +1,90 @@
+@use '@styles/variables' as v;
+
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(v.$primary-border-color, 0.3) 25%, 
+    rgba(v.$primary-border-color, 0.5) 50%, 
+    rgba(v.$primary-border-color, 0.3) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-line {
+  margin-bottom: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.skeleton-card {
+  background: v.$primary-table-bg;
+  border: 1px solid v.$primary-border-color;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.skeleton-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid v.$primary-border-color;
+  background: linear-gradient(135deg, v.$primary-table-bg 0%, rgba(v.$primary-color, 0.02) 100%);
+}
+
+.skeleton-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  
+  @media (max-width: v.$breakpoint-md) {
+    padding: 20px;
+  }
+}
+
+.skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-navigation {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.skeleton-divider {
+  width: 1px;
+  height: 12px;
+  background-color: v.$primary-border-color;
+}
+
+.skeleton-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skeleton-arrow {
+  color: v.$primary-border-color;
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

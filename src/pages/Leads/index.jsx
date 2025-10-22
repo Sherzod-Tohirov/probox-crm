@@ -1,5 +1,6 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useDeferredValue } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { Col, Row, Table } from '@components/ui';
 import LeadsToolbar from '@features/leads/components/LeadsToolbar';
@@ -17,10 +18,11 @@ import {
 import useFetchLeads from '@/hooks/data/leads/useFetchLeads';
 
 export default function Leads() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const isMobile = useIsMobile();
   const { leadsTableColumns } = useLeadsTableColumns();
-  const { currentPage, pageSize, filter } = useSelector(
+  const { currentPage, pageSize, filter, currentLead } = useSelector(
     (state) => state.page.leads
   );
   const {
@@ -65,8 +67,9 @@ export default function Leads() {
   const handleRowClick = useCallback(
     (row) => {
       dispatch(setCurrentLead(row));
+      navigate(`/leads/${row.id}`);
     },
-    [dispatch]
+    [dispatch, navigate]
   );
 
   // Keep current page in bounds when filters change
@@ -75,6 +78,11 @@ export default function Leads() {
       dispatch(setLeadsCurrentPage(Math.max(1, meta.totalPages)));
     }
   }, [meta, dispatch]);
+
+  // Defer large dataset to keep other UI responsive
+  // const deferredLeads = useDeferredValue(leads);
+  // const shouldVirtualize = (deferredLeads?.length || 0) > 100;
+  // const virtualizedHeight = isMobile ? 500 : 600; // px
 
   return (
     <>
@@ -112,13 +120,25 @@ export default function Leads() {
           <Table
             id={'leads-table'}
             scrollable
-            uniqueKey={'clientPhone'}
+            uniqueKey={'id'}
             isLoading={isLoadingLeads}
             columns={leadsTableColumns}
             data={leads}
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
             showPivotColumn={true}
+            rowNumberOffset={currentPage * pageSize}
+            getRowStyles={(row) => {
+              const isDark =
+                document.documentElement.getAttribute('data-theme') === 'dark';
+              if (row?.id === currentLead?.id) {
+                return {
+                  backgroundColor: isDark
+                    ? 'rgba(222, 216, 216, 0.15)'
+                    : 'rgba(231, 231, 231, 0.78)',
+                };
+              }
+            }}
           />
         </Col>
         <Col style={{ width: '100%' }}></Col>

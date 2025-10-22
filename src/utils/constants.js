@@ -18,6 +18,7 @@ export const URL_PATH_LANG_MAP = {
   clients: "Mijozlar",
   calendar: "Kalendar",
   statistics: "Statistika",
+  leads: "Leadlar",
 };
 
 export const CLIENT_PAYMENT_ERROR_MESSAGES = {

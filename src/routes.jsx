@@ -8,6 +8,7 @@ const Clients = lazy(() => import('./pages/Clients'));
 const ClientPage = lazy(() => import('./pages/Clients/ClientPage'));
 const Statistics = lazy(() => import('./pages/Statistics'));
 const Leads = lazy(() => import('./pages/Leads'));
+const LeadPage = lazy(() => import('./pages/Leads/LeadPage'));
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
 const Error = lazy(() => import('./pages/helper/Error'));
@@ -82,13 +83,30 @@ const router = createBrowserRouter([
       },
       {
         path: '/leads',
-        element: (
-          <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
-            <Suspense fallback={<PageLoader />}>
-              <Leads />
-            </Suspense>
-          </ProtectedRoute>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
+                <Suspense fallback={<PageLoader />}>
+                  <Leads />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+            errorElement: <Error />,
+          },
+          {
+            path: '/leads/:id',
+            element: (
+              <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
+                <Suspense fallback={<PageLoader />}>
+                  <LeadPage />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+            errorElement: <Error />,
+          },
+        ],
         errorElement: <Error />,
       },
     ],

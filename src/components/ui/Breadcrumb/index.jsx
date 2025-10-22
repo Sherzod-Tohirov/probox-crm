@@ -6,7 +6,7 @@ import classNames from "classnames";
 import iconsMap from "@utils/iconsMap";
 import { URL_PATH_LANG_MAP } from "../../../utils/constants";
 
-export default function Breadcrumb() {
+export default function Breadcrumb({ customBreadcrumbs = null }) {
   const { pathname } = useLocation();
 
   const generateBreadcrumb = useCallback((pathname) => {
@@ -40,7 +40,8 @@ export default function Breadcrumb() {
     );
   }, []);
 
-  const breadcrumbs = generateBreadcrumb(pathname);
+  // Use custom breadcrumbs if provided, otherwise generate from URL
+  const breadcrumbs = customBreadcrumbs || generateBreadcrumb(pathname);
 
   return (
     <List

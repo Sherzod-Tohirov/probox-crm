@@ -1,0 +1,35 @@
+@use '@styles/variables' as v;
+
+.card {
+  background: v.$primary-table-bg;
+  border: 1px solid v.$primary-border-color;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid v.$primary-border-color;
+  background: linear-gradient(135deg, v.$primary-table-bg 0%, rgba(v.$primary-color, 0.02) 100%);
+}
+
+.card-title {
+  margin: 0;
+  font-weight: 600;
+  color: v.$primary-color;
+}
+
+.card-body {
+  padding: 24px;
+
+  @media (max-width: v.$breakpoint-md) {
+    padding: 20px;
+  }
+}

@@ -72,6 +72,7 @@ import {
   Leaf,
   Users,
   Globe,
+  Meta,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -148,6 +149,7 @@ const iconsMap = {
   leaf: <Leaf />,
   users: <Users />,
   globe: <Globe />,
+  meta: <Meta />,
 };
 
 export default iconsMap;

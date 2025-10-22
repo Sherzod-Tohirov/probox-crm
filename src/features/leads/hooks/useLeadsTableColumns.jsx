@@ -1,19 +1,22 @@
 import formatDate from '@/utils/formatDate';
 import { useMemo } from 'react';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
+import { Badge } from '@/components/ui';
+
+/**
+ * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
+ */
 
 export default function useLeadsTableColumns() {
-  const { data: operator1List = [], isLoading: isOperator1Loading } =
-    useFetchExecutors({
-      include_role: 'Operator1',
-    });
-  const { data: operator2List = [], isLoading: isOperator2Loading } =
-    useFetchExecutors({
-      include_role: 'Operator2',
-    });
-  console.log(operator1List, 'operator1List');
-  console.log(operator2List, 'operator2List');
+  const { data: operator1List = [] } = useFetchExecutors({
+    include_role: 'Operator1',
+  });
+  const { data: operator2List = [] } = useFetchExecutors({
+    include_role: 'Operator2',
+  });
+  const { data: branchList = [] } = useFetchBranches();
   const findOperatorName = (operatorCode, type = 'operator1') => {
     const operator = (
       type === 'operator1' ? operator1List : operator2List
@@ -22,48 +25,59 @@ export default function useLeadsTableColumns() {
     return operator?.SlpName || '-';
   };
 
+  const findBranchName = (branchCode) => {
+    const branch = branchList.find(
+      (branch) => String(branch.id) === String(branchCode)
+    );
+
+    return branch?.name || '-';
+  };
+
   const getSourceStyle = (source) => {
     const sourceStyles = {
-      'Manychat': {
+      Manychat: {
         icon: 'chatBubble',
         bgColor: '#00D4AA',
         textColor: '#fff',
-        name: 'Manychat'
+        name: 'Manychat',
       },
-      'Meta': {
-        icon: 'facebook',
+      Meta: {
+        icon: 'meta',
         bgColor: '#1877F2',
         textColor: '#fff',
-        name: 'Meta'
+        name: 'Meta',
       },
-      'Organika': {
+      Organika: {
         icon: 'leaf',
         bgColor: '#22C55E',
         textColor: '#fff',
-        name: 'Organika'
+        name: 'Organika',
       },
       'Kiruvchi qongiroq': {
         icon: 'telephone',
         bgColor: '#F59E0B',
         textColor: '#fff',
-        name: 'Qo\'ng\'iroq'
+        name: "Qo'ng'iroq",
       },
-      'Community': {
+      Community: {
         icon: 'users',
         bgColor: '#8B5CF6',
         textColor: '#fff',
-        name: 'Community'
+        name: 'Community',
+      },
+    };
+
+    return (
+      sourceStyles[source] || {
+        icon: 'globe',
+        bgColor: '#6B7280',
+        textColor: '#fff',
+        name: source || "Noma'lum",
       }
-    };
-    
-    return sourceStyles[source] || {
-      icon: 'globe',
-      bgColor: '#6B7280',
-      textColor: '#fff',
-      name: source || 'Noma\'lum'
-    };
+    );
   };
 
+  /** @type {TableColumn[]} */
   const leadsTableColumns = useMemo(
     () => [
       {
@@ -86,7 +100,7 @@ export default function useLeadsTableColumns() {
         renderCell: (column) => {
           const { source } = column;
           const sourceStyle = getSourceStyle(source);
-          
+
           return (
             <div
               style={{
@@ -105,22 +119,26 @@ export default function useLeadsTableColumns() {
                 boxSizing: 'border-box',
               }}
             >
-              <span style={{ 
-                fontSize: '14px', 
-                display: 'flex', 
-                alignItems: 'center',
-                width: '14px',
-                height: '14px',
-                justifyContent: 'center'
-              }}>
+              <span
+                style={{
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '14px',
+                  height: '14px',
+                  justifyContent: 'center',
+                }}
+              >
                 {iconsMap[sourceStyle.icon]}
               </span>
-              <span style={{ 
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                flex: 1
-              }}>
+              <span
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  flex: 1,
+                }}
+              >
                 {sourceStyle.name}
               </span>
             </div>
@@ -134,7 +152,6 @@ export default function useLeadsTableColumns() {
         width: { xs: '20%', md: '12%', xl: '10%' },
         renderCell: (column) => {
           const { operator } = column;
-          console.log(findOperatorName(operator), 'found');
           return <span>{findOperatorName(operator)}</span>;
         },
       },
@@ -148,14 +165,28 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'branch',
+        title: 'Filial',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        renderCell: (column) => {
+          const { branch } = column;
+          return <span>{findBranchName(branch)}</span>;
+        },
+      },
+      {
         key: 'meetingConfirmed',
         title: 'Uchrashuv belgilandimi',
+        horizontal: 'center',
         renderCell: (column) => {
           const { meetingConfirmed } = column;
           return (
-            <span style={{ color: meetingConfirmed ? 'green' : 'red' }}>
+            <Badge
+              color={meetingConfirmed ? 'success' : 'danger'}
+              variant="soft"
+              size="md"
+            >
               {meetingConfirmed ? 'Ha' : "Yo'q"}
-            </span>
+            </Badge>
           );
         },
       },

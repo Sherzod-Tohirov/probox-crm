@@ -1,3 +1,42 @@
 .filter-form {
   width: 100%;
 }
+
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .filter-form {
+    .mobile-full-width {
+      width: 100% !important;
+      flex: 1 1 100% !important;
+      max-width: 100% !important;
+    }
+
+    /* Ensure all form inputs are full width on mobile */
+    :global(.ant-col) {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 1 100% !important;
+    }
+
+    /* Stack action buttons vertically on mobile */
+    .action-buttons {
+      width: 100%;
+      margin-top: 16px;
+
+      :global(.ant-row) {
+        justify-content: center;
+        gap: 8px;
+      }
+
+      :global(.ant-col) {
+        flex: 1;
+        max-width: none;
+      }
+
+      :global(.ant-btn) {
+        width: 100%;
+      }
+    }
+  }
+}

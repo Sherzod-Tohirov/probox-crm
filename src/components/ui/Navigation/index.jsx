@@ -5,7 +5,7 @@ import Breadcrumb from "../Breadcrumb";
 import Divider from "../Divider";
 import { useCallback, useRef } from "react";
 
-export default function Navigation({ fallbackBackPath = "/" }) {
+export default function Navigation({ fallbackBackPath = "/", customBreadcrumbs = null }) {
   const navigate = useNavigate();
   const hasNavigated = useRef(null);
 
@@ -28,7 +28,7 @@ export default function Navigation({ fallbackBackPath = "/" }) {
         Ortga
       </Button>
       <Divider color="secondary" height={"12px"} />
-      <Breadcrumb />
+      <Breadcrumb customBreadcrumbs={customBreadcrumbs} />
     </nav>
   );
 }

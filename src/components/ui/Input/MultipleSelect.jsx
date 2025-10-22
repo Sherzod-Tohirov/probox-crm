@@ -42,6 +42,7 @@ const MultipleSelect = ({
       backspaceRemovesValue={true}
       blurInputOnSelect={false}
       closeMenuOnScroll={false}
+      noOptionsMessage={() => 'Hech narsa topilmadi'}
       menuPortalTarget={
         props.menuPortalTarget ||
         (typeof document !== 'undefined' ? document.body : undefined)

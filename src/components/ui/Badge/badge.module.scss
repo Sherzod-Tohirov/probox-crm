@@ -1,0 +1,102 @@
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
+
+.badge {
+  @include m.flex(center, center, 0.5rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+
+  &.sm {
+    padding: 2px 6px;
+    font-size: 3rem; // ~12px
+  }
+
+  &.md {
+    padding: 4px 8px;
+    font-size: 3.5rem; // ~14px
+  }
+
+  &.lg {
+    padding: 6px 10px;
+    font-size: 4rem; // ~16px
+  }
+
+  // Variants
+  &.soft {
+    border: 1px solid transparent;
+  }
+
+  &.solid {
+    border: 1px solid transparent;
+    color: #fff;
+  }
+
+  &.outlined {
+    background-color: transparent;
+    border: 1px solid currentColor;
+  }
+
+  // Colors (using existing theme tokens)
+  &.info {
+    &.soft {
+      background-color: v.$info-bg;
+      color: v.$info-color;
+    }
+    &.solid {
+      background-color: v.$info-color;
+      color: #fff;
+    }
+    &.outlined {
+      color: v.$info-color;
+    }
+  }
+
+  &.success {
+    &.soft {
+      background-color: v.$success-bg;
+      color: v.$success-color;
+    }
+    &.solid {
+      background-color: v.$success-color;
+      color: #fff;
+    }
+    &.outlined {
+      color: v.$success-color;
+    }
+  }
+
+  // Map warning to info tokens (no dedicated warning tokens in theme)
+  &.warning {
+    &.soft {
+      background-color: v.$info-bg;
+      color: v.$info-color;
+    }
+    &.solid {
+      background-color: v.$info-color;
+      color: #fff;
+    }
+    &.outlined {
+      color: v.$info-color;
+    }
+  }
+
+  &.danger {
+    &.soft {
+      background-color: v.$danger-bg;
+      color: v.$danger-color;
+    }
+    &.solid {
+      background-color: v.$danger-color;
+      color: #fff;
+    }
+    &.outlined {
+      color: v.$danger-color;
+    }
+  }
+}

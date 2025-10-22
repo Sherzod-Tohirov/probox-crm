@@ -10,13 +10,45 @@ import useIsMobile from '@hooks/useIsMobile';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
+/**
+ * @typedef {'start'|'center'|'end'} Alignment
+ *
+ * @typedef {Object} TableColumn
+ * @property {string} key
+ * @property {string} [title]
+ * @property {Object|string} [width]
+ * @property {string|number} [minWidth]
+ * @property {string|number} [maxWidth]
+ * @property {string} [icon]
+ * @property {(row: any, rowIndex: number) => any} [renderCell]
+ * @property {Record<string, any>} [cellStyle]
+ * @property {boolean} [hideOnMobile]
+ * @property {Alignment} [horizontal] Horizontal alignment: start | center | end
+ * @property {Alignment} [vertical] Vertical alignment: start | center | end
+ */
+
 // Memoized table cell component
 const TableCell = memo(({ column, row, rowIndex }) => {
   const content = column.renderCell
     ? column.renderCell(row, rowIndex)
     : row[column.key];
 
-  return <td style={column?.cellStyle || {}}>{content || '-'}</td>;
+  const hMap = { start: 'left', center: 'center', end: 'right' };
+  const vMap = { start: 'top', center: 'middle', end: 'bottom' };
+  const alignStyle = {
+    ...(column?.horizontal
+      ? { textAlign: hMap[column.horizontal] || column.horizontal }
+      : {}),
+    ...(column?.vertical
+      ? { verticalAlign: vMap[column.vertical] || column.vertical }
+      : {}),
+  };
+
+  return (
+    <td style={{ ...alignStyle, ...(column?.cellStyle || {}) }}>
+      {content || '-'}
+    </td>
+  );
 });
 
 // Selection checkbox cell
@@ -152,6 +184,7 @@ const Table = forwardRef(function Table(
     },
     isLoading = false,
     showPivotColumn = false,
+    rowNumberOffset = 0,
     scrollable = {
       xs: true,
       sm: true,
@@ -179,11 +212,11 @@ const Table = forwardRef(function Table(
         title: 'ID',
         width: { xs: '10%', md: '2%', xl: '2%' }, // Added xl breakpoint
         cellStyle: { textAlign: 'center' },
-        renderCell: (_, rowIndex) => rowIndex + 1,
+        renderCell: (_, rowIndex) => rowIndex + 1 + (Number(rowNumberOffset) || 0),
       },
       ...filteredColumns,
     ];
-  }, [columns, showPivotColumn]);
+  }, [columns, showPivotColumn, rowNumberOffset]);
 
   const handleMouseDown = useCallback(() => {
     pressTimeRef.current = Date.now();
@@ -350,6 +383,22 @@ const Table = forwardRef(function Table(
                       : column.width || 'auto',
                     minWidth: column.minWidth || 'initial',
                     maxWidth: column.maxWidth || 'initial',
+                    textAlign:
+                      column?.horizontal === 'start'
+                        ? 'left'
+                        : column?.horizontal === 'end'
+                        ? 'right'
+                        : column?.horizontal === 'center'
+                        ? 'center'
+                        : undefined,
+                    verticalAlign:
+                      column?.vertical === 'start'
+                        ? 'top'
+                        : column?.vertical === 'end'
+                        ? 'bottom'
+                        : column?.vertical === 'center'
+                        ? 'middle'
+                        : undefined,
                   }}
                 >
                   <div className={styles['table-header-cell']}>
@@ -409,6 +458,7 @@ Table.propTypes = {
   containerHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   scrollable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   scrollHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  rowNumberOffset: PropTypes.number,
   // ...other prop types...
 };
 

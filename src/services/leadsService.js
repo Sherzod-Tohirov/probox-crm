@@ -8,3 +8,12 @@ export const getLeads = async (params) => {
     throw error.response?.data || error;
   }
 };
+
+export const getLeadById = async (id) => {
+  try {
+    const response = await api.get(`/leads/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
