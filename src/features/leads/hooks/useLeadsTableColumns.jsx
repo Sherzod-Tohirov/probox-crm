@@ -4,6 +4,7 @@ import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
 import { Badge } from '@/components/ui';
+import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 
 /**
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
@@ -91,6 +92,10 @@ export default function useLeadsTableColumns() {
         title: 'Telefon',
         width: { xs: '30%', md: '18%', xl: '14%' },
         minWidth: '120px',
+        renderCell: (column) => {
+          const { clientPhone } = column;
+          return <span>{formatToReadablePhoneNumber(clientPhone, true)}</span>;
+        },
       },
       {
         key: 'source',
