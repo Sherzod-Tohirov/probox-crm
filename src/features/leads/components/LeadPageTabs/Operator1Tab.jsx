@@ -60,20 +60,20 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                 </Col>
                 <Col>
                   <FormField
-                    name="callTime"
-                    label="Qo'ng'iroq vaqti"
-                    control={control}
-                    type="date"
-                    disabled={!canEdit}
-                  />
-                </Col>
-                <Col>
-                  <FormField
                     name="answered"
                     label="Javob berildimi?"
                     control={control}
                     type="boolean"
                     disabled={!canEdit}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="callTime"
+                    label="Qo'ng'iroq vaqti"
+                    control={control}
+                    type="datetime-local"
+                    disabled
                   />
                 </Col>
               </Row>
@@ -109,7 +109,6 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             </Col>
           </Row>
         </FieldGroup>
-
         <FieldGroup title="Shaxsiy hujjatlar">
           <FormField
             name="passportVisit"

@@ -5,6 +5,7 @@ import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
 import useOperator2Form from '../../hooks/useOperator2Form.jsx';
 import styles from './leadPageTabs.module.scss';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
 
 export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useOperator2Form(
@@ -12,9 +13,9 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
-  
-  const { control, reset } = form || {};
 
+  const { control, reset } = form || {};
+  const { data: branches } = useFetchBranches();
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -30,6 +31,17 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
       });
     }
   }, [leadData, reset]);
+
+  const paymentInterestOptions = [
+    { value: 'trade', label: 'Trade-in' },
+    { value: 'nasiya', label: 'Nasiya' },
+    { value: 'naqd', label: 'Naqd' },
+  ];
+  const branchOptions =
+    branches?.map((branch) => ({
+      value: branch.id,
+      label: branch.name,
+    })) || [];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -75,6 +87,8 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
           <FormField
             name="branch"
             label="Filial"
+            type="select"
+            options={branchOptions}
             control={control}
             disabled={!canEdit}
           />
@@ -92,6 +106,8 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="paymentInterest"
             label="To'lov turi"
             control={control}
+            type="select"
+            options={paymentInterestOptions}
             disabled={!canEdit}
           />
         </FieldGroup>

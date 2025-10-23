@@ -5,24 +5,25 @@ export default function FormField({
   name,
   label,
   control,
+  options,
   type = 'text',
   disabled = false,
   span = { xs: 24, md: 8 },
   prefix,
   rules = {},
-  defaultValue = ''
+  defaultValue = '',
 }) {
   const commonProps = {
     label,
     size: 'large',
     variant: 'filled',
     disabled,
-    prefix
+    prefix,
   };
 
   const confirmOptions = [
     { value: true, label: 'Ha' },
-    { value: false, label: 'Yo\'q' },
+    { value: false, label: "Yo'q" },
   ];
 
   const renderField = ({ field, fieldState }) => {
@@ -30,7 +31,7 @@ export default function FormField({
       ...commonProps,
       ...field,
       control,
-      error: fieldState?.error?.message
+      error: fieldState?.error?.message,
     };
 
     switch (type) {
@@ -41,40 +42,30 @@ export default function FormField({
             type="select"
             placeholder={`${label} tanlang`}
             options={confirmOptions}
-         />
+          />
         );
-      
+
       case 'number':
-        return (
-          <Input
-            {...fieldProps}
-            type="number"
-          />
-        );
-      
+        return <Input {...fieldProps} type="number" />;
+
       case 'date':
-        return (
-          <Input
-            {...fieldProps}
-            type="date"
-          />
-        );
-      
+        return <Input {...fieldProps} type="date" />;
+
       case 'datetime-local':
+        return <Input {...fieldProps} type="datetime-local" />;
+
+      case 'select':
         return (
           <Input
             {...fieldProps}
-            type="datetime-local"
+            type="select"
+            placeholder={`${label} tanlang`}
+            options={options ?? []}
           />
         );
-      
+
       default:
-        return (
-          <Input
-            {...fieldProps}
-            type="text"
-          />
-        );
+        return <Input {...fieldProps} type="text" />;
     }
   };
 
@@ -83,7 +74,7 @@ export default function FormField({
     const directProps = {
       ...commonProps,
       defaultValue,
-      value: defaultValue
+      value: defaultValue,
     };
 
     switch (type) {
@@ -94,48 +85,36 @@ export default function FormField({
               {...directProps}
               type="select"
               placeholder={`${label} tanlang`}
-              options={confirmOptions}
+              options={options ?? []}
             />
           </Col>
         );
-      
+
       case 'number':
         return (
           <Col span={span}>
-            <Input
-              {...directProps}
-              type="number"
-            />
+            <Input {...directProps} type="number" />
           </Col>
         );
-      
+
       case 'date':
         return (
           <Col span={span}>
-            <Input
-              {...directProps}
-              type="date"
-            />
+            <Input {...directProps} type="date" />
           </Col>
         );
-      
+
       case 'datetime-local':
         return (
           <Col span={span}>
-            <Input
-              {...directProps}
-              type="datetime-local"
-            />
+            <Input {...directProps} type="datetime-local" />
           </Col>
         );
-      
+
       default:
         return (
           <Col span={span}>
-            <Input
-              {...directProps}
-              type="text"
-            />
+            <Input {...directProps} type="text" />
           </Col>
         );
     }

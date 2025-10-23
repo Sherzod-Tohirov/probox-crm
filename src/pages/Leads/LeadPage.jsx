@@ -15,6 +15,7 @@ import {
 import useFetchLeadById from '@/hooks/data/leads/useFetchLeadById';
 import useAuth from '@/hooks/useAuth';
 import useIsMobile from '@/hooks/useIsMobile';
+
 import { Globe } from '@/assets/images/icons/Icons';
 
 // Import feature components
@@ -26,6 +27,7 @@ import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
 
 import styles from './style.module.scss';
+import useAlert from '@/hooks/useAlert';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -34,12 +36,20 @@ export default function LeadPage() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useFetchLeadById(id);
   const { data: lead } = data ?? {};
-
-  const [activeTab, setActiveTab] = useState('operator1');
-
+  const { alert } = useAlert();
   // Get current user role
-  const currentUserRole = user?.role || 'Operator1';
-
+  const currentUserRole = user?.['U_role'] ?? '';
+  // Map role to tab key
+  const roleMapping = {
+    Operator1: 'operator1',
+    Operator2: 'operator2',
+    Seller: 'seller',
+    CEO: 'scoring',
+  };
+  // Set default tab based on user role
+  const [activeTab, setActiveTab] = useState(
+    roleMapping[currentUserRole] ?? 'operator1'
+  );
   // Custom breadcrumbs to show lead name instead of ID
   const customBreadcrumbs = useMemo(() => {
     if (!lead) return null;
@@ -64,7 +74,7 @@ export default function LeadPage() {
       operator1: 'Operator1',
       operator2: 'Operator2',
       seller: 'Seller',
-      scoring: 'Scoring',
+      scoring: 'CEO',
     };
     return currentUserRole === roleMapping[tabKey];
   };
@@ -73,8 +83,8 @@ export default function LeadPage() {
   const handleFormSuccess = (updatedData) => {
     // Invalidate and refetch the lead data
     queryClient.invalidateQueries(['lead', id]);
-
-    // Show success message (you can implement toast notification here)
+    // Show success message (you   can implement toast notification here)
+    alert("Lead ma'lumotlari muvaffaqiyatli yangilandi", { type: 'success' });
     console.log('Lead updated successfully:', updatedData);
   };
 
