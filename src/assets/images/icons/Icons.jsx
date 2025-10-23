@@ -583,6 +583,7 @@ export const BarCodeFilled = () => {
   );
 };
 
+
 export const BarCode = () => {
   return (
     <svg

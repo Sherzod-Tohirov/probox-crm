@@ -37,7 +37,7 @@
   border: 1px solid v.$primary-border-color;
   border-radius: 8px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: v.$primary-border-color;
     transform: translateX(-2px);
@@ -72,7 +72,7 @@
   height: 44px;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -96,7 +96,11 @@
 .card-header {
   padding: 20px 24px 16px;
   border-bottom: 1px solid v.$primary-border-color;
-  background: linear-gradient(135deg, v.$primary-table-bg 0%, rgba(v.$primary-color, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    v.$primary-table-bg 0%,
+    rgba(v.$primary-color, 0.02) 100%
+  );
 }
 
 .card-title {
@@ -147,8 +151,83 @@
   align-items: center;
   justify-content: center;
   min-height: 120px;
-  background: linear-gradient(135deg, rgba(v.$secondary-color, 0.02) 0%, rgba(v.$secondary-color, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(v.$secondary-color, 0.02) 0%,
+    rgba(v.$secondary-color, 0.05) 100%
+  );
   border: 2px dashed v.$primary-border-color;
   border-radius: 12px;
   text-align: center;
+}
+
+.tab-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  margin-top: 24px;
+  border-top: 1px solid v.$primary-border-color;
+
+  .tab-save-button {
+    min-width: 120px;
+    height: 44px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: v.$breakpoint-md) {
+      width: 100%;
+    }
+  }
+
+  button {
+    min-width: 120px;
+    height: 44px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+:global {
+  .ant-input:disabled,
+  .ant-select-disabled .ant-select-selector {
+    opacity: 0.8 !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .ant-input[disabled] {
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+}
+
+.error-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: rgba(255, 77, 79, 0.1);
+  border: 1px solid rgba(255, 77, 79, 0.3);
+  border-radius: 8px;
+  color: #ff4d4f;
+  font-size: 1.4rem;
+  font-weight: 500;
 }
