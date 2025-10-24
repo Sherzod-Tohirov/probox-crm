@@ -14,9 +14,11 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset } = form || {};
+  const { control, reset, watch } = form || {};
   const { data: branches } = useFetchBranches();
   // Reset form when leadData changes
+  const answered2 = watch('answered2');
+  console.log(answered2, 'answered2');
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -38,10 +40,13 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
     { value: 'naqd', label: 'Naqd' },
   ];
   const branchOptions =
-    branches?.map((branch) => ({
-      value: branch.id,
-      label: branch.name,
-    })) || [];
+    [
+      { value: '', label: "Noma'lum" },
+      ...(branches?.map((branch) => ({
+        value: branch.id,
+        label: branch.name,
+      })) || []),
+    ] || [];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -81,7 +86,7 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="meetingDate"
             label="Uchrashuv sanasi"
             control={control}
-            type="date"
+            type="datetime"
             disabled={!canEdit}
           />
           <FormField

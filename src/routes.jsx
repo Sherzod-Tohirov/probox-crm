@@ -87,7 +87,15 @@ const router = createBrowserRouter([
           {
             index: true,
             element: (
-              <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
+              <ProtectedRoute
+                allowedRoles={[
+                  'Operator1',
+                  'Operator2',
+                  'Scoring',
+                  'Seller',
+                  'CEO',
+                ]}
+              >
                 <Suspense fallback={<PageLoader />}>
                   <Leads />
                 </Suspense>
@@ -98,7 +106,15 @@ const router = createBrowserRouter([
           {
             path: '/leads/:id',
             element: (
-              <ProtectedRoute allowedRoles={['Operator1', 'Operator2', 'CEO']}>
+              <ProtectedRoute
+                allowedRoles={[
+                  'Operator1',
+                  'Operator2',
+                  'Scoring',
+                  'Seller',
+                  'CEO',
+                ]}
+              >
                 <Suspense fallback={<PageLoader />}>
                   <LeadPage />
                 </Suspense>

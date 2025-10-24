@@ -1,5 +1,5 @@
 import formatDate from '@/utils/formatDate';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
@@ -18,21 +18,25 @@ export default function useLeadsTableColumns() {
     include_role: 'Operator2',
   });
   const { data: branchList = [] } = useFetchBranches();
-  const findOperatorName = (operatorCode, type = 'operator1') => {
+  const findOperatorName = useCallback((operatorCode, type = 'operator1') => {
+    console.log(operatorCode, "operator code");
+    console.log(type, "operator type");
+    console.log(operator1List, "operator1List");
+    console.log(operator2List, "operator2List");
     const operator = (
       type === 'operator1' ? operator1List : operator2List
     ).find((operator) => String(operator.SlpCode) === String(operatorCode));
-
+    console.log(operator, "found operator");
     return operator?.SlpName || '-';
-  };
+  }, [operator1List, operator2List]);
 
-  const findBranchName = (branchCode) => {
+  const findBranchName = useCallback((branchCode) => {
     const branch = branchList.find(
       (branch) => String(branch.id) === String(branchCode)
     );
 
     return branch?.name || '-';
-  };
+  }, [branchList]);
 
   const getSourceStyle = (source) => {
     const sourceStyles = {
@@ -224,7 +228,7 @@ export default function useLeadsTableColumns() {
         width: { xs: '40%', md: '22%', xl: '20%' },
       },
     ],
-    []
+    [findOperatorName, findBranchName]
   );
 
   return { leadsTableColumns };

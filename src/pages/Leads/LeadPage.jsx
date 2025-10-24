@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Meta, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -28,6 +28,7 @@ import FormField from '@/features/leads/components/LeadPageForm/FormField';
 
 import styles from './style.module.scss';
 import useAlert from '@/hooks/useAlert';
+import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -106,7 +107,7 @@ export default function LeadPage() {
             control={null}
             disabled={true}
             span={{ xs: 24, md: 12 }}
-            defaultValue={lead?.clientPhone}
+            defaultValue={formatToReadablePhoneNumber(lead?.clientPhone, true)}
           />
         </FieldGroup>
 
@@ -242,7 +243,7 @@ export default function LeadPage() {
 
   return (
     <>
-      <Row gutter={isMobile ? 2 : 6} style={{ width: '100%', height: '100%' }}>
+      <Row gutter={12} style={{ width: '100%', height: '100%' }}>
         <Col fullWidth>
           <Row
             direction={{ xs: 'column', md: 'row' }}

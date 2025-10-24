@@ -12,7 +12,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
-  
+
   const { control, reset } = form || {};
 
   // Reset form when leadData changes
@@ -51,10 +51,10 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       />
 
       <form onSubmit={handleSubmit}>
-        <FieldGroup title="Hodim ma'lumotlari">
+        <FieldGroup title="Xodim ma'lumotlari">
           <FormField
             name="employeeName"
-            label="Hodim F.I.O"
+            label="Xodim F.I.O"
             control={control}
             disabled={!canEdit}
           />

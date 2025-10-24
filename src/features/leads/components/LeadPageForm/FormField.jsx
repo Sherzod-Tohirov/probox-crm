@@ -22,8 +22,8 @@ export default function FormField({
   };
 
   const confirmOptions = [
-    { value: true, label: 'Ha' },
-    { value: false, label: "Yo'q" },
+    { value: true, label: 'Ha ✔️' },
+    { value: false, label: "Yo'q ❌" },
   ];
 
   const renderField = ({ field, fieldState }) => {
@@ -44,12 +44,14 @@ export default function FormField({
             options={confirmOptions}
           />
         );
-
       case 'number':
-        return <Input {...fieldProps} type="number" />;
+        return <Input {...fieldProps} type="number" min={0} />;
 
       case 'date':
         return <Input {...fieldProps} type="date" />;
+
+      case 'datetime':
+        return <Input {...fieldProps} type="date" includeTime />;
 
       case 'datetime-local':
         return <Input {...fieldProps} type="datetime-local" />;
@@ -85,7 +87,7 @@ export default function FormField({
               {...directProps}
               type="select"
               placeholder={`${label} tanlang`}
-              options={options ?? []}
+              options={confirmOptions}
             />
           </Col>
         );
@@ -93,7 +95,7 @@ export default function FormField({
       case 'number':
         return (
           <Col span={span}>
-            <Input {...directProps} type="number" />
+            <Input {...directProps} type="number" min={0} />
           </Col>
         );
 
@@ -101,6 +103,13 @@ export default function FormField({
         return (
           <Col span={span}>
             <Input {...directProps} type="date" />
+          </Col>
+        );
+
+      case 'datetime':
+        return (
+          <Col span={span}>
+            <Input {...directProps} type="date" includeTime />
           </Col>
         );
 

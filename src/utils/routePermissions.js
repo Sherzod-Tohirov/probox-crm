@@ -1,12 +1,12 @@
 /**
  * Centralized route permissions configuration
- * 
+ *
  * This ensures sidebar visibility and route access use the same rules
- * 
+ *
  * Each route can have:
  * - allowedRoles: Array of roles that can access this route. If not specified, all roles can access.
  * - excludedRoles: Array of roles that cannot access this route. Takes precedence over allowedRoles.
- * 
+ *
  * Priority: excludedRoles > allowedRoles > default (accessible to all authenticated users)
  */
 const routePermissions = {
@@ -26,7 +26,7 @@ const routePermissions = {
     // Accessible to all authenticated users
   },
   '/leads': {
-    allowedRoles: ['Operator1', 'Operator2', 'CEO'], // Only specific roles can access leads
+    allowedRoles: ['Operator1', 'Operator2', 'Scoring', 'Seller', 'CEO'], // Only specific roles can access leads
   },
 };
 

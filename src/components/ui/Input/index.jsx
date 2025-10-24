@@ -154,36 +154,45 @@ const Input = forwardRef(
               control={props.control}
               render={({ field }) => (
                 <Flatpickr
+                  key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
                   value={field.value || props.defaultValue}
                   {...commonProps}
                   options={{
-                    enableTime: false,
+                    enableTime: !!props.includeTime,
                     defaultDate: field.value || props.defaultValue || new Date(),
-                    dateFormat: 'd.m.Y',
+                    dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
+                    ...(props.includeTime ? { time_24hr: true } : {}),
                     locale: { firstDayOfWeek: 1 },
                     clickOpens: true,
                     allowInput: false,
+                    disableMobile: true,
                     static: false,
                     ...(props.datePickerOptions || {}),
                   }}
                   onChange={(dateArr) => {
                     const formatted = dateArr[0]
-                      ? moment(dateArr[0]).format('DD.MM.YYYY')
+                      ? moment(dateArr[0]).format(
+                          props.includeTime
+                            ? 'DD.MM.YYYY HH:mm'
+                            : 'DD.MM.YYYY'
+                        )
                       : '';
                     field.onChange(formatted);
                   }}
-                  {...omit(props, ['datePickerOptions'])}
+                  {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
                 />
               )}
             />
           ) : (
             <Flatpickr
+              key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
               value={props.value || props.defaultValue}
               {...commonProps}
               options={{
-                enableTime: false,
+                enableTime: !!props.includeTime,
                 defaultDate: props.value || props.defaultValue || new Date(),
-                dateFormat: 'd.m.Y',
+                dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
+                ...(props.includeTime ? { time_24hr: true } : {}),
                 locale: { firstDayOfWeek: 1 },
                 clickOpens: true,
                 allowInput: false,
@@ -192,11 +201,13 @@ const Input = forwardRef(
               }}
               onChange={(dateArr) => {
                 const formatted = dateArr[0]
-                  ? moment(dateArr[0]).format('DD.MM.YYYY')
+                  ? moment(dateArr[0]).format(
+                      props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
+                    )
                   : '';
                 props.onChange?.(formatted);
               }}
-              {...omit(props, ['datePickerOptions'])}
+              {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
             />
           )
         ),
@@ -216,6 +227,7 @@ const Input = forwardRef(
                     time_24hr: true,
                     clickOpens: true,
                     allowInput: false,
+                    disableMobile: true,
                     static: false,
                     ...(props.datePickerOptions || {}),
                   }}
@@ -225,7 +237,7 @@ const Input = forwardRef(
                       : '';
                     field.onChange(formatted);
                   }}
-                  {...omit(props, ['datePickerOptions'])}
+                  {...omit(props, ['datePickerOptions', 'type'])}
                 />
               )}
             />
@@ -240,6 +252,7 @@ const Input = forwardRef(
                 time_24hr: true,
                 clickOpens: true,
                 allowInput: false,
+                disableMobile: true,
                 static: false,
                 ...(props.datePickerOptions || {}),
               }}
@@ -249,7 +262,7 @@ const Input = forwardRef(
                   : '';
                 props.onChange?.(formatted);
               }}
-              {...omit(props, ['datePickerOptions'])}
+              {...omit(props, ['datePickerOptions', 'type'])}
             />
           )
         ),
@@ -268,6 +281,7 @@ const Input = forwardRef(
                     time_24hr: true,
                     clickOpens: true,
                     allowInput: false,
+                    disableMobile: true,
                     static: false,
                     ...(props.datePickerOptions || {}),
                   }}
@@ -277,7 +291,7 @@ const Input = forwardRef(
                       : '';
                     field.onChange(formatted);
                   }}
-                  {...omit(props, ['datePickerOptions'])}
+                  {...omit(props, ['datePickerOptions', 'type'])}
                 />
               )}
             />
@@ -291,6 +305,7 @@ const Input = forwardRef(
                 time_24hr: true,
                 clickOpens: true,
                 allowInput: false,
+                disableMobile: true,
                 static: false,
                 ...(props.datePickerOptions || {}),
               }}
@@ -300,9 +315,83 @@ const Input = forwardRef(
                   : '';
                 props.onChange?.(formatted);
               }}
-              {...omit(props, ['datePickerOptions'])}
+              {...omit(props, ['datePickerOptions', 'type'])}
             />
           )
+        ),
+        number: (
+          <input
+            type="number"
+            {...commonProps}
+            {...omit(
+              ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
+              props
+            )}
+            inputMode={
+              props?.min !== undefined && props?.min !== null && Number(props.min) >= 0
+                ? 'numeric'
+                : undefined
+            }
+            value={
+              props?.value === undefined || props?.value === null
+                ? ''
+                : props.value
+            }
+            onWheel={(e) => {
+              // Prevent scroll from changing value inadvertently
+              e.currentTarget.blur();
+            }}
+            onKeyDown={(e) => {
+              const minAttr =
+                props?.min !== undefined && props?.min !== null
+                  ? Number(props.min)
+                  : undefined;
+              const disallowNegative = minAttr !== undefined && minAttr >= 0;
+              if (
+                e.key === 'e' ||
+                e.key === 'E' ||
+                e.key === '+' ||
+                (disallowNegative && e.key === '-')
+              ) {
+                e.preventDefault();
+              }
+            }}
+            onPaste={(e) => {
+              const minAttr =
+                props?.min !== undefined && props?.min !== null
+                  ? Number(props.min)
+                  : undefined;
+              const disallowNegative = minAttr !== undefined && minAttr >= 0;
+              const text = e.clipboardData.getData('text');
+              if (disallowNegative && /-/g.test(text)) {
+                e.preventDefault();
+              }
+            }}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === '') {
+                props.onChange?.('');
+                return;
+              }
+              const n = Number(v);
+              if (Number.isNaN(n)) {
+                // ignore invalid intermediate values like '-'
+                return;
+              }
+              const minAttr =
+                props?.min !== undefined && props?.min !== null
+                  ? Number(props.min)
+                  : undefined;
+              const maxAttr =
+                props?.max !== undefined && props?.max !== null
+                  ? Number(props.max)
+                  : undefined;
+              let out = n;
+              if (minAttr !== undefined && out < minAttr) out = minAttr;
+              if (maxAttr !== undefined && out > maxAttr) out = maxAttr;
+              props.onChange?.(out);
+            }}
+          />
         ),
         select: multipleSelect ? (
           <Controller
@@ -340,12 +429,28 @@ const Input = forwardRef(
               ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
               props
             )}
+            value={
+              props?.value !== undefined && props?.value !== null
+                ? String(props.value)
+                : props?.value
+            }
+            {...(props?.defaultValue !== undefined &&
+            props?.defaultValue !== null
+              ? { defaultValue: String(props.defaultValue) }
+              : {})}
+            onChange={(e) => {
+              const raw = e.target.value;
+              // Find the original option to preserve type (boolean/number/etc.)
+              const match = options.find((opt) => String(opt.value) === raw);
+              const parsed = match ? match.value : raw;
+              props.onChange?.(parsed);
+            }}
           >
             {options.map((option) => (
               <option
                 disabled={option.isNotSelectable}
-                key={option.value}
-                value={option.value}
+                key={String(option.value)}
+                value={String(option.value)}
               >
                 {option.label}
               </option>

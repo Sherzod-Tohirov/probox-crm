@@ -16,7 +16,6 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
 
   const { control, reset } = form || {};
   const isMobile = useIsMobile();
-
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -34,6 +33,12 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
       });
     }
   }, [leadData, reset]);
+
+  const passportVisitOptions = [
+    { value: 'passport', label: 'Pasport' },
+    { value: 'visit', label: 'Tashrif' },
+    { value: 'process', label: 'Jarayonda' },
+  ];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -72,7 +77,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     name="callTime"
                     label="Qo'ng'iroq vaqti"
                     control={control}
-                    type="datetime-local"
+                    type="datetime"
                     disabled
                   />
                 </Col>
@@ -92,8 +97,9 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                 <Col>
                   <FormField
                     name="interested"
-                    label="Qiziqish"
+                    label="Qiziqish bildirildimi?"
                     control={control}
+                    type="boolean"
                     disabled={!canEdit}
                   />
                 </Col>
@@ -114,6 +120,8 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="passportVisit"
             label="Pasport/Tashrif"
             control={control}
+            type="select"
+            options={passportVisitOptions}
             disabled={!canEdit}
           />
           <FormField
