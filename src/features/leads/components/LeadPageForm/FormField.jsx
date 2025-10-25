@@ -1,11 +1,14 @@
 import { Controller } from 'react-hook-form';
 import { Input, Col } from '@components/ui';
+import formatterCurrency from '@utils/formatterCurrency';
 
 export default function FormField({
   name,
   label,
   control,
   options,
+  dateOptions = {},
+  placeholderOption,
   type = 'text',
   disabled = false,
   span = { xs: 24, md: 8 },
@@ -47,8 +50,28 @@ export default function FormField({
       case 'number':
         return <Input {...fieldProps} type="number" min={0} />;
 
+      case 'currency':
+        return (
+          <Input
+            {...fieldProps}
+            type="text"
+            value={field.value === '' ? '' : String(field.value)}
+            inputMode="numeric"
+            iconText="so'm"
+            canClickIcon={false}
+            onChange={(e) => {
+              const raw = e?.target?.value ?? '';
+              const digits = String(raw).replace(/[^0-9]/g, '');
+              const formatted = formatterCurrency(Number(digits));
+              field.onChange(formatted);
+            }}
+          />
+        );
+
       case 'date':
-        return <Input {...fieldProps} type="date" />;
+        return (
+          <Input {...fieldProps} type="date" datePickerOptions={dateOptions} />
+        );
 
       case 'datetime':
         return <Input {...fieldProps} type="date" includeTime />;
@@ -63,6 +86,7 @@ export default function FormField({
             type="select"
             placeholder={`${label} tanlang`}
             options={options ?? []}
+            placeholderOption={placeholderOption}
           />
         );
 

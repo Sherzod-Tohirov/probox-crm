@@ -16,11 +16,13 @@ import {
   setLeadsFilter,
 } from '@store/slices/leadsPageSlice';
 import useFetchLeads from '@/hooks/data/leads/useFetchLeads';
+import useTheme from '@/hooks/useTheme';
 
 export default function Leads() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isMobile = useIsMobile();
+  const { currentTheme } = useTheme();
   const { leadsTableColumns } = useLeadsTableColumns();
   const { currentPage, pageSize, filter, currentLead } = useSelector(
     (state) => state.page.leads
@@ -124,13 +126,15 @@ export default function Leads() {
             isLoading={isLoadingLeads}
             columns={leadsTableColumns}
             data={leads}
+            maxBodyHeight={
+              isMobile ? 'calc(100vh - 400px)' : 'calc(100vh - 600px)'
+            }
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
             showPivotColumn={true}
             rowNumberOffset={currentPage * pageSize}
             getRowStyles={(row) => {
-              const isDark =
-                document.documentElement.getAttribute('data-theme') === 'dark';
+              const isDark = currentTheme === 'dark';
               if (row?.id === currentLead?.id) {
                 return {
                   backgroundColor: isDark

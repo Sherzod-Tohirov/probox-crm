@@ -46,9 +46,9 @@ const LeadsFooter = ({ leadsDetails = {} }) => {
                   variant="outlined"
                   type="select"
                   options={tableSizeSelectOptions}
-                  defaultValue={Number(pageSize)}
-                  onChange={(e) => {
-                    dispatch(setLeadsPageSize(Number(e.target.value)));
+                  value={Number(pageSize)}
+                  onChange={(value) => {
+                    dispatch(setLeadsPageSize(Number(value)));
                   }}
                   canClickIcon={false}
                 />

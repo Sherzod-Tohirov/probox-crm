@@ -45,7 +45,7 @@ export default function LeadPage() {
     Operator1: 'operator1',
     Operator2: 'operator2',
     Seller: 'seller',
-    CEO: 'scoring',
+    Scoring: 'scoring',
   };
   // Set default tab based on user role
   const [activeTab, setActiveTab] = useState(
@@ -75,7 +75,7 @@ export default function LeadPage() {
       operator1: 'Operator1',
       operator2: 'Operator2',
       seller: 'Seller',
-      scoring: 'CEO',
+      scoring: 'Scoring',
     };
     return currentUserRole === roleMapping[tabKey];
   };

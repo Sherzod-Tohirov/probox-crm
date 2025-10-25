@@ -147,177 +147,169 @@ const Input = forwardRef(
 
     const inputTypeMatcher = useMemo(
       () => ({
-        date: (
-          props.control ? (
-            <Controller
-              name={props.name}
-              control={props.control}
-              render={({ field }) => (
-                <Flatpickr
-                  key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
-                  value={field.value || props.defaultValue}
-                  {...commonProps}
-                  options={{
-                    enableTime: !!props.includeTime,
-                    defaultDate: field.value || props.defaultValue || new Date(),
-                    dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
-                    ...(props.includeTime ? { time_24hr: true } : {}),
-                    locale: { firstDayOfWeek: 1 },
-                    clickOpens: true,
-                    allowInput: false,
-                    disableMobile: true,
-                    static: false,
-                    ...(props.datePickerOptions || {}),
-                  }}
-                  onChange={(dateArr) => {
-                    const formatted = dateArr[0]
-                      ? moment(dateArr[0]).format(
-                          props.includeTime
-                            ? 'DD.MM.YYYY HH:mm'
-                            : 'DD.MM.YYYY'
-                        )
-                      : '';
-                    field.onChange(formatted);
-                  }}
-                  {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
-                />
-              )}
-            />
-          ) : (
-            <Flatpickr
-              key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
-              value={props.value || props.defaultValue}
-              {...commonProps}
-              options={{
-                enableTime: !!props.includeTime,
-                defaultDate: props.value || props.defaultValue || new Date(),
-                dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
-                ...(props.includeTime ? { time_24hr: true } : {}),
-                locale: { firstDayOfWeek: 1 },
-                clickOpens: true,
-                allowInput: false,
-                static: false,
-                ...(props.datePickerOptions || {}),
-              }}
-              onChange={(dateArr) => {
-                const formatted = dateArr[0]
-                  ? moment(dateArr[0]).format(
-                      props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
-                    )
-                  : '';
-                props.onChange?.(formatted);
-              }}
-              {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
-            />
-          )
+        date: props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <Flatpickr
+                key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
+                value={field.value || props.defaultValue}
+                {...commonProps}
+                options={{
+                  enableTime: !!props.includeTime,
+                  defaultDate: field.value || props.defaultValue || new Date(),
+                  dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
+                  ...(props.includeTime ? { time_24hr: true } : {}),
+                  locale: { firstDayOfWeek: 1 },
+                  clickOpens: true,
+                  allowInput: false,
+                  disableMobile: true,
+                  static: false,
+                  ...(props.datePickerOptions || {}),
+                }}
+                onChange={(dateArr) => {
+                  const formatted = dateArr[0]
+                    ? moment(dateArr[0]).format(
+                        props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
+                      )
+                    : '';
+                  field.onChange(formatted);
+                }}
+                {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
+              />
+            )}
+          />
+        ) : (
+          <Flatpickr
+            key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
+            value={props.value || props.defaultValue}
+            {...commonProps}
+            options={{
+              enableTime: !!props.includeTime,
+              defaultDate: props.value || props.defaultValue || new Date(),
+              dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
+              ...(props.includeTime ? { time_24hr: true } : {}),
+              locale: { firstDayOfWeek: 1 },
+              clickOpens: true,
+              allowInput: false,
+              static: false,
+              ...(props.datePickerOptions || {}),
+            }}
+            onChange={(dateArr) => {
+              const formatted = dateArr[0]
+                ? moment(dateArr[0]).format(
+                    props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
+                  )
+                : '';
+              props.onChange?.(formatted);
+            }}
+            {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
+          />
         ),
-        time: (
-          props.control ? (
-            <Controller
-              name={props.name}
-              control={props.control}
-              render={({ field }) => (
-                <Flatpickr
-                  value={field.value || props.defaultValue}
-                  {...commonProps}
-                  options={{
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: 'H:i',
-                    time_24hr: true,
-                    clickOpens: true,
-                    allowInput: false,
-                    disableMobile: true,
-                    static: false,
-                    ...(props.datePickerOptions || {}),
-                  }}
-                  onChange={(dateArr) => {
-                    const formatted = dateArr[0]
-                      ? moment(dateArr[0]).format('HH:mm')
-                      : '';
-                    field.onChange(formatted);
-                  }}
-                  {...omit(props, ['datePickerOptions', 'type'])}
-                />
-              )}
-            />
-          ) : (
-            <Flatpickr
-              value={props.value || props.defaultValue}
-              {...commonProps}
-              options={{
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: 'H:i',
-                time_24hr: true,
-                clickOpens: true,
-                allowInput: false,
-                disableMobile: true,
-                static: false,
-                ...(props.datePickerOptions || {}),
-              }}
-              onChange={(dateArr) => {
-                const formatted = dateArr[0]
-                  ? moment(dateArr[0]).format('HH:mm')
-                  : '';
-                props.onChange?.(formatted);
-              }}
-              {...omit(props, ['datePickerOptions', 'type'])}
-            />
-          )
+        time: props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <Flatpickr
+                value={field.value || props.defaultValue}
+                {...commonProps}
+                options={{
+                  enableTime: true,
+                  noCalendar: true,
+                  dateFormat: 'H:i',
+                  time_24hr: true,
+                  clickOpens: true,
+                  allowInput: false,
+                  disableMobile: true,
+                  static: false,
+                  ...(props.datePickerOptions || {}),
+                }}
+                onChange={(dateArr) => {
+                  const formatted = dateArr[0]
+                    ? moment(dateArr[0]).format('HH:mm')
+                    : '';
+                  field.onChange(formatted);
+                }}
+                {...omit(props, ['datePickerOptions', 'type'])}
+              />
+            )}
+          />
+        ) : (
+          <Flatpickr
+            value={props.value || props.defaultValue}
+            {...commonProps}
+            options={{
+              enableTime: true,
+              noCalendar: true,
+              dateFormat: 'H:i',
+              time_24hr: true,
+              clickOpens: true,
+              allowInput: false,
+              disableMobile: true,
+              static: false,
+              ...(props.datePickerOptions || {}),
+            }}
+            onChange={(dateArr) => {
+              const formatted = dateArr[0]
+                ? moment(dateArr[0]).format('HH:mm')
+                : '';
+              props.onChange?.(formatted);
+            }}
+            {...omit(props, ['datePickerOptions', 'type'])}
+          />
         ),
-        'datetime-local': (
-          props.control ? (
-            <Controller
-              name={props.name}
-              control={props.control}
-              render={({ field }) => (
-                <Flatpickr
-                  value={field.value || props.defaultValue}
-                  {...commonProps}
-                  options={{
-                    enableTime: true,
-                    dateFormat: 'd.m.Y H:i',
-                    time_24hr: true,
-                    clickOpens: true,
-                    allowInput: false,
-                    disableMobile: true,
-                    static: false,
-                    ...(props.datePickerOptions || {}),
-                  }}
-                  onChange={(dateArr) => {
-                    const formatted = dateArr[0]
-                      ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
-                      : '';
-                    field.onChange(formatted);
-                  }}
-                  {...omit(props, ['datePickerOptions', 'type'])}
-                />
-              )}
-            />
-          ) : (
-            <Flatpickr
-              value={props.value || props.defaultValue}
-              {...commonProps}
-              options={{
-                enableTime: true,
-                dateFormat: 'd.m.Y H:i',
-                time_24hr: true,
-                clickOpens: true,
-                allowInput: false,
-                disableMobile: true,
-                static: false,
-                ...(props.datePickerOptions || {}),
-              }}
-              onChange={(dateArr) => {
-                const formatted = dateArr[0]
-                  ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
-                  : '';
-                props.onChange?.(formatted);
-              }}
-              {...omit(props, ['datePickerOptions', 'type'])}
-            />
-          )
+        'datetime-local': props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <Flatpickr
+                value={field.value || props.defaultValue}
+                {...commonProps}
+                options={{
+                  enableTime: true,
+                  dateFormat: 'd.m.Y H:i',
+                  time_24hr: true,
+                  clickOpens: true,
+                  allowInput: false,
+                  disableMobile: true,
+                  static: false,
+                  ...(props.datePickerOptions || {}),
+                }}
+                onChange={(dateArr) => {
+                  const formatted = dateArr[0]
+                    ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
+                    : '';
+                  field.onChange(formatted);
+                }}
+                {...omit(props, ['datePickerOptions', 'type'])}
+              />
+            )}
+          />
+        ) : (
+          <Flatpickr
+            value={props.value || props.defaultValue}
+            {...commonProps}
+            options={{
+              enableTime: true,
+              dateFormat: 'd.m.Y H:i',
+              time_24hr: true,
+              clickOpens: true,
+              allowInput: false,
+              disableMobile: true,
+              static: false,
+              ...(props.datePickerOptions || {}),
+            }}
+            onChange={(dateArr) => {
+              const formatted = dateArr[0]
+                ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
+                : '';
+              props.onChange?.(formatted);
+            }}
+            {...omit(props, ['datePickerOptions', 'type'])}
+          />
         ),
         number: (
           <input
@@ -328,7 +320,9 @@ const Input = forwardRef(
               props
             )}
             inputMode={
-              props?.min !== undefined && props?.min !== null && Number(props.min) >= 0
+              props?.min !== undefined &&
+              props?.min !== null &&
+              Number(props.min) >= 0
                 ? 'numeric'
                 : undefined
             }
@@ -426,7 +420,14 @@ const Input = forwardRef(
           <select
             {...commonProps}
             {...omit(
-              ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
+              [
+                'images',
+                'accept',
+                'multiple',
+                'control',
+                'datePickerOptions',
+                'placeholderOption',
+              ],
               props
             )}
             value={
@@ -446,6 +447,40 @@ const Input = forwardRef(
               props.onChange?.(parsed);
             }}
           >
+            {(() => {
+              const defaultPlaceholder = { value: '', label: '-' };
+              const ph =
+                typeof props.placeholderOption === 'boolean'
+                  ? defaultPlaceholder
+                  : props.placeholderOption;
+              if (!ph) return null;
+              const currentValueStr =
+                props?.value !== undefined && props?.value !== null
+                  ? String(props.value)
+                  : props?.defaultValue !== undefined &&
+                      props?.defaultValue !== null
+                    ? String(props.defaultValue)
+                    : undefined;
+              const hasValue =
+                currentValueStr !== undefined && currentValueStr !== null;
+              const existsInOptions = hasValue
+                ? options.some((opt) => String(opt.value) === currentValueStr)
+                : false;
+              // Show placeholder only if value is unset, equals placeholder value, or not found in options
+              const showPlaceholder =
+                !hasValue ||
+                currentValueStr === String(ph.value) ||
+                !existsInOptions;
+              return showPlaceholder ? (
+                <option
+                  disabled
+                  key={`placeholder-${String(ph.value)}`}
+                  value={String(ph.value)}
+                >
+                  {ph.label}
+                </option>
+              ) : null;
+            })()}
             {options.map((option) => (
               <option
                 disabled={option.isNotSelectable}
@@ -574,55 +609,53 @@ const Input = forwardRef(
             </label>
           </Box>
         ),
-        tel: (
-          props.control ? (
-            <Controller
-              name={props.name}
-              control={props.control}
-              render={({ field }) => {
-                return (
-                  <PhoneInput
-                    {...(props.onFocus ? { onFocus: props.onFocus } : {})}
-                    {...field}
-                    {...r.omit(['className', 'style'], commonProps)}
-                    value={formatPhoneNumber(field.value || '')}
-                    inputClass={classNames(
-                      styles[`input-tel-${variant}`],
-                      styles[size]
-                    )}
-                    inputStyle={commonProps.style}
-                    containerClass={styles['input-tel-container']}
-                    onlyCountries={['uz']}
-                    disableDropdown={true}
-                    countryCodeEditable={false}
-                    buttonClass={styles['hidden']}
-                    country={'uz'}
-                    onChange={(value) => {
-                      const formattedValue = formatPhoneNumber(value);
-                      field.onChange(formattedValue);
-                    }}
-                  />
-                );
-              }}
-            />
-          ) : (
-            <PhoneInput
-              {...(props.onFocus ? { onFocus: props.onFocus } : {})}
-              {...r.omit(['className', 'style'], commonProps)}
-              value={formatPhoneNumber(props.value || props.defaultValue || '')}
-              inputClass={classNames(
-                styles[`input-tel-${variant}`],
-                styles[size]
-              )}
-              inputStyle={commonProps.style}
-              containerClass={styles['input-tel-container']}
-              onlyCountries={['uz']}
-              disableDropdown={true}
-              countryCodeEditable={false}
-              buttonClass={styles['hidden']}
-              country={'uz'}
-            />
-          )
+        tel: props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => {
+              return (
+                <PhoneInput
+                  {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+                  {...field}
+                  {...r.omit(['className', 'style'], commonProps)}
+                  value={formatPhoneNumber(field.value || '')}
+                  inputClass={classNames(
+                    styles[`input-tel-${variant}`],
+                    styles[size]
+                  )}
+                  inputStyle={commonProps.style}
+                  containerClass={styles['input-tel-container']}
+                  onlyCountries={['uz']}
+                  disableDropdown={true}
+                  countryCodeEditable={false}
+                  buttonClass={styles['hidden']}
+                  country={'uz'}
+                  onChange={(value) => {
+                    const formattedValue = formatPhoneNumber(value);
+                    field.onChange(formattedValue);
+                  }}
+                />
+              );
+            }}
+          />
+        ) : (
+          <PhoneInput
+            {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+            {...r.omit(['className', 'style'], commonProps)}
+            value={formatPhoneNumber(props.value || props.defaultValue || '')}
+            inputClass={classNames(
+              styles[`input-tel-${variant}`],
+              styles[size]
+            )}
+            inputStyle={commonProps.style}
+            containerClass={styles['input-tel-container']}
+            onlyCountries={['uz']}
+            disableDropdown={true}
+            countryCodeEditable={false}
+            buttonClass={styles['hidden']}
+            country={'uz'}
+          />
         ),
         default: searchable ? (
           props.control ? (
@@ -649,7 +682,13 @@ const Input = forwardRef(
               type={type}
               {...commonProps}
               {...omit(
-                ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
+                [
+                  'images',
+                  'accept',
+                  'multiple',
+                  'control',
+                  'datePickerOptions',
+                ],
                 props
               )}
             />

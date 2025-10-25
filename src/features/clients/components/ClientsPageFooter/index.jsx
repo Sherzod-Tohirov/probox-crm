@@ -230,9 +230,9 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                       variant="outlined"
                       type="select"
                       options={tableSizeSelectOptions}
-                      defaultValue={Number(pageSize)}
-                      onChange={(e) => {
-                        dispatch(setClientsPageSize(Number(e.target.value)));
+                      value={Number(pageSize)}
+                      onChange={(value) => {
+                        dispatch(setClientsPageSize(Number(value)));
                       }}
                       canClickIcon={false}
                     />

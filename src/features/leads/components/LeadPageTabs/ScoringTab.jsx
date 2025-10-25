@@ -5,6 +5,53 @@ import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
 import useScoringForm from '../../hooks/useScoringForm.jsx';
 import styles from './leadPageTabs.module.scss';
+import { getKATMInfo, MAX_KATM_SCORE } from '@/utils/getKATMInfo';
+import { getAge } from '@/utils/getAge';
+
+const regionOptions = [
+  { value: 'Toshkent', label: 'Toshkent viloyati' },
+  { value: "Farg'ona", label: "Farg'ona viloyati" },
+  { value: 'Namangan', label: 'Namangan viloyati' },
+  { value: 'Andijon', label: 'Andijon viloyati' },
+  { value: 'Sirdaryo', label: 'Sirdaryo viloyati' },
+  { value: 'Jizzax', label: 'Jizzax viloyati' },
+  { value: 'Samarqand', label: 'Samarqand viloyati' },
+  { value: 'Qashqadaryo', label: 'Qashqadaryo viloyati' },
+  { value: 'Surxondaryo', label: 'Surxondaryo viloyati' },
+  { value: 'Navoiy', label: 'Navoiy viloyati' },
+  { value: 'Buxoro', label: 'Buxoro viloyati' },
+  { value: 'Xorazm', label: 'Xorazm viloyati' },
+  { value: "Qoraqalpog'iston", label: "Qoraqalpog'iston viloyati" },
+];
+
+const paymentHistoryOptions = [
+  { value: '0 Kun', label: '0 Kun' },
+  { value: '30 kun AQ', label: '30 kun AQ' },
+  { value: 'Keyinga oy AQ', label: 'Keyinga oy AQ' },
+  { value: '31-60 kun AQ', label: '31-60 kun AQ' },
+  { value: '61-90 kun AQ', label: '61-90 kun AQ' },
+  { value: '91 kun AQ', label: '91 kun AQ' },
+  { value: 'SUD', label: 'SUD' },
+  { value: 'SUD jarayoni AQ', label: 'SUD jarayoni AQ' },
+  { value: '30 kun FOIZ', label: '30 kun FOIZ' },
+  { value: 'Keyinga oy FOIZ', label: 'Keyinga oy FOIZ' },
+  { value: '31-60 kun FOIZ', label: '31-60 kun FOIZ' },
+  { value: '61-90 kun FOIZ', label: '61-90 kun FOIZ' },
+  { value: '91 kun AQ FOIZ', label: '91 kun AQ FOIZ' },
+  { value: 'SUD jarayoni FOIZ', label: 'SUD jarayoni FOIZ' },
+];
+
+const mibIrresponsibleOptions = [
+  ...Array.from({ length: 10 }, (_, i) => ({
+    value: i,
+    label: i + 1,
+  })),
+];
+
+const maxBirthDate = new Date();
+maxBirthDate.setFullYear(maxBirthDate.getFullYear() - 18);
+
+// Scoring Tab
 
 export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useScoringForm(
@@ -13,14 +60,15 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset } = form || {};
-
+  const { control, reset, watch, setValue } = form || {};
+  const fieldScore = watch('score');
+  const fieldBirthDate = watch('birthDate');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
-        employeeName: leadData.employeeName || '',
+        clientFullName: leadData.clientFullName || '',
         region: leadData.region || '',
         district: leadData.district || '',
         address: leadData.address || '',
@@ -41,6 +89,23 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     }
   }, [leadData, reset]);
 
+  useEffect(() => {
+    if (!form) return;
+    if (fieldScore !== undefined) {
+      if (fieldScore > MAX_KATM_SCORE) {
+        setValue('score', MAX_KATM_SCORE);
+      }
+      setValue('katm', getKATMInfo(fieldScore), { shouldValidate: true });
+    }
+  }, [fieldScore, setValue, form]);
+
+  useEffect(() => {
+    if (!form) return;
+    if (fieldBirthDate !== undefined) {
+      setValue('age', getAge(fieldBirthDate), { shouldValidate: true });
+    }
+  }, [fieldBirthDate, setValue, form]);
+
   return (
     <Row direction="column" className={styles['tab-content']}>
       <TabHeader
@@ -51,10 +116,10 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       />
 
       <form onSubmit={handleSubmit}>
-        <FieldGroup title="Xodim ma'lumotlari">
+        <FieldGroup title="Mijoz ma'lumotlari">
           <FormField
-            name="employeeName"
-            label="Xodim F.I.O"
+            name="clientFullName"
+            label="Mijoz F.I.O"
             control={control}
             disabled={!canEdit}
           />
@@ -65,6 +130,9 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             name="region"
             label="Viloyat"
             control={control}
+            type="select"
+            options={regionOptions}
+            placeholderOption={true}
             disabled={!canEdit}
           />
           <FormField
@@ -86,6 +154,9 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             name="birthDate"
             label="Tug'ilgan sana"
             control={control}
+            dateOptions={{
+              maxDate: maxBirthDate,
+            }}
             type="date"
             disabled={!canEdit}
           />
@@ -100,9 +171,12 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             name="age"
             label="Yosh"
             control={control}
+            disabled
             type="number"
-            disabled={!canEdit}
           />
+        </FieldGroup>
+
+        <FieldGroup title="KATM va To'lov ma'lumotlari">
           <FormField
             name="score"
             label="Ball (score)"
@@ -110,25 +184,25 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             type="number"
             disabled={!canEdit}
           />
-        </FieldGroup>
-
-        <FieldGroup title="KATM va To'lov ma'lumotlari">
           <FormField
             name="katm"
             label="KATM"
             control={control}
-            disabled={!canEdit}
+            disabled={true}
           />
           <FormField
             name="katmPayment"
             label="KATM to'lov"
             control={control}
+            type="currency"
             disabled={!canEdit}
           />
           <FormField
             name="paymentHistory"
             label="To'lov tarixi"
             control={control}
+            type="select"
+            options={paymentHistoryOptions}
             disabled={!canEdit}
           />
         </FieldGroup>
@@ -138,19 +212,22 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             name="mib"
             label="MIB"
             control={control}
+            type="currency"
             disabled={!canEdit}
           />
           <FormField
             name="mibIrresponsible"
             label="MIB mas'uliyatsiz"
             control={control}
-            type="boolean"
+            type="select"
+            options={mibIrresponsibleOptions}
             disabled={!canEdit}
           />
           <FormField
             name="aliment"
             label="Aliment"
             control={control}
+            type="currency"
             disabled={!canEdit}
           />
         </FieldGroup>
@@ -160,14 +237,14 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             name="officialSalary"
             label="Rasmiy oylik"
             control={control}
-            type="number"
+            type="currency"
             disabled={!canEdit}
           />
           <FormField
             name="finalLimit"
             label="Yakuniy limit"
             control={control}
-            type="number"
+            type="currency"
             disabled={!canEdit}
           />
           <FormField
