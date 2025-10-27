@@ -26,7 +26,7 @@ export default function FormField({
 
   const confirmOptions = [
     { value: true, label: 'Ha ✔️' },
-    { value: false, label: "Yo'q ❌" },
+    { value: false, label: '-' },
   ];
 
   const renderField = ({ field, fieldState }) => {
@@ -45,6 +45,7 @@ export default function FormField({
             type="select"
             placeholder={`${label} tanlang`}
             options={confirmOptions}
+            placeholderOption={placeholderOption}
           />
         );
       case 'number':
@@ -112,6 +113,7 @@ export default function FormField({
               type="select"
               placeholder={`${label} tanlang`}
               options={confirmOptions}
+              placeholderOption={placeholderOption}
             />
           </Col>
         );

@@ -18,6 +18,19 @@ const Accordion = ({
 
   const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
 
+  const variants = {
+    open: {
+      height: 'auto',
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 260, damping: 24 },
+    },
+    collapsed: {
+      height: 0,
+      opacity: 0,
+      transition: { duration: 0.2, ease: 'easeInOut' },
+    },
+  };
+
   const handleToggle = () => {
     if (!isEnabled) return;
     if (isControlled && onToggle) {
@@ -33,7 +46,7 @@ const Accordion = ({
 
   return (
     <div
-      className={`${styles.accordionItem} ${isEnabled ? '' : styles.disabled}`}
+      className={`${styles.accordionItem} ${!title ? styles.noTitle : ''} ${isEnabled ? '' : styles.disabled}`}
     >
       {title && (
         <Typography
@@ -55,16 +68,22 @@ const Accordion = ({
       )}
 
       <AnimatePresence initial={false}>
-        {isOpen && isEnabled && (
+        {isEnabled && (
           <motion.div
             key="content"
             className={styles.accordionContent}
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            initial="collapsed"
+            animate={isOpen ? 'open' : 'collapsed'}
+            exit="collapsed"
+            variants={variants}
           >
-            <div className={styles.innerContent}>{children}</div>
+            <div
+              className={styles.innerContent}
+              aria-hidden={!isOpen}
+              style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
+            >
+              {children}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

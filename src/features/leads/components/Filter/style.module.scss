@@ -1,7 +1,31 @@
+@use '@styles/mixins' as m;
 .filter-form {
   width: 100%;
+  @include m.flex(center, center, 14px, column);
+  .innerContent {
+    padding: 8px 12px;
+  }
+  // Keep default Row/Col sizing for compact layout
 }
 
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px 12px;
+  padding: 12px;
+  width: 100%;
+  align-items: end;
+  > * {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+.compactCol {
+  flex: 1 1 220px !important;
+  min-width: 220px;
+}
 
 /* Mobile-first responsive design */
 @media (max-width: 768px) {

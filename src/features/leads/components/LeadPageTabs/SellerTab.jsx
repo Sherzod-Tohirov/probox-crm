@@ -5,6 +5,7 @@ import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
 import useSellerForm from '../../hooks/useSellerForm.jsx';
 import styles from './leadPageTabs.module.scss';
+import { useSelectOptions } from '../../hooks/useSelectOptions.jsx';
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -12,16 +13,21 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
-  
-  const { control, reset } = form || {};
+
+  const { control, reset, watch } = form || {};
 
   // Reset form when leadData changes
+  const { consultantOptions, sellTypeOptions, branchOptions } =
+    useSelectOptions('seller');
+  const fieldPurchase = watch('purchase');
+  console.log(fieldPurchase, 'fieldPurchase');
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
-        meetingConfirmed: leadData.meetingConfirmed || false,
+        meetingConfirmed: leadData.meetingConfirmed,
         meetingConfirmedDate: leadData.meetingConfirmedDate || '',
+        branch2: leadData?.branch2,
         consultant: leadData.consultant || '',
         purchase: leadData.purchase || false,
         purchaseDate: leadData.purchaseDate || '',
@@ -58,8 +64,20 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
           <FormField
+            name="branch2"
+            label="Filial"
+            control={control}
+            type="select"
+            options={branchOptions}
+            placeholderOption={true}
+            disabled={!canEdit}
+          />
+          <FormField
             name="consultant"
             label="Maslahatchi"
+            type="select"
+            options={consultantOptions}
+            placeholderOption={true}
             control={control}
             disabled={!canEdit}
           />
@@ -78,13 +96,15 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Xarid sanasi"
             control={control}
             type="date"
-            disabled={!canEdit}
+            disabled={!canEdit || !fieldPurchase}
           />
           <FormField
             name="saleType"
             label="Savdo turi"
+            type="select"
+            options={sellTypeOptions}
             control={control}
-            disabled={!canEdit}
+            disabled={!canEdit || !fieldPurchase}
           />
         </FieldGroup>
 

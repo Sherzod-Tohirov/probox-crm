@@ -6,6 +6,7 @@ import TabHeader from './TabHeader';
 import useOperator2Form from '../../hooks/useOperator2Form.jsx';
 import styles from './leadPageTabs.module.scss';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
+import { useSelectOptions } from '../../hooks/useSelectOptions';
 
 export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useOperator2Form(
@@ -14,11 +15,10 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset, watch } = form || {};
+  const { control, reset } = form || {};
   const { data: branches } = useFetchBranches();
+  const { rejectReasonOptions } = useSelectOptions('common');
   // Reset form when leadData changes
-  const answered2 = watch('answered2');
-  console.log(answered2, 'answered2');
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -41,7 +41,6 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   ];
   const branchOptions =
     [
-      { value: '', label: "Noma'lum" },
       ...(branches?.map((branch) => ({
         value: branch.id,
         label: branch.name,
@@ -77,6 +76,9 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="rejectionReason2"
             label="Ikkinchi rad sababi"
             control={control}
+            type="select"
+            options={rejectReasonOptions}
+            placeholderOption={true}
             disabled={!canEdit}
           />
         </FieldGroup>
@@ -95,6 +97,7 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             type="select"
             options={branchOptions}
             control={control}
+            placeholderOption={true}
             disabled={!canEdit}
           />
           <FormField

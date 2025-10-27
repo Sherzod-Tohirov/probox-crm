@@ -1,5 +1,10 @@
+@use '@styles/variables' as v;
+
 .tab-content {
   padding: 20px;
+  @media (max-width: v.$breakpoint-sm) {
+    padding: 0;
+  }
 }
 
 .tab-header {

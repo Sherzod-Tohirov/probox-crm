@@ -7,11 +7,11 @@ const loadState = () => {
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
     return {
       leads: [],
-      currentLead: parsedState.currentLead || {},
-      filter: parsedState.filter || initialLeadsFilterState,
-      currentPage: parsedState.currentPage || 1,
-      pageSize: parsedState.pageSize || 10,
-      lastAction: parsedState.lastAction || [],
+      currentLead: parsedState.currentLead ?? {},
+      filter: parsedState.filter ?? initialLeadsFilterState,
+      currentPage: parsedState.currentPage ?? 1,
+      pageSize: parsedState.pageSize ?? 10,
+      lastAction: parsedState.lastAction ?? [],
     };
   } catch (error) {
     console.log('Error loading leads page state', error);

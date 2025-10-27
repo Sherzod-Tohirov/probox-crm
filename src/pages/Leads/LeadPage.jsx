@@ -109,6 +109,30 @@ export default function LeadPage() {
             span={{ xs: 24, md: 12 }}
             defaultValue={formatToReadablePhoneNumber(lead?.clientPhone, true)}
           />
+          <FormField
+            name="birthDate"
+            label="Tug'ilgan sana"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 12 }}
+            defaultValue={lead?.birthDate}
+          />
+          <FormField
+            name="passportId"
+            label="Pasport ID"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={lead?.passportId}
+          />
+          <FormField
+            name="jshshir2"
+            label="JSHSHIR"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={lead?.jshshir2 || lead?.jshshir}
+          />
         </FieldGroup>
 
         <FieldGroup title="Asosiy ma'lumotlar">
@@ -121,22 +145,7 @@ export default function LeadPage() {
             prefix={<Globe />}
             defaultValue={lead?.source}
           />
-          <FormField
-            name="number"
-            label="Tartib raqami"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={lead?.number}
-          />
-          <FormField
-            name="limit"
-            label="Limit"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={lead?.limit}
-          />
+
           <FormField
             name="time"
             label="Yozilgan vaqt"

@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useEffect } from 'react';
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import moment from 'moment';
-import { Button, Col, Input, Row, Accordion } from '@components/ui';
+import { Button, Col, Row, Accordion } from '@components/ui';
 import { initialLeadsFilterState } from '@utils/store/initialStates';
 import {
   setLeadsCurrentPage,
@@ -12,17 +12,18 @@ import useIsMobile from '@/hooks/useIsMobile';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import selectOptionsCreator from '@utils/selectOptionsCreator';
-import MeetingDateToggle from './MeetingDateToggle';
+import useAuth from '@/hooks/useAuth';
 import styles from './style.module.scss';
-import { AVAILABLE_LEAD_SOURCES } from '@features/leads/utils/constants';
-
-const sourceOptions = [
-  { value: '', label: 'Barchasi' },
-  ...AVAILABLE_LEAD_SOURCES.map((source) => ({
-    value: source,
-    label: source,
-  })),
-];
+import HeaderFilters from './sections/HeaderFilters';
+import MeetingAndDateSection from './sections/MeetingAndDateSection';
+import RoleFilters from './sections/RoleFilters';
+import SelectField from './fields/SelectField';
+import { booleanOptionsAll } from './options';
+import {
+  normalizeFilterState,
+  serializeFilter,
+  persistFilterToStorage,
+} from './utils';
 
 export default function LeadsFilter({
   onFilter = () => {},
@@ -31,6 +32,8 @@ export default function LeadsFilter({
   const dispatch = useDispatch();
   const filterState = useSelector((state) => state.page.leads.filter);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const role = user?.U_role;
 
   // Fetch branches
   const { data: branches = [], isLoading: isBranchesLoading } =
@@ -72,102 +75,68 @@ export default function LeadsFilter({
   }, [operator2List]);
 
   // Ensure multiple select fields are arrays for form initialization
-  const normalizedFilterState = useMemo(() => {
-    const normalized = { ...filterState };
+  const normalizedFilterState = useMemo(
+    () =>
+      normalizeFilterState(
+        filterState,
+        branchOptions,
+        operator1Options,
+        operator2Options
+      ),
+    [filterState, branchOptions, operator1Options, operator2Options]
+  );
 
-    // Convert comma-separated strings back to arrays for multiple selects
-    if (typeof normalized.branch === 'string' && normalized.branch) {
-      const branchValues = normalized.branch.split(',');
-      normalized.branch = branchValues.map((value) => {
-        const option = branchOptions.find(
-          (opt) => opt.value === value || opt.value === parseInt(value)
-        );
-        return option || { value, label: value };
-      });
-    } else if (!Array.isArray(normalized.branch)) {
-      normalized.branch = [];
-    }
-
-    if (typeof normalized.operator === 'string' && normalized.operator) {
-      const operatorValues = normalized.operator.split(',');
-      normalized.operator = operatorValues.map((value) => {
-        const option = operator1Options.find(
-          (opt) => opt.value === value || opt.value === parseInt(value)
-        );
-        return option || { value, label: value };
-      });
-    } else if (!Array.isArray(normalized.operator)) {
-      normalized.operator = [];
-    }
-
-    if (typeof normalized.operator2 === 'string' && normalized.operator2) {
-      const operator2Values = normalized.operator2.split(',');
-      normalized.operator2 = operator2Values.map((value) => {
-        const option = operator2Options.find(
-          (opt) => opt.value === value || opt.value === parseInt(value)
-        );
-        return option || { value, label: value };
-      });
-    } else if (!Array.isArray(normalized.operator2)) {
-      normalized.operator2 = [];
-    }
-
-    return normalized;
-  }, [filterState, branchOptions, operator1Options, operator2Options]);
-
-  const { register, handleSubmit, reset, control, watch } = useForm({
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm({
     defaultValues: normalizedFilterState,
     mode: 'all',
   });
 
   const watchedMeetingDateStart = watch('meetingDateStart');
   const watchedMeetingDateEnd = watch('meetingDateEnd');
-  const enableMeetingDateFilter = watch('enableMeetingDateFilter');
+  const meeting = watch('meeting');
 
   // Reset form when normalized filter state changes (e.g., when options are loaded)
   useEffect(() => {
     reset(normalizedFilterState);
   }, [normalizedFilterState, reset]);
 
+  useEffect(() => {
+    const meetingValue = typeof meeting === 'object' ? meeting?.value : meeting;
+    if (
+      meetingValue === '' ||
+      meetingValue === undefined ||
+      meetingValue === null
+    ) {
+      if (watchedMeetingDateStart) setValue('meetingDateStart', '');
+      if (watchedMeetingDateEnd) setValue('meetingDateEnd', '');
+      return;
+    }
+    const start = moment().startOf('month').format('DD.MM.YYYY');
+    const end = moment().endOf('month').format('DD.MM.YYYY');
+    if (!watchedMeetingDateStart) setValue('meetingDateStart', start);
+    if (!watchedMeetingDateEnd) setValue('meetingDateEnd', end);
+  }, [meeting, watchedMeetingDateStart, watchedMeetingDateEnd, setValue]);
+
   const onSubmit = useCallback(
     (data) => {
-      const payload = { ...data };
-
-      // Remove date fields if date filter is disabled
-      if (!data.enableMeetingDateFilter) {
-        delete payload.meetingDateStart;
-        delete payload.meetingDateEnd;
-      }
-
-      // Format multiple select fields to comma-separated values
-      if (payload.branch && Array.isArray(payload.branch)) {
-        payload.branch = payload.branch
-          .map((item) => (typeof item === 'object' ? item.value : item))
-          .join(',');
-      }
-
-      if (payload.operator && Array.isArray(payload.operator)) {
-        payload.operator = payload.operator
-          .map((item) => (typeof item === 'object' ? item.value : item))
-          .join(',');
-      }
-
-      if (payload.operator2 && Array.isArray(payload.operator2)) {
-        payload.operator2 = payload.operator2
-          .map((item) => (typeof item === 'object' ? item.value : item))
-          .join(',');
-      }
-
-      dispatch(setLeadsCurrentPage(0));
-      dispatch(setLeadsFilter(payload));
+      const payload = serializeFilter(data);
+      dispatch(setLeadsCurrentPage(1));
       onFilter(payload);
     },
     [dispatch, onFilter]
   );
 
+  // Persist filter draft to localStorage on any form change (without dispatching)
+  useEffect(() => {
+    const subscription = watch((values) => {
+      const payload = serializeFilter(values);
+      persistFilterToStorage(payload);
+    });
+    return () => subscription.unsubscribe?.();
+  }, [watch]);
+
   const onClear = useCallback(() => {
-    dispatch(setLeadsCurrentPage(0));
-    dispatch(setLeadsFilter(initialLeadsFilterState));
+    dispatch(setLeadsCurrentPage(1));
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
@@ -176,192 +145,65 @@ export default function LeadsFilter({
     });
 
     reset(normalizedInitialState);
-    onFilter(initialLeadsFilterState);
+    const pruned = serializeFilter(normalizedInitialState);
+    onFilter(pruned);
   }, [dispatch, reset, onFilter]);
 
   return (
-    <Accordion
-      isOpen={isExpanded}
-      defaultOpen={isExpanded}
-      isEnabled={isMobile}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className={styles['filter-form']}>
-        <Row direction="row" gutter={isMobile ? 4 : 2} wrap align="flex-end">
-          {/* All filters in one row on desktop, full width on mobile */}
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={2}
-            xl={2}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Qidiruv"
-              type="search"
-              placeholder="Ismi | Telefon"
-              placeholderColor="secondary"
-              control={control}
-              {...register('search')}
-            />
-          </Col>
+    <Accordion isOpen={isExpanded} isEnabled={true}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={styles['filter-form']}
+        style={{ width: '100%' }}
+      >
+        <HeaderFilters
+          control={control}
+          register={register}
+          isMobile={isMobile}
+          branchOptions={branchOptions}
+          operator1Options={operator1Options}
+          operator2Options={operator2Options}
+          isBranchesLoading={isBranchesLoading}
+          isOperator1Loading={isOperator1Loading}
+          isOperator2Loading={isOperator2Loading}
+        />
 
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.2}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Manba"
-              type="select"
-              options={sourceOptions}
-              canClickIcon={false}
-              control={control}
-              {...register('source')}
-            />
-          </Col>
+        <MeetingAndDateSection
+          control={control}
+          isMobile={isMobile}
+          watchedMeeting={meeting}
+          watchedMeetingDateStart={watchedMeetingDateStart}
+          watchedMeetingDateEnd={watchedMeetingDateEnd}
+        />
 
+        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
           <Col
             xs={12}
             sm={6}
             md={2}
             lg={1.5}
             xl={1.2}
-            className={isMobile ? styles['mobile-full-width'] : ''}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
           >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Filial"
-              type="select"
-              options={branchOptions}
-              canClickIcon={false}
-              multipleSelect={true}
-              isLoading={isBranchesLoading}
+            <SelectField
+              name="purchase"
+              label="Xarid"
+              options={booleanOptionsAll}
               control={control}
-              {...register('branch')}
             />
           </Col>
+        </Row>
 
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.2}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Operator 1"
-              type="select"
-              options={operator1Options}
-              canClickIcon={false}
-              multipleSelect={true}
-              isLoading={isOperator1Loading}
-              control={control}
-              showAvatars={true}
-              avatarSize={22}
-              {...register('operator')}
-            />
-          </Col>
+        <RoleFilters
+          role={role}
+          control={control}
+          isMobile={isMobile}
+          register={register}
+        />
 
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.2}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Operator 2"
-              type="select"
-              options={operator2Options}
-              canClickIcon={false}
-              multipleSelect={true}
-              isLoading={isOperator2Loading}
-              control={control}
-              showAvatars={true}
-              avatarSize={22}
-              {...register('operator2')}
-            />
-          </Col>
-
-          {/* Meeting Date Toggle - inline with date inputs */}
-          <Col
-            xs={12}
-            sm="auto"
-            style={{ minWidth: 'auto' }}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <MeetingDateToggle
-              register={register}
-              isEnabled={enableMeetingDateFilter}
-            />
-          </Col>
-
-          {/* Meeting Date Inputs - Always visible, just disabled */}
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.3}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Boshlanish"
-              canClickIcon={false}
-              type="date"
-              disabled={!enableMeetingDateFilter}
-              datePickerOptions={{
-                maxDate: watchedMeetingDateEnd
-                  ? moment(watchedMeetingDateEnd, 'DD.MM.YYYY').toDate()
-                  : undefined,
-              }}
-              control={control}
-              {...register('meetingDateStart')}
-            />
-          </Col>
-
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.3}
-            className={isMobile ? styles['mobile-full-width'] : ''}
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Tugash"
-              canClickIcon={false}
-              type="date"
-              disabled={!enableMeetingDateFilter}
-              datePickerOptions={{
-                minDate: watchedMeetingDateStart
-                  ? moment(watchedMeetingDateStart, 'DD.MM.YYYY').toDate()
-                  : undefined,
-              }}
-              control={control}
-              {...register('meetingDateEnd')}
-            />
-          </Col>
-
+        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
           {/* Action Buttons */}
           <Col
             xs={12}

@@ -27,6 +27,22 @@ export default function Leads() {
   const { currentPage, pageSize, filter, currentLead } = useSelector(
     (state) => state.page.leads
   );
+
+  const [toggleFilter, setToggleFilter] = useState(() => {
+    try {
+      const raw = localStorage.getItem('leadsFilterOpen');
+      if (raw === 'true') return true;
+      if (raw === 'false') return false;
+    } catch (_) {}
+    return false;
+  });
+
+  // Persist filter open state to its own key
+  useEffect(() => {
+    try {
+      localStorage.setItem('leadsFilterOpen', String(toggleFilter));
+    } catch (_) {}
+  }, [toggleFilter]);
   const {
     data: { data: leads, ...meta } = {
       data: [],
@@ -39,7 +55,7 @@ export default function Leads() {
     params: filter,
   });
 
-  const [toggleFilter, setToggleFilter] = useState(false);
+  
 
   const {
     uiScale,
@@ -111,10 +127,7 @@ export default function Leads() {
               />
             </Col>
             <Col fullWidth>
-              <LeadsFilter
-                onFilter={handleFilter}
-                isExpanded={isMobile ? toggleFilter : true}
-              />
+              <LeadsFilter onFilter={handleFilter} isExpanded={toggleFilter} />
             </Col>
           </Row>
         </Col>

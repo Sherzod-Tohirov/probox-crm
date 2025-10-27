@@ -242,7 +242,6 @@ const useClientsTableColumns = (props) => {
         const insTotal = parseFloat(column.InsTotal) || 0;
         const insTotalFC = parseFloat(column.InsTotalFC) || 0;
         const rate = parseFloat(currency?.['Rate']) || 0;
-
         const value = column?.DocCur === 'USD' ? insTotal * rate : insTotalFC;
         return (
           (

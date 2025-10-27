@@ -88,20 +88,16 @@ export default function LeadsToolbar({
             </Button>
           </div>
 
-          {isMobile && (
-            <>
-              <span className={styles.divider} />
-              <Button
-                variant="text"
-                color="secondary"
-                onClick={onToggleFilter}
-                icon="filter"
-                iconSize={20}
-                aria-label="Toggle filter"
-                className={styles['filter-button']}
-              />
-            </>
-          )}
+          <span className={styles.divider} />
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={onToggleFilter}
+            icon="filter"
+            iconSize={20}
+            aria-label="Toggle filter"
+            className={styles['filter-button']}
+          />
         </div>
       </Col>
     </Row>

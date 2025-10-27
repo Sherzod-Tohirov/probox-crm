@@ -6,6 +6,7 @@ import TabHeader from './TabHeader';
 import useOperator1Form from '../../hooks/useOperator1Form.jsx';
 import styles from './leadPageTabs.module.scss';
 import useIsMobile from '@/hooks/useIsMobile';
+import { useSelectOptions } from '../../hooks/useSelectOptions';
 
 export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useOperator1Form(
@@ -16,6 +17,8 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
 
   const { control, reset } = form || {};
   const isMobile = useIsMobile();
+  const { rejectReasonOptions } = useSelectOptions('common');
+  const { passportVisitOptions } = useSelectOptions('operator1');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -33,12 +36,6 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
       });
     }
   }, [leadData, reset]);
-
-  const passportVisitOptions = [
-    { value: 'passport', label: 'Pasport' },
-    { value: 'visit', label: 'Tashrif' },
-    { value: 'process', label: 'Jarayonda' },
-  ];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -108,6 +105,9 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     name="rejectionReason"
                     label="Rad etish sababi"
                     control={control}
+                    type="select"
+                    options={rejectReasonOptions}
+                    placeholderOption={true}
                     disabled={!canEdit}
                   />
                 </Col>

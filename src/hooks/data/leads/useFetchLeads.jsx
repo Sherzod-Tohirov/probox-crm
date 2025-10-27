@@ -15,7 +15,7 @@ export default function useFetchLeads(options = {}) {
     queryKey: ['leads', queryParams],
     queryFn: () => getLeads(queryParams),
     enabled: options.enabled !== undefined ? !!options.enabled : true,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     ...options.queryOptions,
   });

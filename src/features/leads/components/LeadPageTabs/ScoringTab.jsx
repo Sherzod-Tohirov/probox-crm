@@ -85,6 +85,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         officialSalary: leadData.officialSalary || '',
         finalLimit: leadData.finalLimit || '',
         finalPercentage: leadData.finalPercentage || '',
+        acceptedReason: leadData?.acceptedReason || '',
       });
     }
   }, [leadData, reset]);
@@ -105,6 +106,12 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       setValue('age', getAge(fieldBirthDate), { shouldValidate: true });
     }
   }, [fieldBirthDate, setValue, form]);
+
+  const acceptedReasonOptions = [
+    { value: 'Yaxshi mijoz', label: 'Yaxshi mijoz' },
+    { value: 'Unduruv ruxsat bergan', label: 'Undruv ruxsat bergan' },
+    { value: 'Limit chiqdi', label: 'Limit chiqdi' },
+  ];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -252,6 +259,15 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Yakuniy foiz"
             control={control}
             type="number"
+            disabled={!canEdit}
+          />
+          <FormField
+            name="acceptedReason"
+            label="Qabul qilingan sabab"
+            control={control}
+            type="select"
+            options={acceptedReasonOptions}
+            placeholderOption={true}
             disabled={!canEdit}
           />
         </FieldGroup>
