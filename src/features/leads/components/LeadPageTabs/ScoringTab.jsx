@@ -7,6 +7,9 @@ import useScoringForm from '../../hooks/useScoringForm.jsx';
 import styles from './leadPageTabs.module.scss';
 import { getKATMInfo, MAX_KATM_SCORE } from '@/utils/getKATMInfo';
 import { getAge } from '@/utils/getAge';
+import { calculateLeadLimit } from '@/utils/calculateLeadLimit';
+import { PULT } from '../../utils/constants';
+import formatterCurrency from '@/utils/formatterCurrency';
 
 const regionOptions = [
   { value: 'Toshkent', label: 'Toshkent viloyati' },
@@ -44,7 +47,7 @@ const paymentHistoryOptions = [
 const mibIrresponsibleOptions = [
   ...Array.from({ length: 10 }, (_, i) => ({
     value: i,
-    label: i + 1,
+    label: i,
   })),
 ];
 
@@ -61,8 +64,29 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   );
 
   const { control, reset, watch, setValue } = form || {};
-  const fieldScore = watch('score');
-  const fieldBirthDate = watch('birthDate');
+  const [
+    fieldScore,
+    fieldBirthDate,
+    fieldAge,
+    fieldKatm,
+    fieldKatmPayment,
+    fieldPaymentHistory,
+    fieldMib,
+    fieldMibIrresponsible,
+    fieldAliment,
+    fieldOfficialSalary,
+  ] = watch([
+    'score',
+    'birthDate',
+    'age',
+    'katm',
+    'katmPayment',
+    'paymentHistory',
+    'mib',
+    'mibIrresponsible',
+    'aliment',
+    'officialSalary',
+  ]);
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -89,7 +113,6 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       });
     }
   }, [leadData, reset]);
-
   useEffect(() => {
     if (!form) return;
     if (fieldScore !== undefined) {
@@ -106,6 +129,39 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       setValue('age', getAge(fieldBirthDate), { shouldValidate: true });
     }
   }, [fieldBirthDate, setValue, form]);
+  useEffect(() => {
+    if (!form) return;
+
+    const computed = calculateLeadLimit(
+      {
+        age: fieldAge,
+        katmScore: fieldKatm,
+        katmPayment: fieldKatmPayment,
+        katmHistory: fieldPaymentHistory,
+        mibDebt: fieldMib,
+        mibIrresponsible: fieldMibIrresponsible,
+        alimentDebt: fieldAliment,
+        salary: fieldOfficialSalary,
+      },
+      PULT
+    );
+    console.log(computed, 'computed');
+    setValue('finalLimit', formatterCurrency(computed), {
+      shouldValidate: true,
+    });
+  }, [
+    form,
+    setValue,
+    fieldScore,
+    fieldAge,
+    fieldKatm,
+    fieldKatmPayment,
+    fieldPaymentHistory,
+    fieldMib,
+    fieldMibIrresponsible,
+    fieldAliment,
+    fieldOfficialSalary,
+  ]);
 
   const acceptedReasonOptions = [
     { value: 'Yaxshi mijoz', label: 'Yaxshi mijoz' },

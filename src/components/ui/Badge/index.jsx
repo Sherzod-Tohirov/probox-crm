@@ -3,20 +3,25 @@ import PropTypes from 'prop-types';
 import { forwardRef, memo } from 'react';
 import styles from './badge.module.scss';
 
-function Badge({
-  children,
-  className,
-  color = 'info',
-  variant = 'soft',
-  size = 'md',
-  ...props
-}, ref) {
+function Badge(
+  {
+    children,
+    className,
+    color = 'info',
+    variant = 'soft',
+    size = 'md',
+    ...props
+  },
+  ref
+) {
   return (
     <span
       ref={ref}
       className={classNames(
         styles.badge,
-        styles[color],
+        styles[
+          typeof color === 'boolean' ? (color ? 'success' : 'danger') : color
+        ],
         styles[variant],
         styles[size],
         className

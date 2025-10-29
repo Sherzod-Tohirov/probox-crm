@@ -15,24 +15,26 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset } = form || {};
+  const { control, reset, watch } = form || {};
   const isMobile = useIsMobile();
   const { rejectReasonOptions } = useSelectOptions('common');
   const { passportVisitOptions } = useSelectOptions('operator1');
+  const fieldAnswered = watch('answered');
+  console.log(fieldAnswered, 'answered');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
-        called: leadData.called || false,
-        callTime: leadData.callTime || '',
-        answered: leadData.answered || false,
-        callCount: leadData.callCount || '',
-        interested: leadData.interested || '',
-        rejectionReason: leadData.rejectionReason || '',
-        passportVisit: leadData.passportVisit || '',
-        jshshir: leadData.jshshir || '',
-        idX: leadData.idX || '',
+        called: leadData.called,
+        callTime: leadData.callTime,
+        answered: leadData.answered,
+        callCount: leadData.callCount,
+        interested: leadData.interested,
+        rejectionReason: leadData.rejectionReason,
+        passportVisit: leadData.passportVisit,
+        jshshir: leadData.jshshir,
+        idX: leadData.idX,
       });
     }
   }, [leadData, reset]);
@@ -50,7 +52,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         <FieldGroup title="Qo'ng'iroq ma'lumotlari">
           <Row gutter={isMobile ? 2 : 6}>
             <Col>
-              <Row direction={'row'} gutter={isMobile ? 2 : 3}>
+              <Row direction={'row'} gutter={isMobile ? 2 : 3} wrap>
                 <Col>
                   <FormField
                     name="called"
@@ -65,7 +67,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     name="answered"
                     label="Javob berildimi?"
                     control={control}
-                    type="boolean"
+                    type="confirm"
                     disabled={!canEdit}
                   />
                 </Col>
@@ -81,7 +83,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
               </Row>
             </Col>
             <Col>
-              <Row direction={'row'} gutter={isMobile ? 2 : 3}>
+              <Row direction={'row'} gutter={isMobile ? 2 : 3} wrap>
                 <Col>
                   <FormField
                     name="callCount"
@@ -96,7 +98,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     name="interested"
                     label="Qiziqish bildirildimi?"
                     control={control}
-                    type="boolean"
+                    type="confirm"
                     disabled={!canEdit}
                   />
                 </Col>

@@ -94,7 +94,7 @@ export function persistFilterToStorage(filter) {
       'leadsPageState',
       JSON.stringify({
         ...prev,
-        filter,
+        filterDraft: filter,
       })
     );
   } catch (_) {

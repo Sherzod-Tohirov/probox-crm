@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useDeferredValue } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ import useLeadsTableColumns from '@features/leads/hooks/useLeadsTableColumns';
 import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
 import useIsMobile from '@hooks/useIsMobile';
+
 import {
   setCurrentLead,
   setLeadsCurrentPage,
@@ -45,17 +46,15 @@ export default function Leads() {
   }, [toggleFilter]);
   const {
     data: { data: leads, ...meta } = {
-      data: [],
-      meta: {},
+      data: { data: [], totalPages: 0, total: 0 },
     },
     isLoading: isLoadingLeads,
   } = useFetchLeads({
-    page: currentPage,
+    page: currentPage + 1,
     limit: pageSize,
     params: filter,
   });
-
-  
+ 
 
   const {
     uiScale,
@@ -92,15 +91,11 @@ export default function Leads() {
 
   // Keep current page in bounds when filters change
   useEffect(() => {
-    if (currentPage >= meta.totalPages) {
-      dispatch(setLeadsCurrentPage(Math.max(1, meta.totalPages)));
+    const totalPages = Number(meta?.totalPages ?? 0);
+    if (totalPages > 0 && currentPage >= totalPages) {
+      dispatch(setLeadsCurrentPage(Math.max(0, totalPages - 1)));
     }
-  }, [meta, dispatch]);
-
-  // Defer large dataset to keep other UI responsive
-  // const deferredLeads = useDeferredValue(leads);
-  // const shouldVirtualize = (deferredLeads?.length || 0) > 100;
-  // const virtualizedHeight = isMobile ? 500 : 600; // px
+  }, [currentPage, meta?.totalPages, dispatch]);
 
   return (
     <>
@@ -140,7 +135,7 @@ export default function Leads() {
             columns={leadsTableColumns}
             data={leads}
             maxBodyHeight={
-              isMobile ? 'calc(100vh - 400px)' : 'calc(100vh - 600px)'
+              isMobile ? 'calc(100vh - 400px)' : 'calc(100vh - 200px)'
             }
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}

@@ -25,6 +25,7 @@ import SellerTab from '@/features/leads/components/LeadPageTabs/SellerTab';
 import ScoringTab from '@/features/leads/components/LeadPageTabs/ScoringTab';
 import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
+import PassportUpload from '@/features/leads/components/LeadPageForm/PassportUpload';
 
 import styles from './style.module.scss';
 import useAlert from '@/hooks/useAlert';
@@ -38,6 +39,7 @@ export default function LeadPage() {
   const { data, isLoading } = useFetchLeadById(id);
   const { data: lead } = data ?? {};
   const { alert } = useAlert();
+  const [passportFiles, setPassportFiles] = useState([]);
   // Get current user role
   const currentUserRole = user?.['U_role'] ?? '';
   // Map role to tab key
@@ -93,46 +95,92 @@ export default function LeadPage() {
     () => (
       <div className={styles['fields-grid']}>
         <FieldGroup title="Mijoz ma'lumotlari">
-          <FormField
-            name="clientName"
-            label="Ismi"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 12 }}
-            defaultValue={lead?.clientName}
-          />
-          <FormField
-            name="clientPhone"
-            label="Telefon"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 12 }}
-            defaultValue={formatToReadablePhoneNumber(lead?.clientPhone, true)}
-          />
-          <FormField
-            name="birthDate"
-            label="Tug'ilgan sana"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 12 }}
-            defaultValue={lead?.birthDate}
-          />
-          <FormField
-            name="passportId"
-            label="Pasport ID"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={lead?.passportId}
-          />
-          <FormField
-            name="jshshir2"
-            label="JSHSHIR"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={lead?.jshshir2 || lead?.jshshir}
-          />
+          <Row gutter={4}>
+            <Col>
+              <Row direction={'row'} gutter={4} wrap>
+                <Col>
+                  <FormField
+                    name="clientName"
+                    label="Ismi"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 12 }}
+                    defaultValue={lead?.clientName}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="clientPhone"
+                    label="Telefon"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 12 }}
+                    defaultValue={formatToReadablePhoneNumber(
+                      lead?.clientPhone,
+                      true
+                    )}
+                  />
+                </Col>
+                <Col>
+                  {' '}
+                  <FormField
+                    name="birthDate"
+                    label="Tug'ilgan sana"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 12 }}
+                    defaultValue={lead?.birthDate}
+                  />
+                </Col>
+                <Col>
+                  {' '}
+                  <FormField
+                    name="age"
+                    label="Yosh"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 12 }}
+                    defaultValue={lead?.age}
+                  />
+                </Col>
+              </Row>
+            </Col>
+            <Col>
+              <Row direction={'row'} gutter={4} wrap>
+                {' '}
+                <Col>
+                  <FormField
+                    name="passportId"
+                    label="Pasport ID"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 8 }}
+                    defaultValue={lead?.passportId}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="jshshir2"
+                    label="JSHSHIR"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 8 }}
+                    defaultValue={lead?.jshshir2 || lead?.jshshir}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="limit"
+                    label="Limit"
+                    control={null}
+                    disabled={true}
+                    span={{ xs: 24, md: 8 }}
+                    defaultValue={lead?.limit}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </FieldGroup>
 
         <FieldGroup title="Asosiy ma'lumotlar">
@@ -155,9 +203,13 @@ export default function LeadPage() {
             defaultValue={lead?.time}
           />
         </FieldGroup>
+
+        <FieldGroup title="Pasport rasmlari">
+          <PassportUpload value={passportFiles} onChange={setPassportFiles} />
+        </FieldGroup>
       </div>
     ),
-    [lead]
+    [lead, passportFiles]
   );
 
   const tabs = useMemo(

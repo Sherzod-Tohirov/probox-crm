@@ -18,25 +18,26 @@ export default function useLeadsTableColumns() {
     include_role: 'Operator2',
   });
   const { data: branchList = [] } = useFetchBranches();
-  const findOperatorName = useCallback((operatorCode, type = 'operator1') => {
-    console.log(operatorCode, "operator code");
-    console.log(type, "operator type");
-    console.log(operator1List, "operator1List");
-    console.log(operator2List, "operator2List");
-    const operator = (
-      type === 'operator1' ? operator1List : operator2List
-    ).find((operator) => String(operator.SlpCode) === String(operatorCode));
-    console.log(operator, "found operator");
-    return operator?.SlpName || '-';
-  }, [operator1List, operator2List]);
+  const findOperatorName = useCallback(
+    (operatorCode, type = 'operator1') => {
+      const operator = (
+        type === 'operator1' ? operator1List : operator2List
+      ).find((operator) => String(operator.SlpCode) === String(operatorCode));
+      return operator?.SlpName || '-';
+    },
+    [operator1List, operator2List]
+  );
 
-  const findBranchName = useCallback((branchCode) => {
-    const branch = branchList.find(
-      (branch) => String(branch.id) === String(branchCode)
-    );
+  const findBranchName = useCallback(
+    (branchCode) => {
+      const branch = branchList.find(
+        (branch) => String(branch.id) === String(branchCode)
+      );
 
-    return branch?.name || '-';
-  }, [branchList]);
+      return branch?.name || '-';
+    },
+    [branchList]
+  );
 
   const getSourceStyle = (source) => {
     const sourceStyles = {
@@ -183,17 +184,26 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'purchase',
+        title: "Xarid bo'ldimi",
+        renderCell: (column) => {
+          const { purchase } = column;
+          if (purchase === null) return '-';
+          return (
+            <Badge color={purchase} variant="soft" size="md">
+              {purchase ? 'Ha' : "Yo'q"}
+            </Badge>
+          );
+        },
+      },
+      {
         key: 'meetingConfirmed',
         title: 'Uchrashuv belgilandimi',
-        horizontal: 'center',
         renderCell: (column) => {
           const { meetingConfirmed } = column;
+          if (meetingConfirmed === null) return '-';
           return (
-            <Badge
-              color={meetingConfirmed ? 'success' : 'danger'}
-              variant="soft"
-              size="md"
-            >
+            <Badge color={meetingConfirmed} variant="soft" size="md">
               {meetingConfirmed ? 'Ha' : "Yo'q"}
             </Badge>
           );
@@ -210,9 +220,18 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'finalLimit',
+        title: 'Yakuniy limit',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        renderCell: (column) => {
+          const { finalLimit } = column;
+          return <span>{finalLimit ?? '-'}</span>;
+        },
+      },
+      {
         key: 'time',
         title: 'Vaqti',
-        width: { xs: '30%', md: '14%', xl: '12%' },
+        width: { xs: '25%', md: '14%', xl: '8%' },
         renderCell: (column) => {
           const { time } = column;
           return (

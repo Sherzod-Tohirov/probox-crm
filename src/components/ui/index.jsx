@@ -21,6 +21,7 @@ import Card from './Card';
 import Spinner from './Spinner';
 import Skeleton, { SkeletonText, SkeletonCard, SkeletonNavigation } from './Skeleton';
 import YandexMap from './Map/YandexMap';
+import Notifications from './Notifications';
 export {
   Row,
   Col,
@@ -47,5 +48,6 @@ export {
   SkeletonText,
   SkeletonCard,
   SkeletonNavigation,
+  Notifications,
   YandexMap,
 };

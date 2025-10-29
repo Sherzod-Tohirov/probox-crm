@@ -20,20 +20,19 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { consultantOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
   const fieldPurchase = watch('purchase');
-  console.log(fieldPurchase, 'fieldPurchase');
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
         meetingConfirmed: leadData.meetingConfirmed,
-        meetingConfirmedDate: leadData.meetingConfirmedDate || '',
+        meetingConfirmedDate: leadData.meetingConfirmedDate,
         branch2: leadData?.branch2,
-        consultant: leadData.consultant || '',
-        purchase: leadData.purchase || false,
-        purchaseDate: leadData.purchaseDate || '',
-        saleType: leadData.saleType || '',
-        passportId: leadData.passportId || '',
-        jshshir2: leadData.jshshir2 || '',
+        consultant: leadData.consultant,
+        purchase: leadData.purchase,
+        purchaseDate: leadData.purchaseDate,
+        saleType: leadData.saleType,
+        passportId: leadData.passportId,
+        jshshir2: leadData.jshshir2,
       });
     }
   }, [leadData, reset]);
@@ -53,7 +52,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             name="meetingConfirmed"
             label="Uchrashuv tasdiqlandi"
             control={control}
-            type="boolean"
+            type="confirm"
             disabled={!canEdit}
           />
           <FormField
@@ -82,14 +81,18 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
         </FieldGroup>
-
+        {!leadData?.limit && canEdit && (
+          <Row className={styles['error-message']}>
+            Xaridni tasdiqlash uchun limit mavjud emas
+          </Row>
+        )}
         <FieldGroup title="Xarid ma'lumotlari">
           <FormField
             name="purchase"
             label="Xarid amalga oshdimi?"
             control={control}
-            type="boolean"
-            disabled={!canEdit}
+            type="confirm"
+            disabled={!canEdit || !leadData?.limit || !leadData?.acceptedReason}
           />
           <FormField
             name="purchaseDate"

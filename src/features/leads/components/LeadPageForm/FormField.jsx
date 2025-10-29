@@ -1,5 +1,5 @@
 import { Controller } from 'react-hook-form';
-import { Input, Col } from '@components/ui';
+import { Input, Col, Row } from '@components/ui';
 import formatterCurrency from '@utils/formatterCurrency';
 
 export default function FormField({
@@ -24,9 +24,15 @@ export default function FormField({
     prefix,
   };
 
-  const confirmOptions = [
+  const booleanOptions = [
     { value: true, label: 'Ha ✔️' },
-    { value: false, label: '-' },
+    { value: false, label: "Yo'q" },
+  ];
+
+  const confirmOptions = [
+    { value: 'null', label: '-' },
+    { value: 'true', label: 'Ha ✔️' },
+    { value: 'false', label: "Yo'q" },
   ];
 
   const renderField = ({ field, fieldState }) => {
@@ -44,10 +50,32 @@ export default function FormField({
             {...fieldProps}
             type="select"
             placeholder={`${label} tanlang`}
-            options={confirmOptions}
+            options={booleanOptions}
             placeholderOption={placeholderOption}
           />
         );
+      case 'confirm':
+        return (
+          <Input
+            {...fieldProps}
+            type="select"
+            placeholder={`${label} tanlang`}
+            options={confirmOptions}
+            value={
+              field.value === true
+                ? 'true'
+                : field.value === false
+                  ? 'false'
+                  : 'null'
+            }
+            onChange={(val) => {
+              const out = val === 'true' ? true : val === 'false' ? false : null;
+              field.onChange(out);
+            }}
+            placeholderOption={false}
+          />
+        );
+
       case 'number':
         return <Input {...fieldProps} type="number" min={0} />;
 
@@ -107,17 +135,42 @@ export default function FormField({
     switch (type) {
       case 'boolean':
         return (
+          <Row>
+            {info ? <Col span={span}>{info}</Col> : null}
+            <Col>
+              <Input
+                {...directProps}
+                type="select"
+                placeholder={`${label} tanlang`}
+                options={booleanOptions}
+                placeholderOption={placeholderOption}
+              />
+            </Col>
+          </Row>
+        );
+      case 'confirm':
+        return (
           <Col span={span}>
             <Input
               {...directProps}
               type="select"
-              placeholder={`${label} tanlang`}
               options={confirmOptions}
-              placeholderOption={placeholderOption}
+              value={
+                directProps.value === true
+                  ? 'true'
+                  : directProps.value === false
+                    ? 'false'
+                    : 'null'
+              }
+              onChange={(val) => {
+                const out = val === 'true' ? true : val === 'false' ? false : null;
+                directProps.onChange?.(out);
+              }}
+              placeholder={`${label} tanlang`}
+              placeholderOption={false}
             />
           </Col>
         );
-
       case 'number':
         return (
           <Col span={span}>

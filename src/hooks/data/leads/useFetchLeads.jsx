@@ -10,13 +10,22 @@ export default function useFetchLeads(options = {}) {
     limit: options.limit || pageSize,
     ...options.params,
   };
-  console.log(queryParams);
+  const cleanedParams = Object.fromEntries(
+    Object.entries(queryParams).filter(([_, v]) => {
+      if (v === '' || v === null || v === undefined) return false;
+      if (Array.isArray(v) && v.length === 0) return false;
+      return true; // keep booleans (including false) and numbers
+    })
+  );
   const { data, error, isLoading, isError, isFetching, refetch } = useQuery({
-    queryKey: ['leads', queryParams],
-    queryFn: () => getLeads(queryParams),
+    queryKey: ['leads', JSON.stringify(cleanedParams)],
+    queryFn: () => getLeads(cleanedParams),
     enabled: options.enabled !== undefined ? !!options.enabled : true,
-    refetchOnMount: true,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    keepPreviousData: true,
+    retry: false,
     ...options.queryOptions,
   });
 

@@ -1,4 +1,4 @@
-import { Row, Col, Input } from '@components/ui';
+import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
 import { sourceOptions } from '../options';
@@ -16,7 +16,7 @@ export default function HeaderFilters({
   isOperator2Loading,
 }) {
   return (
-    <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
+    <div className={styles.gridRow}>
       <Col
         xs={12}
         sm={6}
@@ -107,6 +107,6 @@ export default function HeaderFilters({
           avatarSize={22}
         />
       </Col>
-    </Row>
+    </div>
   );
 }

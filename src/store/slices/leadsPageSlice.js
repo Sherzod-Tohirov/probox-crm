@@ -5,10 +5,21 @@ const loadState = () => {
   try {
     const serializedState = localStorage.getItem('leadsPageState');
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
+    const rawFilter = parsedState.filter ?? initialLeadsFilterState;
+    const mVal =
+      typeof rawFilter?.meeting === 'object'
+        ? rawFilter.meeting?.value
+        : rawFilter?.meeting;
+    const sanitizedFilter = {
+      ...rawFilter,
+      ...(mVal === '' || mVal === undefined || mVal === null
+        ? { meetingDateStart: '', meetingDateEnd: '' }
+        : {}),
+    };
     return {
       leads: [],
       currentLead: parsedState.currentLead ?? {},
-      filter: parsedState.filter ?? initialLeadsFilterState,
+      filter: sanitizedFilter,
       currentPage: parsedState.currentPage ?? 1,
       pageSize: parsedState.pageSize ?? 10,
       lastAction: parsedState.lastAction ?? [],

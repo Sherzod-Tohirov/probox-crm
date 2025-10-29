@@ -4,8 +4,9 @@ import useAuth from '@/hooks/useAuth';
 
 export function useSelectOptions(tab) {
   const { user } = useAuth();
+  console.log(user, 'user');
   const { data: executors } = useFetchExecutors({
-    branchId: user?.branchId,
+    branchId: user?.U_branch,
     include_role: 'Seller',
   });
   const { data: branches } = useFetchBranches();
@@ -87,7 +88,7 @@ export function useSelectOptions(tab) {
 
     const branchOptions =
       branches
-        ?.filter((branch) => branch.id === user?.branchId)
+        ?.filter((branch) => branch.id === user?.U_branch)
         ?.map((branch) => ({
           value: branch.id,
           label: branch.name,

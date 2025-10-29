@@ -1,4 +1,4 @@
-import { Row, Col, Input } from '@components/ui';
+import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
 import { meetingOptions } from '../options';
 import styles from '../style.module.scss';
@@ -10,10 +10,10 @@ export default function MeetingAndDateSection({
   watchedMeeting,
   watchedMeetingDateStart,
   watchedMeetingDateEnd,
+  inline = false,
 }) {
-  console.log(watchedMeeting, 'watchedMeeting');
-  return (
-    <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
+  const content = (
+    <>
       <Col
         xs={12}
         sm={6}
@@ -45,8 +45,9 @@ export default function MeetingAndDateSection({
           label="Boshlanish"
           canClickIcon={false}
           type="date"
-          disabled={watchedMeeting === ''}
+          disabled={!(watchedMeeting === true || watchedMeeting === false)}
           datePickerOptions={{
+            clickOpens: watchedMeeting === true || watchedMeeting === false,
             maxDate: watchedMeetingDateEnd
               ? moment(watchedMeetingDateEnd, 'DD.MM.YYYY').toDate()
               : undefined,
@@ -70,8 +71,9 @@ export default function MeetingAndDateSection({
           label="Tugash"
           canClickIcon={false}
           type="date"
-          disabled={watchedMeeting === ''}
+          disabled={!(watchedMeeting === true || watchedMeeting === false)}
           datePickerOptions={{
+            clickOpens: watchedMeeting === true || watchedMeeting === false,
             minDate: watchedMeetingDateStart
               ? moment(watchedMeetingDateStart, 'DD.MM.YYYY').toDate()
               : undefined,
@@ -79,6 +81,10 @@ export default function MeetingAndDateSection({
           control={control}
         />
       </Col>
-    </Row>
+    </>
   );
+
+  if (inline) return <>{content}</>;
+
+  return <div className={styles.gridRow}>{content}</div>;
 }

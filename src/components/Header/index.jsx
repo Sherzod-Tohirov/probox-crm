@@ -1,10 +1,11 @@
 import { useLocation } from 'react-router-dom';
-import { Col, Row, Button, Divider, Input } from '../ui';
+import { Col, Row, Button, Divider } from '../ui';
 
 import useToggle from '@hooks/useToggle';
 import useAuth from '@hooks/useAuth';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
 import ThemeSelector from '@components/ThemeSelector';
+import Notifications from '@components/ui/Notifications';
 
 import { isMessengerRoute } from '@utils/routesConfig';
 import formatterCurrency from '@utils/formatterCurrency';
@@ -22,6 +23,7 @@ function Header() {
           <Row direction="row" gutter={6} align="center" justify="start">
             <Col align="center" justify="center">
               <Button
+                className={styles['header-btn']}
                 variant="text"
                 color="secondary"
                 icon={sidebar.isOpen ? 'toggleClose' : 'toggleOpen'}
@@ -42,17 +44,23 @@ function Header() {
               <ThemeSelector />
             </Col>
             <Col>
-              <Button variant={'text'} icon={'expense'} iconColor={'primary'}>
+              <Button className={styles['header-btn']} variant={'text'} icon={'expense'} iconColor={'primary'}>
                 {formatterCurrency(currency?.Rate, currency?.Currency)}
               </Button>
             </Col>
             <Col>
+              <Notifications />
+            </Col>
+            <Col>
               <Button
+              
                 icon={'avatarFilled'}
                 variant={'text'}
                 iconColor={'primary'}
+                className={styles['user-btn']}
+                iconSize={20}
               >
-                {user.SlpName}
+                <span className={styles['user-name']}>{user.SlpName}</span>
               </Button>
             </Col>
             {isMessengerRoute(pathname) ? (

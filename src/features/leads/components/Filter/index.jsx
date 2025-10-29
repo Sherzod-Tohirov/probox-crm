@@ -22,7 +22,6 @@ import { booleanOptionsAll } from './options';
 import {
   normalizeFilterState,
   serializeFilter,
-  persistFilterToStorage,
 } from './utils';
 
 export default function LeadsFilter({
@@ -107,6 +106,7 @@ export default function LeadsFilter({
       meetingValue === undefined ||
       meetingValue === null
     ) {
+      // Clear dates when meeting is 'All'
       if (watchedMeetingDateStart) setValue('meetingDateStart', '');
       if (watchedMeetingDateEnd) setValue('meetingDateEnd', '');
       return;
@@ -120,23 +120,16 @@ export default function LeadsFilter({
   const onSubmit = useCallback(
     (data) => {
       const payload = serializeFilter(data);
-      dispatch(setLeadsCurrentPage(1));
+      dispatch(setLeadsCurrentPage(0));
       onFilter(payload);
     },
     [dispatch, onFilter]
   );
 
-  // Persist filter draft to localStorage on any form change (without dispatching)
-  useEffect(() => {
-    const subscription = watch((values) => {
-      const payload = serializeFilter(values);
-      persistFilterToStorage(payload);
-    });
-    return () => subscription.unsubscribe?.();
-  }, [watch]);
+  // No draft persistence needed; keep logic simple
 
   const onClear = useCallback(() => {
-    dispatch(setLeadsCurrentPage(1));
+    dispatch(setLeadsCurrentPage(0));
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
@@ -168,15 +161,15 @@ export default function LeadsFilter({
           isOperator2Loading={isOperator2Loading}
         />
 
-        <MeetingAndDateSection
-          control={control}
-          isMobile={isMobile}
-          watchedMeeting={meeting}
-          watchedMeetingDateStart={watchedMeetingDateStart}
-          watchedMeetingDateEnd={watchedMeetingDateEnd}
-        />
-
-        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
+        <div className={styles.gridRow}>
+          <MeetingAndDateSection
+            control={control}
+            isMobile={isMobile}
+            watchedMeeting={meeting}
+            watchedMeetingDateStart={watchedMeetingDateStart}
+            watchedMeetingDateEnd={watchedMeetingDateEnd}
+            inline={true}
+          />
           <Col
             xs={12}
             sm={6}
@@ -189,19 +182,19 @@ export default function LeadsFilter({
           >
             <SelectField
               name="purchase"
-              label="Xarid"
+              label="Xarid amalga oshdimi"
               options={booleanOptionsAll}
               control={control}
             />
           </Col>
-        </Row>
 
-        <RoleFilters
-          role={role}
-          control={control}
-          isMobile={isMobile}
-          register={register}
-        />
+          <RoleFilters
+            role={role}
+            control={control}
+            isMobile={isMobile}
+            register={register}
+          />
+        </div>
 
         <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
           {/* Action Buttons */}

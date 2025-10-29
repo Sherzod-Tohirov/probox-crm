@@ -212,7 +212,8 @@ const Table = forwardRef(function Table(
         title: 'ID',
         width: { xs: '10%', md: '2%', xl: '2%' }, // Added xl breakpoint
         cellStyle: { textAlign: 'center' },
-        renderCell: (_, rowIndex) => rowIndex + 1 + (Number(rowNumberOffset) || 0),
+        renderCell: (_, rowIndex) =>
+          rowIndex + 1 + (Number(rowNumberOffset) || 0),
       },
       ...filteredColumns,
     ];
@@ -238,6 +239,7 @@ const Table = forwardRef(function Table(
   );
 
   // Selection logic
+  const rows = useMemo(() => (Array.isArray(data) ? data : []), [data]);
   const getRowKey = useCallback(
     (row) => {
       if (Array.isArray(uniqueKey)) {
@@ -268,19 +270,19 @@ const Table = forwardRef(function Table(
   );
 
   const allSelected = useMemo(() => {
-    const selectableRowsLength = data.filter(isRowSelectable).length;
+    const selectableRowsLength = rows.filter(isRowSelectable).length;
     if (!selectableRowsLength) return false;
     return selectedRows.length === selectableRowsLength;
-  }, [data, isRowSelected]);
+  }, [rows, isRowSelected]);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
       onSelectionChange([]);
     } else {
-      const filteredRows = data.filter((row) => isRowSelectable(row));
+      const filteredRows = rows.filter((row) => isRowSelectable(row));
       onSelectionChange([...filteredRows]);
     }
-  }, [allSelected, data, onSelectionChange]);
+  }, [allSelected, rows, onSelectionChange]);
 
   const handleSelectRow = useCallback(
     (row) => {
@@ -369,7 +371,7 @@ const Table = forwardRef(function Table(
             <tr>
               {selectionEnabled && (
                 <SelectionHeaderCell
-                  disabled={data.filter(isRowSelectable).length === 0}
+                  disabled={rows.filter(isRowSelectable).length === 0}
                   checked={allSelected}
                   onChange={handleSelectAll}
                 />
@@ -387,18 +389,18 @@ const Table = forwardRef(function Table(
                       column?.horizontal === 'start'
                         ? 'left'
                         : column?.horizontal === 'end'
-                        ? 'right'
-                        : column?.horizontal === 'center'
-                        ? 'center'
-                        : undefined,
+                          ? 'right'
+                          : column?.horizontal === 'center'
+                            ? 'center'
+                            : undefined,
                     verticalAlign:
                       column?.vertical === 'start'
                         ? 'top'
                         : column?.vertical === 'end'
-                        ? 'bottom'
-                        : column?.vertical === 'center'
-                        ? 'middle'
-                        : undefined,
+                          ? 'bottom'
+                          : column?.vertical === 'center'
+                            ? 'middle'
+                            : undefined,
                   }}
                 >
                   <div className={styles['table-header-cell']}>
@@ -418,8 +420,8 @@ const Table = forwardRef(function Table(
                   <ClipLoader color={'#94A3B8'} size={26} />
                 </td>
               </tr>
-            ) : data?.length > 0 ? (
-              data.map((row, rowIndex) => (
+            ) : rows.length > 0 ? (
+              rows.map((row, rowIndex) => (
                 <TableRow
                   key={`row-${rowIndex}`}
                   row={row}

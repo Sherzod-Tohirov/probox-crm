@@ -10,7 +10,53 @@
     v.$secondary-border-color;
   background-color: v.$primary-bg;
 
-  & button {
+  .header-btn {
     font-size: 4.5rem !important;
+  }
+
+  .user-btn {
+    max-width: 48rem;
+  }
+
+  .user-name {
+    display: inline-block;
+    max-width: 42rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+  @include m.media-max(v.$breakpoint-md) {
+    padding: 4rem 4rem;
+
+    & button {
+      font-size: 3.2rem !important;
+    }
+
+    .user-btn {
+      max-width: 36rem;
+    }
+
+    .user-name {
+      max-width: 28rem;
+      font-size: 3.2rem;
+    }
+  }
+
+  @include m.media-max(v.$breakpoint-sm) {
+    padding: 3rem 3rem;
+
+    & button {
+      font-size: 2.8rem !important;
+    }
+
+    .user-btn {
+      max-width: 28rem;
+    }
+
+    .user-name {
+      display: none;
+    }
   }
 }

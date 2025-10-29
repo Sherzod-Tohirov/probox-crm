@@ -1,0 +1,178 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dropzone {
+  border: 1px dashed v.$primary-color;
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+
+  background: rgba(255, 255, 255, 0.95);
+  outline: none;
+  cursor: pointer;
+  &.active {
+    border-color: v.$primary-color;
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: v.$primary-color;
+  }
+}
+
+.fileInput {
+  display: none;
+}
+
+.icon {
+  font-size: 24px;
+  color: v.$primary-color;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 5rem;
+}
+
+.clickLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px dashed v.$secondary-border-color;
+  border-radius: 8px;
+  cursor: pointer;
+  color: v.$primary-color;
+  font-weight: 600;
+  font-size: 4.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: v.$primary-color;
+    background: rgba(59, 130, 246, 0.06);
+  }
+}
+
+.subtitle {
+  font-size: 3.5rem;
+  color: v.$secondary-color;
+}
+
+.limit {
+  font-size: 3.5rem;
+  color: v.$tertiary-color;
+}
+
+.error {
+  color: v.$danger-color;
+  font-size: 3.5rem;
+}
+
+.actionsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: v.$tertiary-bg;
+  color: v.$secondary-color;
+  font-size: 3.5rem;
+}
+
+.previewRail {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+}
+
+.previewCard {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: v.$primary-bg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+  }
+}
+
+.fileName {
+  padding: 0 10px 10px 10px;
+  font-size: 3.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.removeBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.58);
+  border: none;
+  color: white;
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+@include m.media-max(v.$breakpoint-md) {
+  .dropzone {
+    padding: 20px 16px;
+  }
+  .title {
+    font-size: 5rem;
+  }
+  .subtitle {
+    font-size: 3.5rem;
+  }
+  .previewCard img {
+    height: 140px;
+  }
+}

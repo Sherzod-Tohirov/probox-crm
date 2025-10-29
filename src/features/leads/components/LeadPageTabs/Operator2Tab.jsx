@@ -23,13 +23,13 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
     if (!form) return;
     if (leadData) {
       reset({
-        answered2: leadData.answered2 || false,
+        answered2: leadData.answered2,
         callCount2: leadData.callCount2 || '',
         meetingDate: leadData.meetingDate || '',
         rejectionReason2: leadData.rejectionReason2 || '',
         paymentInterest: leadData.paymentInterest || '',
         branch: leadData.branch || '',
-        meetingHappened: leadData.meetingHappened || false,
+        meetingHappened: leadData.meetingHappened,
       });
     }
   }, [leadData, reset]);
@@ -62,7 +62,7 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="answered2"
             label="Javob oldimi?"
             control={control}
-            type="boolean"
+            type="confirm"
             disabled={!canEdit}
           />
           <FormField
