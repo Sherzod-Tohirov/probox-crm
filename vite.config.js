@@ -13,6 +13,7 @@ dotenv.config();
 
 export default defineConfig({
   plugins: [react()],
+
   base: '/',
   server: {
     port: process.env.PORT || 3000,
@@ -26,6 +27,11 @@ export default defineConfig({
         },
       },
     },
+  },
+  preview: {
+    host: true,
+    port: 5646,
+    allowedHosts: ['work.probox.uz'],
   },
   resolve: {
     alias: {
