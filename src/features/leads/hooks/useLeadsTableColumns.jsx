@@ -5,6 +5,7 @@ import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
 import { Badge } from '@/components/ui';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
+import { formatterPayment } from '@/utils/formatterPayment';
 
 /**
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
@@ -225,7 +226,12 @@ export default function useLeadsTableColumns() {
         width: { xs: '20%', md: '12%', xl: '10%' },
         renderCell: (column) => {
           const { finalLimit } = column;
-          return <span>{finalLimit ?? '-'}</span>;
+          const getLimitText = (limit) => {
+            if (limit === null) return '-';
+            if (limit === 0) return <span>Limit chiqmadi</span>;
+            return <span>{formatterPayment(limit)}</span>;
+          };
+          return getLimitText(finalLimit);
         },
       },
       {

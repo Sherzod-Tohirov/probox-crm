@@ -5,7 +5,6 @@
   @include m.flex-center;
   position: relative;
   gap: 2rem;
-  height: 38px;
   cursor: pointer;
   transform: scale(1);
   transform-origin: center;
@@ -51,6 +50,7 @@
   &.filled {
     background-color: v.$button-bg;
     color: v.$button-color;
+    height: 38px;
     padding: 2.5rem 4rem;
     font-size: 3.5rem;
     font-weight: 500;
@@ -69,6 +69,7 @@
   &.outlined {
     background-color: transparent;
     color: v.$button-bg;
+    height: 38px;
     padding: 2.5rem 4rem;
     font-size: 3.5rem;
     font-weight: 500;

@@ -108,7 +108,9 @@ export default function PassportUpload({
   const removeFile = useCallback(
     (file) => {
       if (disabled) return;
-      if (file?.source === 'local' && file?.preview) {
+      // Prevent removing server-side files here; deletion should be handled via API
+      if (file?.source !== 'local') return;
+      if (file?.preview) {
         URL.revokeObjectURL(file.preview);
       }
       const filtered = files.filter((item) => item.id !== file.id);
@@ -227,7 +229,7 @@ export default function PassportUpload({
               </button>
               <img src={file.preview} alt="Passport preview" />
               <div className={styles.fileName}>
-                {file.file?.name || 'Server fayli'}
+                {file.file?.name || file.fileName || 'Server fayli'}
               </div>
             </div>
           ))}

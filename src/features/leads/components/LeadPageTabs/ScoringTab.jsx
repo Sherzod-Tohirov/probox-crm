@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Row } from '@components/ui';
 import FormField from '../LeadPageForm/FormField';
 import FieldGroup from '../LeadPageForm/FieldGroup';
@@ -62,6 +62,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
+  const [limitStatus, setLimitStatus] = useState('');
 
   const { control, reset, watch, setValue } = form || {};
   const [
@@ -133,16 +134,6 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
     if (!form) return;
-    console.log(fieldScore, 'fieldScore');
-    console.log(fieldAge, 'fieldAge');
-    console.log(fieldKatm, 'fieldKatm');
-    console.log(fieldKatmPayment, 'fieldKatmPayment');
-    console.log(fieldPaymentHistory, 'fieldPaymentHistory');
-    console.log(fieldMib, 'fieldMib');
-    console.log(fieldMibIrresponsible, 'fieldMibIrresponsible');
-    console.log(fieldAliment, 'fieldAliment');
-    console.log(fieldOfficialSalary, 'fieldOfficialSalary');
-    console.log(fieldApplicationDate, 'fieldApplicationDate');
     const isProvided = (v) =>
       v !== undefined && v !== null && v !== '' && v !== false;
     const allProvided =
@@ -153,26 +144,48 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       isProvided(fieldMib) &&
       isProvided(fieldMibIrresponsible) &&
       isProvided(fieldAliment) &&
-      isProvided(fieldOfficialSalary) &&
-      isProvided(fieldApplicationDate);
-    console.log(allProvided, 'allProvided');
-    if (allProvided) {
-      const computed = calculateLeadLimit(
-        {
-          age: fieldAge,
-          katmScore: fieldKatm,
-          katmPayment: fieldKatmPayment,
-          katmHistory: fieldPaymentHistory,
-          mibDebt: fieldMib,
-          mibIrresponsible: fieldMibIrresponsible,
-          alimentDebt: fieldAliment,
-          salary: fieldOfficialSalary,
-        },
-        PULT
-      );
-      setValue('finalLimit', formatterCurrency(computed), {
-        shouldValidate: true,
-      });
+      isProvided(fieldOfficialSalary);
+    const providedAny =
+      isProvided(fieldAge) ||
+      isProvided(fieldKatm) ||
+      isProvided(fieldKatmPayment) ||
+      isProvided(fieldPaymentHistory) ||
+      isProvided(fieldMib) ||
+      isProvided(fieldMibIrresponsible) ||
+      isProvided(fieldAliment) ||
+      isProvided(fieldOfficialSalary);
+    if (!providedAny) {
+      setLimitStatus('not_provided');
+      setValue('finalLimit', '', { shouldValidate: true });
+      return;
+    }
+    if (!allProvided) {
+      setLimitStatus('in_progress');
+      setValue('finalLimit', '', { shouldValidate: true });
+      return;
+    }
+
+    const computed = calculateLeadLimit(
+      {
+        age: fieldAge,
+        katmScore: fieldKatm,
+        katmPayment: fieldKatmPayment,
+        katmHistory: fieldPaymentHistory,
+        mibDebt: fieldMib,
+        mibIrresponsible: fieldMibIrresponsible,
+        alimentDebt: fieldAliment,
+        salary: fieldOfficialSalary,
+      },
+      PULT
+    );
+
+    setValue('finalLimit', formatterCurrency(computed), {
+      shouldValidate: true,
+    });
+    if (!computed || computed <= 0) {
+      setLimitStatus('no_limit');
+    } else {
+      setLimitStatus('has_limit');
     }
   }, [
     form,
@@ -187,12 +200,31 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     fieldOfficialSalary,
     fieldApplicationDate,
   ]);
+  useEffect(() => {
+    if (!form) return;
+    if (fieldBirthDate) {
+      setValue('applicationDate', new Date());
+    }
+  }, [fieldBirthDate, setValue, form]);
 
   const acceptedReasonOptions = [
     { value: 'Yaxshi mijoz', label: 'Yaxshi mijoz' },
     { value: 'Unduruv ruxsat bergan', label: 'Undruv ruxsat bergan' },
     { value: 'Limit chiqdi', label: 'Limit chiqdi' },
   ];
+
+  const getLimitText = (status) => {
+    switch (status) {
+      case 'in_progress':
+        return 'Jarayonda';
+      case 'no_limit':
+        return 'Limit chiqmadi';
+      case 'has_limit':
+        return 'Limit chiqdi';
+      default:
+        return '';
+    }
+  };
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -253,7 +285,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Ariza sanasi"
             control={control}
             type="date"
-            disabled={!canEdit}
+            disabled={true}
           />
           <FormField
             name="age"
@@ -290,6 +322,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             label="KATM to'lov"
             control={control}
             type="currency"
+            placeholderOption={{ value: null, label: '-' }}
             disabled={!canEdit}
           />
           <FormField
@@ -298,6 +331,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             control={control}
             type="select"
             options={paymentHistoryOptions}
+            placeholderOption={true}
             disabled={!canEdit}
           />
         </FieldGroup>
@@ -329,6 +363,22 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         </FieldGroup>
 
         <FieldGroup title="Yakuniy ma'lumotlar">
+          <Row>
+            <span
+              style={{
+                fontSize: '3.5rem',
+                fontWeight: 600,
+                color:
+                  limitStatus === 'in_progress'
+                    ? 'var(--info-color)'
+                    : limitStatus === 'no_limit'
+                      ? 'var(--danger-color)'
+                      : 'var(--success-color)',
+              }}
+            >
+              {getLimitText(limitStatus)}
+            </span>
+          </Row>
           <FormField
             name="finalLimit"
             label="Yakuniy limit"

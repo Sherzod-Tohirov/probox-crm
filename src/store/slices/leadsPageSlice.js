@@ -53,6 +53,14 @@ const saveState = (state) => {
   }
 };
 
+const clearPersistedState = () => {
+  try {
+    localStorage.removeItem('leadsPageState');
+  } catch (error) {
+    console.log('Error clearing leads page state', error);
+  }
+};
+
 const initialState = loadState();
 // Save initial state
 saveState(initialState);
@@ -84,6 +92,15 @@ const leadsPageSlice = createSlice({
       state.lastAction = action.payload;
       saveState(state);
     },
+    resetLeadsPage(state) {
+      state.leads = [];
+      state.currentLead = {};
+      state.filter = initialLeadsFilterState;
+      state.currentPage = 1;
+      state.pageSize = 10;
+      state.lastAction = [];
+      clearPersistedState();
+    },
   },
 });
 
@@ -94,6 +111,7 @@ export const {
   setLeadsPageSize,
   setLeadsLastAction,
   setCurrentLead,
+  resetLeadsPage,
 } = leadsPageSlice.actions;
 
 export default leadsPageSlice.reducer;

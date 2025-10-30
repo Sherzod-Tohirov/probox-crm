@@ -1,6 +1,5 @@
 export function calculateLeadLimit(lead, pult) {
   const defaultValue = 0;
-  const msg = 'Limit chiqmadi';
 
   const toNumber = (v) => {
     if (v === null || v === undefined || v === '') return 0;

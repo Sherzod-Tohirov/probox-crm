@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 export default function useFetchLeads(options = {}) {
   const { currentPage, pageSize } = useSelector((state) => state.page.leads);
+  const authToken = useSelector((state) => state.auth.token);
 
   const queryParams = {
     page: options.page || currentPage,
@@ -18,10 +19,10 @@ export default function useFetchLeads(options = {}) {
     })
   );
   const { data, error, isLoading, isError, isFetching, refetch } = useQuery({
-    queryKey: ['leads', JSON.stringify(cleanedParams)],
+    queryKey: ['leads', authToken || 'anon', JSON.stringify(cleanedParams)],
     queryFn: () => getLeads(cleanedParams),
     enabled: options.enabled !== undefined ? !!options.enabled : true,
-    refetchOnMount: false,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     keepPreviousData: true,

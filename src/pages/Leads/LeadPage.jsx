@@ -7,6 +7,7 @@ import {
   Typography,
   Tabs,
   Navigation,
+  Button,
   Card,
   SkeletonCard,
   SkeletonNavigation,
@@ -30,6 +31,8 @@ import PassportUpload from '@/features/leads/components/LeadPageForm/PassportUpl
 import styles from './style.module.scss';
 import useAlert from '@/hooks/useAlert';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
+import { useMutateFileUpload } from '@/hooks/data/leads/useMutateFileUpload';
+import useFetchLeadFiles from '@/hooks/data/leads/useFetchLeadFiles';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -40,6 +43,27 @@ export default function LeadPage() {
   const { data: lead } = data ?? {};
   const { alert } = useAlert();
   const [passportFiles, setPassportFiles] = useState([]);
+  const { mutateFileUpload } = useMutateFileUpload();
+  const cardCode = lead?.cardCode ?? id;
+  const { data: filesData, isLoading: isLoadingFiles } = useFetchLeadFiles(cardCode, { retry: 2 });
+  const serverFiles = useMemo(() => {
+    const list = Array.isArray(filesData)
+      ? filesData
+      : (filesData?.data ?? []);
+    return list.map((f) => ({
+      id: f._id || f.id || f.key,
+      preview: f.url,
+      file: null,
+      source: 'server',
+      fileName: f.fileName,
+      mimeType: f.mimeType,
+      size: f.size,
+    }));
+  }, [filesData]);
+  const uploadValue = useMemo(
+    () => [...passportFiles, ...serverFiles],
+    [passportFiles, serverFiles]
+  );
   // Get current user role
   const currentUserRole = user?.['U_role'] ?? '';
   // Map role to tab key
@@ -212,14 +236,44 @@ export default function LeadPage() {
 
         <FieldGroup title="Pasport rasmlari">
           <PassportUpload
-            disabled={!canEditTab('all')}
-            value={passportFiles}
+            disabled={!canEditTab('all') || mutateFileUpload.isLoading}
+            value={uploadValue}
             onChange={setPassportFiles}
           />
+          <Row gutter={2} style={{ marginTop: '8px' }}>
+            <Col>
+              <Button
+                variant="filled"
+                onClick={() => {
+                  if (!passportFiles?.length) return;
+                  const formData = new FormData();
+                  passportFiles.forEach((p) => {
+                    if (p?.file instanceof File) {
+                      formData.append('images', p.file, p.file.name);
+                    }
+                  });
+                  const cardCodeFinal = lead?.cardCode ?? id;
+                  mutateFileUpload.mutate(
+                    { cardCode: cardCodeFinal, formData },
+                    {
+                      onSuccess: () => {
+                        setPassportFiles([]);
+                        queryClient.invalidateQueries(['lead', id]);
+                        queryClient.invalidateQueries(['lead-files', cardCodeFinal]);
+                      },
+                    }
+                  );
+                }}
+                disabled={!canEditTab('all') || passportFiles.length === 0 || mutateFileUpload.isLoading}
+              >
+                Hujjatlarni saqlash
+              </Button>
+            </Col>
+          </Row>
         </FieldGroup>
       </div>
     ),
-    [lead, passportFiles]
+    [lead, passportFiles, mutateFileUpload?.isLoading]
   );
 
   const tabs = useMemo(

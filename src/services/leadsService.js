@@ -31,7 +31,7 @@ export const updateLeadFields = async (id, fields) => {
   try {
     // Filter out empty values
     const filteredFields = {};
-    Object.keys(fields).forEach(key => {
+    Object.keys(fields).forEach((key) => {
       if (fields[key] !== undefined && fields[key] !== '') {
         filteredFields[key] = fields[key];
       }
@@ -56,6 +56,27 @@ export const createLead = async (data) => {
 export const deleteLead = async (id) => {
   try {
     const response = await api.delete(`/leads/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const getLeadFiles = async ({ cardCode }) => {
+  try {
+    const response = await api.get(`/lead-images/${cardCode}`);
+    return response.data;
+  } catch (error) {
+    console.log(error, 'Error file get files');
+    throw error?.response?.data || error;
+  }
+};
+
+export const postFileUpload = async ({ cardCode, formData }) => {
+  try {
+    // formData must contain one or multiple 'images' entries
+    // Do NOT set Content-Type here; axios will set multipart with boundary.
+    const response = await api.post(`/lead-images/${cardCode}`, formData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
