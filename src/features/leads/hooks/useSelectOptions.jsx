@@ -4,7 +4,6 @@ import useAuth from '@/hooks/useAuth';
 
 export function useSelectOptions(tab) {
   const { user } = useAuth();
-  console.log(user, 'user');
   const { data: executors } = useFetchExecutors({
     branchId: user?.U_branch,
     include_role: 'Seller',

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Button, Typography, Row, Col } from '@components/ui';
 import iconsMap from '@utils/iconsMap';
 import styles from './passportUpload.module.scss';
+import { Upload } from 'lucide-react';
 
 const MAX_FILES = 6;
 const ACCEPTED_TYPES = [
@@ -166,8 +167,12 @@ export default function PassportUpload({
             <div className={styles.icon}>{iconsMap.uploadCloud}</div>
           </Col>
           <Col>
-            <label htmlFor={inputId} className={styles.clickLabel}>
-              Pasport nusxasini yuklang
+            <label
+              htmlFor={inputId}
+              className={styles.clickLabel}
+              onClick={(e) => e.preventDefault()}
+            >
+              Passport nusxasini yuklang <Upload />
             </label>
           </Col>
           <Col>

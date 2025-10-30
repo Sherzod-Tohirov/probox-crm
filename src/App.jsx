@@ -11,11 +11,13 @@ import PrimaryLayout from '@layouts/PrimaryLayout';
 
 import Sidebar from '@components/Sidebar';
 import Header from '@components/Header';
+import Offline from '@pages/helper/Offline';
 
 import useAuth from '@hooks/useAuth';
 import useAlert from '@hooks/useAlert';
 import useToggle from '@hooks/useToggle';
 import useTheme from '@hooks/useTheme';
+import useOnlineStatus from '@hooks/useOnlineStatus';
 
 import { isMessengerRoute } from '@utils/routesConfig';
 import { setGlobalAlert } from '@utils/globalAlert';
@@ -30,6 +32,7 @@ function App() {
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle('messenger');
   const { pathname } = useLocation();
+  const isOnline = useOnlineStatus();
 
   // Initialize theme on app mount
   useTheme();
@@ -45,6 +48,10 @@ function App() {
       alert(message, options, onClose);
     });
   }, [alert]);
+
+  if (!isOnline) {
+    return <Offline />;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

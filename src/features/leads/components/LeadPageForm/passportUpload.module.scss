@@ -16,14 +16,13 @@
     border-color 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
-
-  background: rgba(255, 255, 255, 0.95);
+  background: v.$secondary-bg;
   outline: none;
   cursor: pointer;
   &.active {
     border-color: v.$primary-color;
-    background: rgba(59, 130, 246, 0.08);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    background: color-mix(in srgb, v.$fourth-color 8%, v.$secondary-bg);
+    box-shadow: 0 0 0 3px color-mix(in srgb, v.$fourth-color 20%, transparent);
   }
   &.disabled {
     opacity: 0.6;
@@ -53,18 +52,21 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 8px 12px;
-  border: 1px dashed v.$secondary-border-color;
+  border: 1px dashed v.$primary-color;
   border-radius: 8px;
   cursor: pointer;
   color: v.$primary-color;
   font-weight: 600;
   font-size: 4.5rem;
+  opacity: 0.6;
   transition: all 0.2s ease;
 
   &:hover {
+    opacity: 1;
     border-color: v.$primary-color;
-    background: rgba(59, 130, 246, 0.06);
+    background: color-mix(in srgb, v.$fourth-color 6%, transparent);
   }
 }
 
@@ -107,6 +109,8 @@
   gap: 8px;
   overflow-x: auto;
   padding: 4px 2px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
 }
 
 .previewCard {
@@ -121,6 +125,8 @@
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
+  min-width: clamp(120px, 42vw, 200px);
+  scroll-snap-align: start;
 
   &:hover {
     transform: translateY(-2px);
@@ -150,8 +156,8 @@
   border: none;
   color: white;
   border-radius: 999px;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,5 +180,38 @@
   }
   .previewCard img {
     height: 140px;
+  }
+  .clickLabel {
+    font-size: 3.8rem;
+    padding: 6px 10px;
+  }
+  .limit {
+    font-size: 3.2rem;
+  }
+  .removeBtn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@include m.media-max(v.$breakpoint-sm) {
+  .dropzone {
+    padding: 16px 12px;
+  }
+  .clickLabel {
+    font-size: 3.2rem;
+    padding: 6px 10px;
+  }
+  .subtitle,
+  .limit,
+  .error {
+    font-size: 3rem;
+  }
+  .previewCard img {
+    height: 120px;
+  }
+  .removeBtn {
+    width: 32px;
+    height: 32px;
   }
 }

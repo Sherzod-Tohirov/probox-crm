@@ -75,6 +75,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     fieldMibIrresponsible,
     fieldAliment,
     fieldOfficialSalary,
+    fieldApplicationDate,
   ] = watch([
     'score',
     'birthDate',
@@ -86,25 +87,26 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     'mibIrresponsible',
     'aliment',
     'officialSalary',
+    'applicationDate',
   ]);
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
-        clientFullName: leadData.clientFullName || '',
-        region: leadData.region || '',
-        district: leadData.district || '',
-        address: leadData.address || '',
-        birthDate: leadData.birthDate || '',
-        applicationDate: leadData.applicationDate || '',
+        clientFullName: leadData.clientFullName,
+        region: leadData.region,
+        district: leadData.district,
+        address: leadData.address,
+        birthDate: leadData.birthDate,
+        applicationDate: leadData.applicationDate,
         age: leadData.age || '',
         score: leadData.score || '',
         katm: leadData.katm || '',
         katmPayment: leadData.katmPayment || '',
         paymentHistory: leadData.paymentHistory || '',
         mib: leadData.mib || '',
-        mibIrresponsible: leadData.mibIrresponsible || false,
+        mibIrresponsible: leadData.mibIrresponsible,
         aliment: leadData.aliment || '',
         officialSalary: leadData.officialSalary || '',
         finalLimit: leadData.finalLimit || '',
@@ -131,28 +133,50 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
     if (!form) return;
-
-    const computed = calculateLeadLimit(
-      {
-        age: fieldAge,
-        katmScore: fieldKatm,
-        katmPayment: fieldKatmPayment,
-        katmHistory: fieldPaymentHistory,
-        mibDebt: fieldMib,
-        mibIrresponsible: fieldMibIrresponsible,
-        alimentDebt: fieldAliment,
-        salary: fieldOfficialSalary,
-      },
-      PULT
-    );
-    console.log(computed, 'computed');
-    setValue('finalLimit', formatterCurrency(computed), {
-      shouldValidate: true,
-    });
+    console.log(fieldScore, 'fieldScore');
+    console.log(fieldAge, 'fieldAge');
+    console.log(fieldKatm, 'fieldKatm');
+    console.log(fieldKatmPayment, 'fieldKatmPayment');
+    console.log(fieldPaymentHistory, 'fieldPaymentHistory');
+    console.log(fieldMib, 'fieldMib');
+    console.log(fieldMibIrresponsible, 'fieldMibIrresponsible');
+    console.log(fieldAliment, 'fieldAliment');
+    console.log(fieldOfficialSalary, 'fieldOfficialSalary');
+    console.log(fieldApplicationDate, 'fieldApplicationDate');
+    const isProvided = (v) =>
+      v !== undefined && v !== null && v !== '' && v !== false;
+    const allProvided =
+      isProvided(fieldAge) &&
+      isProvided(fieldKatm) &&
+      isProvided(fieldKatmPayment) &&
+      isProvided(fieldPaymentHistory) &&
+      isProvided(fieldMib) &&
+      isProvided(fieldMibIrresponsible) &&
+      isProvided(fieldAliment) &&
+      isProvided(fieldOfficialSalary) &&
+      isProvided(fieldApplicationDate);
+    console.log(allProvided, 'allProvided');
+    if (allProvided) {
+      const computed = calculateLeadLimit(
+        {
+          age: fieldAge,
+          katmScore: fieldKatm,
+          katmPayment: fieldKatmPayment,
+          katmHistory: fieldPaymentHistory,
+          mibDebt: fieldMib,
+          mibIrresponsible: fieldMibIrresponsible,
+          alimentDebt: fieldAliment,
+          salary: fieldOfficialSalary,
+        },
+        PULT
+      );
+      setValue('finalLimit', formatterCurrency(computed), {
+        shouldValidate: true,
+      });
+    }
   }, [
     form,
     setValue,
-    fieldScore,
     fieldAge,
     fieldKatm,
     fieldKatmPayment,
@@ -161,6 +185,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     fieldMibIrresponsible,
     fieldAliment,
     fieldOfficialSalary,
+    fieldApplicationDate,
   ]);
 
   const acceptedReasonOptions = [
@@ -237,6 +262,13 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled
             type="number"
           />
+          <FormField
+            name="officialSalary"
+            label="Rasmiy oylik"
+            control={control}
+            type="currency"
+            disabled={!canEdit}
+          />
         </FieldGroup>
 
         <FieldGroup title="KATM va To'lov ma'lumotlari">
@@ -283,6 +315,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             label="MIB mas'uliyatsiz"
             control={control}
             type="select"
+            placeholderOption={{ value: false, label: '-' }}
             options={mibIrresponsibleOptions}
             disabled={!canEdit}
           />
@@ -297,18 +330,11 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
 
         <FieldGroup title="Yakuniy ma'lumotlar">
           <FormField
-            name="officialSalary"
-            label="Rasmiy oylik"
-            control={control}
-            type="currency"
-            disabled={!canEdit}
-          />
-          <FormField
             name="finalLimit"
             label="Yakuniy limit"
             control={control}
             type="currency"
-            disabled={!canEdit}
+            disabled={true}
           />
           <FormField
             name="finalPercentage"

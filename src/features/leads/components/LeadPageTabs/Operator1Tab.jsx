@@ -20,7 +20,6 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { rejectReasonOptions } = useSelectOptions('common');
   const { passportVisitOptions } = useSelectOptions('operator1');
   const fieldAnswered = watch('answered');
-  console.log(fieldAnswered, 'answered');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;

@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
 
 const SCORING_FIELDS = [
-  'employeeName',
+  'clientFullName',
   'region',
   'district',
   'address',
@@ -24,7 +24,7 @@ const SCORING_FIELDS = [
 export default function useScoringForm(leadId, leadData, onSuccess) {
   const form = useForm({
     defaultValues: {
-      employeeName: leadData?.employeeName || '',
+      clientFullName: leadData?.clientFullName || '',
       region: leadData?.region || '',
       district: leadData?.district || '',
       address: leadData?.address || '',

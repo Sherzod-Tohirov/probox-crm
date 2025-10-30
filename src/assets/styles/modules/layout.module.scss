@@ -31,6 +31,7 @@
   background: v.$secondary-bg;
   transition: all v.$transition-time v.$transition-type;
   will-change: width;
+  align-self: flex-start;
 
   &.open {
     width: clamp(200px, 220px, 220px) !important;

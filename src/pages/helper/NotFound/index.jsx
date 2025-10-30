@@ -83,6 +83,7 @@ export default function NotFound() {
             </Button>
             <Button
               icon="arrowLeft"
+              iconSize={14}
               variant="outlined"
               onClick={() => navigate(-2)}
               className={styles['btn-outlined']}

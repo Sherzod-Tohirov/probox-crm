@@ -79,6 +79,12 @@ export default function LeadPage() {
       seller: 'Seller',
       scoring: 'Scoring',
     };
+    if (
+      Object.values(roleMapping).includes(currentUserRole) &&
+      tabKey === 'all'
+    )
+      return true;
+
     return currentUserRole === roleMapping[tabKey];
   };
 
@@ -205,7 +211,11 @@ export default function LeadPage() {
         </FieldGroup>
 
         <FieldGroup title="Pasport rasmlari">
-          <PassportUpload value={passportFiles} onChange={setPassportFiles} />
+          <PassportUpload
+            disabled={!canEditTab('all')}
+            value={passportFiles}
+            onChange={setPassportFiles}
+          />
         </FieldGroup>
       </div>
     ),

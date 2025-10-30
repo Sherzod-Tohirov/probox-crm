@@ -1,43 +1,16 @@
-/**
- * Calculates the lead limit based on business rules (translated from the Google Sheet formula).
- *
- * Variables:
- *  age               -> BS
- *  mibDebt           -> BX
- *  mibIrresponsible  -> BY
- *  alimentDebt       -> BZ
- *  salary            -> CA
- *  katmPayment       -> BV
- *  katmScore         -> BU
- *  katmHistory       -> BW
- *
- *  pult = {
- *    minBaseSalary,        // A
- *    maxMibDebt,           // B
- *    katmHistoryPatterns,  // C[]
- *    katmHistoryValues,    // D[]
- *    katmScoreKeys,        // E[]
- *    katmScorePercents,    // F[]
- *    maxKatmPayment,       // G
- *    minLeadAge,           // H
- *    maxAlimentDebt,       // I
- *    creditPressure,       // J
- *    maxMibIrresponsible   // K
- *  }
- */
-
 export function calculateLeadLimit(lead, pult) {
-  const msg = 0;
+  const defaultValue = 0;
+  const msg = 'Limit chiqmadi';
 
   const toNumber = (v) => {
-    if (v === null || v === undefined || v === '') return NaN;
+    if (v === null || v === undefined || v === '') return 0;
     if (typeof v === 'number') return v;
     const cleaned = String(v)
       .replace(/[^0-9+\-.%]/g, '')
       .replace(',', '.');
     if (/%$/.test(cleaned)) return parseFloat(cleaned) / 100;
     const n = parseFloat(cleaned);
-    return Number.isFinite(n) ? n : NaN;
+    return Number.isFinite(n) ? n : 0;
   };
 
   const parsePercent = (val) => {
@@ -72,7 +45,7 @@ export function calculateLeadLimit(lead, pult) {
   const katmPayment = toNumber(lead?.katmPayment);
   const katmScore = lead?.katmScore ?? lead?.katm;
   const katmHistory = lead?.katmHistory ?? lead?.paymentHistory;
-  
+
   if (
     !Number.isFinite(age) ||
     age < pult.minLeadAge ||
@@ -81,40 +54,50 @@ export function calculateLeadLimit(lead, pult) {
       mibIrresponsible > pult.maxMibIrresponsible) ||
     (Number.isFinite(alimentDebt) && alimentDebt > pult.maxAlimentDebt)
   ) {
-    return msg;
+    return defaultValue;
   }
 
   const baseSalary =
     !Number.isFinite(salary) || salary <= pult.minBaseSalary
       ? pult.minBaseSalary
       : salary;
-
+  console.log(baseSalary, 'base salary');
   const creditPressure = parsePercent(pult.creditPressure);
+  console.log(creditPressure, 'credit pressure');
   const afterCredit = baseSalary * (1 - creditPressure);
-
-  const limitedKatm = !Number.isFinite(katmPayment)
-    ? 0
-    : pult.maxKatmPayment > 0
-      ? katmPayment
-      : Math.min(katmPayment, pult.maxKatmPayment);
+  console.log(afterCredit, 'after credit');
+  let limitedKatm = 0;
+  if (!Number.isFinite(pult.maxKatmPayment) && Number.isFinite(katmPayment)) {
+    limitedKatm = katmPayment;
+  } else if (pult.maxKatmPayment === 0) {
+    limitedKatm = 0;
+  } else if (pult.maxKatmPayment > 0) {
+    limitedKatm = Math.min(katmPayment, pult.maxKatmPayment);
+  }
+  console.log(limitedKatm, 'limited katm');
   const afterKatm = afterCredit - limitedKatm;
-  
+  console.log(afterKatm, 'after katm');
+  if (afterKatm <= 0) return defaultValue;
   const historyPercent = findByRegex(
     katmHistory,
     pult.katmHistoryPatterns,
     pult.katmHistoryValues
   );
+  console.log(historyPercent, 'history percent');
   const afterHistory = afterKatm * (1 - historyPercent);
-
+  console.log(afterHistory, 'after history');
+  console.log(katmScore, 'katm score');
   const scorePercent = findExact(
     katmScore,
     pult.katmScoreKeys,
     pult.katmScorePercents
   );
+  console.log(scorePercent, 'score percent');
   const result = afterHistory * (1 - scorePercent);
+  console.log(result, 'result');
 
-  if (!Number.isFinite(result) || result <= 0) return msg;
+  if (!Number.isFinite(result) || result <= 0) return defaultValue;
 
   const annual = result * 12;
-  return annual > 30000000 ? 30000000 : Math.round(annual);
+  return annual > 30_000_000 ? 30_000_000 : Math.round(annual);
 }

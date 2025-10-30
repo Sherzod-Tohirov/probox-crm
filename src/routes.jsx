@@ -94,6 +94,7 @@ const router = createBrowserRouter([
                   'Scoring',
                   'Seller',
                   'CEO',
+                  'Manager',
                 ]}
               >
                 <Suspense fallback={<PageLoader />}>
@@ -113,6 +114,7 @@ const router = createBrowserRouter([
                   'Scoring',
                   'Seller',
                   'CEO',
+                  'Manager',
                 ]}
               >
                 <Suspense fallback={<PageLoader />}>

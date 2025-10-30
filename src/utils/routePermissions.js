@@ -26,7 +26,24 @@ const routePermissions = {
     // Accessible to all authenticated users
   },
   '/leads': {
-    allowedRoles: ['Operator1', 'Operator2', 'Scoring', 'Seller', 'CEO'], // Only specific roles can access leads
+    allowedRoles: [
+      'Operator1',
+      'Operator2',
+      'Scoring',
+      'Seller',
+      'CEO',
+      'Manager',
+    ], // Only specific roles can access leads
+  },
+  '/leads/:id': {
+    allowedRoles: [
+      'Operator1',
+      'Operator2',
+      'Scoring',
+      'Seller',
+      'CEO',
+      'Manager',
+    ], // Only specific roles can access leads
   },
 };
 

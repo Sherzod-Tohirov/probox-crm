@@ -4,7 +4,13 @@
 .sidebar {
   display: flex;
   position: sticky;
-  top: 6.1rem;
+  top: 6.5rem;
+  @include m.media-max(v.$breakpoint-md) {
+    top: 4rem;
+  }
+  @include m.media-max(v.$breakpoint-sm) {
+    top: 3rem;
+  }
 }
 
 .sidebar-text {
