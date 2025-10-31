@@ -176,7 +176,7 @@ const Input = forwardRef(
                     : '';
                   field.onChange(formatted);
                 }}
-                {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
+                {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
               />
             )}
           />
@@ -204,7 +204,7 @@ const Input = forwardRef(
                 : '';
               props.onChange?.(formatted);
             }}
-            {...omit(props, ['datePickerOptions', 'includeTime', 'type'])}
+            {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
           />
         ),
         time: props.control ? (
@@ -232,7 +232,7 @@ const Input = forwardRef(
                     : '';
                   field.onChange(formatted);
                 }}
-                {...omit(props, ['datePickerOptions', 'type'])}
+                {...omit(['datePickerOptions', 'type'], props)}
               />
             )}
           />
@@ -257,7 +257,7 @@ const Input = forwardRef(
                 : '';
               props.onChange?.(formatted);
             }}
-            {...omit(props, ['datePickerOptions', 'type'])}
+            {...omit(['datePickerOptions', 'type'], props)}
           />
         ),
         'datetime-local': props.control ? (
@@ -284,7 +284,7 @@ const Input = forwardRef(
                     : '';
                   field.onChange(formatted);
                 }}
-                {...omit(props, ['datePickerOptions', 'type'])}
+                {...omit(['datePickerOptions', 'type'], props)}
               />
             )}
           />
@@ -308,7 +308,7 @@ const Input = forwardRef(
                 : '';
               props.onChange?.(formatted);
             }}
-            {...omit(props, ['datePickerOptions', 'type'])}
+            {...omit(['datePickerOptions', 'type'], props)}
           />
         ),
         number: (

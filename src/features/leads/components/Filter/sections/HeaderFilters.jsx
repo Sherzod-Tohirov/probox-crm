@@ -14,6 +14,7 @@ export default function HeaderFilters({
   isBranchesLoading,
   isOperator1Loading,
   isOperator2Loading,
+  minimal = false,
 }) {
   return (
     <div className={styles.gridRow}>
@@ -53,22 +54,24 @@ export default function HeaderFilters({
         />
       </Col>
 
-      <Col
-        xs={12}
-        sm={6}
-        md={2}
-        lg={1.5}
-        xl={1.2}
-        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-      >
-        <MultiSelectField
-          name="branch"
-          label="Filial"
-          options={branchOptions}
-          isLoading={isBranchesLoading}
-          control={control}
-        />
-      </Col>
+      {minimal ? null : (
+        <Col
+          xs={12}
+          sm={6}
+          md={2}
+          lg={1.5}
+          xl={1.2}
+          className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
+        >
+          <MultiSelectField
+            name="branch"
+            label="Filial"
+            options={branchOptions}
+            isLoading={isBranchesLoading}
+            control={control}
+          />
+        </Col>
+      )}
 
       <Col
         xs={12}

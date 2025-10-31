@@ -8,6 +8,10 @@
   max-width: 100%;
   min-width: 0;
   -webkit-overflow-scrolling: touch;
+  border: v.$secondary-border-width v.$primary-border-type v.$primary-border-color;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  background: v.$primary-table-bg;
   &.loading {
     pointer-events: none;
   }
@@ -34,13 +38,20 @@
 .table-container {
   @include m.flex(start, start, 0);
   width: 100%;
+  height: 100%;
+  // Prevent the table flex item from shrinking so horizontal overflow works
+  & > table {
+    flex: 0 0 auto;
+  }
   & * {
     transition: all v.$transition-time v.$transition-type;
   }
 }
 
 .base-table {
-  width: 100%;
+  min-width: 100%;
+  width: max-content; // allow table to grow beyond container for scroll-x
+  table-layout: auto;
   font-size: 3.2rem; // Default for desktop
   color: v.$primary-color;
   font-style: normal;
@@ -119,6 +130,9 @@
     padding: 2rem; // Default for desktop
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     @media (max-width: (v.$breakpoint-md - 1)) {
       padding: 2rem; // Smaller padding for mobile
@@ -145,21 +159,28 @@
 }
 
 .table-header-cell {
-  @include m.flex(center, start, 1rem); // Smaller gap for mobile
+  @include m.flex(center, start, 0.8rem); // Tighter gap for mobile
   @media (min-width: v.$breakpoint-md) {
-    @include m.flex(center, start, 2rem); // Desktop gap
+    @include m.flex(center, start, 1.2rem); // Desktop gap
   }
 
   svg {
     flex-shrink: 0;
-    width: 4rem; // Smaller for mobile
-    height: 4rem;
+    width: 3rem; // Smaller header icon (mobile)
+    height: 3rem;
     color: v.$secondary-color;
     @media (min-width: v.$breakpoint-md) {
-      width: 5rem; // Desktop size
-      height: 5rem;
+      width: 3.5rem; // Smaller header icon (desktop)
+      height: 3.5rem;
     }
   }
+}
+
+// Default smaller icon size for cell content icons
+.base-table td svg {
+  width: 3.2rem;
+  height: 3.2rem;
+  color: v.$secondary-color;
 }
 
 .selection-checkbox {

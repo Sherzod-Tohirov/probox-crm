@@ -27,6 +27,7 @@ import {
 export default function LeadsFilter({
   onFilter = () => {},
   isExpanded = false,
+  minimal = false,
 }) {
   const dispatch = useDispatch();
   const filterState = useSelector((state) => state.page.leads.filter);
@@ -141,6 +142,60 @@ export default function LeadsFilter({
     const pruned = serializeFilter(normalizedInitialState);
     onFilter(pruned);
   }, [dispatch, reset, onFilter]);
+
+  if (minimal) {
+    return (
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={styles['filter-form']}
+        style={{ width: '100%' }}
+      >
+        <HeaderFilters
+          control={control}
+          register={register}
+          isMobile={isMobile}
+          branchOptions={branchOptions}
+          operator1Options={operator1Options}
+          operator2Options={operator2Options}
+          isBranchesLoading={isBranchesLoading}
+          isOperator1Loading={isOperator1Loading}
+          isOperator2Loading={isOperator2Loading}
+          minimal
+        />
+
+        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
+          <Col xs={12} sm="auto" style={{ marginLeft: isMobile ? '0' : 'auto' }}>
+            <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
+              <Col>
+                <Button
+                  className="leads-filter-clear"
+                  variant="outlined"
+                  color="danger"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClear();
+                  }}
+                >
+                  Tozalash
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  className="leads-filter-search"
+                  icon="search"
+                  iconSize={18}
+                  variant="filled"
+                  type="submit"
+                >
+                  Qidirish
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </form>
+    );
+  }
 
   return (
     <Accordion isOpen={isExpanded} isEnabled={true}>

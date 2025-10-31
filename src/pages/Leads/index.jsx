@@ -1,15 +1,17 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { Col, Row, Table } from '@components/ui';
 import LeadsToolbar from '@features/leads/components/LeadsToolbar';
 import LeadsFilter from '@features/leads/components/Filter';
+import AdvancedFilterModal from '@features/leads/components/Filter/AdvancedFilterModal';
 import LeadsPageFooter from '@features/leads/components/LeadsPageFooter';
 import useLeadsTableColumns from '@features/leads/hooks/useLeadsTableColumns';
 import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
 import useIsMobile from '@hooks/useIsMobile';
+import useAuth from '@hooks/useAuth';
 
 import {
   setCurrentLead,
@@ -24,6 +26,8 @@ export default function Leads() {
   const dispatch = useDispatch();
   const isMobile = useIsMobile();
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
+  const role = user?.U_role;
   const { leadsTableColumns } = useLeadsTableColumns();
   const { currentPage, pageSize, filter, currentLead } = useSelector(
     (state) => state.page.leads
@@ -38,6 +42,25 @@ export default function Leads() {
     return false;
   });
 
+  // Advanced modal + column visibility
+  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    try {
+      const raw = localStorage.getItem('leadsVisibleColumns');
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'leadsVisibleColumns',
+        JSON.stringify(visibleColumns)
+      );
+    } catch (_) {}
+  }, [visibleColumns]);
+
   // Persist filter open state to its own key
   useEffect(() => {
     try {
@@ -49,12 +72,12 @@ export default function Leads() {
       data: { data: [], totalPages: 0, total: 0 },
     },
     isLoading: isLoadingLeads,
+    refetch,
   } = useFetchLeads({
     page: currentPage + 1,
     limit: pageSize,
     params: filter,
   });
- 
 
   const {
     uiScale,
@@ -97,6 +120,59 @@ export default function Leads() {
     }
   }, [currentPage, meta?.totalPages, dispatch]);
 
+  // Initialize default visible columns if none are saved
+  useEffect(() => {
+    try {
+      const initialized = localStorage.getItem('leadsVisibleColumnsInit');
+      if (initialized) return;
+      const important = new Set([
+        'clientName',
+        'clientPhone',
+        'source',
+        'time',
+      ]);
+      const map = {};
+      (leadsTableColumns || []).forEach((c) => {
+        if (!important.has(c.key)) map[c.key] = false;
+      });
+      setVisibleColumns(map);
+      localStorage.setItem('leadsVisibleColumnsInit', '1');
+    } catch (_) {}
+  }, [leadsTableColumns]);
+
+  // Filter columns based on visibility toggles
+  const columnsToUse = useMemo(() => {
+    const map = visibleColumns || {};
+    // Always show Name; others including ID are user-toggleable
+    return leadsTableColumns.filter((c) =>
+      c.key === 'clientName' ? true : map[c.key] !== false
+    );
+  }, [leadsTableColumns, visibleColumns]);
+
+  // Highlight new leads briefly and refetch on socket event
+  const [highlighted, setHighlighted] = useState({}); // { [id]: true }
+  useEffect(() => {
+    const onNew = (e) => {
+      const id = e?.detail?.id;
+      if (!id) return;
+      setHighlighted((p) => ({ ...p, [id]: true }));
+      // auto clear after 4s
+      setTimeout(() => {
+        setHighlighted((p) => {
+          const next = { ...p };
+          delete next[id];
+          return next;
+        });
+      }, 4000);
+      // Refresh leads list
+      try {
+        refetch?.();
+      } catch (_) {}
+    };
+    window.addEventListener('probox:new-lead', onNew);
+    return () => window.removeEventListener('probox:new-lead', onNew);
+  }, [refetch]);
+
   return (
     <>
       <Row gutter={isMobile ? 2 : 6} style={{ width: '100%', height: '100%' }}>
@@ -111,7 +187,7 @@ export default function Leads() {
                 onIncreaseDensity={increaseDensity}
                 onDecreaseDensity={decreaseDensity}
                 onResetDensity={resetDensity}
-                onToggleFilter={() => setToggleFilter((prev) => !prev)}
+                onToggleFilter={() => setAdvancedOpen(true)}
                 isMobile={isMobile}
                 canIncreaseUI={canIncrease}
                 canDecreaseUI={canDecrease}
@@ -122,21 +198,22 @@ export default function Leads() {
               />
             </Col>
             <Col fullWidth>
-              <LeadsFilter onFilter={handleFilter} isExpanded={toggleFilter} />
+              <LeadsFilter
+                onFilter={handleFilter}
+                isExpanded={toggleFilter}
+                minimal
+              />
             </Col>
           </Row>
         </Col>
-        <Col fullWidth>
+        <Col fullWidth flexGrow fullHeight>
           <Table
             id={'leads-table'}
             scrollable
             uniqueKey={'id'}
             isLoading={isLoadingLeads}
-            columns={leadsTableColumns}
+            columns={columnsToUse}
             data={leads}
-            maxBodyHeight={
-              isMobile ? 'calc(100vh - 400px)' : 'calc(100vh - 200px)'
-            }
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
             showPivotColumn={true}
@@ -150,11 +227,28 @@ export default function Leads() {
                     : 'rgba(231, 231, 231, 0.78)',
                 };
               }
+              if (highlighted[row?.id]) {
+                return {
+                  backgroundColor: isDark
+                    ? 'rgba(255, 220, 130, 0.25)'
+                    : 'rgba(255, 245, 200, 0.9)',
+                  transition: 'background-color 0.8s ease',
+                };
+              }
             }}
           />
         </Col>
-        <Col style={{ width: '100%' }}></Col>
       </Row>
+      <AdvancedFilterModal
+        isOpen={isAdvancedOpen}
+        onClose={() => setAdvancedOpen(false)}
+        onApply={handleFilter}
+        initialValues={filter}
+        role={role}
+        columns={leadsTableColumns}
+        visibleColumns={visibleColumns}
+        onChangeVisibleColumns={setVisibleColumns}
+      />
       <LeadsPageFooter leadsDetails={meta} />
     </>
   );

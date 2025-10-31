@@ -47,6 +47,12 @@ function Col(
     className,
     wrap = false,
     style,
+    // Strip responsive sizing hints so they don't leak to the DOM
+    xs,
+    sm,
+    md,
+    lg,
+    xl,
     ...props
   },
   ref

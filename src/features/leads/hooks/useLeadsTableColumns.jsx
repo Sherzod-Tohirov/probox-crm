@@ -1,5 +1,5 @@
 import formatDate from '@/utils/formatDate';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, cloneElement } from 'react';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
@@ -87,25 +87,76 @@ export default function useLeadsTableColumns() {
   /** @type {TableColumn[]} */
   const leadsTableColumns = useMemo(
     () => [
+      // {
+      //   key: 'id',
+      //   title: 'ID',
+      //   icon: 'barCode',
+      //   width: { xs: '14%', md: '8%', xl: '6%' },
+      //   minWidth: '100px',
+      //   cellStyle: { whiteSpace: 'nowrap' },
+      //   renderCell: (row) => <span>{row.id}</span>,
+      // },
       {
         key: 'clientName',
         title: 'Ismi',
+        icon: 'avatar',
         width: { xs: '40%', md: '24%', xl: '20%' },
-        minWidth: '120px',
+        minWidth: '160px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.clientName;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.avatar}
+                </span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {value || '-'}
+              </span>
+            </span>
+          );
+        },
       },
       {
         key: 'clientPhone',
         title: 'Telefon',
+        icon: 'telephone',
         width: { xs: '30%', md: '18%', xl: '14%' },
-        minWidth: '120px',
-        renderCell: (column) => {
-          const { clientPhone } = column;
-          return <span>{formatToReadablePhoneNumber(clientPhone, true)}</span>;
+        minWidth: '150px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.clientPhone;
+          return (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.telephone}
+                </span>
+              ) : null}
+              <span>{formatToReadablePhoneNumber(value, true)}</span>
+            </span>
+          );
         },
       },
       {
         key: 'source',
         title: 'Manba',
+        icon: 'globe',
         width: { xs: '20%', md: '12%', xl: '10%' },
         minWidth: '120px',
         renderCell: (column) => {
@@ -138,9 +189,14 @@ export default function useLeadsTableColumns() {
                   width: '14px',
                   height: '14px',
                   justifyContent: 'center',
+                  color: '#fff',
                 }}
               >
-                {iconsMap[sourceStyle.icon]}
+                {iconsMap[sourceStyle.icon]
+                  ? cloneElement(iconsMap[sourceStyle.icon], {
+                      style: { color: '#fff' },
+                    })
+                  : null}
               </span>
               <span
                 style={{
@@ -160,39 +216,118 @@ export default function useLeadsTableColumns() {
       {
         key: 'operator',
         title: 'Operator 1',
+        icon: 'users',
         width: { xs: '20%', md: '12%', xl: '10%' },
-        renderCell: (column) => {
-          const { operator } = column;
-          return <span>{findOperatorName(operator)}</span>;
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.operator;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>{iconsMap.users}</span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {findOperatorName(value)}
+              </span>
+            </span>
+          );
         },
       },
       {
         key: 'operator2',
         title: 'Operator 2',
+        icon: 'users',
         width: { xs: '20%', md: '12%', xl: '10%' },
-        renderCell: (column) => {
-          const { operator2 } = column;
-          return <span>{findOperatorName(operator2, 'operator2')}</span>;
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.operator2;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>{iconsMap.users}</span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {findOperatorName(value, 'operator2')}
+              </span>
+            </span>
+          );
         },
       },
       {
         key: 'branch',
         title: 'Filial',
+        icon: 'presentationChart',
         width: { xs: '20%', md: '12%', xl: '10%' },
-        renderCell: (column) => {
-          const { branch } = column;
-          return <span>{findBranchName(branch)}</span>;
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.branch;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.presentationChart}
+                </span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {findBranchName(value)}
+              </span>
+            </span>
+          );
         },
       },
       {
         key: 'purchase',
         title: "Xarid bo'ldimi",
+        icon: 'wallet',
+        minWidth: '140px',
+        cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { purchase } = column;
           if (purchase === null) return '-';
           return (
             <Badge color={purchase} variant="soft" size="md">
-              {purchase ? 'Ha' : "Yo'q"}
+              <span
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                {purchase ? iconsMap.tickCircle : iconsMap.closeCircle}
+                {purchase ? 'Ha' : "Yo'q"}
+              </span>
             </Badge>
           );
         },
@@ -200,12 +335,20 @@ export default function useLeadsTableColumns() {
       {
         key: 'meetingConfirmed',
         title: 'Uchrashuv belgilandimi',
+        icon: 'calendarDays',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { meetingConfirmed } = column;
           if (meetingConfirmed === null) return '-';
           return (
             <Badge color={meetingConfirmed} variant="soft" size="md">
-              {meetingConfirmed ? 'Ha' : "Yo'q"}
+              <span
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                {meetingConfirmed ? iconsMap.tickCircle : iconsMap.closeCircle}
+                {meetingConfirmed ? 'Ha' : "Yo'q"}
+              </span>
             </Badge>
           );
         },
@@ -213,23 +356,53 @@ export default function useLeadsTableColumns() {
       {
         key: 'meetingDate',
         title: 'Uchrashuv sanasi',
+        icon: 'calendarDays',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { meetingDate } = column;
           return (
-            <span>{formatDate(meetingDate, 'YYYY.MM.DD', 'DD.MM.YYYY')}</span>
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {meetingDate ? iconsMap.calendarDays : null}
+              {formatDate(meetingDate, 'YYYY.MM.DD', 'DD.MM.YYYY')}
+            </span>
           );
         },
       },
       {
         key: 'finalLimit',
         title: 'Yakuniy limit',
+        icon: 'wallet',
         width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { finalLimit } = column;
           const getLimitText = (limit) => {
             if (limit === null) return '-';
-            if (limit === 0) return <span>Limit chiqmadi</span>;
-            return <span>{formatterPayment(limit)}</span>;
+            if (limit === 0)
+              return (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  {iconsMap.infoCircle}
+                  Limit chiqmadi
+                </span>
+              );
+            return (
+              <span
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                {iconsMap.wallet}
+                {formatterPayment(limit)}
+              </span>
+            );
           };
           return getLimitText(finalLimit);
         },
@@ -237,11 +410,17 @@ export default function useLeadsTableColumns() {
       {
         key: 'time',
         title: 'Vaqti',
+        icon: 'clock',
         width: { xs: '25%', md: '14%', xl: '8%' },
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { time } = column;
           return (
-            <span>
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {time ? iconsMap.clock : null}
               {formatDate(time, 'YYYY.MM.DD hh:mm', 'DD.MM.YYYY HH:mm')}
             </span>
           );
@@ -250,7 +429,35 @@ export default function useLeadsTableColumns() {
       {
         key: 'comment',
         title: 'Izoh',
+        icon: 'chatBubble',
         width: { xs: '40%', md: '22%', xl: '20%' },
+        minWidth: '160px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.comment;
+          if (!value) return '-';
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              <span style={{ display: 'inline-flex' }}>
+                {iconsMap.chatBubble}
+              </span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {value}
+              </span>
+            </span>
+          );
+        },
       },
     ],
     [findOperatorName, findBranchName]

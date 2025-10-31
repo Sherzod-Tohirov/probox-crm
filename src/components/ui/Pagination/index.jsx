@@ -11,7 +11,9 @@ export default function Pagination({ pageCount, onPageChange, activePage }) {
       breakClassName={styles["page"]}
       pageCount={pageCount || 0}
       onPageChange={pageCount > 0 ? onPageChange : () => {}}
-      forcePage={pageCount > 0 ? Math.min(activePage ?? 0, (pageCount || 1) - 1) : 0}
+      {...(pageCount > 0
+        ? { forcePage: Math.min(activePage ?? 0, (pageCount || 1) - 1) }
+        : {})}
       marginPagesDisplayed={1}
       pageRangeDisplayed={2}
       containerClassName={styles["pagination"]}

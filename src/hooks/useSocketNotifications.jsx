@@ -52,7 +52,7 @@ function normalizeLeadToNotification(lead) {
   const phone = lead?.clientPhone || lead?.phone || '';
   const source = lead?.source ? `• ${lead.source}` : '';
   const message = [clientName, phone, source].filter(Boolean).join(' ');
-  const link = lead?.id ? `/leads/${lead.id}` : undefined;
+  const link = lead?._id ? `/leads/${lead._id}` : undefined;
   return {
     id: `lead-${id}`,
     type: 'lead',
@@ -100,41 +100,58 @@ export default function useSocketNotifications() {
     });
   }, []);
 
-  const seedTest = useCallback(() => {
-    // Prevent duplicate autobatching when called from auto-seed repeatedly
-    if (!import.meta.env || !import.meta.env.DEV) return;
-    const code = user?.SlpCode ?? 0;
-    const stamp = Date.now();
-    const leads = [
-      {
-        id: `dev-${stamp}-a-${Math.random().toString(36).slice(2, 6)}`,
-        clientName: 'Doston',
-        clientPhone: '+998 90 123 45 67',
-        source: 'Meta',
-        operator: code,
-      },
-      {
-        id: `dev-${stamp}-b-${Math.random().toString(36).slice(2, 6)}`,
-        clientName: 'Malika',
-        clientPhone: '+998 91 765 43 21',
-        source: 'Manychat',
-        operator2: code,
-      },
-      {
-        id: `dev-${stamp}-c-${Math.random().toString(36).slice(2, 6)}`,
-        clientName: 'Javlon',
-        clientPhone: '+998 93 555 44 33',
-        source: 'Organika',
-        operator: code,
-      },
-    ];
-    leads.forEach((lead, i) => {
-      setTimeout(() => {
-        const notif = normalizeLeadToNotification(lead);
-        addNotification(notif);
-      }, i * 120);
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => {
+      const next = prev.filter((n) => n.id !== id);
+      writeToStorage(next);
+      return next;
     });
-  }, [user, addNotification]);
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setNotifications(() => {
+      try {
+        localStorage.removeItem(LS_KEY);
+      } catch (_) {}
+      return [];
+    });
+  }, []);
+
+  // const seedTest = useCallback(() => {
+  //   // Prevent duplicate autobatching when called from auto-seed repeatedly
+  //   if (!import.meta.env || !import.meta.env.DEV) return;
+  //   const code = user?.SlpCode ?? 0;
+  //   const stamp = Date.now();
+  //   const leads = [
+  //     {
+  //       id: `dev-${stamp}-a-${Math.random().toString(36).slice(2, 6)}`,
+  //       clientName: 'Doston',
+  //       clientPhone: '+998 90 123 45 67',
+  //       source: 'Meta',
+  //       operator: code,
+  //     },
+  //     {
+  //       id: `dev-${stamp}-b-${Math.random().toString(36).slice(2, 6)}`,
+  //       clientName: 'Malika',
+  //       clientPhone: '+998 91 765 43 21',
+  //       source: 'Manychat',
+  //       operator2: code,
+  //     },
+  //     {
+  //       id: `dev-${stamp}-c-${Math.random().toString(36).slice(2, 6)}`,
+  //       clientName: 'Javlon',
+  //       clientPhone: '+998 93 555 44 33',
+  //       source: 'Organika',
+  //       operator: code,
+  //     },
+  //   ];
+  //   leads.forEach((lead, i) => {
+  //     setTimeout(() => {
+  //       const notif = normalizeLeadToNotification(lead);
+  //       addNotification(notif);
+  //     }, i * 120);
+  //   });
+  // }, [user, addNotification]);
 
   useEffect(() => {
     const baseUrl = getSocketBaseUrl();
@@ -162,6 +179,14 @@ export default function useSocketNotifications() {
         if (belongsToCurrentUser(lead, user)) {
           const notif = normalizeLeadToNotification(lead);
           addNotification(notif);
+          try {
+            const id = lead?.id ?? lead?._id ?? null;
+            if (id) {
+              window.dispatchEvent(
+                new CustomEvent('probox:new-lead', { detail: { id, lead } })
+              );
+            }
+          } catch (_) {}
         }
       });
     };
@@ -178,30 +203,32 @@ export default function useSocketNotifications() {
     };
   }, [user, token, addNotification]);
 
-  useEffect(() => {
-    if (import.meta.env && import.meta.env.DEV) {
-      // expose test seed helper
-      window.seedNotifications = seedTest;
+  // useEffect(() => {
+  //   if (import.meta.env && import.meta.env.DEV) {
+  //     // expose test seed helper
+  //     window.seedNotifications = seedTest;
 
-      const seeded = sessionStorage.getItem('probox.notifications.devSeeded');
-      if (!seeded || notifications.length === 0) {
-        seedTest();
-        sessionStorage.setItem('probox.notifications.devSeeded', '1');
-      }
-    }
+  //     const seeded = sessionStorage.getItem('probox.notifications.devSeeded');
+  //     if (!seeded || notifications.length === 0) {
+  //       seedTest();
+  //       sessionStorage.setItem('probox.notifications.devSeeded', '1');
+  //     }
+  //   }
 
-    return () => {
-      if (import.meta.env && import.meta.env.DEV) {
-        delete window.seedNotifications;
-      }
-    };
-  }, [seedTest]);
+  //   return () => {
+  //     if (import.meta.env && import.meta.env.DEV) {
+  //       delete window.seedNotifications;
+  //     }
+  //   };
+  // }, [seedTest]);
 
   return {
     notifications,
     unreadCount,
     markAsRead,
     markAllAsRead,
-    seedTest,
+    removeNotification,
+    clearAll,
+    // seedTest,
   };
 }

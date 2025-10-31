@@ -44,8 +44,16 @@ const TableCell = memo(({ column, row, rowIndex }) => {
       : {}),
   };
 
+  const widthStyle = {
+    width: isResponsiveProp(column.width)
+      ? column.width.xl || column.width.md || 'auto'
+      : column.width || 'auto',
+    minWidth: column.minWidth || 'initial',
+    maxWidth: column.maxWidth || 'initial',
+  };
+
   return (
-    <td style={{ ...alignStyle, ...(column?.cellStyle || {}) }}>
+    <td style={{ ...widthStyle, ...alignStyle, ...(column?.cellStyle || {}) }}>
       {content || '-'}
     </td>
   );
@@ -156,9 +164,9 @@ const TableRow = memo(
 const defaultScrollHeight = {
   xs: `calc(100vh - ${breakpoints.xs + 100}px)`,
   sm: `calc(100vh - ${breakpoints.sm / 4}px)`,
-  md: `calc(100vh - 250px)`,
-  lg: `calc(100vh - 250px)`,
-  xl: `calc(100vh - 420px)`,
+  md: `calc(100vh - 220px)`,
+  lg: `calc(100vh - 220px)`,
+  xl: `calc(100vh - 300px)`,
 };
 
 const Table = forwardRef(function Table(
@@ -324,24 +332,13 @@ const Table = forwardRef(function Table(
     [scrollable, isLoading, containerClass]
   );
 
-  // Resolve responsive containerHeight and scrollHeight
+  // Resolve responsive containerHeight and scrollHeight (independent of column count)
   const resolvedContainerStyle = useMemo(() => {
-    const height =
-      columns.length > 10
-        ? isMobile
-          ? containerHeight.md
-          : containerHeight.xl
-        : 'auto';
-    const scroll =
-      columns.length > 10
-        ? isMobile
-          ? scrollHeight.md
-          : scrollHeight.xl
-        : 'auto';
     const isScrollable = getBreakpointValue(scrollable);
-
+    const heightVal = getBreakpointValue(containerHeight);
+    const scrollVal = getBreakpointValue(scrollHeight);
     return {
-      height: isScrollable ? scroll : height,
+      height: isScrollable ? scrollVal : heightVal,
       ...containerStyle,
     };
   }, [containerHeight, scrollHeight, scrollable, containerStyle]);

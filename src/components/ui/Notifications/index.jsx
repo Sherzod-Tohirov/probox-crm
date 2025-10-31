@@ -4,7 +4,8 @@ import useSocketNotifications from '@/hooks/useSocketNotifications';
 import styles from './notifications.module.scss';
 
 export default function Notifications() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useSocketNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearAll } =
+    useSocketNotifications();
   const [open, setOpen] = useState(false);
   const [removingId, setRemovingId] = useState(null);
   const ref = useRef(null);
@@ -13,6 +14,7 @@ export default function Notifications() {
     () => notifications.filter((n) => !n.read),
     [notifications]
   );
+  console.log(notifications, 'notficiations');
 
   const toggle = useCallback(() => setOpen((p) => !p), []);
 
@@ -29,16 +31,17 @@ export default function Notifications() {
     (n) => {
       setRemovingId(n.id);
       setTimeout(() => {
-        markAsRead(n.id);
+        removeNotification(n.id);
+        n.link ? (window.location.href = n.link) : null;
         setRemovingId(null);
       }, 150);
     },
-    [markAsRead]
+    [removeNotification]
   );
 
   const handleMarkAll = useCallback(() => {
-    markAllAsRead();
-  }, [markAllAsRead]);
+    clearAll();
+  }, [clearAll]);
 
   return (
     <div className={styles.container} ref={ref}>
@@ -54,12 +57,20 @@ export default function Notifications() {
       {unreadCount > 0 ? <span className={styles.badge} aria-hidden /> : null}
 
       {open ? (
-        <div className={styles.dropdown} role="menu" aria-label="Bildirishnomalar menyusi">
+        <div
+          className={styles.dropdown}
+          role="menu"
+          aria-label="Bildirishnomalar menyusi"
+        >
           <div className={styles.header}>
             <span className={styles.title}>Bildirishnomalar</span>
             <div className={styles.actions}>
               {unreadList.length > 0 ? (
-                <button className={styles.markAll} onClick={handleMarkAll} type="button">
+                <button
+                  className={styles.markAll}
+                  onClick={handleMarkAll}
+                  type="button"
+                >
                   Hammasi o'qildi qilish
                 </button>
               ) : null}
@@ -77,7 +88,9 @@ export default function Notifications() {
                   onClick={() => handleItemClick(n)}
                 >
                   <div className={styles.itemTitle}>{n.title}</div>
-                  {n.message ? <div className={styles.itemMsg}>{n.message}</div> : null}
+                  {n.message ? (
+                    <div className={styles.itemMsg}>{n.message}</div>
+                  ) : null}
                 </button>
               ))
             )}
