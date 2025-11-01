@@ -19,10 +19,7 @@ import MeetingAndDateSection from './sections/MeetingAndDateSection';
 import RoleFilters from './sections/RoleFilters';
 import SelectField from './fields/SelectField';
 import { booleanOptionsAll } from './options';
-import {
-  normalizeFilterState,
-  serializeFilter,
-} from './utils';
+import { normalizeFilterState, serializeFilter } from './utils';
 
 export default function LeadsFilter({
   onFilter = () => {},
@@ -163,8 +160,18 @@ export default function LeadsFilter({
           minimal
         />
 
-        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
-          <Col xs={12} sm="auto" style={{ marginLeft: isMobile ? '0' : 'auto' }}>
+        <Row
+          direction="row"
+          gutter={isMobile ? 2 : 1}
+          wrap
+          align="flex-end"
+          style={{ alignSelf: 'end' }}
+        >
+          <Col
+            xs={12}
+            sm="auto"
+            style={{ marginLeft: isMobile ? '0' : 'auto' }}
+          >
             <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
               <Col>
                 <Button

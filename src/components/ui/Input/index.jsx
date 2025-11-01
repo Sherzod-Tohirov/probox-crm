@@ -731,8 +731,9 @@ const Input = forwardRef(
           <Col>
             <Typography
               element="label"
-              className={styles['label']}
-              disabled={disabled}
+              className={classNames(styles['label'], {
+                [styles['label-disabled']]: disabled,
+              })}
             >
               {label}
             </Typography>

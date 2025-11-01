@@ -1,9 +1,12 @@
 @use '@styles/mixins' as m;
 .filter-form {
   width: 100%;
-  @include m.flex(center, center, 14px, column);
+  @include m.flex(center, center, 14px, row);
   .innerContent {
     padding: 8px 12px;
+  }
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
   // Keep default Row/Col sizing for compact layout
 }

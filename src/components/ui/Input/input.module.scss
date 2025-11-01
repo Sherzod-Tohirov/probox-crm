@@ -226,6 +226,11 @@
   color: v.$primary-label-color;
 }
 
+.label-disabled {
+  color: v.$primary-color;
+  font-weight: 600;
+}
+
 .file-image {
   width: 24px;
   height: 24px;

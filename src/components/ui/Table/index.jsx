@@ -164,7 +164,7 @@ const TableRow = memo(
 const defaultScrollHeight = {
   xs: `calc(100vh - ${breakpoints.xs + 100}px)`,
   sm: `calc(100vh - ${breakpoints.sm / 4}px)`,
-  md: `calc(100vh - 220px)`,
+  md: `calc(100vh - 350px)`,
   lg: `calc(100vh - 220px)`,
   xl: `calc(100vh - 300px)`,
 };

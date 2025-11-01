@@ -99,7 +99,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'clientName',
         title: 'Ismi',
-        icon: 'avatar',
+        icon: 'avatarFilled',
         width: { xs: '40%', md: '24%', xl: '20%' },
         minWidth: '160px',
         cellStyle: {
@@ -133,7 +133,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'clientPhone',
         title: 'Telefon',
-        icon: 'telephone',
+        icon: 'telephoneFilled',
         width: { xs: '30%', md: '18%', xl: '14%' },
         minWidth: '150px',
         cellStyle: { whiteSpace: 'nowrap' },
@@ -156,7 +156,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'source',
         title: 'Manba',
-        icon: 'globe',
+        icon: 'globeFilled',
         width: { xs: '20%', md: '12%', xl: '10%' },
         minWidth: '120px',
         renderCell: (column) => {
@@ -236,7 +236,7 @@ export default function useLeadsTableColumns() {
               }}
             >
               {value ? (
-                <span style={{ display: 'inline-flex' }}>{iconsMap.users}</span>
+                <span style={{ display: 'inline-flex' }}>{iconsMap.avatar}</span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {findOperatorName(value)}
@@ -268,7 +268,7 @@ export default function useLeadsTableColumns() {
               }}
             >
               {value ? (
-                <span style={{ display: 'inline-flex' }}>{iconsMap.users}</span>
+                <span style={{ display: 'inline-flex' }}>{iconsMap.avatar}</span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {findOperatorName(value, 'operator2')}
@@ -335,7 +335,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'meetingConfirmed',
         title: 'Uchrashuv belgilandimi',
-        icon: 'calendarDays',
+        icon: 'calendar',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
@@ -356,7 +356,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'meetingDate',
         title: 'Uchrashuv sanasi',
-        icon: 'calendarDays',
+        icon: 'calendar',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
@@ -410,7 +410,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'time',
         title: 'Vaqti',
-        icon: 'clock',
+        icon: 'clockFilled',
         width: { xs: '25%', md: '14%', xl: '8%' },
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },

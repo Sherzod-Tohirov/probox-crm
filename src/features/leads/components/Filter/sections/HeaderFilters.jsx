@@ -1,4 +1,4 @@
-import { Col, Input } from '@components/ui';
+import { Col, Input, Row } from '@components/ui';
 import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
 import { sourceOptions } from '../options';
@@ -17,8 +17,9 @@ export default function HeaderFilters({
   minimal = false,
 }) {
   return (
-    <div className={styles.gridRow}>
+    <Row direction="row" gutter={2} wrap>
       <Col
+        fullWidth
         xs={12}
         sm={6}
         md={2}
@@ -43,7 +44,7 @@ export default function HeaderFilters({
         sm={6}
         md={2}
         lg={1.5}
-        xl={1.2}
+        xl={1.5}
         className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
       >
         <SelectField
@@ -110,6 +111,6 @@ export default function HeaderFilters({
           avatarSize={22}
         />
       </Col>
-    </div>
+    </Row>
   );
 }

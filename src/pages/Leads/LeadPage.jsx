@@ -45,11 +45,12 @@ export default function LeadPage() {
   const [passportFiles, setPassportFiles] = useState([]);
   const { mutateFileUpload } = useMutateFileUpload();
   const cardCode = lead?.cardCode ?? id;
-  const { data: filesData, isLoading: isLoadingFiles } = useFetchLeadFiles(cardCode, { retry: 2 });
+  const { data: filesData, isLoading: isLoadingFiles } = useFetchLeadFiles(
+    cardCode,
+    { retry: 2 }
+  );
   const serverFiles = useMemo(() => {
-    const list = Array.isArray(filesData)
-      ? filesData
-      : (filesData?.data ?? []);
+    const list = Array.isArray(filesData) ? filesData : (filesData?.data ?? []);
     return list.map((f) => ({
       id: f._id || f.id || f.key,
       preview: f.url,
@@ -259,12 +260,19 @@ export default function LeadPage() {
                       onSuccess: () => {
                         setPassportFiles([]);
                         queryClient.invalidateQueries(['lead', id]);
-                        queryClient.invalidateQueries(['lead-files', cardCodeFinal]);
+                        queryClient.invalidateQueries([
+                          'lead-files',
+                          cardCodeFinal,
+                        ]);
                       },
                     }
                   );
                 }}
-                disabled={!canEditTab('all') || passportFiles.length === 0 || mutateFileUpload.isLoading}
+                disabled={
+                  !canEditTab('all') ||
+                  passportFiles.length === 0 ||
+                  mutateFileUpload.isLoading
+                }
               >
                 Hujjatlarni saqlash
               </Button>

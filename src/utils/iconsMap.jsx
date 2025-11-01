@@ -73,6 +73,8 @@ import {
   Users,
   Globe,
   Meta,
+  ClockFilled,
+  GlobeFilled,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -93,6 +95,7 @@ const iconsMap = {
   doubleTick: <DoubleTick />,
   close: <Close />,
   clock: <Clock />,
+  clockFilled: <ClockFilled />,
   closeCircle: <CloseCircle />,
   infoCircle: <InfoCircle />,
   barCode: <BarCode />,
@@ -149,6 +152,7 @@ const iconsMap = {
   leaf: <Leaf />,
   users: <Users />,
   globe: <Globe />,
+  globeFilled: <GlobeFilled />,
   meta: <Meta />,
 };
 
