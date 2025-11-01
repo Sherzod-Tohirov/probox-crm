@@ -44,18 +44,38 @@ const router = createBrowserRouter([
           {
             index: true,
             element: (
-              <Suspense fallback={<PageLoader />}>
-                <Clients />
-              </Suspense>
+              <ProtectedRoute
+                excludedRoles={[
+                  'Operator1',
+                  'Operator2',
+                  'Scoring',
+                  'Seller',
+                  'OperatorM',
+                ]}
+              >
+                <Suspense fallback={<PageLoader />}>
+                  <Clients />
+                </Suspense>
+              </ProtectedRoute>
             ),
             errorElement: <Error />,
           },
           {
             path: '/clients/:id',
             element: (
-              <Suspense fallback={<PageLoader />}>
-                <ClientPage />
-              </Suspense>
+              <ProtectedRoute
+                excludedRoles={[
+                  'Operator1',
+                  'Operator2',
+                  'Scoring',
+                  'Seller',
+                  'OperatorM',
+                ]}
+              >
+                <Suspense fallback={<PageLoader />}>
+                  <ClientPage />
+                </Suspense>
+              </ProtectedRoute>
             ),
             errorElement: <Error />,
           },
@@ -69,7 +89,15 @@ const router = createBrowserRouter([
       {
         path: '/statistics',
         element: (
-          <ProtectedRoute excludedRoles={['Operator1', 'Operator2']}>
+          <ProtectedRoute
+            excludedRoles={[
+              'Operator1',
+              'Operator2',
+              'Scoring',
+              'Seller',
+              'OperatorM',
+            ]}
+          >
             <Suspense fallback={<PageLoader />}>
               <Statistics />
             </Suspense>
@@ -93,6 +121,7 @@ const router = createBrowserRouter([
                   'Operator2',
                   'Scoring',
                   'Seller',
+                  'OperatorM',
                   'CEO',
                   'Manager',
                 ]}
@@ -113,6 +142,7 @@ const router = createBrowserRouter([
                   'Operator2',
                   'Scoring',
                   'Seller',
+                  'OperatorM',
                   'CEO',
                   'Manager',
                 ]}

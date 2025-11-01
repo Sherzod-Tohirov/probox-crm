@@ -103,6 +103,7 @@ export default function LeadPage() {
       operator2: 'Operator2',
       seller: 'Seller',
       scoring: 'Scoring',
+      operatorM: 'OperatorM',
     };
     if (
       Object.values(roleMapping).includes(currentUserRole) &&
@@ -293,7 +294,7 @@ export default function LeadPage() {
           <Operator1Tab
             leadId={id}
             leadData={lead}
-            canEdit={canEditTab('operator1')}
+            canEdit={canEditTab('operator1') || canEditTab('operatorM')}
             onSuccess={handleFormSuccess}
           />
         ),
@@ -305,7 +306,7 @@ export default function LeadPage() {
           <Operator2Tab
             leadId={id}
             leadData={lead}
-            canEdit={canEditTab('operator2')}
+            canEdit={canEditTab('operator2') || canEditTab('operatorM')}
             onSuccess={handleFormSuccess}
           />
         ),
