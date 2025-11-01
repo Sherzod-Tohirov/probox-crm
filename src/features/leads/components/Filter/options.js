@@ -13,6 +13,10 @@ export const booleanOptionsAll = [
 
 export const meetingOptions = [
   { value: '', label: 'Hammasi' },
-  { value: true, label: "Uchrashuv sanasi bo'yicha" },
-  { value: false, label: "Lead qabul qilingan sana bo'yicha" },
+  { value: 'meetingDate', label: "Uchrashuv sanasi bo'yicha" },
+  {
+    value: 'meetingConfirmedDate',
+    label: "Uchrashuv tasdiqlanish sanasi bo'yicha",
+  },
+  { value: 'time', label: "Lead qabul qilingan sana bo'yicha" },
 ];

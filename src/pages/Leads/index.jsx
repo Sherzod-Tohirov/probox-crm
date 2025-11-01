@@ -209,7 +209,7 @@ export default function Leads() {
         <Col fullWidth flexGrow fullHeight>
           <Table
             id={'leads-table'}
-            scrollable
+            scrollable={{ xs: true, sm: true, md: true, lg: true, xl: true }}
             uniqueKey={'id'}
             isLoading={isLoadingLeads}
             columns={columnsToUse}

@@ -236,7 +236,9 @@ export default function useLeadsTableColumns() {
               }}
             >
               {value ? (
-                <span style={{ display: 'inline-flex' }}>{iconsMap.avatar}</span>
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.avatar}
+                </span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {findOperatorName(value)}
@@ -268,7 +270,9 @@ export default function useLeadsTableColumns() {
               }}
             >
               {value ? (
-                <span style={{ display: 'inline-flex' }}>{iconsMap.avatar}</span>
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.avatar}
+                </span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {findOperatorName(value, 'operator2')}

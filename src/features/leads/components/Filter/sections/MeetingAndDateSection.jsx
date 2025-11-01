@@ -12,6 +12,7 @@ export default function MeetingAndDateSection({
   watchedMeetingDateEnd,
   inline = false,
 }) {
+  console.log(watchedMeeting == true, 'watchedMeeting');
   const content = (
     <>
       <Col
@@ -45,9 +46,9 @@ export default function MeetingAndDateSection({
           label="Boshlanish"
           canClickIcon={false}
           type="date"
-          disabled={!(watchedMeeting === true || watchedMeeting === false)}
+          disabled={!watchedMeeting}
           datePickerOptions={{
-            clickOpens: watchedMeeting === true || watchedMeeting === false,
+            clickOpens: watchedMeeting !== '',
             maxDate: watchedMeetingDateEnd
               ? moment(watchedMeetingDateEnd, 'DD.MM.YYYY').toDate()
               : undefined,
@@ -71,9 +72,9 @@ export default function MeetingAndDateSection({
           label="Tugash"
           canClickIcon={false}
           type="date"
-          disabled={!(watchedMeeting === true || watchedMeeting === false)}
+          disabled={!watchedMeeting}
           datePickerOptions={{
-            clickOpens: watchedMeeting === true || watchedMeeting === false,
+            clickOpens: watchedMeeting !== '',
             minDate: watchedMeetingDateStart
               ? moment(watchedMeetingDateStart, 'DD.MM.YYYY').toDate()
               : undefined,

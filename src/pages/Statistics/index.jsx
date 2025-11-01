@@ -81,6 +81,7 @@ export default function Statistics() {
         <Col fullWidth>
           <Table
             scrollable
+            scrollHeight={'auto'}
             uniqueKey="SlpCode"
             data={salesPerson.data}
             isLoading={salesPerson.isLoading}
@@ -110,6 +111,7 @@ export default function Statistics() {
         <Col fullWidth>
           <Table
             scrollable
+            scrollHeight={'auto'}
             uniqueKey="DueDate"
             data={monthly.data}
             isLoading={monthly.isLoading}

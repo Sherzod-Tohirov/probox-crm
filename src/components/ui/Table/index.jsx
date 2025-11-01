@@ -1,5 +1,13 @@
 import { ClipLoader } from 'react-spinners';
-import { useCallback, useMemo, useRef, forwardRef, memo } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  forwardRef,
+  memo,
+  useState,
+  useEffect,
+} from 'react';
 import iconsMap from '@utils/iconsMap';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
@@ -169,6 +177,9 @@ const defaultScrollHeight = {
   xl: `calc(100vh - 300px)`,
 };
 
+const MIN_AUTO_SCROLL_HEIGHT = 200;
+const AUTO_SCROLL_BOTTOM_GAP = 16;
+
 const Table = forwardRef(function Table(
   {
     id,
@@ -206,8 +217,86 @@ const Table = forwardRef(function Table(
   },
   ref
 ) {
+  const containerRef = useRef(null);
   const pressTimeRef = useRef(0);
   const allowRowClickRef = useRef(true);
+  const [autoScrollHeight, setAutoScrollHeight] = useState('auto');
+  const shouldUseAutoHeight = scrollHeight === defaultScrollHeight;
+  const computeAutoHeight = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const element = containerRef.current;
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+    const styles = window.getComputedStyle(element);
+    const marginBottom = parseFloat(styles.marginBottom || '0');
+    const paddingBottom = parseFloat(styles.paddingBottom || '0');
+    const borderBottom = parseFloat(styles.borderBottomWidth || '0');
+    const offset = rect.top + marginBottom + paddingBottom + borderBottom;
+
+    let footerHeight = 0;
+    if (typeof document !== 'undefined') {
+      const footerRoot = document.getElementById('footer-root');
+      const footerNode = footerRoot?.firstElementChild;
+      if (footerNode) {
+        const footerRect = footerNode.getBoundingClientRect();
+        const footerStyles = window.getComputedStyle(footerNode);
+        const footerMarginTop = parseFloat(footerStyles.marginTop || '0');
+        const footerMarginBottom = parseFloat(footerStyles.marginBottom || '0');
+        footerHeight = footerRect.height + footerMarginTop + footerMarginBottom;
+      }
+    }
+
+    const available =
+      window.innerHeight - footerHeight - offset - AUTO_SCROLL_BOTTOM_GAP;
+    const normalized = Math.max(available, MIN_AUTO_SCROLL_HEIGHT);
+    setAutoScrollHeight(`${Math.round(normalized)}px`);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldUseAutoHeight) return;
+    computeAutoHeight();
+  }, [computeAutoHeight, shouldUseAutoHeight, data, columns, isLoading]);
+
+  useEffect(() => {
+    if (!shouldUseAutoHeight) return;
+
+    const handleResize = () => {
+      computeAutoHeight();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+    }
+
+    const observers = [];
+    if (typeof ResizeObserver !== 'undefined') {
+      const footerRoot =
+        typeof document !== 'undefined'
+          ? document.getElementById('footer-root')
+          : null;
+      const targetElements = [
+        containerRef.current,
+        containerRef.current?.parentElement,
+        footerRoot,
+        document?.body || null,
+      ].filter(Boolean);
+
+      targetElements.forEach((target) => {
+        const observer = new ResizeObserver(handleResize);
+        observer.observe(target);
+        observers.push(observer);
+      });
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [computeAutoHeight, shouldUseAutoHeight]);
+
   const isMobile = useIsMobile();
   // Responsive column filtering
   const finalColumns = useMemo(() => {
@@ -336,12 +425,21 @@ const Table = forwardRef(function Table(
   const resolvedContainerStyle = useMemo(() => {
     const isScrollable = getBreakpointValue(scrollable);
     const heightVal = getBreakpointValue(containerHeight);
-    const scrollVal = getBreakpointValue(scrollHeight);
+    const scrollVal = shouldUseAutoHeight
+      ? autoScrollHeight
+      : getBreakpointValue(scrollHeight);
     return {
       height: isScrollable ? scrollVal : heightVal,
       ...containerStyle,
     };
-  }, [containerHeight, scrollHeight, scrollable, containerStyle]);
+  }, [
+    autoScrollHeight,
+    containerHeight,
+    scrollHeight,
+    scrollable,
+    containerStyle,
+    shouldUseAutoHeight,
+  ]);
 
   const tableClassName = useMemo(
     () =>
@@ -357,6 +455,7 @@ const Table = forwardRef(function Table(
     <div
       id="table-wrapper"
       data-testid="table-wrapper"
+      ref={containerRef}
       style={resolvedContainerStyle}
       className={classNames(containerClassName, {
         [styles[`breakpoint-${getBreakpointValue(scrollable)}`]]: true,

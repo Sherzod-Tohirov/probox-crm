@@ -25,26 +25,49 @@ export default function AdvancedFilterModal({
   const [columnsLocal, setColumnsLocal] = useState(visibleColumns || {});
 
   // Fetch options
-  const { data: branches = [], isLoading: isBranchesLoading } = useFetchBranches();
-  const { data: operator1List = [], isLoading: isOperator1Loading } = useFetchExecutors({ include_role: 'Operator1' });
-  const { data: operator2List = [], isLoading: isOperator2Loading } = useFetchExecutors({ include_role: 'Operator2' });
+  const { data: branches = [], isLoading: isBranchesLoading } =
+    useFetchBranches();
+  const { data: operator1List = [], isLoading: isOperator1Loading } =
+    useFetchExecutors({ include_role: 'Operator1' });
+  const { data: operator2List = [], isLoading: isOperator2Loading } =
+    useFetchExecutors({ include_role: 'Operator2' });
 
-  const branchOptions = useMemo(() => selectOptionsCreator(branches, { label: 'name', value: 'id' }), [branches]);
+  const branchOptions = useMemo(
+    () => selectOptionsCreator(branches, { label: 'name', value: 'id' }),
+    [branches]
+  );
   const operator1Options = useMemo(
-    () => selectOptionsCreator(operator1List, { label: 'SlpName', value: 'SlpCode' }),
+    () =>
+      selectOptionsCreator(operator1List, {
+        label: 'SlpName',
+        value: 'SlpCode',
+      }),
     [operator1List]
   );
   const operator2Options = useMemo(
-    () => selectOptionsCreator(operator2List, { label: 'SlpName', value: 'SlpCode' }),
+    () =>
+      selectOptionsCreator(operator2List, {
+        label: 'SlpName',
+        value: 'SlpCode',
+      }),
     [operator2List]
   );
 
   const defaults = useMemo(
-    () => normalizeFilterState(initialValues || {}, branchOptions, operator1Options, operator2Options),
+    () =>
+      normalizeFilterState(
+        initialValues || {},
+        branchOptions,
+        operator1Options,
+        operator2Options
+      ),
     [initialValues, branchOptions, operator1Options, operator2Options]
   );
 
-  const { control, handleSubmit, reset, watch } = useForm({ defaultValues: defaults, mode: 'all' });
+  const { control, handleSubmit, reset, watch, register } = useForm({
+    defaultValues: defaults,
+    mode: 'all',
+  });
 
   useEffect(() => {
     reset(defaults);
@@ -70,7 +93,14 @@ export default function AdvancedFilterModal({
   );
 
   const footer = (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, width: '100%' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 12,
+        width: '100%',
+      }}
+    >
       <Button variant="outlined" color="danger" onClick={onClose} type="button">
         Bekor qilish
       </Button>
@@ -81,12 +111,20 @@ export default function AdvancedFilterModal({
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={'Qidirish va Ustunlar'} size="lg" preventScroll footer={footer}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={'Qidirish va Ustunlar'}
+      size="lg"
+      preventScroll
+      footer={footer}
+    >
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-        <Row direction="row" gutter={2} wrap>
-          <Col fullWidth>
+        <Row direction="column" gutter={2} flexGrow>
+          <Col flexGrow fullWidth>
             <div
               style={{
+                width: '100%',
                 border: '1px solid rgba(148,163,184,0.18)',
                 background: 'rgba(148,163,184,0.08)',
                 borderRadius: 12,
@@ -94,7 +132,9 @@ export default function AdvancedFilterModal({
                 marginBottom: 12,
               }}
             >
-              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>Boshqa filterlar</div>
+              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>
+                Boshqa filterlar
+              </div>
               <Row direction="row" gutter={2} wrap>
                 <MeetingAndDateSection
                   control={control}
@@ -105,10 +145,20 @@ export default function AdvancedFilterModal({
                 />
 
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
-                  <SelectField name="purchase" label="Xarid amalga oshdimi" options={booleanOptionsAll} control={control} />
+                  <SelectField
+                    name="purchase"
+                    label="Xarid amalga oshdimi"
+                    options={booleanOptionsAll}
+                    control={control}
+                  />
                 </Col>
 
-                <RoleFilters role={role} control={control} isMobile={isMobile} />
+                <RoleFilters
+                  role={role}
+                  control={control}
+                  isMobile={isMobile}
+                  register={register}
+                />
               </Row>
             </div>
           </Col>
@@ -122,7 +172,9 @@ export default function AdvancedFilterModal({
                 padding: 12,
               }}
             >
-              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>Jadval ustunlari</div>
+              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>
+                Jadval ustunlari
+              </div>
               <Row direction="row" gutter={2} wrap>
                 {columns.map((col) => {
                   const disabled = col.key === 'clientName';
@@ -147,7 +199,12 @@ export default function AdvancedFilterModal({
                           type="checkbox"
                           checked={checked}
                           disabled={disabled}
-                          onChange={(e) => setColumnsLocal({ ...columnsLocal, [col.key]: e.target.checked })}
+                          onChange={(e) =>
+                            setColumnsLocal({
+                              ...columnsLocal,
+                              [col.key]: e.target.checked,
+                            })
+                          }
                           style={{ width: 18, height: 18 }}
                         />
                         <span>{col.title || col.key}</span>
