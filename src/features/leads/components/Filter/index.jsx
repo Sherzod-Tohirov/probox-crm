@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -93,18 +93,26 @@ export default function LeadsFilter({
   const { register, handleSubmit, reset, control, watch, setValue, getValues } =
     useForm({
       defaultValues: normalizedFilterState,
-      mode: 'all',
+      mode: 'onSubmit',
     });
 
   const watchedMeetingDateStart = watch('meetingDateStart');
   const watchedMeetingDateEnd = watch('meetingDateEnd');
   const meeting = watch('meeting');
   const search = watch('search');
+  const lastSearchRef = useRef(search ?? '');
 
-  // Reset form when normalized filter state changes (e.g., when options are loaded)
+  // Reset form when normalized filter state changes, only if different
   useEffect(() => {
-    reset(normalizedFilterState);
-  }, [normalizedFilterState, reset]);
+    const current = getValues();
+    let same = false;
+    try {
+      same = JSON.stringify(current) === JSON.stringify(normalizedFilterState);
+    } catch (_) {}
+    if (!same) {
+      reset(normalizedFilterState);
+    }
+  }, [normalizedFilterState, reset, getValues]);
 
   useEffect(() => {
     const meetingValue = typeof meeting === 'object' ? meeting?.value : meeting;
@@ -124,9 +132,12 @@ export default function LeadsFilter({
     if (!watchedMeetingDateEnd) setValue('meetingDateEnd', end);
   }, [meeting, watchedMeetingDateStart, watchedMeetingDateEnd, setValue]);
 
-  // Debounced real-time search (only for 'search' field)
+  // Debounced real-time search (only for 'search' field) with loop guard
   useEffect(() => {
+    const current = search ?? '';
+    if (lastSearchRef.current === current) return;
     const handler = setTimeout(() => {
+      lastSearchRef.current = current;
       const values = getValues();
       const payload = serializeFilter({
         ...values,
@@ -139,7 +150,7 @@ export default function LeadsFilter({
       onFilter(payload);
     }, 400);
     return () => clearTimeout(handler);
-  }, [search, dispatch, onFilter, getValues]);
+  }, [search]);
 
   const onSubmit = useCallback(
     (data) => {
