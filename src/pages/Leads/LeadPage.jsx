@@ -33,12 +33,17 @@ import useAlert from '@/hooks/useAlert';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 import { useMutateFileUpload } from '@/hooks/data/leads/useMutateFileUpload';
 import useFetchLeadFiles from '@/hooks/data/leads/useFetchLeadFiles';
+import useFetchExecutors from '@/hooks/data/useFetchExecutors';
+import { findExecutor } from '@/utils/findExecutorById';
 
 export default function LeadPage() {
   const { id } = useParams();
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: executors } = useFetchExecutors({
+    include_role: ['Operator1', 'Operator2', 'Seller', 'Scoring', 'OperatorM'],
+  });
   const { data, isLoading } = useFetchLeadById(id);
   const { data: lead } = data ?? {};
   const { alert } = useAlert();
@@ -233,6 +238,40 @@ export default function LeadPage() {
             disabled={true}
             span={{ xs: 24, md: 24 }}
             defaultValue={lead?.time}
+          />
+        </FieldGroup>
+        <FieldGroup title="Biriktirilgan xodimlar">
+          <FormField
+            name="operator"
+            label="Operator 1"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={findExecutor(executors, lead?.operator)?.SlpName}
+          />
+          <FormField
+            name="operator2"
+            label="Operator 2"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={findExecutor(executors, lead?.operator2)?.SlpName}
+          />
+          <FormField
+            name="seller"
+            label="Sotuvchi"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
+          />
+          <FormField
+            name="scoring"
+            label="Scoring"
+            control={null}
+            disabled={true}
+            span={{ xs: 24, md: 8 }}
+            defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
           />
         </FieldGroup>
 

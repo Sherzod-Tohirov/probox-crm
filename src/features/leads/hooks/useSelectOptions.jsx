@@ -4,12 +4,15 @@ import useAuth from '@/hooks/useAuth';
 
 export function useSelectOptions(tab) {
   const { user } = useAuth();
+
   const { data: executors } = useFetchExecutors({
-    branchId: user?.U_branch,
+    branch: user?.U_branch,
     include_role: 'Seller',
   });
-  const { data: branches } = useFetchBranches();
 
+  const { data: branches } = useFetchBranches();
+  console.log(branches, 'branches');
+  
   if (tab === 'common') {
     const rejectReasonOptions = [
       {
@@ -66,8 +69,8 @@ export function useSelectOptions(tab) {
   if (tab === 'seller') {
     const consultantOptions =
       executors?.map((executor) => ({
-        value: executor.id,
-        label: executor.name,
+        value: executor.SlpCode,
+        label: executor.SlpName,
       })) ?? [];
 
     const sellTypeOptions = [
@@ -87,7 +90,7 @@ export function useSelectOptions(tab) {
 
     const branchOptions =
       branches
-        ?.filter((branch) => branch.id === user?.U_branch)
+        ?.filter((branch) => String(branch.id) === String(user?.U_branch))
         ?.map((branch) => ({
           value: branch.id,
           label: branch.name,

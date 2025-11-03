@@ -84,6 +84,29 @@ export default function useLeadsTableColumns() {
     );
   };
 
+  const getLimitText = (limit) => {
+    if (limit === null) return '-';
+    if (limit === 0)
+      return (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          {iconsMap.infoCircle}
+          Limit chiqmadi
+        </span>
+      );
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {iconsMap.wallet}
+        {formatterPayment(limit)}
+      </span>
+    );
+  };
+
   /** @type {TableColumn[]} */
   const leadsTableColumns = useMemo(
     () => [
@@ -318,7 +341,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'purchase',
         title: "Xarid bo'ldimi",
-        icon: 'wallet',
+        icon: 'products',
         minWidth: '140px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
@@ -378,37 +401,26 @@ export default function useLeadsTableColumns() {
       {
         key: 'finalLimit',
         title: 'Yakuniy limit',
-        icon: 'wallet',
+        icon: 'products',
         width: { xs: '20%', md: '12%', xl: '10%' },
         minWidth: '140px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { finalLimit } = column;
-          const getLimitText = (limit) => {
-            if (limit === null) return '-';
-            if (limit === 0)
-              return (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                  }}
-                >
-                  {iconsMap.infoCircle}
-                  Limit chiqmadi
-                </span>
-              );
-            return (
-              <span
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-              >
-                {iconsMap.wallet}
-                {formatterPayment(limit)}
-              </span>
-            );
-          };
           return getLimitText(finalLimit);
+        },
+      },
+      {
+        key: 'finalPercentage',
+        title: 'Yakuniy foiz',
+        icon: 'products',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (column) => {
+          const { finalPercentage } = column;
+          if (finalPercentage === null) return '-';
+          return finalPercentage + ' %';
         },
       },
       {

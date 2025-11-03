@@ -21,7 +21,7 @@ export const initialStatisticsFilterState = {
 
 export const initialLeadsFilterState = {
   search: '',
-  source: '',
+  source: [],
   branch: [],
   operator: [],
   operator2: [],

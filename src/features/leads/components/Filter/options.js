@@ -1,7 +1,6 @@
 import { AVAILABLE_LEAD_SOURCES } from '@features/leads/utils/constants';
 
 export const sourceOptions = [
-  { value: '', label: 'Barchasi' },
   ...AVAILABLE_LEAD_SOURCES.map((source) => ({ value: source, label: source })),
 ];
 

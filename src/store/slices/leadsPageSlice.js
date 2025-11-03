@@ -16,12 +16,20 @@ const loadState = () => {
         ? { meetingDateStart: '', meetingDateEnd: '' }
         : {}),
     };
+    const storedPage = Number.parseInt(parsedState.currentPage, 10);
+    const normalizedPage =
+      Number.isNaN(storedPage) || storedPage < 0 ? 0 : storedPage;
+    const storedPageSize = Number.parseInt(parsedState.pageSize, 10);
+    const normalizedPageSize = Number.isNaN(storedPageSize)
+      ? 10
+      : Math.max(storedPageSize, 1);
+
     return {
       leads: [],
       currentLead: parsedState.currentLead ?? {},
       filter: sanitizedFilter,
-      currentPage: parsedState.currentPage ?? 1,
-      pageSize: parsedState.pageSize ?? 10,
+      currentPage: normalizedPage,
+      pageSize: normalizedPageSize,
       lastAction: parsedState.lastAction ?? [],
     };
   } catch (error) {
@@ -30,7 +38,7 @@ const loadState = () => {
       leads: [],
       currentLead: {},
       filter: initialLeadsFilterState,
-      currentPage: 1,
+      currentPage: 0,
       pageSize: 10,
       lastAction: [],
     };
@@ -96,10 +104,10 @@ const leadsPageSlice = createSlice({
       state.leads = [];
       state.currentLead = {};
       state.filter = initialLeadsFilterState;
-      state.currentPage = 1;
-      state.pageSize = 10;
+      state.currentPage = 0;
+      state.pageSize = state.pageSize || 10;
       state.lastAction = [];
-      clearPersistedState();
+      saveState(state);
     },
   },
 });

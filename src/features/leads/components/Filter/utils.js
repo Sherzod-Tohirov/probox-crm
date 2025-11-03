@@ -2,7 +2,8 @@ export function normalizeFilterState(
   filterState,
   branchOptions = [],
   operator1Options = [],
-  operator2Options = []
+  operator2Options = [],
+  sourceOptions = []
 ) {
   const normalized = { ...filterState };
 
@@ -17,6 +18,9 @@ export function normalizeFilterState(
     });
   };
 
+  if (!Array.isArray(normalized.source)) {
+    normalized.source = toArrayFromCSV(normalized.source, sourceOptions);
+  }
   if (!Array.isArray(normalized.branch)) {
     normalized.branch = toArrayFromCSV(normalized.branch, branchOptions);
   }
@@ -61,6 +65,7 @@ export function serializeFilter(values) {
           .join(',')
       : arr;
 
+  if (payload.source) payload.source = serializeMulti(payload.source);
   if (payload.branch) payload.branch = serializeMulti(payload.branch);
   if (payload.operator) payload.operator = serializeMulti(payload.operator);
   if (payload.operator2) payload.operator2 = serializeMulti(payload.operator2);

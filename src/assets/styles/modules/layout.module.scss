@@ -86,7 +86,10 @@
 .main-layout {
   position: relative;
   display: flex;
-  min-height: 100vh !important;
+  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
 .primary-layout {
@@ -94,6 +97,9 @@
   @include m.flex-direction(column);
   width: 100%;
   min-height: 100vh;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .client-page-layout {

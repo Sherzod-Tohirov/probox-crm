@@ -4,10 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, Col, Row, Accordion } from '@components/ui';
 import { initialLeadsFilterState } from '@utils/store/initialStates';
-import {
-  setLeadsCurrentPage,
-  setLeadsFilter,
-} from '@store/slices/leadsPageSlice';
+import { setLeadsCurrentPage } from '@store/slices/leadsPageSlice';
 import useIsMobile from '@/hooks/useIsMobile';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
@@ -18,7 +15,10 @@ import HeaderFilters from './sections/HeaderFilters';
 import MeetingAndDateSection from './sections/MeetingAndDateSection';
 import RoleFilters from './sections/RoleFilters';
 import SelectField from './fields/SelectField';
-import { booleanOptionsAll } from './options';
+import {
+  booleanOptionsAll,
+  sourceOptions as leadSourceOptions,
+} from './options';
 import { normalizeFilterState, serializeFilter } from './utils';
 
 export default function LeadsFilter({
@@ -78,19 +78,28 @@ export default function LeadsFilter({
         filterState,
         branchOptions,
         operator1Options,
-        operator2Options
+        operator2Options,
+        leadSourceOptions
       ),
-    [filterState, branchOptions, operator1Options, operator2Options]
+    [
+      filterState,
+      branchOptions,
+      operator1Options,
+      operator2Options,
+      leadSourceOptions,
+    ]
   );
 
-  const { register, handleSubmit, reset, control, watch, setValue } = useForm({
-    defaultValues: normalizedFilterState,
-    mode: 'all',
-  });
+  const { register, handleSubmit, reset, control, watch, setValue, getValues } =
+    useForm({
+      defaultValues: normalizedFilterState,
+      mode: 'all',
+    });
 
   const watchedMeetingDateStart = watch('meetingDateStart');
   const watchedMeetingDateEnd = watch('meetingDateEnd');
   const meeting = watch('meeting');
+  const search = watch('search');
 
   // Reset form when normalized filter state changes (e.g., when options are loaded)
   useEffect(() => {
@@ -115,6 +124,23 @@ export default function LeadsFilter({
     if (!watchedMeetingDateEnd) setValue('meetingDateEnd', end);
   }, [meeting, watchedMeetingDateStart, watchedMeetingDateEnd, setValue]);
 
+  // Debounced real-time search (only for 'search' field)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const values = getValues();
+      const payload = serializeFilter({
+        ...values,
+        source: values.source,
+        branch: values.branch,
+        operator: values.operator,
+        operator2: values.operator2,
+      });
+      dispatch(setLeadsCurrentPage(0));
+      onFilter(payload);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [search, dispatch, onFilter, getValues]);
+
   const onSubmit = useCallback(
     (data) => {
       const payload = serializeFilter(data);
@@ -124,6 +150,12 @@ export default function LeadsFilter({
     [dispatch, onFilter]
   );
 
+  const submitForm = useCallback(() => {
+    const payload = serializeFilter(getValues());
+    dispatch(setLeadsCurrentPage(0));
+    onFilter(payload);
+  }, [dispatch, onFilter, getValues]);
+
   // No draft persistence needed; keep logic simple
 
   const onClear = useCallback(() => {
@@ -131,7 +163,7 @@ export default function LeadsFilter({
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
-    ['branch', 'operator', 'operator2'].forEach((field) => {
+    ['source', 'branch', 'operator', 'operator2'].forEach((field) => {
       normalizedInitialState[field] = [];
     });
 

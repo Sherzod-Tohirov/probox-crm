@@ -73,7 +73,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           />
           <FormField
             name="consultant"
-            label="Maslahatchi"
+            label="Consultant"
             type="select"
             options={consultantOptions}
             placeholderOption={true}

@@ -15,6 +15,7 @@ export default function HeaderFilters({
   isOperator1Loading,
   isOperator2Loading,
   minimal = false,
+  onSearchSubmit,
 }) {
   return (
     <Row direction="row" gutter={2} wrap>
@@ -35,6 +36,12 @@ export default function HeaderFilters({
           placeholder="Ismi | Telefon"
           placeholderColor="secondary"
           control={control}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              onSearchSubmit?.();
+            }
+          }}
           {...register('search')}
         />
       </Col>
@@ -47,32 +54,31 @@ export default function HeaderFilters({
         xl={1.5}
         className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
       >
-        <SelectField
+        <MultiSelectField
           name="source"
           label="Manba"
           options={sourceOptions}
           control={control}
+          isSearchable={false}
         />
       </Col>
 
-      {minimal ? null : (
-        <Col
-          xs={12}
-          sm={6}
-          md={2}
-          lg={1.5}
-          xl={1.2}
-          className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-        >
-          <MultiSelectField
-            name="branch"
-            label="Filial"
-            options={branchOptions}
-            isLoading={isBranchesLoading}
-            control={control}
-          />
-        </Col>
-      )}
+      <Col
+        xs={12}
+        sm={6}
+        md={2}
+        lg={1.5}
+        xl={1.2}
+        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
+      >
+        <MultiSelectField
+          name="branch"
+          label="Filial"
+          options={branchOptions}
+          isLoading={isBranchesLoading}
+          control={control}
+        />
+      </Col>
 
       <Col
         xs={12}
