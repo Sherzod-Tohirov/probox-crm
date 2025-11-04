@@ -3,9 +3,6 @@ import useMutateLead from '@/hooks/data/leads/useMutateLead';
 
 const SCORING_FIELDS = [
   'clientFullName',
-  'region',
-  'district',
-  'address',
   'birthDate',
   'applicationDate',
   'age',
@@ -25,9 +22,6 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
   const form = useForm({
     defaultValues: {
       clientFullName: leadData?.clientFullName || '',
-      region: leadData?.region || '',
-      district: leadData?.district || '',
-      address: leadData?.address || '',
       birthDate: leadData?.birthDate || '',
       applicationDate: leadData?.applicationDate || '',
       age: leadData?.age || '',

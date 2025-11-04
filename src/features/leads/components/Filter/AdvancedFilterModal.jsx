@@ -8,7 +8,7 @@ import useIsMobile from '@/hooks/useIsMobile';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import selectOptionsCreator from '@utils/selectOptionsCreator';
-import { booleanOptionsAll } from './options';
+import { booleanOptionsAll, sourceOptions as leadSourceOptions } from './options';
 import { normalizeFilterState, serializeFilter } from './utils';
 
 export default function AdvancedFilterModal({
@@ -31,6 +31,14 @@ export default function AdvancedFilterModal({
     useFetchExecutors({ include_role: 'Operator1' });
   const { data: operator2List = [], isLoading: isOperator2Loading } =
     useFetchExecutors({ include_role: 'Operator2' });
+  const shouldLoadSeller = role === 'Seller';
+  const shouldLoadScoring = role === 'Scoring';
+  const { data: sellerList = [], isLoading: isSellerLoading } = useFetchExecutors(
+    shouldLoadSeller ? { include_role: 'Seller' } : undefined
+  );
+  const { data: scoringList = [], isLoading: isScoringLoading } = useFetchExecutors(
+    shouldLoadScoring ? { include_role: 'Scoring' } : undefined
+  );
 
   const branchOptions = useMemo(
     () => selectOptionsCreator(branches, { label: 'name', value: 'id' }),
@@ -52,6 +60,22 @@ export default function AdvancedFilterModal({
       }),
     [operator2List]
   );
+  const sellerOptions = useMemo(
+    () =>
+      selectOptionsCreator(sellerList, {
+        label: 'SlpName',
+        value: 'SlpCode',
+      }),
+    [sellerList]
+  );
+  const scoringOptions = useMemo(
+    () =>
+      selectOptionsCreator(scoringList, {
+        label: 'SlpName',
+        value: 'SlpCode',
+      }),
+    [scoringList]
+  );
 
   const defaults = useMemo(
     () =>
@@ -59,9 +83,21 @@ export default function AdvancedFilterModal({
         initialValues || {},
         branchOptions,
         operator1Options,
-        operator2Options
+        operator2Options,
+        leadSourceOptions,
+        shouldLoadSeller ? sellerOptions : [],
+        shouldLoadScoring ? scoringOptions : []
       ),
-    [initialValues, branchOptions, operator1Options, operator2Options]
+    [
+      initialValues,
+      branchOptions,
+      operator1Options,
+      operator2Options,
+      shouldLoadSeller,
+      sellerOptions,
+      shouldLoadScoring,
+      scoringOptions,
+    ]
   );
 
   const { control, handleSubmit, reset, watch, register } = useForm({
@@ -158,6 +194,10 @@ export default function AdvancedFilterModal({
                   control={control}
                   isMobile={isMobile}
                   register={register}
+                  sellerOptions={sellerOptions}
+                  scoringOptions={scoringOptions}
+                  isSellerLoading={isSellerLoading}
+                  isScoringLoading={isScoringLoading}
                 />
               </Row>
             </div>

@@ -307,6 +307,74 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'seller',
+        title: 'Sotuvchi',
+        icon: 'users',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.seller;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.avatar}
+                </span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {findOperatorName(value, 'seller')}
+              </span>
+            </span>
+          );
+        },
+      },
+      {
+        key: 'scoring',
+        title: 'Scoring',
+        icon: 'users',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.scoring;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              {value ? (
+                <span style={{ display: 'inline-flex' }}>
+                  {iconsMap.avatar}
+                </span>
+              ) : null}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {findOperatorName(value, 'scoring')}
+              </span>
+            </span>
+          );
+        },
+      },
+      {
         key: 'branch',
         title: 'Filial',
         icon: 'presentationChart',

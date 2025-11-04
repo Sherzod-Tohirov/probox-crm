@@ -1,5 +1,5 @@
 import { Meta, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Row,
@@ -14,8 +14,10 @@ import {
 } from '@components/ui';
 
 import useFetchLeadById from '@/hooks/data/leads/useFetchLeadById';
+import useMutateLead from '@/hooks/data/leads/useMutateLead';
 import useAuth from '@/hooks/useAuth';
 import useIsMobile from '@/hooks/useIsMobile';
+import { useForm } from 'react-hook-form';
 
 import { Globe } from '@/assets/images/icons/Icons';
 
@@ -83,23 +85,35 @@ export default function LeadPage() {
   const [activeTab, setActiveTab] = useState(
     roleMapping[currentUserRole] ?? 'operator1'
   );
-  // Custom breadcrumbs to show lead name instead of ID
-  const customBreadcrumbs = useMemo(() => {
-    if (!lead) return null;
 
-    return [
-      {
-        path: '/leads',
-        label: 'Leadlar',
-        isMainPath: true,
-      },
-      {
-        path: `/leads/${id}`,
-        label: lead?.clientName || `${id}`,
-        isLastPath: true,
-      },
-    ];
-  }, [lead, id]);
+  // Address form state (General Information)
+  const addressForm = useForm({
+    defaultValues: {
+      region: lead?.region || '',
+      district: lead?.district || '',
+      address: lead?.address || '',
+    },
+  });
+  const {
+    control: addressControl,
+    handleSubmit: handleAddressSubmit,
+    reset: resetAddress,
+  } = addressForm;
+
+  useEffect(() => {
+    if (!lead) return;
+    resetAddress({
+      region: lead?.region || '',
+      district: lead?.district || '',
+      address: lead?.address || '',
+    });
+  }, [lead, resetAddress]);
+
+  const updateLead = useMutateLead(id, {
+    onSuccess: (updated) => {
+      handleFormSuccess(updated);
+    },
+  });
 
   // Check if user can edit specific tab
   const canEditTab = (tabKey) => {
@@ -118,6 +132,59 @@ export default function LeadPage() {
 
     return currentUserRole === roleMapping[tabKey];
   };
+
+  const canEditAddress = useMemo(() => {
+    return (
+      canEditTab('operator1') ||
+      canEditTab('operator2') ||
+      canEditTab('operatorM') ||
+      canEditTab('seller') ||
+      canEditTab('scoring')
+    );
+  }, [currentUserRole]);
+
+  const onSaveAddress = handleAddressSubmit((values) => {
+    const payload = {
+      region: values?.region ?? '',
+      district: values?.district ?? '',
+      address: values?.address ?? '',
+    };
+    updateLead.mutate(payload);
+  });
+
+  const regionOptions = [
+    { value: 'Toshkent shahar', label: 'Toshkent shahar' },
+    { value: 'Toshkent', label: 'Toshkent viloyati' },
+    { value: "Farg'ona", label: "Farg'ona viloyati" },
+    { value: 'Namangan', label: 'Namangan viloyati' },
+    { value: 'Andijon', label: 'Andijon viloyati' },
+    { value: 'Sirdaryo', label: 'Sirdaryo viloyati' },
+    { value: 'Jizzax', label: 'Jizzax viloyati' },
+    { value: 'Samarqand', label: 'Samarqand viloyati' },
+    { value: 'Qashqadaryo', label: 'Qashqadaryo viloyati' },
+    { value: 'Surxondaryo', label: 'Surxondaryo viloyati' },
+    { value: 'Navoiy', label: 'Navoiy viloyati' },
+    { value: 'Buxoro', label: 'Buxoro viloyati' },
+    { value: 'Xorazm', label: 'Xorazm viloyati' },
+    { value: "Qoraqalpog'iston", label: "Qoraqalpog'iston viloyati" },
+  ];
+  // Custom breadcrumbs to show lead name instead of ID
+  const customBreadcrumbs = useMemo(() => {
+    if (!lead) return null;
+
+    return [
+      {
+        path: '/leads',
+        label: 'Leadlar',
+        isMainPath: true,
+      },
+      {
+        path: `/leads/${id}`,
+        label: lead?.clientName || `${id}`,
+        isLastPath: true,
+      },
+    ];
+  }, [lead, id]);
 
   // Handle successful form submission
   const handleFormSuccess = (updatedData) => {
@@ -216,6 +283,41 @@ export default function LeadPage() {
                   />
                 </Col>
               </Row>
+            </Col>
+          </Row>
+        </FieldGroup>
+
+        <FieldGroup title="Manzil ma'lumotlari">
+          <FormField
+            name="region"
+            label="Viloyat"
+            control={addressControl}
+            type="select"
+            options={regionOptions}
+            placeholderOption={true}
+            disabled={!canEditAddress}
+          />
+          <FormField
+            name="district"
+            label="Tuman"
+            control={addressControl}
+            disabled={!canEditAddress}
+          />
+          <FormField
+            name="address"
+            label="Manzil"
+            control={addressControl}
+            disabled={!canEditAddress}
+          />
+          <Row gutter={2} style={{ marginTop: '8px' }}>
+            <Col>
+              <Button
+                variant="filled"
+                onClick={onSaveAddress}
+                disabled={!canEditAddress || updateLead.isPending}
+              >
+                Manzilni saqlash
+              </Button>
             </Col>
           </Row>
         </FieldGroup>
@@ -321,7 +423,14 @@ export default function LeadPage() {
         </FieldGroup>
       </div>
     ),
-    [lead, passportFiles, mutateFileUpload?.isLoading]
+    [
+      lead,
+      passportFiles,
+      mutateFileUpload?.isLoading,
+      canEditAddress,
+      addressControl,
+      updateLead?.isPending,
+    ]
   );
 
   const tabs = useMemo(

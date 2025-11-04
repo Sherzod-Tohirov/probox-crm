@@ -1,9 +1,19 @@
 import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
+import MultiSelectField from '../fields/MultiSelectField';
 import { booleanOptionsAll } from '../options';
 import styles from '../style.module.scss';
 
-export default function RoleFilters({ role, control, isMobile, register }) {
+export default function RoleFilters({
+  role,
+  control,
+  isMobile,
+  register,
+  sellerOptions = [],
+  scoringOptions = [],
+  isSellerLoading = false,
+  isScoringLoading = false,
+}) {
   if (!role) return null;
 
   return (
@@ -145,7 +155,50 @@ export default function RoleFilters({ role, control, isMobile, register }) {
               {...register('jshshir2')}
             />
           </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <MultiSelectField
+              name="scoring"
+              label="Scoring xodim(lar)"
+              options={scoringOptions}
+              control={control}
+              isLoading={isScoringLoading}
+              showAvatars={true}
+              avatarSize={22}
+            />
+          </Col>
         </>
+      )}
+
+      {role === 'Seller' && (
+        <Col
+          xs={12}
+          sm={6}
+          md={2}
+          lg={1.5}
+          xl={1.2}
+          className={
+            isMobile ? styles['mobile-full-width'] : styles.compactCol
+          }
+        >
+          <MultiSelectField
+            name="seller"
+            label="Sotuvchi(lar)"
+            options={sellerOptions}
+            control={control}
+            isLoading={isSellerLoading}
+            showAvatars={true}
+            avatarSize={22}
+          />
+        </Col>
       )}
     </>
   );

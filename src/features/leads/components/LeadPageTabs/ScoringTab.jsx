@@ -10,22 +10,9 @@ import { getAge } from '@/utils/getAge';
 import { calculateLeadLimit } from '@/utils/calculateLeadLimit';
 import { PULT } from '../../utils/constants';
 import formatterCurrency from '@/utils/formatterCurrency';
+import moment from 'moment';
 
-const regionOptions = [
-  { value: 'Toshkent', label: 'Toshkent viloyati' },
-  { value: "Farg'ona", label: "Farg'ona viloyati" },
-  { value: 'Namangan', label: 'Namangan viloyati' },
-  { value: 'Andijon', label: 'Andijon viloyati' },
-  { value: 'Sirdaryo', label: 'Sirdaryo viloyati' },
-  { value: 'Jizzax', label: 'Jizzax viloyati' },
-  { value: 'Samarqand', label: 'Samarqand viloyati' },
-  { value: 'Qashqadaryo', label: 'Qashqadaryo viloyati' },
-  { value: 'Surxondaryo', label: 'Surxondaryo viloyati' },
-  { value: 'Navoiy', label: 'Navoiy viloyati' },
-  { value: 'Buxoro', label: 'Buxoro viloyati' },
-  { value: 'Xorazm', label: 'Xorazm viloyati' },
-  { value: "Qoraqalpog'iston", label: "Qoraqalpog'iston viloyati" },
-];
+// Address fields moved to General Information in LeadPage
 
 const paymentHistoryOptions = [
   { value: '0 Kun', label: '0 Kun' },
@@ -91,15 +78,22 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     'applicationDate',
   ]);
   // Reset form when leadData changes
+  const formatBirthDate = (birthDate) => {
+    if (!birthDate) return '';
+    const parsed = moment(
+      birthDate,
+      ['DD.MM.YYYY', 'YYYY.MM.DD', moment.ISO_8601],
+      true
+    );
+    const validMoment = parsed.isValid() ? parsed : moment(birthDate);
+    return validMoment.isValid() ? validMoment.format('DD.MM.YYYY') : '';
+  };
   useEffect(() => {
     if (!form) return;
     if (leadData) {
       reset({
         clientFullName: leadData.clientFullName,
-        region: leadData.region,
-        district: leadData.district,
-        address: leadData.address,
-        birthDate: leadData.birthDate,
+        birthDate: formatBirthDate(leadData.birthDate),
         applicationDate: leadData.applicationDate,
         age: leadData.age || '',
         score: leadData.score || '',
@@ -128,8 +122,13 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
 
   useEffect(() => {
     if (!form) return;
+    console.log(fieldBirthDate, 'fieldBirthDate');
     if (fieldBirthDate !== undefined) {
-      setValue('age', getAge(fieldBirthDate), { shouldValidate: true });
+      const birthDate = Array.isArray(fieldBirthDate)
+        ? fieldBirthDate[0]
+        : fieldBirthDate;
+      console.log(birthDate, 'birthDate');
+      setValue('age', getAge(birthDate), { shouldValidate: true });
     }
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
@@ -245,29 +244,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
           />
         </FieldGroup>
 
-        <FieldGroup title="Manzil ma'lumotlari">
-          <FormField
-            name="region"
-            label="Viloyat"
-            control={control}
-            type="select"
-            options={regionOptions}
-            placeholderOption={true}
-            disabled={!canEdit}
-          />
-          <FormField
-            name="district"
-            label="Tuman"
-            control={control}
-            disabled={!canEdit}
-          />
-          <FormField
-            name="address"
-            label="Manzil"
-            control={control}
-            disabled={!canEdit}
-          />
-        </FieldGroup>
+        {/* Address fields are edited in General Information section */}
 
         <FieldGroup title="Shaxsiy ma'lumotlar">
           <FormField

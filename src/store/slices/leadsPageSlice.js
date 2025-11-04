@@ -103,7 +103,15 @@ const leadsPageSlice = createSlice({
     resetLeadsPage(state) {
       state.leads = [];
       state.currentLead = {};
-      state.filter = initialLeadsFilterState;
+      state.filter = {
+        ...initialLeadsFilterState,
+        source: [],
+        branch: [],
+        operator: [],
+        operator2: [],
+        seller: [],
+        scoring: [],
+      };
       state.currentPage = 0;
       state.pageSize = state.pageSize || 10;
       state.lastAction = [];

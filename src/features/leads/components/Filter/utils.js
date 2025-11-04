@@ -3,7 +3,9 @@ export function normalizeFilterState(
   branchOptions = [],
   operator1Options = [],
   operator2Options = [],
-  sourceOptions = []
+  sourceOptions = [],
+  sellerOptions = [],
+  scoringOptions = []
 ) {
   const normalized = { ...filterState };
 
@@ -32,6 +34,12 @@ export function normalizeFilterState(
       normalized.operator2,
       operator2Options
     );
+  }
+  if (!Array.isArray(normalized.seller)) {
+    normalized.seller = toArrayFromCSV(normalized.seller, sellerOptions);
+  }
+  if (!Array.isArray(normalized.scoring)) {
+    normalized.scoring = toArrayFromCSV(normalized.scoring, scoringOptions);
   }
 
   return normalized;
@@ -69,6 +77,8 @@ export function serializeFilter(values) {
   if (payload.branch) payload.branch = serializeMulti(payload.branch);
   if (payload.operator) payload.operator = serializeMulti(payload.operator);
   if (payload.operator2) payload.operator2 = serializeMulti(payload.operator2);
+  if (payload.seller) payload.seller = serializeMulti(payload.seller);
+  if (payload.scoring) payload.scoring = serializeMulti(payload.scoring);
 
   // Remove empty-like values except valid booleans/numbers
   Object.keys(payload).forEach((key) => {

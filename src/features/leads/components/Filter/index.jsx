@@ -70,7 +70,6 @@ export default function LeadsFilter({
       value: 'SlpCode',
     });
   }, [operator2List]);
-
   // Ensure multiple select fields are arrays for form initialization
   const normalizedFilterState = useMemo(
     () =>
@@ -174,7 +173,7 @@ export default function LeadsFilter({
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
-    ['source', 'branch', 'operator', 'operator2'].forEach((field) => {
+    ['source', 'branch', 'operator', 'operator2', 'seller', 'scoring'].forEach((field) => {
       normalizedInitialState[field] = [];
     });
 

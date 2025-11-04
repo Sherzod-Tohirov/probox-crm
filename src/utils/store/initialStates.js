@@ -25,6 +25,8 @@ export const initialLeadsFilterState = {
   branch: [],
   operator: [],
   operator2: [],
+  seller: [],
+  scoring: [],
   meeting: '',
   meetingDateStart: '',
   meetingDateEnd: '',
