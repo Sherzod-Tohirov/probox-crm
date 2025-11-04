@@ -35,6 +35,11 @@ export default function FormField({
     { value: 'false', label: "Yo'q" },
   ];
 
+  const confirmOnlyFalseOptions = [
+    { value: 'null', label: '-' },
+    { value: 'false', label: "Yo'q" },
+  ];
+
   const renderField = ({ field, fieldState }) => {
     const fieldProps = {
       ...commonProps,
@@ -69,13 +74,29 @@ export default function FormField({
                   : 'null'
             }
             onChange={(val) => {
-              const out = val === 'true' ? true : val === 'false' ? false : null;
+              const out =
+                val === 'true' ? true : val === 'false' ? false : null;
               field.onChange(out);
             }}
             placeholderOption={false}
           />
         );
-
+      case 'confirmOnlyFalse':
+        return (
+          <Input
+            {...fieldProps}
+            type="select"
+            placeholder={`${label} tanlang`}
+            options={confirmOnlyFalseOptions}
+            value={field.value === false ? 'false' : 'null'}
+            onChange={(val) => {
+              const out =
+                val === 'true' ? true : val === 'false' ? false : null;
+              field.onChange(out);
+            }}
+            placeholderOption={false}
+          />
+        );
       case 'number':
         return <Input {...fieldProps} type="number" min={0} />;
 
@@ -163,7 +184,26 @@ export default function FormField({
                     : 'null'
               }
               onChange={(val) => {
-                const out = val === 'true' ? true : val === 'false' ? false : null;
+                const out =
+                  val === 'true' ? true : val === 'false' ? false : null;
+                directProps.onChange?.(out);
+              }}
+              placeholder={`${label} tanlang`}
+              placeholderOption={false}
+            />
+          </Col>
+        );
+      case 'confirmOnlyFalse':
+        return (
+          <Col span={span}>
+            <Input
+              {...directProps}
+              type="select"
+              options={confirmOnlyFalseOptions}
+              value={directProps.value === false ? 'false' : 'null'}
+              onChange={(val) => {
+                const out =
+                  val === 'true' ? true : val === 'false' ? false : null;
                 directProps.onChange?.(out);
               }}
               placeholder={`${label} tanlang`}

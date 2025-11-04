@@ -32,7 +32,7 @@ export default function useLeadsTableColumns() {
   const findBranchName = useCallback(
     (branchCode) => {
       const branch = branchList.find(
-        (branch) => String(branch.id) === String(branchCode)
+        (branch) => String(branch._id) === String(branchCode)
       );
 
       return branch?.name || '-';
@@ -125,6 +125,7 @@ export default function useLeadsTableColumns() {
         icon: 'avatarFilled',
         width: { xs: '40%', md: '24%', xl: '20%' },
         minWidth: '160px',
+        maxWidth: '200px',
         cellStyle: {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -134,6 +135,7 @@ export default function useLeadsTableColumns() {
           const value = row.clientName;
           return (
             <span
+              title={value}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -326,11 +328,6 @@ export default function useLeadsTableColumns() {
                 maxWidth: '100%',
               }}
             >
-              {value ? (
-                <span style={{ display: 'inline-flex' }}>
-                  {iconsMap.presentationChart}
-                </span>
-              ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {findBranchName(value)}
               </span>

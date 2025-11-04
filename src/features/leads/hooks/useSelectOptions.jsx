@@ -12,7 +12,7 @@ export function useSelectOptions(tab) {
 
   const { data: branches } = useFetchBranches();
   console.log(branches, 'branches');
-  
+
   if (tab === 'common') {
     const rejectReasonOptions = [
       {
@@ -67,7 +67,7 @@ export function useSelectOptions(tab) {
   }
 
   if (tab === 'seller') {
-    const consultantOptions =
+    const sellerOptions =
       executors?.map((executor) => ({
         value: executor.SlpCode,
         label: executor.SlpName,
@@ -75,8 +75,8 @@ export function useSelectOptions(tab) {
 
     const sellTypeOptions = [
       {
-        value: 'trade',
-        label: 'Trade-in',
+        value: '',
+        label: '-',
       },
       {
         value: 'nasiya',
@@ -96,6 +96,10 @@ export function useSelectOptions(tab) {
           label: branch.name,
         })) ?? [];
 
-    return { consultantOptions, sellTypeOptions, branchOptions };
+    return {
+      sellerOptions,
+      sellTypeOptions,
+      branchOptions,
+    };
   }
 }

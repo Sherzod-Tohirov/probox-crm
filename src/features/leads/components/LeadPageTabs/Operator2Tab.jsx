@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import moment from 'moment';
 import { Row } from '@components/ui';
 import FormField from '../LeadPageForm/FormField';
 import FieldGroup from '../LeadPageForm/FieldGroup';
@@ -22,10 +23,21 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   useEffect(() => {
     if (!form) return;
     if (leadData) {
+      const meetingDate = (() => {
+        if (!leadData.meetingDate) return '';
+        const strict = moment(
+          leadData.meetingDate,
+          ['DD.MM.YYYY HH:mm', 'YYYY.MM.DD HH:mm', 'DD.MM.YYYY'],
+          true
+        );
+        if (strict.isValid()) return strict.format('DD.MM.YYYY HH:mm');
+        const loose = moment(leadData.meetingDate);
+        return loose.isValid() ? loose.format('DD.MM.YYYY HH:mm') : '';
+      })();
       reset({
         answered2: leadData.answered2,
         callCount2: leadData.callCount2 || '',
-        meetingDate: leadData.meetingDate || '',
+        meetingDate,
         rejectionReason2: leadData.rejectionReason2 || '',
         paymentInterest: leadData.paymentInterest || '',
         branch: leadData.branch || '',
@@ -42,7 +54,7 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   const branchOptions =
     [
       ...(branches?.map((branch) => ({
-        value: branch.id,
+        value: branch?._id || branch.id,
         label: branch.name,
       })) || []),
     ] || [];

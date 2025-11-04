@@ -6,6 +6,7 @@ import TabHeader from './TabHeader';
 import useSellerForm from '../../hooks/useSellerForm.jsx';
 import styles from './leadPageTabs.module.scss';
 import { useSelectOptions } from '../../hooks/useSelectOptions.jsx';
+import moment from 'moment';
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -14,12 +15,15 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset, watch } = form || {};
+  const { control, reset, watch, setValue } = form || {};
 
   // Reset form when leadData changes
-  const { consultantOptions, sellTypeOptions, branchOptions } =
+  const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
+
   const fieldPurchase = watch('purchase');
+  const fieldSellType = watch('saleType');
+
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -27,7 +31,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         meetingConfirmed: leadData.meetingConfirmed,
         meetingConfirmedDate: leadData.meetingConfirmedDate,
         branch2: leadData?.branch2,
-        consultant: leadData.consultant,
+        seller: leadData.seller,
         purchase: leadData.purchase,
         purchaseDate: leadData.purchaseDate,
         saleType: leadData.saleType,
@@ -36,6 +40,14 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       });
     }
   }, [leadData, reset]);
+
+  useEffect(() => {
+    console.log(fieldPurchase, 'fieldPurchase');
+    if (!form) return;
+    if (fieldSellType && fieldPurchase !== null) {
+      setValue('purchaseDate', moment().format('DD.MM.YYYY'));
+    }
+  }, [fieldSellType, setValue, fieldPurchase]);
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -72,42 +84,46 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
           <FormField
-            name="consultant"
-            label="Consultant"
+            name="seller"
+            label="Sotuvchi"
             type="select"
-            options={consultantOptions}
+            options={sellerOptions}
             placeholderOption={true}
             control={control}
             disabled={!canEdit}
           />
         </FieldGroup>
-        {!leadData?.limit && canEdit && (
+        {!leadData?.limit && fieldSellType === 'nasiya' && canEdit && (
           <Row className={styles['error-message']}>
             Xaridni tasdiqlash uchun limit mavjud emas
           </Row>
         )}
         <FieldGroup title="Xarid ma'lumotlari">
           <FormField
+            name="saleType"
+            label="Savdo turi"
+            type="select"
+            options={sellTypeOptions}
+            control={control}
+            disabled={!canEdit}
+          />
+          <FormField
             name="purchase"
             label="Xarid amalga oshdimi?"
             control={control}
-            type="confirm"
-            disabled={!canEdit || !leadData?.limit || !leadData?.acceptedReason}
+            type={
+              !leadData.limit && fieldSellType === 'nasiya'
+                ? 'confirmOnlyFalse'
+                : 'confirm'
+            }
+            disabled={!canEdit}
           />
           <FormField
             name="purchaseDate"
             label="Xarid sanasi"
             control={control}
             type="date"
-            disabled={!canEdit || !fieldPurchase}
-          />
-          <FormField
-            name="saleType"
-            label="Savdo turi"
-            type="select"
-            options={sellTypeOptions}
-            control={control}
-            disabled={!canEdit || !fieldPurchase}
+            disabled={!canEdit || fieldPurchase !== 'true'}
           />
         </FieldGroup>
 
