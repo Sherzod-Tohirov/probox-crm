@@ -179,15 +179,15 @@ export default function useSocketNotifications() {
         if (belongsToCurrentUser(lead, user)) {
           const notif = normalizeLeadToNotification(lead);
           addNotification(notif);
-          try {
-            const id = lead?.id ?? lead?._id ?? null;
-            if (id) {
-              window.dispatchEvent(
-                new CustomEvent('probox:new-lead', { detail: { id, lead } })
-              );
-            }
-          } catch (_) {}
         }
+        try {
+          const id = lead?.id ?? lead?._id ?? null;
+          if (id) {
+            window.dispatchEvent(
+              new CustomEvent('probox:new-lead', { detail: { id, lead } })
+            );
+          }
+        } catch (_) {}
       });
     };
 

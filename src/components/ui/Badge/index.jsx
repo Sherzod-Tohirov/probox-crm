@@ -38,7 +38,13 @@ const ForwardedBadge = memo(forwardRef(Badge));
 ForwardedBadge.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  color: PropTypes.oneOf(['info', 'success', 'warning', 'danger']),
+  color: PropTypes.oneOf([
+    'info',
+    'success',
+    'warning',
+    'danger',
+    'extrasuccess',
+  ]),
   variant: PropTypes.oneOf(['soft', 'solid', 'outlined']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
 };

@@ -123,6 +123,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             control={control}
             type="select"
             options={passportVisitOptions}
+            placeholderOption={true}
             disabled={!canEdit}
           />
           <FormField

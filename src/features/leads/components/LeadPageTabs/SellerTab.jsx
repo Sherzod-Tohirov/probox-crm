@@ -31,7 +31,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         meetingConfirmed: leadData.meetingConfirmed,
         meetingConfirmedDate: leadData.meetingConfirmedDate,
         branch2: leadData?.branch2,
-        seller: leadData.seller,
+        seller: leadData.seller === null ? 'null' : leadData.seller,
         purchase: leadData.purchase,
         purchaseDate: leadData.purchaseDate,
         saleType: leadData.saleType,
@@ -88,7 +88,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Sotuvchi"
             type="select"
             options={sellerOptions}
-            placeholderOption={true}
+            placeholderOption={{ value: 'null', label: '-' }}
             control={control}
             disabled={!canEdit}
           />

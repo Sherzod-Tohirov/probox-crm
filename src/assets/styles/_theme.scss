@@ -25,6 +25,10 @@
   --primary-disabled-color: #ccc;
   --primary-chat-input-bg: #f7f8f9;
 
+  // Extrasuccess colors
+  --extrasuccess-bg: #7be273;
+  --extrasuccess-color: #004227;
+
   // Success colors
   --success-bg: #f0ffef;
   --success-color: #027243;
@@ -81,9 +85,13 @@
   --primary-disabled-color: #6b7280;
   --primary-chat-input-bg: #2f3542;
 
+  // Extrasuccess colors
+  --extrasuccess-bg: #7be273;
+  --extrasuccess-color: #004227;
+
   // Success colors
   --success-bg: #1e3a29;
-  --success-color: #34d399;
+  --success-color: #30916d;
 
   // Info colors
   --info-bg: #3a3320;
@@ -117,7 +125,7 @@ button,
 input,
 select,
 textarea,
-div:not([class*="motion"]):not([class*="animate"]),
+div:not([class*='motion']):not([class*='animate']),
 span,
 a,
 p,
@@ -127,7 +135,10 @@ h3,
 h4,
 h5,
 h6 {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease !important;
 }
 
 // Global body background

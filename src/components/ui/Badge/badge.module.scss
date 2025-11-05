@@ -57,6 +57,20 @@
     }
   }
 
+  &.extrasuccess {
+    &.soft {
+      background-color: v.$extrasuccess-bg;
+      color: v.$extrasuccess-color;
+    }
+    &.solid {
+      background-color: v.$extrasuccess-color;
+      color: #fff;
+    }
+    &.outlined {
+      color: v.$extrasuccess-color;
+    }
+  }
+
   &.success {
     &.soft {
       background-color: v.$success-bg;

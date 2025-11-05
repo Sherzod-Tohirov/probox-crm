@@ -84,21 +84,23 @@ export default function useLeadsTableColumns() {
     if (limit === null) return '-';
     if (limit === 0)
       return (
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          {iconsMap.infoCircle}
+        <Badge color="danger" size="md">
           Limit chiqmadi
-        </span>
+        </Badge>
       );
+    const getLimitColor = (limit) => {
+      if (limit < 25_000_000) return 'success';
+      if (limit >= 25_000_000) return 'extrasuccess';
+      return 'warning';
+    };
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        {iconsMap.wallet}
-        {formatterCurrency(limit, 'UZS')}
+        {
+          <Badge color={getLimitColor(limit)} size="md">
+            {iconsMap.wallet}
+            {formatterCurrency(limit, 'UZS')}
+          </Badge>
+        }
       </span>
     );
   };
@@ -114,6 +116,18 @@ export default function useLeadsTableColumns() {
         minWidth: '100px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => <span>{row.n}</span>,
+      },
+      {
+        key: 'finalLimit',
+        title: 'Yakuniy limit',
+        icon: 'products',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (column) => {
+          const { finalLimit } = column;
+          return getLimitText(finalLimit);
+        },
       },
       {
         key: 'clientName',
@@ -519,18 +533,7 @@ export default function useLeadsTableColumns() {
           );
         },
       },
-      {
-        key: 'finalLimit',
-        title: 'Yakuniy limit',
-        icon: 'products',
-        width: { xs: '20%', md: '12%', xl: '10%' },
-        minWidth: '140px',
-        cellStyle: { whiteSpace: 'nowrap' },
-        renderCell: (column) => {
-          const { finalLimit } = column;
-          return getLimitText(finalLimit);
-        },
-      },
+
       {
         key: 'finalPercentage',
         title: 'Yakuniy foiz',
