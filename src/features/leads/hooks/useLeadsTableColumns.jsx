@@ -398,7 +398,7 @@ export default function useLeadsTableColumns() {
           textOverflow: 'ellipsis',
         },
         renderCell: (row) => {
-          const value = row.branch;
+          const value = row.branch2;
           return (
             <span
               style={{
