@@ -402,6 +402,64 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'idX',
+        title: 'ID X',
+        icon: 'barCodeFilled',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.idX;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {value}
+              </span>
+            </span>
+          );
+        },
+      },
+      {
+        key: 'jshshir',
+        title: 'JSHSHIR',
+        icon: 'barCodeFilled',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '140px',
+        cellStyle: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        renderCell: (row) => {
+          const value = row.jshshir;
+          return (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                maxWidth: '100%',
+              }}
+            >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {value}
+              </span>
+            </span>
+          );
+        },
+      },
+      {
         key: 'purchase',
         title: "Xarid bo'ldimi",
         icon: 'products',

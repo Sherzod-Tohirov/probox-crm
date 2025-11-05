@@ -31,7 +31,6 @@ export default function PassportUpload({
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
   const inputId = 'passport-files';
-
   const files = useMemo(() => value || [], [value]);
 
   const appendFiles = useCallback(
