@@ -216,7 +216,6 @@ export default function Leads() {
             data={leads}
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
-            showPivotColumn={true}
             rowNumberOffset={currentPage * pageSize}
             getRowStyles={(row) => {
               const isDark = currentTheme === 'dark';

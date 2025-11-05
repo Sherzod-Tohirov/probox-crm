@@ -95,18 +95,18 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         clientFullName: leadData.clientFullName,
         birthDate: formatBirthDate(leadData.birthDate),
         applicationDate: leadData.applicationDate,
-        age: leadData.age || '',
-        score: leadData.score || '',
-        katm: leadData.katm || '',
-        katmPayment: leadData.katmPayment || '',
-        paymentHistory: leadData.paymentHistory || '',
-        mib: leadData.mib || '',
+        age: leadData.age,
+        score: leadData.score,
+        katm: leadData.katm,
+        katmPayment: leadData.katmPayment,
+        paymentHistory: leadData.paymentHistory,
+        mib: leadData.mib,
         mibIrresponsible: leadData.mibIrresponsible,
-        aliment: leadData.aliment || '',
-        officialSalary: leadData.officialSalary || '',
-        finalLimit: leadData.finalLimit || '',
-        finalPercentage: leadData.finalPercentage || '',
-        acceptedReason: leadData?.acceptedReason || '',
+        aliment: leadData.aliment,
+        officialSalary: leadData.officialSalary,
+        finalLimit: leadData.finalLimit,
+        finalPercentage: leadData.finalPercentage,
+        acceptedReason: leadData?.acceptedReason,
       });
     }
   }, [leadData, reset]);
@@ -122,19 +122,21 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
 
   useEffect(() => {
     if (!form) return;
-    console.log(fieldBirthDate, 'fieldBirthDate');
     if (fieldBirthDate !== undefined) {
       const birthDate = Array.isArray(fieldBirthDate)
         ? fieldBirthDate[0]
         : fieldBirthDate;
-      console.log(birthDate, 'birthDate');
       setValue('age', getAge(birthDate), { shouldValidate: true });
     }
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
     if (!form) return;
-    const isProvided = (v) =>
-      v !== undefined && v !== null && v !== '' && v !== false;
+    const isProvided = (value) => {
+      if (typeof value === 'boolean') return true;
+      if (typeof value === 'number') return !Number.isNaN(value);
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== '';
+    };
     const allProvided =
       isProvided(fieldAge) &&
       isProvided(fieldKatm) &&

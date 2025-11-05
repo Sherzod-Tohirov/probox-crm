@@ -15,6 +15,7 @@ export default function FormField({
   prefix,
   rules = {},
   defaultValue = '',
+  iconText = '',
 }) {
   const commonProps = {
     label,
@@ -22,6 +23,7 @@ export default function FormField({
     variant: 'filled',
     disabled,
     prefix,
+    iconText,
   };
 
   const booleanOptions = [
@@ -59,6 +61,8 @@ export default function FormField({
             placeholderOption={placeholderOption}
           />
         );
+      case 'textarea':
+        return <Input {...fieldProps} type="textarea" />;
       case 'confirm':
         return (
           <Input
@@ -113,6 +117,7 @@ export default function FormField({
               const raw = e?.target?.value ?? '';
               const digits = String(raw).replace(/[^0-9]/g, '');
               const formatted = formatterCurrency(Number(digits));
+              console.log(formatted, 'formatted');
               field.onChange(formatted);
             }}
           />
@@ -168,6 +173,12 @@ export default function FormField({
               />
             </Col>
           </Row>
+        );
+      case 'textarea':
+        return (
+          <Col span={span}>
+            <Input {...directProps} type="textarea" />
+          </Col>
         );
       case 'confirm':
         return (

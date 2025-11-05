@@ -43,7 +43,7 @@ function ClientPageForm({
   const [isFileSaveButtonDisabled, setFileSaveButtonDisabled] = useState(true);
 
   const { data: executors } = useFetchExecutors({
-    exclude_role: ['Operator1', 'Operator2', 'CEO'],
+    include_role: ['Manager', 'Assistant'],
   });
 
   const { data: rate } = useFetchCurrency();

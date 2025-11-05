@@ -147,6 +147,29 @@ const Input = forwardRef(
 
     const inputTypeMatcher = useMemo(
       () => ({
+        textarea: props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                {...commonProps}
+                {...omit(['images', 'accept', 'multiple', 'control', 'datePickerOptions'], props)}
+                value={field.value || ''}
+                onChange={(e) => field.onChange(e.target.value)}
+              />
+            )}
+          />
+        ) : (
+          <textarea
+            {...commonProps}
+            {...omit(
+              ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
+              props
+            )}
+          />
+        ),
         date: props.control ? (
           <Controller
             name={props.name}

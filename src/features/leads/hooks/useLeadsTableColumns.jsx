@@ -6,27 +6,23 @@ import iconsMap from '@utils/iconsMap';
 import { Badge } from '@/components/ui';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 import { formatterPayment } from '@/utils/formatterPayment';
+import formatterCurrency from '@/utils/formatterCurrency';
 
 /**
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
  */
 
 export default function useLeadsTableColumns() {
-  const { data: operator1List = [] } = useFetchExecutors({
-    include_role: 'Operator1',
-  });
-  const { data: operator2List = [] } = useFetchExecutors({
-    include_role: 'Operator2',
-  });
+  const { data: executors = [] } = useFetchExecutors();
   const { data: branchList = [] } = useFetchBranches();
   const findOperatorName = useCallback(
-    (operatorCode, type = 'operator1') => {
-      const operator = (
-        type === 'operator1' ? operator1List : operator2List
-      ).find((operator) => String(operator.SlpCode) === String(operatorCode));
+    (operatorCode) => {
+      const operator = executors.find(
+        (operator) => String(operator.SlpCode) === String(operatorCode)
+      );
       return operator?.SlpName || '-';
     },
-    [operator1List, operator2List]
+    [executors]
   );
 
   const findBranchName = useCallback(
@@ -102,7 +98,7 @@ export default function useLeadsTableColumns() {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         {iconsMap.wallet}
-        {formatterPayment(limit)}
+        {formatterCurrency(limit, 'UZS')}
       </span>
     );
   };
@@ -110,15 +106,15 @@ export default function useLeadsTableColumns() {
   /** @type {TableColumn[]} */
   const leadsTableColumns = useMemo(
     () => [
-      // {
-      //   key: 'id',
-      //   title: 'ID',
-      //   icon: 'barCode',
-      //   width: { xs: '14%', md: '8%', xl: '6%' },
-      //   minWidth: '100px',
-      //   cellStyle: { whiteSpace: 'nowrap' },
-      //   renderCell: (row) => <span>{row.id}</span>,
-      // },
+      {
+        key: 'n',
+        title: 'ID',
+        icon: 'barCode',
+        width: { xs: '14%', md: '8%', xl: '6%' },
+        minWidth: '100px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => <span>{row.n}</span>,
+      },
       {
         key: 'clientName',
         title: 'Ismi',
@@ -300,7 +296,7 @@ export default function useLeadsTableColumns() {
                 </span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {findOperatorName(value, 'operator2')}
+                {findOperatorName(value)}
               </span>
             </span>
           );
@@ -334,7 +330,7 @@ export default function useLeadsTableColumns() {
                 </span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {findOperatorName(value, 'seller')}
+                {findOperatorName(value)}
               </span>
             </span>
           );
@@ -353,6 +349,8 @@ export default function useLeadsTableColumns() {
         },
         renderCell: (row) => {
           const value = row.scoring;
+          console.log(value, 'scoring');
+          if (!value) return '-';
           return (
             <span
               style={{
@@ -368,7 +366,7 @@ export default function useLeadsTableColumns() {
                 </span>
               ) : null}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {findOperatorName(value, 'scoring')}
+                {findOperatorName(value)}
               </span>
             </span>
           );

@@ -54,7 +54,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
   const dispatch = useDispatch(); // Add dispatch
   const { query, phone } = useFilter();
   const { data: executors, isPending: isExecutorsLoading } = useFetchExecutors({
-    exclude_role: ['Operator1', 'Operator2', 'CEO'],
+    include_role: ['Manager', 'Assistant'],
   });
 
   const filterState = useSelector((state) => state.page.clients.filter);

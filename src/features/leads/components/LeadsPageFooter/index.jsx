@@ -20,6 +20,7 @@ const LeadsFooter = ({ leadsDetails = {} }) => {
       { value: 50, label: '50' },
       { value: 100, label: '100' },
       { value: 200, label: '200' },
+      { value: 500, label: '500' },
     ],
     []
   );
@@ -55,7 +56,7 @@ const LeadsFooter = ({ leadsDetails = {} }) => {
               </Col>
               <Col>
                 <Box>
-                  <Typography variant='body2'>
+                  <Typography variant="body2">
                     {leadsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
                     {'-'}
                     {(currentPage + 1) * pageSize > leadsDetails.total

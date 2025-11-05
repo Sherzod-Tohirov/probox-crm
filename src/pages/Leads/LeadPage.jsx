@@ -1,4 +1,4 @@
-import { Meta, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -36,14 +36,33 @@ import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 import { useMutateFileUpload } from '@/hooks/data/leads/useMutateFileUpload';
 import useFetchLeadFiles from '@/hooks/data/leads/useFetchLeadFiles';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
+import selectOptionsCreator from '@/utils/selectOptionsCreator';
 import { findExecutor } from '@/utils/findExecutorById';
+import formatterCurrency from '@/utils/formatterCurrency';
+
+const regionOptions = [
+  { value: 'Toshkent shahar', label: 'Toshkent shahar' },
+  { value: 'Toshkent', label: 'Toshkent viloyati' },
+  { value: "Farg'ona", label: "Farg'ona viloyati" },
+  { value: 'Namangan', label: 'Namangan viloyati' },
+  { value: 'Andijon', label: 'Andijon viloyati' },
+  { value: 'Sirdaryo', label: 'Sirdaryo viloyati' },
+  { value: 'Jizzax', label: 'Jizzax viloyati' },
+  { value: 'Samarqand', label: 'Samarqand viloyati' },
+  { value: 'Qashqadaryo', label: 'Qashqadaryo viloyati' },
+  { value: 'Surxondaryo', label: 'Surxondaryo viloyati' },
+  { value: 'Navoiy', label: 'Navoiy viloyati' },
+  { value: 'Buxoro', label: 'Buxoro viloyati' },
+  { value: 'Xorazm', label: 'Xorazm viloyati' },
+  { value: "Qoraqalpog'iston", label: "Qoraqalpog'iston viloyati" },
+];
 
 export default function LeadPage() {
   const { id } = useParams();
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { data: executors } = useFetchExecutors({
+  const { data: executors = [] } = useFetchExecutors({
     include_role: ['Operator1', 'Operator2', 'Seller', 'Scoring', 'OperatorM'],
   });
   const { data, isLoading } = useFetchLeadById(id);
@@ -74,6 +93,7 @@ export default function LeadPage() {
   );
   // Get current user role
   const currentUserRole = user?.['U_role'] ?? '';
+  const isOperatorManager = currentUserRole === 'OperatorM';
   // Map role to tab key
   const roleMapping = {
     Operator1: 'operator1',
@@ -109,6 +129,54 @@ export default function LeadPage() {
     });
   }, [lead, resetAddress]);
 
+  const assignmentsForm = useForm({
+    defaultValues: {
+      operator: lead?.operator ? String(lead.operator) : '',
+      operator2: lead?.operator2 ? String(lead.operator2) : '',
+    },
+  });
+  const {
+    control: assignmentsControl,
+    handleSubmit: handleAssignmentsSubmit,
+    reset: resetAssignments,
+    formState: { isDirty: isAssignmentsDirty },
+  } = assignmentsForm;
+  console.log(assignmentsForm, 'assignmentsForm');
+  console.log(isAssignmentsDirty, 'isAssignmentsDirty');
+  const commentsForm = useForm({
+    defaultValues: {
+      comment: lead?.comment || '',
+    },
+  });
+  const {
+    control: commentsControl,
+    handleSubmit: handleCommentsSubmit,
+    reset: resetComments,
+    formState: { isDirty: isCommentsDirty },
+  } = commentsForm;
+
+  // Update this useEffect to properly handle the form reset
+  useEffect(() => {
+    if (!lead) return;
+
+    const defaultValues = {
+      operator: lead?.operator ? String(lead.operator) : '',
+      operator2: lead?.operator2 ? String(lead.operator2) : '',
+    };
+
+    // Reset the form with the new default values
+    resetAssignments(defaultValues, {
+      keepDirty: false, // This ensures the form is marked as not dirty after reset
+    });
+  }, [lead, resetAssignments]);
+
+  useEffect(() => {
+    if (!lead) return;
+    resetComments({
+      comment: lead?.comment || '',
+    });
+  }, [lead, resetComments]);
+
   const updateLead = useMutateLead(id, {
     onSuccess: (updated) => {
       handleFormSuccess(updated);
@@ -143,6 +211,39 @@ export default function LeadPage() {
     );
   }, [currentUserRole]);
 
+  const operator1Options = useMemo(() => {
+    const operator1Executors = executors.filter(
+      (executor) => String(executor.U_role) === 'Operator1'
+    );
+    return selectOptionsCreator(operator1Executors, {
+      label: 'SlpName',
+      value: 'SlpCode',
+      includeEmpty: true,
+      isEmptySelectable: true,
+    });
+  }, [executors]);
+  const operator2Options = useMemo(() => {
+    const operator2Executors = executors.filter(
+      (executor) => String(executor.U_role) === 'Operator2'
+    );
+    return selectOptionsCreator(operator2Executors, {
+      label: 'SlpName',
+      value: 'SlpCode',
+      includeEmpty: true,
+      isEmptySelectable: true,
+    });
+  }, [executors]);
+
+  const operatorName = useMemo(
+    () => findExecutor(executors, lead?.operator)?.SlpName || '-',
+    [executors, lead?.operator]
+  );
+
+  const operator2Name = useMemo(
+    () => findExecutor(executors, lead?.operator2)?.SlpName || '-',
+    [executors, lead?.operator2]
+  );
+
   const onSaveAddress = handleAddressSubmit((values) => {
     const payload = {
       region: values?.region ?? '',
@@ -152,22 +253,21 @@ export default function LeadPage() {
     updateLead.mutate(payload);
   });
 
-  const regionOptions = [
-    { value: 'Toshkent shahar', label: 'Toshkent shahar' },
-    { value: 'Toshkent', label: 'Toshkent viloyati' },
-    { value: "Farg'ona", label: "Farg'ona viloyati" },
-    { value: 'Namangan', label: 'Namangan viloyati' },
-    { value: 'Andijon', label: 'Andijon viloyati' },
-    { value: 'Sirdaryo', label: 'Sirdaryo viloyati' },
-    { value: 'Jizzax', label: 'Jizzax viloyati' },
-    { value: 'Samarqand', label: 'Samarqand viloyati' },
-    { value: 'Qashqadaryo', label: 'Qashqadaryo viloyati' },
-    { value: 'Surxondaryo', label: 'Surxondaryo viloyati' },
-    { value: 'Navoiy', label: 'Navoiy viloyati' },
-    { value: 'Buxoro', label: 'Buxoro viloyati' },
-    { value: 'Xorazm', label: 'Xorazm viloyati' },
-    { value: "Qoraqalpog'iston", label: "Qoraqalpog'iston viloyati" },
-  ];
+  const onSaveAssignments = handleAssignmentsSubmit((values) => {
+    const payload = {
+      operator: String(values?.operator) || '',
+      operator2: String(values?.operator2) || '',
+    };
+    updateLead.mutate(payload);
+  });
+
+  const onSaveComment = handleCommentsSubmit((values) => {
+    const payload = {
+      comment: values?.comment ?? '',
+    };
+    updateLead.mutate(payload);
+  });
+
   // Custom breadcrumbs to show lead name instead of ID
   const customBreadcrumbs = useMemo(() => {
     if (!lead) return null;
@@ -195,6 +295,12 @@ export default function LeadPage() {
     console.log('Lead updated successfully:', updatedData);
   };
 
+  console.log(
+    !isAssignmentsDirty || updateLead.isPending,
+    'isAssignmentDirty || updateLead.isPending',
+    updateLead.isPending
+  );
+  console.log(isCommentsDirty, 'isComments dirty');
   const commonFields = useMemo(
     () => (
       <div className={styles['fields-grid']}>
@@ -274,12 +380,13 @@ export default function LeadPage() {
                 </Col>
                 <Col>
                   <FormField
-                    name="limit"
+                    name="finalLimit"
                     label="Limit"
                     control={null}
                     disabled={true}
                     span={{ xs: 24, md: 8 }}
-                    defaultValue={lead?.limit}
+                    defaultValue={formatterCurrency(lead?.finalLimit)}
+                    iconText="so'm"
                   />
                 </Col>
               </Row>
@@ -343,38 +450,119 @@ export default function LeadPage() {
           />
         </FieldGroup>
         <FieldGroup title="Biriktirilgan xodimlar">
-          <FormField
-            name="operator"
-            label="Operator 1"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.operator)?.SlpName}
-          />
-          <FormField
-            name="operator2"
-            label="Operator 2"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.operator2)?.SlpName}
-          />
-          <FormField
-            name="seller"
-            label="Sotuvchi"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
-          />
-          <FormField
-            name="scoring"
-            label="Scoring"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
-          />
+          {isOperatorManager ? (
+            <form onSubmit={onSaveAssignments} style={{ width: '100%' }}>
+              <Row direction="row" gutter={2} wrap>
+                <Col span={{ xs: 24, md: 8 }}>
+                  <FormField
+                    name="operator"
+                    label="Operator 1"
+                    control={assignmentsControl}
+                    type="select"
+                    options={operator1Options}
+                    disabled={!isOperatorManager}
+                  />
+                </Col>
+                <Col span={{ xs: 24, md: 8 }}>
+                  <FormField
+                    name="operator2"
+                    label="Operator 2"
+                    control={assignmentsControl}
+                    type="select"
+                    options={operator2Options}
+                    disabled={!isOperatorManager}
+                  />
+                </Col>
+                <Col span={{ xs: 24, md: 8 }}>
+                  <FormField
+                    name="seller"
+                    label="Sotuvchi"
+                    control={null}
+                    disabled
+                    defaultValue={
+                      findExecutor(executors, lead?.seller)?.SlpName
+                    }
+                  />
+                </Col>
+                <Col span={{ xs: 24, md: 8 }}>
+                  <FormField
+                    name="scoring"
+                    label="Scoring"
+                    control={null}
+                    disabled
+                    defaultValue={
+                      findExecutor(executors, lead?.scoring)?.SlpName
+                    }
+                  />
+                </Col>
+              </Row>
+              <Row gutter={2} style={{ marginTop: '16px' }}>
+                <Col>
+                  <Button variant="filled" type="submit" disabled={false}>
+                    Biriktirishlarni saqlash
+                  </Button>
+                </Col>
+              </Row>
+            </form>
+          ) : (
+            <>
+              <FormField
+                name="operator"
+                label="Operator 1"
+                control={null}
+                disabled
+                span={{ xs: 24, md: 8 }}
+                defaultValue={operatorName}
+              />
+              <FormField
+                name="operator2"
+                label="Operator 2"
+                control={null}
+                disabled
+                span={{ xs: 24, md: 8 }}
+                defaultValue={operator2Name}
+              />
+              <FormField
+                name="seller"
+                label="Sotuvchi"
+                control={null}
+                disabled
+                span={{ xs: 24, md: 8 }}
+                defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
+              />
+              <FormField
+                name="scoring"
+                label="Scoring"
+                control={null}
+                disabled
+                span={{ xs: 24, md: 8 }}
+                defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
+              />
+            </>
+          )}
+        </FieldGroup>
+
+        <FieldGroup title="Izoh">
+          <form onSubmit={onSaveComment} style={{ width: '100%' }}>
+            <Row direction="row" gutter={2} wrap>
+              <Col span={{ xs: 24, md: 24 }}>
+                <FormField
+                  name="comment"
+                  label="Izoh"
+                  control={commentsControl}
+                  type="textarea"
+                  span={{ xs: 24, md: 24 }}
+                />
+              </Col>
+            </Row>
+            <Row gutter={2} style={{ marginTop: '8px' }}>
+              <Col>
+                <Button variant="filled" type="submit">
+                  Izohni saqlash
+                </Button>
+              </Col>
+            </Row>
+          </form>
         </FieldGroup>
 
         <FieldGroup title="Pasport rasmlari">
