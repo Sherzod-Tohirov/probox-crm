@@ -182,6 +182,7 @@ export default function useSocketNotifications() {
         }
         try {
           const id = lead?.id ?? lead?._id ?? null;
+          console.log(id, 'id socket', lead);
           if (id) {
             window.dispatchEvent(
               new CustomEvent('probox:new-lead', { detail: { id, lead } })

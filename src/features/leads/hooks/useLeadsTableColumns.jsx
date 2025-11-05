@@ -387,7 +387,7 @@ export default function useLeadsTableColumns() {
         },
       },
       {
-        key: 'branch',
+        key: 'branch2',
         title: 'Filial',
         icon: 'presentationChart',
         width: { xs: '20%', md: '12%', xl: '10%' },
@@ -417,7 +417,7 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'idX',
-        title: 'ID X',
+        title: 'Passport ID',
         icon: 'barCodeFilled',
         width: { xs: '20%', md: '12%', xl: '10%' },
         minWidth: '140px',

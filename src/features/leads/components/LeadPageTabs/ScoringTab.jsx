@@ -91,22 +91,27 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   useEffect(() => {
     if (!form) return;
     if (leadData) {
+      const isNotFalsy = (value) => {
+        return value === undefined || value === null || value === false
+          ? ''
+          : value;
+      };
       reset({
         clientFullName: leadData.clientFullName,
         birthDate: formatBirthDate(leadData.birthDate),
         applicationDate: leadData.applicationDate,
         age: leadData.age,
         score: leadData.score,
-        katm: leadData.katm,
-        katmPayment: leadData.katmPayment,
-        paymentHistory: leadData.paymentHistory,
-        mib: leadData.mib,
+        katm: isNotFalsy(leadData.katm),
+        katmPayment: isNotFalsy(leadData.katmPayment),
+        paymentHistory: isNotFalsy(leadData.paymentHistory),
+        mib: isNotFalsy(leadData.mib),
         mibIrresponsible: leadData.mibIrresponsible,
-        aliment: leadData.aliment,
-        officialSalary: leadData.officialSalary,
-        finalLimit: leadData.finalLimit,
-        finalPercentage: leadData.finalPercentage,
-        acceptedReason: leadData?.acceptedReason,
+        aliment: isNotFalsy(leadData.aliment),
+        officialSalary: isNotFalsy(leadData.officialSalary),
+        finalLimit: isNotFalsy(leadData.finalLimit),
+        finalPercentage: isNotFalsy(leadData.finalPercentage),
+        acceptedReason: isNotFalsy(leadData.acceptedReason),
       });
     }
   }, [leadData, reset]);

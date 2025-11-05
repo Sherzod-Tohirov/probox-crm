@@ -134,7 +134,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
           />
           <FormField
             name="idX"
-            label="ID X"
+            label="Passport ID"
             control={control}
             disabled={!canEdit}
           />
