@@ -6,8 +6,9 @@ export const sourceOptions = [
 
 export const booleanOptionsAll = [
   { value: '', label: 'Barchasi' },
-  { value: true, label: 'Ha' },
-  { value: false, label: "Yo'q" },
+  { value: 'yes', label: 'Ha' },
+  { value: 'no', label: "Yo'q" },
+  { value: 'unmarked', label: 'Belgilanmagan' },
 ];
 
 export const meetingOptions = [

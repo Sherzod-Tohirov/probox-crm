@@ -19,7 +19,7 @@ function Header() {
   return (
     <header className={styles['site-header']}>
       <Row direction="row" justify="space-between">
-        <Col align={"center"} justify={"center"}>
+        <Col align={'center'} justify={'center'}>
           <Row direction="row" gutter={6} align="center" justify="start">
             <Col align="center" justify="center">
               <Button
@@ -44,7 +44,12 @@ function Header() {
               <ThemeSelector />
             </Col>
             <Col>
-              <Button className={styles['header-btn']} variant={'text'} icon={'expense'} iconColor={'primary'}>
+              <Button
+                className={styles['header-btn']}
+                variant={'text'}
+                icon={'expense'}
+                iconColor={'primary'}
+              >
                 {formatterCurrency(currency?.Rate, currency?.Currency)}
               </Button>
             </Col>
@@ -53,7 +58,6 @@ function Header() {
             </Col>
             <Col>
               <Button
-              
                 icon={'avatarFilled'}
                 variant={'text'}
                 iconColor={'primary'}

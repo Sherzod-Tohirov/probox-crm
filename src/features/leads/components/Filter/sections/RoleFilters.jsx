@@ -113,8 +113,8 @@ export default function RoleFilters({
         </>
       )}
 
-      {role === 'Scoring' && (
-        <>
+      {role === 'Operator1' ||
+        (role === 'Operator2' && (
           <Col
             xs={12}
             sm={6}
@@ -133,6 +133,29 @@ export default function RoleFilters({
               options={booleanOptionsAll}
               control={control}
               {...register('passportId')}
+            />
+          </Col>
+        ))}
+      {role === 'Scoring' && (
+        <>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <Input
+              size="full-grow"
+              variant="outlined"
+              label="Limit mavjudmi"
+              type="select"
+              options={booleanOptionsAll}
+              control={control}
+              {...register('finalLimit')}
             />
           </Col>
           <Col
@@ -185,9 +208,7 @@ export default function RoleFilters({
           md={2}
           lg={1.5}
           xl={1.2}
-          className={
-            isMobile ? styles['mobile-full-width'] : styles.compactCol
-          }
+          className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
         >
           <MultiSelectField
             name="seller"

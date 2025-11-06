@@ -14,7 +14,7 @@ const routePermissions = {
     // Accessible to all authenticated users
   },
   '/clients': {
-    excludedRoles: ['Operator1', 'Operator2', 'Scoring', 'Seller', 'OperatorM'], // Operators cannot access statistics
+    excludedRoles: ['Operator1', 'Operator2', 'Seller', 'OperatorM'], // Operators cannot access statistics
   },
   '/calendar': {
     // Accessible to all authenticated users

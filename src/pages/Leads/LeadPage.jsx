@@ -139,10 +139,7 @@ export default function LeadPage() {
     control: assignmentsControl,
     handleSubmit: handleAssignmentsSubmit,
     reset: resetAssignments,
-    formState: { isDirty: isAssignmentsDirty },
   } = assignmentsForm;
-  console.log(assignmentsForm, 'assignmentsForm');
-  console.log(isAssignmentsDirty, 'isAssignmentsDirty');
   const commentsForm = useForm({
     defaultValues: {
       comment: lead?.comment || '',
@@ -152,9 +149,9 @@ export default function LeadPage() {
     control: commentsControl,
     handleSubmit: handleCommentsSubmit,
     reset: resetComments,
-    formState: { isDirty: isCommentsDirty },
   } = commentsForm;
-
+  const isCommentsDirty = commentsForm.formState.isDirty;
+  const isAssignmentsDirty = assignmentsForm.formState.isDirty;
   // Update this useEffect to properly handle the form reset
   useEffect(() => {
     if (!lead) return;
@@ -295,12 +292,6 @@ export default function LeadPage() {
     console.log('Lead updated successfully:', updatedData);
   };
 
-  console.log(
-    !isAssignmentsDirty || updateLead.isPending,
-    'isAssignmentDirty || updateLead.isPending',
-    updateLead.isPending
-  );
-  console.log(isCommentsDirty, 'isComments dirty');
   const commonFields = useMemo(
     () => (
       <div className={styles['fields-grid']}>
@@ -498,7 +489,7 @@ export default function LeadPage() {
               </Row>
               <Row gutter={2} style={{ marginTop: '16px' }}>
                 <Col>
-                  <Button variant="filled" type="submit" disabled={false}>
+                  <Button variant="filled" type="submit" disabled={!isAssignmentsDirty}>
                     Biriktirishlarni saqlash
                   </Button>
                 </Col>
@@ -557,7 +548,11 @@ export default function LeadPage() {
             </Row>
             <Row gutter={2} style={{ marginTop: '8px' }}>
               <Col>
-                <Button variant="filled" type="submit">
+                <Button
+                  variant="filled"
+                  type="submit"
+                  disabled={!isCommentsDirty}
+                >
                   Izohni saqlash
                 </Button>
               </Col>
@@ -618,6 +613,8 @@ export default function LeadPage() {
       canEditAddress,
       addressControl,
       updateLead?.isPending,
+      isCommentsDirty,
+      isAssignmentsDirty,
     ]
   );
 

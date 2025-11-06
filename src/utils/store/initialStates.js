@@ -38,4 +38,5 @@ export const initialLeadsFilterState = {
   answered2: '',
   passportId: '',
   jshshir2: '',
+  finalLimit: '',
 };

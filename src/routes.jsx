@@ -48,7 +48,6 @@ const router = createBrowserRouter([
                 excludedRoles={[
                   'Operator1',
                   'Operator2',
-                  'Scoring',
                   'Seller',
                   'OperatorM',
                 ]}
@@ -67,7 +66,6 @@ const router = createBrowserRouter([
                 excludedRoles={[
                   'Operator1',
                   'Operator2',
-                  'Scoring',
                   'Seller',
                   'OperatorM',
                 ]}

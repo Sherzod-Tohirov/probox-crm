@@ -5,16 +5,28 @@ import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
 import { Badge } from '@/components/ui';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
-import { formatterPayment } from '@/utils/formatterPayment';
 import formatterCurrency from '@/utils/formatterCurrency';
 
 /**
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
  */
 
+const StatusBadge = ({ status }) => {
+  if (status === null) return '-';
+  return (
+    <Badge color={status} variant="soft" size="md">
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {status ? iconsMap.tickCircle : iconsMap.closeCircle}
+        {status ? 'Ha' : "Yo'q"}
+      </span>
+    </Badge>
+  );
+};
+
 export default function useLeadsTableColumns() {
   const { data: executors = [] } = useFetchExecutors();
   const { data: branchList = [] } = useFetchBranches();
+
   const findOperatorName = useCallback(
     (operatorCode) => {
       const operator = executors.find(
@@ -283,6 +295,28 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'called',
+        title: 'Telefon qilindimi',
+        icon: 'telephone',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.called;
+          return <StatusBadge status={value} />;
+        },
+      },
+      {
+        key: 'answered',
+        title: 'Javob berildimi',
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.answered;
+          return <StatusBadge status={value} />;
+        },
+      },
+      {
         key: 'operator2',
         title: 'Operator 2',
         icon: 'users',
@@ -314,6 +348,28 @@ export default function useLeadsTableColumns() {
               </span>
             </span>
           );
+        },
+      },
+      {
+        key: 'called2',
+        title: 'Telefon qilindimi 2',
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.called2;
+          return <StatusBadge status={value} />;
+        },
+      },
+      {
+        key: 'answered2',
+        title: 'Javob berildimi 2',
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.answered2;
+          return <StatusBadge status={value} />;
         },
       },
       {
@@ -502,17 +558,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { meetingConfirmed } = column;
-          if (meetingConfirmed === null) return '-';
-          return (
-            <Badge color={meetingConfirmed} variant="soft" size="md">
-              <span
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-              >
-                {meetingConfirmed ? iconsMap.tickCircle : iconsMap.closeCircle}
-                {meetingConfirmed ? 'Ha' : "Yo'q"}
-              </span>
-            </Badge>
-          );
+          return <StatusBadge status={meetingConfirmed} />;
         },
       },
       {
@@ -572,6 +618,7 @@ export default function useLeadsTableColumns() {
         icon: 'chatBubble',
         width: { xs: '40%', md: '22%', xl: '20%' },
         minWidth: '160px',
+        maxWidth: '300px',
         cellStyle: {
           whiteSpace: 'nowrap',
           overflow: 'hidden',

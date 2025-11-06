@@ -1,8 +1,14 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .navigation {
   @include m.flex(center, start, 3rem);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+  padding: 1rem 0;
+
   &-back-btn {
     font-size: 3.5rem !important;
     font-weight: 500;

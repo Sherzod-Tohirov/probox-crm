@@ -57,7 +57,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     name="called"
                     label="Qo'ng'iroq qilindimi?"
                     control={control}
-                    type="boolean"
+                    type="confirm"
                     disabled={!canEdit}
                   />
                 </Col>

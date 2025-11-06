@@ -1,21 +1,20 @@
 @use '@styles/mixins' as m;
 .filter-form {
   width: 100%;
-  @include m.flex(center, center, 14px, row);
+  @include m.flex(start, start, 14px, row);
   .innerContent {
     padding: 8px 12px;
   }
   @media (max-width: 768px) {
     flex-direction: column;
   }
-  // Keep default Row/Col sizing for compact layout
 }
 
 .gridRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 8px 10px;
-  padding: 8px 10px;
+  padding: 8px 0;
   width: 100%;
   align-items: end;
   > * {

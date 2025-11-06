@@ -86,7 +86,7 @@ export const PULT = {
     '100.00%', // E2
     '100.00%', // E1
   ],
-  maxKatmPayment: 1_000_000,
+  maxKatmPayment: 0,
   minLeadAge: 20,
   maxAlimentDebt: 0,
   creditPressure: 0,
