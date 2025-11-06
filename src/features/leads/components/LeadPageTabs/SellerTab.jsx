@@ -42,7 +42,6 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [leadData, reset]);
 
   useEffect(() => {
-    console.log(fieldPurchase, 'fieldPurchase');
     if (!form) return;
     if (fieldSellType && fieldPurchase !== null) {
       setValue('purchaseDate', moment().format('DD.MM.YYYY'));
