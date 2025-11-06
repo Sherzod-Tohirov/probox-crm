@@ -123,7 +123,7 @@ export default function useLeadsTableColumns() {
       {
         key: 'n',
         title: 'ID',
-        icon: 'barCode',
+        icon: 'barCodeFilled',
         width: { xs: '14%', md: '8%', xl: '6%' },
         minWidth: '100px',
         cellStyle: { whiteSpace: 'nowrap' },
@@ -512,7 +512,7 @@ export default function useLeadsTableColumns() {
           textOverflow: 'ellipsis',
         },
         renderCell: (row) => {
-          const value = row.jshshir;
+          const value = row.jshshir2 ?? row.jshshir ?? '';
           return (
             <span
               style={{

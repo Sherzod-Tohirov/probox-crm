@@ -173,9 +173,11 @@ export default function LeadsFilter({
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
-    ['source', 'branch', 'operator', 'operator2', 'seller', 'scoring'].forEach((field) => {
-      normalizedInitialState[field] = [];
-    });
+    ['source', 'branch', 'operator', 'operator2', 'seller', 'scoring'].forEach(
+      (field) => {
+        normalizedInitialState[field] = [];
+      }
+    );
 
     reset(normalizedInitialState);
     const pruned = serializeFilter(normalizedInitialState);
@@ -189,55 +191,60 @@ export default function LeadsFilter({
         className={styles['filter-form']}
         style={{ width: '100%' }}
       >
-        <HeaderFilters
-          control={control}
-          register={register}
-          isMobile={isMobile}
-          branchOptions={branchOptions}
-          operator1Options={operator1Options}
-          operator2Options={operator2Options}
-          isBranchesLoading={isBranchesLoading}
-          isOperator1Loading={isOperator1Loading}
-          isOperator2Loading={isOperator2Loading}
-          minimal
-        />
-
-        <Row
-          direction="row"
-          gutter={isMobile ? 2 : 1}
-          wrap
-          align="flex-end"
-          style={{ alignSelf: 'end' }}
-        >
-          <Col
-            xs={12}
-            sm="auto"
-            style={{ marginLeft: isMobile ? '0' : 'auto' }}
-          >
-            <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
-              <Col>
-                <Button
-                  className="leads-filter-clear"
-                  variant="outlined"
-                  color="danger"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onClear();
-                  }}
-                >
-                  Tozalash
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  className="leads-filter-search"
-                  icon="search"
-                  iconSize={18}
-                  variant="filled"
-                  type="submit"
-                >
-                  Qidirish
-                </Button>
+        <Row direction={'row'} justify={'between'} gutter={12} wrap>
+          <Col flexGrow>
+            <HeaderFilters
+              control={control}
+              register={register}
+              isMobile={isMobile}
+              branchOptions={branchOptions}
+              operator1Options={operator1Options}
+              operator2Options={operator2Options}
+              isBranchesLoading={isBranchesLoading}
+              isOperator1Loading={isOperator1Loading}
+              isOperator2Loading={isOperator2Loading}
+              minimal
+            />
+          </Col>
+          <Col style={{ alignSelf: 'end' }}>
+            <Row
+              direction="row"
+              gutter={isMobile ? 2 : 1}
+              wrap
+              align="flex-end"
+              style={{ alignSelf: 'end' }}
+            >
+              <Col
+                xs={12}
+                sm="auto"
+                style={{ marginLeft: isMobile ? '0' : 'auto' }}
+              >
+                <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
+                  <Col>
+                    <Button
+                      className="leads-filter-clear"
+                      variant="outlined"
+                      color="danger"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onClear();
+                      }}
+                    >
+                      Tozalash
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      className="leads-filter-search"
+                      icon="search"
+                      iconSize={18}
+                      variant="filled"
+                      type="submit"
+                    >
+                      Qidirish
+                    </Button>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Col>
@@ -253,85 +260,102 @@ export default function LeadsFilter({
         className={styles['filter-form']}
         style={{ width: '100%' }}
       >
-        <HeaderFilters
-          control={control}
-          register={register}
-          isMobile={isMobile}
-          branchOptions={branchOptions}
-          operator1Options={operator1Options}
-          operator2Options={operator2Options}
-          isBranchesLoading={isBranchesLoading}
-          isOperator1Loading={isOperator1Loading}
-          isOperator2Loading={isOperator2Loading}
-        />
+        <Row>
+          <Col flexGrow>
+            <Row>
+              <Col>
+                <HeaderFilters
+                  control={control}
+                  register={register}
+                  isMobile={isMobile}
+                  branchOptions={branchOptions}
+                  operator1Options={operator1Options}
+                  operator2Options={operator2Options}
+                  isBranchesLoading={isBranchesLoading}
+                  isOperator1Loading={isOperator1Loading}
+                  isOperator2Loading={isOperator2Loading}
+                />
+              </Col>
 
-        <div className={styles.gridRow}>
-          <MeetingAndDateSection
-            control={control}
-            isMobile={isMobile}
-            watchedMeeting={meeting}
-            watchedMeetingDateStart={watchedMeetingDateStart}
-            watchedMeetingDateEnd={watchedMeetingDateEnd}
-            inline={true}
-          />
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.2}
-            className={
-              isMobile ? styles['mobile-full-width'] : styles.compactCol
-            }
-          >
-            <SelectField
-              name="purchase"
-              label="Xarid amalga oshdimi"
-              options={booleanOptionsAll}
-              control={control}
-            />
+              <Col>
+                <div className={styles.gridRow}>
+                  <MeetingAndDateSection
+                    control={control}
+                    isMobile={isMobile}
+                    watchedMeeting={meeting}
+                    watchedMeetingDateStart={watchedMeetingDateStart}
+                    watchedMeetingDateEnd={watchedMeetingDateEnd}
+                    inline={true}
+                  />
+                  <Col
+                    xs={12}
+                    sm={6}
+                    md={2}
+                    lg={1.5}
+                    xl={1.2}
+                    className={
+                      isMobile ? styles['mobile-full-width'] : styles.compactCol
+                    }
+                  >
+                    <SelectField
+                      name="purchase"
+                      label="Xarid amalga oshdimi"
+                      options={booleanOptionsAll}
+                      control={control}
+                    />
+                  </Col>
+
+                  <RoleFilters
+                    role={role}
+                    control={control}
+                    isMobile={isMobile}
+                    register={register}
+                  />
+                </div>
+              </Col>
+            </Row>
           </Col>
 
-          <RoleFilters
-            role={role}
-            control={control}
-            isMobile={isMobile}
-            register={register}
-          />
-        </div>
-
-        <Row direction="row" gutter={isMobile ? 2 : 1} wrap align="flex-end">
-          {/* Action Buttons */}
-          <Col
-            xs={12}
-            sm="auto"
-            style={{ marginLeft: isMobile ? '0' : 'auto' }}
-            className={isMobile ? styles['action-buttons'] : ''}
-          >
-            <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
-              <Col>
-                <Button
-                  className="leads-filter-clear"
-                  variant="outlined"
-                  color="danger"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onClear();
-                  }}
-                >
-                  Tozalash
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  className="leads-filter-search"
-                  icon="search"
-                  iconSize={18}
-                  variant="filled"
-                  type="submit"
-                >
-                  Qidirish
-                </Button>
+          <Col>
+            <Row
+              direction="row"
+              gutter={isMobile ? 2 : 1}
+              wrap
+              align="flex-end"
+            >
+              {/* Action Buttons */}
+              <Col
+                xs={12}
+                sm="auto"
+                style={{ marginLeft: isMobile ? '0' : 'auto' }}
+                className={isMobile ? styles['action-buttons'] : ''}
+              >
+                <Row direction="row" gutter={2} style={{ marginTop: 'auto' }}>
+                  <Col>
+                    <Button
+                      className="leads-filter-clear"
+                      variant="outlined"
+                      color="danger"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onClear();
+                      }}
+                    >
+                      Tozalash
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      className="leads-filter-search"
+                      icon="search"
+                      iconSize={18}
+                      variant="filled"
+                      type="submit"
+                    >
+                      Qidirish
+                    </Button>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Col>

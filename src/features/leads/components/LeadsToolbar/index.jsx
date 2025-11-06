@@ -11,6 +11,7 @@ export default function LeadsToolbar({
   onDecreaseDensity,
   onResetDensity,
   onToggleFilter,
+  onAddLead,
   isMobile = false,
   canIncreaseUI = true,
   canDecreaseUI = true,
@@ -20,7 +21,13 @@ export default function LeadsToolbar({
   isDefaultDensity = true,
 }) {
   return (
-    <Row direction="row" justify="space-between" align="center" gutter={4} wrap={isMobile}>
+    <Row
+      direction="row"
+      justify="space-between"
+      align="center"
+      gutter={4}
+      wrap={isMobile}
+    >
       <Col>
         <Navigation fallbackBackPath="/leads" />
       </Col>
@@ -98,6 +105,16 @@ export default function LeadsToolbar({
             aria-label="Toggle filter"
             className={styles['filter-button']}
           />
+          <Button
+            variant="text"
+            color="secondary"
+            icon="users"
+            iconSize={18}
+            aria-label="Add lead"
+            onClick={onAddLead}
+          />
+
+          <span className={styles.divider} />
         </div>
       </Col>
     </Row>

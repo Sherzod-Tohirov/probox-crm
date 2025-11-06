@@ -93,7 +93,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
         </FieldGroup>
-        {!leadData?.limit && fieldSellType === 'nasiya' && canEdit && (
+        {!leadData?.finalLimit && fieldSellType === 'nasiya' && canEdit && (
           <Row className={styles['error-message']}>
             Xaridni tasdiqlash uchun limit mavjud emas
           </Row>
@@ -112,7 +112,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Xarid amalga oshdimi?"
             control={control}
             type={
-              !leadData.limit && fieldSellType === 'nasiya'
+              !leadData.finalLimit && fieldSellType === 'nasiya'
                 ? 'confirmOnlyFalse'
                 : 'confirm'
             }

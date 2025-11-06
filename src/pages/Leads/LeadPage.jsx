@@ -372,11 +372,15 @@ export default function LeadPage() {
                 <Col>
                   <FormField
                     name="finalLimit"
-                    label="Limit"
+                    label="Yakuniy limit"
                     control={null}
                     disabled={true}
                     span={{ xs: 24, md: 8 }}
-                    defaultValue={formatterCurrency(lead?.finalLimit)}
+                    defaultValue={
+                      lead?.finalLimit
+                        ? formatterCurrency(lead?.finalLimit)
+                        : ''
+                    }
                     iconText="so'm"
                   />
                 </Col>
@@ -489,7 +493,11 @@ export default function LeadPage() {
               </Row>
               <Row gutter={2} style={{ marginTop: '16px' }}>
                 <Col>
-                  <Button variant="filled" type="submit" disabled={!isAssignmentsDirty}>
+                  <Button
+                    variant="filled"
+                    type="submit"
+                    disabled={!isAssignmentsDirty}
+                  >
                     Biriktirishlarni saqlash
                   </Button>
                 </Col>

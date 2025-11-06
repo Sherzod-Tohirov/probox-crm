@@ -6,6 +6,7 @@ import { Col, Row, Table } from '@components/ui';
 import LeadsToolbar from '@features/leads/components/LeadsToolbar';
 import LeadsFilter from '@features/leads/components/Filter';
 import AdvancedFilterModal from '@features/leads/components/Filter/AdvancedFilterModal';
+import AddLeadModal from '@features/leads/components/AddLeadModal';
 import LeadsPageFooter from '@features/leads/components/LeadsPageFooter';
 import useLeadsTableColumns from '@features/leads/hooks/useLeadsTableColumns';
 import useUIScale from '@/features/clients/hooks/useUIScale';
@@ -44,6 +45,7 @@ export default function Leads() {
 
   // Advanced modal + column visibility
   const [isAdvancedOpen, setAdvancedOpen] = useState(false);
+  const [isAddOpen, setAddOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(() => {
     try {
       const raw = localStorage.getItem('leadsVisibleColumns');
@@ -192,6 +194,7 @@ export default function Leads() {
                 onDecreaseDensity={decreaseDensity}
                 onResetDensity={resetDensity}
                 onToggleFilter={() => setAdvancedOpen(true)}
+                onAddLead={() => setAddOpen(true)}
                 isMobile={isMobile}
                 canIncreaseUI={canIncrease}
                 canDecreaseUI={canDecrease}
@@ -242,6 +245,14 @@ export default function Leads() {
           />
         </Col>
       </Row>
+      <AddLeadModal
+        isOpen={isAddOpen}
+        onClose={() => setAddOpen(false)}
+        onCreated={() => {
+          try { refetch?.(); } catch (_) {}
+          setAddOpen(false);
+        }}
+      />
       <AdvancedFilterModal
         isOpen={isAdvancedOpen}
         onClose={() => setAdvancedOpen(false)}
