@@ -7,7 +7,6 @@ import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { createLead } from '@services/leadsService';
 import FieldGroup from './LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
-import FormField from './LeadPageForm/FormField';
 
 const CATEGORY_OPTIONS_OTHERS = [
   { value: 'Organika', label: 'Organika' },
@@ -63,21 +62,25 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     mutationFn: (payload) => createLead(payload),
   });
 
-  const canSubmit = useMemo(() => {
+  const canSubmit = () => {
     const name = watch('clientName');
     const phone = watch('clientPhone');
-    if (!sourceCategory || !name || !phone) return false;
+    const comment = watch('comment');
+
+    if (!sourceCategory || !name || !phone || !comment) return false;
+
     if (sourceCategory === 'Organika') {
       return Boolean(watch('branchId') && watch('seller'));
     }
     return Boolean(watch('platform'));
-  }, [sourceCategory, watch]);
+  };
 
   const onSubmit = (values) => {
     const payload = {
       clientName: values.clientName,
       clientPhone: values.clientPhone,
       source: values.sourceCategory,
+      comment: values.comment,
     };
 
     if (values.sourceCategory === 'Organika') {
@@ -111,7 +114,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       <Button
         variant="filled"
         onClick={handleSubmit(onSubmit)}
-        disabled={!canSubmit || mutation.isLoading}
+        disabled={!canSubmit() || mutation.isLoading}
       >
         {mutation.isLoading ? 'Yaratilmoqda...' : 'Lead yaratish'}
       </Button>
@@ -236,6 +239,15 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                     </Row>
                   </Col>
                 </Row>
+              </Col>
+              <Col fullWidth>
+                <Input
+                  value={watch('comment')}
+                  onChange={(e) => setValue('comment', e.target.value)}
+                  type="textarea"
+                  variant="outlined"
+                  label="Izoh qoldirish"
+                />
               </Col>
             </FieldGroup>
           ) : null}

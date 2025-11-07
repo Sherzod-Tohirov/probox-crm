@@ -278,13 +278,6 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled
             type="number"
           />
-          <FormField
-            name="officialSalary"
-            label="Rasmiy oylik"
-            control={control}
-            type="currency"
-            disabled={!canEdit}
-          />
         </FieldGroup>
 
         <FieldGroup title="KATM va To'lov ma'lumotlari">
@@ -316,6 +309,13 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
             type="select"
             options={paymentHistoryOptions}
             placeholderOption={true}
+            disabled={!canEdit}
+          />
+          <FormField
+            name="officialSalary"
+            label="Rasmiy oylik"
+            control={control}
+            type="currency"
             disabled={!canEdit}
           />
         </FieldGroup>

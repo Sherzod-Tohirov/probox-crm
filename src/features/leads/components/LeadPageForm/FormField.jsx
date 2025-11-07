@@ -130,14 +130,13 @@ export default function FormField({
             {...omit(fieldProps, ['onChange', 'value'])}
             value={
               field.value
-                ? moment(field.value, 'YYYY.MM.DD').format('DD.MM.YYYY')
+                ? moment(field.value, 'DD.MM.YYYY').format('DD.MM.YYYY')
                 : ''
             }
             type="date"
             datePickerOptions={dateOptions}
           />
         );
-
       case 'datetime':
         return <Input {...fieldProps} type="date" includeTime />;
 
@@ -246,7 +245,7 @@ export default function FormField({
               {...{ ...omit(directProps, ['onChange', 'value']) }}
               value={
                 directProps.value
-                  ? moment(directProps.value, 'YYYY.MM.DD').format('DD.MM.YYYY')
+                  ? moment(directProps.value, 'DD.MM.YYYY').format('DD.MM.YYYY')
                   : ''
               }
               type="date"

@@ -178,6 +178,7 @@ export default function LeadsFilter({
         normalizedInitialState[field] = [];
       }
     );
+    normalizedInitialState.meeting = '';
 
     reset(normalizedInitialState);
     const pruned = serializeFilter(normalizedInitialState);

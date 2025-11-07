@@ -153,6 +153,7 @@ const Input = forwardRef(
             control={props.control}
             render={({ field }) => (
               <textarea
+                rows={5}
                 {...field}
                 {...commonProps}
                 {...omit(
@@ -172,6 +173,7 @@ const Input = forwardRef(
           />
         ) : (
           <textarea
+            rows={5}
             {...commonProps}
             {...omit(
               ['images', 'accept', 'multiple', 'control', 'datePickerOptions'],
@@ -203,10 +205,9 @@ const Input = forwardRef(
                 onChange={(dateArr) => {
                   const formatted = dateArr[0]
                     ? moment(dateArr[0]).format(
-                        props.includeTime ? 'YYYY.MM.DD HH:mm' : 'YYYY.MM.DD'
+                        props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
                       )
                     : '';
-                  console.log(formatted, 'formatted');
                   field.onChange(formatted);
                 }}
                 {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
@@ -287,7 +288,6 @@ const Input = forwardRef(
               ...(props.datePickerOptions || {}),
             }}
             onChange={(dateArr) => {
-              console.log(dateArr, 'datee');
               const formatted = dateArr[0]
                 ? moment(dateArr[0]).format('HH:mm')
                 : '';
@@ -315,7 +315,6 @@ const Input = forwardRef(
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
-                  console.log(dateArr, 'datee');
                   const formatted = dateArr[0]
                     ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
                     : '';
@@ -340,7 +339,6 @@ const Input = forwardRef(
               ...(props.datePickerOptions || {}),
             }}
             onChange={(dateArr) => {
-              console.log(dateArr, 'datee');
               const formatted = dateArr[0]
                 ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
                 : '';

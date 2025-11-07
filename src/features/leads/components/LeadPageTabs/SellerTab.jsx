@@ -29,11 +29,17 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     if (leadData) {
       reset({
         meetingConfirmed: leadData.meetingConfirmed,
-        meetingConfirmedDate: leadData.meetingConfirmedDate,
+        meetingConfirmedDate: leadData.meetingConfirmedDate
+          ? moment(leadData.meetingConfirmedDate, 'YYYY.MM.DD').format(
+              'DD.MM.YYYY'
+            )
+          : '',
         branch2: leadData?.branch2,
         seller: leadData.seller === null ? 'null' : leadData.seller,
         purchase: leadData.purchase,
-        purchaseDate: leadData.purchaseDate,
+        purchaseDate: leadData.purchaseDate
+          ? moment(leadData.purchaseDate, 'YYYY.MM.DD').format('DD.MM.YYYY')
+          : '',
         saleType: leadData.saleType,
         passportId: leadData.passportId,
         jshshir2: leadData.jshshir2,

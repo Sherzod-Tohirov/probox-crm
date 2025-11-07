@@ -15,6 +15,10 @@ export function useSelectOptions(tab) {
   if (tab === 'common') {
     const rejectReasonOptions = [
       {
+        value: 'Dubl lead',
+        label: 'Dubl lead',
+      },
+      {
         value: "Yosh to'g'ri kelmaydi",
         label: "Yosh to'g'ri kelmaydi",
       },
