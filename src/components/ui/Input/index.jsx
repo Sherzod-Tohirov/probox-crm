@@ -155,7 +155,16 @@ const Input = forwardRef(
               <textarea
                 {...field}
                 {...commonProps}
-                {...omit(['images', 'accept', 'multiple', 'control', 'datePickerOptions'], props)}
+                {...omit(
+                  [
+                    'images',
+                    'accept',
+                    'multiple',
+                    'control',
+                    'datePickerOptions',
+                  ],
+                  props
+                )}
                 value={field.value || ''}
                 onChange={(e) => field.onChange(e.target.value)}
               />
@@ -194,9 +203,10 @@ const Input = forwardRef(
                 onChange={(dateArr) => {
                   const formatted = dateArr[0]
                     ? moment(dateArr[0]).format(
-                        props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
+                        props.includeTime ? 'YYYY.MM.DD HH:mm' : 'YYYY.MM.DD'
                       )
                     : '';
+                  console.log(formatted, 'formatted');
                   field.onChange(formatted);
                 }}
                 {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
@@ -220,6 +230,7 @@ const Input = forwardRef(
               ...(props.datePickerOptions || {}),
             }}
             onChange={(dateArr) => {
+              console.log(dateArr, 'datee');
               const formatted = dateArr[0]
                 ? moment(dateArr[0]).format(
                     props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
@@ -250,6 +261,7 @@ const Input = forwardRef(
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
+                  console.log(dateArr, 'datee');
                   const formatted = dateArr[0]
                     ? moment(dateArr[0]).format('HH:mm')
                     : '';
@@ -275,6 +287,7 @@ const Input = forwardRef(
               ...(props.datePickerOptions || {}),
             }}
             onChange={(dateArr) => {
+              console.log(dateArr, 'datee');
               const formatted = dateArr[0]
                 ? moment(dateArr[0]).format('HH:mm')
                 : '';
@@ -302,6 +315,7 @@ const Input = forwardRef(
                   ...(props.datePickerOptions || {}),
                 }}
                 onChange={(dateArr) => {
+                  console.log(dateArr, 'datee');
                   const formatted = dateArr[0]
                     ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
                     : '';
@@ -326,6 +340,7 @@ const Input = forwardRef(
               ...(props.datePickerOptions || {}),
             }}
             onChange={(dateArr) => {
+              console.log(dateArr, 'datee');
               const formatted = dateArr[0]
                 ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
                 : '';

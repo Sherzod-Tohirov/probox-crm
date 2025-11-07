@@ -110,6 +110,7 @@ export default function LeadsToolbar({
             color="secondary"
             icon="users"
             iconSize={18}
+            disabled
             aria-label="Add lead"
             onClick={onAddLead}
           />

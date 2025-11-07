@@ -17,7 +17,6 @@ const normalizeNumber = (value) => {
 
 const parseNumber = (value) => {
   const normalized = normalizeNumber(value);
-  console.log(normalized, 'normalized');
   return normalized === null ? '' : normalized;
 };
 
@@ -52,7 +51,6 @@ const SCORING_FIELDS = [
 ];
 
 export default function useScoringForm(leadId, leadData, onSuccess) {
-  console.log(leadData, 'lead data');
   const form = useForm({
     defaultValues: {
       clientFullName: leadData?.clientFullName || '',

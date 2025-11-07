@@ -3,6 +3,7 @@ import useMutateLead from '@/hooks/data/leads/useMutateLead';
 import moment from 'moment';
 
 const OPERATOR2_FIELDS = [
+  'called2',
   'answered2',
   'callCount2',
   'meetingDate',
@@ -15,7 +16,8 @@ const OPERATOR2_FIELDS = [
 export default function useOperator2Form(leadId, leadData, onSuccess) {
   const form = useForm({
     defaultValues: {
-      answered2: leadData?.answered2 || false,
+      called2: leadData?.called2,
+      answered2: leadData?.answered2,
       callCount2: leadData?.callCount2 || '',
       meetingDate: (() => {
         if (!leadData?.meetingDate) return '';
@@ -73,7 +75,6 @@ export default function useOperator2Form(leadId, leadData, onSuccess) {
         }
       }
     });
-    console.log(filteredData, 'filteredData');
 
     updateMutation.mutate(filteredData);
   });

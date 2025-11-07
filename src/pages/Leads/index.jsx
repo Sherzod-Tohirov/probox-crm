@@ -155,11 +155,8 @@ export default function Leads() {
   const [highlighted, setHighlighted] = useState({}); // { [id]: true }
   useEffect(() => {
     const onNew = (e) => {
-      console.log('Triggered, event');
       const id = e?.detail?.id;
       if (!id) return;
-      console.log('Triggered, id', id);
-      console.log('Triggered, highlighted', highlighted);
       setHighlighted((p) => ({ ...p, [id]: true }));
       // auto clear after 4s
       setTimeout(() => {
@@ -249,7 +246,9 @@ export default function Leads() {
         isOpen={isAddOpen}
         onClose={() => setAddOpen(false)}
         onCreated={() => {
-          try { refetch?.(); } catch (_) {}
+          try {
+            refetch?.();
+          } catch (_) {}
           setAddOpen(false);
         }}
       />

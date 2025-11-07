@@ -1,6 +1,8 @@
 import { Controller } from 'react-hook-form';
 import { Input, Col, Row } from '@components/ui';
 import formatterCurrency from '@utils/formatterCurrency';
+import { omit } from 'lodash';
+import moment from 'moment';
 
 export default function FormField({
   name,
@@ -117,7 +119,6 @@ export default function FormField({
               const raw = e?.target?.value ?? '';
               const digits = String(raw).replace(/[^0-9]/g, '');
               const formatted = formatterCurrency(Number(digits));
-              console.log(formatted, 'formatted');
               field.onChange(formatted);
             }}
           />
@@ -125,7 +126,16 @@ export default function FormField({
 
       case 'date':
         return (
-          <Input {...fieldProps} type="date" datePickerOptions={dateOptions} />
+          <Input
+            {...omit(fieldProps, ['onChange', 'value'])}
+            value={
+              field.value
+                ? moment(field.value, 'YYYY.MM.DD').format('DD.MM.YYYY')
+                : ''
+            }
+            type="date"
+            datePickerOptions={dateOptions}
+          />
         );
 
       case 'datetime':
@@ -232,7 +242,15 @@ export default function FormField({
       case 'date':
         return (
           <Col span={span}>
-            <Input {...directProps} type="date" />
+            <Input
+              {...{ ...omit(directProps, ['onChange', 'value']) }}
+              value={
+                directProps.value
+                  ? moment(directProps.value, 'YYYY.MM.DD').format('DD.MM.YYYY')
+                  : ''
+              }
+              type="date"
+            />
           </Col>
         );
 

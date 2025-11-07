@@ -60,11 +60,8 @@ export function calculateLeadLimit(lead, pult) {
     !Number.isFinite(salary) || salary <= pult.minBaseSalary
       ? pult.minBaseSalary
       : salary;
-  console.log(baseSalary, 'base salary');
   const creditPressure = parsePercent(pult.creditPressure);
-  console.log(creditPressure, 'credit pressure');
   const afterCredit = baseSalary * (1 - creditPressure);
-  console.log(afterCredit, 'after credit');
   let limitedKatm = 0;
   if (!Number.isFinite(pult.maxKatmPayment) && Number.isFinite(katmPayment)) {
     limitedKatm = katmPayment;
@@ -73,27 +70,20 @@ export function calculateLeadLimit(lead, pult) {
   } else if (pult.maxKatmPayment > 0) {
     limitedKatm = Math.min(katmPayment, pult.maxKatmPayment);
   }
-  console.log(limitedKatm, 'limited katm');
   const afterKatm = afterCredit - limitedKatm;
-  console.log(afterKatm, 'after katm');
   if (afterKatm <= 0) return defaultValue;
   const historyPercent = findByRegex(
     katmHistory,
     pult.katmHistoryPatterns,
     pult.katmHistoryValues
   );
-  console.log(historyPercent, 'history percent');
   const afterHistory = afterKatm * (1 - historyPercent);
-  console.log(afterHistory, 'after history');
-  console.log(katmScore, 'katm score');
   const scorePercent = findExact(
     katmScore,
     pult.katmScoreKeys,
     pult.katmScorePercents
   );
-  console.log(scorePercent, 'score percent');
   const result = afterHistory * (1 - scorePercent);
-  console.log(result, 'result');
 
   if (!Number.isFinite(result) || result <= 0) return defaultValue;
 

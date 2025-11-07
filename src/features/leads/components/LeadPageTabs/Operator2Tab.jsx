@@ -35,6 +35,7 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
         return loose.isValid() ? loose.format('DD.MM.YYYY HH:mm') : '';
       })();
       reset({
+        called2: leadData.called2,
         answered2: leadData.answered2,
         callCount2: leadData.callCount2 || '',
         meetingDate,
@@ -71,8 +72,15 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
       <form onSubmit={handleSubmit}>
         <FieldGroup title="Qo'ng'iroq ma'lumotlari">
           <FormField
+            name="called2"
+            label="Qo'ng'iroq qilindimi?"
+            control={control}
+            type="confirm"
+            disabled={!canEdit}
+          />
+          <FormField
             name="answered2"
-            label="Javob oldimi?"
+            label="Javob berildimi?"
             control={control}
             type="confirm"
             disabled={!canEdit}

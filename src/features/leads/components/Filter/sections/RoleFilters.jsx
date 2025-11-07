@@ -3,6 +3,7 @@ import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
 import { booleanOptionsAll } from '../options';
 import styles from '../style.module.scss';
+import hasRole from '@/utils/hasRole';
 
 export default function RoleFilters({
   role,
@@ -18,7 +19,7 @@ export default function RoleFilters({
 
   return (
     <>
-      {role === 'Operator1' && (
+      {hasRole(role, ['Operator1', 'OperatorM']) && (
         <>
           <Col
             xs={12}
@@ -32,7 +33,7 @@ export default function RoleFilters({
           >
             <SelectField
               name="called"
-              label="Telefon qilindimi"
+              label="Qo'ng'iroq qilindimi"
               options={booleanOptionsAll}
               control={control}
             />
@@ -74,7 +75,7 @@ export default function RoleFilters({
         </>
       )}
 
-      {role === 'Operator2' && (
+      {hasRole(role, ['Operator2', 'OperatorM']) && (
         <>
           <Col
             xs={12}
@@ -88,7 +89,7 @@ export default function RoleFilters({
           >
             <SelectField
               name="called2"
-              label="Telefon qilindimi"
+              label="Qo'ng'iroq qilindimi 2"
               options={booleanOptionsAll}
               control={control}
             />
@@ -105,7 +106,7 @@ export default function RoleFilters({
           >
             <SelectField
               name="answered2"
-              label="Javob berildimi"
+              label="Javob berildimi 2"
               options={booleanOptionsAll}
               control={control}
             />
@@ -113,30 +114,27 @@ export default function RoleFilters({
         </>
       )}
 
-      {role === 'Operator1' ||
-        (role === 'Operator2' && (
-          <Col
-            xs={12}
-            sm={6}
-            md={2}
-            lg={1.5}
-            xl={1.2}
-            className={
-              isMobile ? styles['mobile-full-width'] : styles.compactCol
-            }
-          >
-            <Input
-              size="full-grow"
-              variant="outlined"
-              label="Pasport ID mavjudmi"
-              type="select"
-              options={booleanOptionsAll}
-              control={control}
-              {...register('passportId')}
-            />
-          </Col>
-        ))}
-      {role === 'Scoring' && (
+      {hasRole(role, ['Operator1', 'Operator2', 'OperatorM']) && (
+        <Col
+          xs={12}
+          sm={6}
+          md={2}
+          lg={1.5}
+          xl={1.2}
+          className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
+        >
+          <Input
+            size="full-grow"
+            variant="outlined"
+            label="Pasport ID mavjudmi"
+            type="select"
+            options={booleanOptionsAll}
+            control={control}
+            {...register('passportId')}
+          />
+        </Col>
+      )}
+      {hasRole(role, ['Scoring']) && (
         <>
           <Col
             xs={12}
@@ -201,7 +199,7 @@ export default function RoleFilters({
         </>
       )}
 
-      {role === 'Seller' && (
+      {hasRole(role, ['Seller']) && (
         <Col
           xs={12}
           sm={6}

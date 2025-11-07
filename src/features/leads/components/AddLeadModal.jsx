@@ -28,7 +28,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     useFetchBranches();
   const { user } = useAuth();
   const isSeller = user?.U_role === 'Seller';
-  const { control, handleSubmit, reset, watch, setValue } = useForm({
+  const { handleSubmit, reset, watch, setValue } = useForm({
     defaultValues: {
       sourceCategory: 'Organika',
       clientName: '',
@@ -171,7 +171,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                         />
                       </Col>
                       <Col xs={12} md={6} flexGrow>
-                        <FormField
+                        <Input
                           size="full-grow"
                           variant="outlined"
                           label="Telefon raqami"

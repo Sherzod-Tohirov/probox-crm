@@ -11,7 +11,6 @@ export function useSelectOptions(tab) {
   });
 
   const { data: branches } = useFetchBranches();
-  console.log(branches, 'branches');
 
   if (tab === 'common') {
     const rejectReasonOptions = [

@@ -12,7 +12,6 @@ export default function MeetingAndDateSection({
   watchedMeetingDateEnd,
   inline = false,
 }) {
-  console.log(watchedMeeting == true, 'watchedMeeting');
   const content = (
     <>
       <Col

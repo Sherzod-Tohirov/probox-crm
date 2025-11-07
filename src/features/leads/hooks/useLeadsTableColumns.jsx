@@ -259,7 +259,25 @@ export default function useLeadsTableColumns() {
           );
         },
       },
-
+      {
+        key: 'time',
+        title: 'Lead tushgan vaqti',
+        icon: 'clockFilled',
+        width: { xs: '25%', md: '14%', xl: '8%' },
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (column) => {
+          const { time } = column;
+          return (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {time ? iconsMap.clock : null}
+              {formatDate(time, 'YYYY.MM.DD hh:mm', 'DD.MM.YYYY HH:mm')}
+            </span>
+          );
+        },
+      },
       {
         key: 'operator',
         title: 'Operator 1',
@@ -296,8 +314,8 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'called',
-        title: 'Telefon qilindimi',
-        icon: 'telephone',
+        title: "Qo'ng'iroq qilindimi",
+        icon: 'telephoneFilled',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
@@ -352,7 +370,7 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'called2',
-        title: 'Telefon qilindimi 2',
+        title: "Qo'ng'iroq qilindimi 2",
         icon: 'telephoneFilled',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
@@ -419,7 +437,6 @@ export default function useLeadsTableColumns() {
         },
         renderCell: (row) => {
           const value = row.scoring;
-          console.log(value, 'scoring');
           if (!value) return '-';
           return (
             <span
@@ -593,25 +610,7 @@ export default function useLeadsTableColumns() {
           return finalPercentage + ' %';
         },
       },
-      {
-        key: 'time',
-        title: 'Vaqti',
-        icon: 'clockFilled',
-        width: { xs: '25%', md: '14%', xl: '8%' },
-        minWidth: '160px',
-        cellStyle: { whiteSpace: 'nowrap' },
-        renderCell: (column) => {
-          const { time } = column;
-          return (
-            <span
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              {time ? iconsMap.clock : null}
-              {formatDate(time, 'YYYY.MM.DD hh:mm', 'DD.MM.YYYY HH:mm')}
-            </span>
-          );
-        },
-      },
+
       {
         key: 'comment',
         title: 'Izoh',
