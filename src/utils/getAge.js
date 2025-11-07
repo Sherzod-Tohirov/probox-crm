@@ -2,6 +2,7 @@ import moment from 'moment';
 
 export function getAge(birthDate) {
   if (!birthDate) return '';
-  const age = moment().diff(moment(birthDate, 'DD.MM.YYYY'), 'years');
+  const formats = ['DD.MM.YYYY', 'YYYY.MM.DD'];
+  const age = moment().diff(moment(birthDate, formats), 'years');
   return age;
 }
