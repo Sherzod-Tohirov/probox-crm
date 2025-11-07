@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import moment from 'moment';
 
 const normalizeNumber = (value) => {
   if (value === null || value === undefined || value === '') return null;
@@ -54,8 +55,12 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
   const form = useForm({
     defaultValues: {
       clientFullName: leadData?.clientFullName || '',
-      birthDate: leadData?.birthDate || '',
-      applicationDate: leadData?.applicationDate || '',
+      birthDate: leadData?.birthDate
+        ? moment(leadData.birthDate, 'YYYY.MM.DD', true).format('DD.MM.YYYY')
+        : '',
+      applicationDate: leadData?.applicationDate
+        ? moment(leadData.applicationDate, 'YYYY.MM.DD', true).format('DD.MM.YYYY')
+        : '',
       age: parseNumber(leadData?.age),
       score: parseNumber(leadData?.score),
       katm: parseNumber(leadData?.katm),
@@ -114,6 +119,12 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
         if (booleanFields.has(field)) {
           const boolVal = parseBoolean(value);
           if (boolVal !== '') payload[field] = boolVal;
+          return;
+        }
+
+        if (field === 'birthDate' || field === 'applicationDate') {
+          const date = moment(value, 'DD.MM.YYYY', true);
+          if (date.isValid()) payload[field] = date.format('YYYY.MM.DD');
           return;
         }
 

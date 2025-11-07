@@ -78,14 +78,14 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     'applicationDate',
   ]);
   // Reset form when leadData changes
-  const formatBirthDate = (birthDate) => {
-    if (!birthDate) return '';
+  const formatDate = (date) => {
+    if (!date) return '';
     const parsed = moment(
-      birthDate,
+      date,
       ['DD.MM.YYYY', 'YYYY.MM.DD', moment.ISO_8601],
       true
     );
-    const validMoment = parsed.isValid() ? parsed : moment(birthDate);
+    const validMoment = parsed.isValid() ? parsed : moment(date);
     return validMoment.isValid() ? validMoment.format('DD.MM.YYYY') : '';
   };
   useEffect(() => {
@@ -98,8 +98,8 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       };
       reset({
         clientFullName: leadData.clientFullName,
-        birthDate: formatBirthDate(leadData.birthDate),
-        applicationDate: leadData.applicationDate,
+        birthDate: formatDate(leadData.birthDate),
+        applicationDate: formatDate(leadData.applicationDate),
         age: leadData.age,
         score: leadData.score,
         katm: isNotFalsy(leadData.katm),
