@@ -230,7 +230,6 @@ export default function LeadPage() {
       isEmptySelectable: true,
     });
   }, [executors]);
-
   const operatorName = useMemo(
     () => findExecutor(executors, lead?.operator)?.SlpName || '-',
     [executors, lead?.operator]
@@ -623,6 +622,10 @@ export default function LeadPage() {
       updateLead?.isPending,
       isCommentsDirty,
       isAssignmentsDirty,
+      operator1Options,
+      operator2Options,
+      executors,
+      id,
     ]
   );
 
