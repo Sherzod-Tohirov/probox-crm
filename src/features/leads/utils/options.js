@@ -20,3 +20,18 @@ export const meetingOptions = [
   },
   { value: 'time', label: "Lead qabul qilingan sana bo'yicha" },
 ];
+
+export const statusOptions = [
+  { value: 'Active', label: 'Active' },
+  { value: 'Archived', label: 'Arxivlangan' },
+  // { value: 'Closed', label: 'Yopilgan' },
+  // { value: 'Blocked', label: 'Bloklangan' },
+  { value: 'Processing', label: 'Jarayonda' },
+];
+
+export const statusFilterOptions = [
+  { value: 'unmarked', label: 'Barchasi' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Archived', label: 'Arxivlangan' },
+  { value: 'Processing', label: 'Jarayonda' },
+];

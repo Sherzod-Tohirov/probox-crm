@@ -8,7 +8,12 @@ import useIsMobile from '@/hooks/useIsMobile';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import selectOptionsCreator from '@utils/selectOptionsCreator';
-import { booleanOptionsAll, sourceOptions as leadSourceOptions } from './options';
+import {
+  booleanOptionsAll,
+  sourceOptions as leadSourceOptions,
+  statusFilterOptions,
+  statusOptions,
+} from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
 
 export default function AdvancedFilterModal({
@@ -33,12 +38,14 @@ export default function AdvancedFilterModal({
     useFetchExecutors({ include_role: 'Operator2' });
   const shouldLoadSeller = role === 'Seller';
   const shouldLoadScoring = role === 'Scoring';
-  const { data: sellerList = [], isLoading: isSellerLoading } = useFetchExecutors(
-    shouldLoadSeller ? { include_role: 'Seller' } : undefined
-  );
-  const { data: scoringList = [], isLoading: isScoringLoading } = useFetchExecutors(
-    shouldLoadScoring ? { include_role: 'Scoring' } : undefined
-  );
+  const { data: sellerList = [], isLoading: isSellerLoading } =
+    useFetchExecutors(
+      shouldLoadSeller ? { include_role: 'Seller' } : undefined
+    );
+  const { data: scoringList = [], isLoading: isScoringLoading } =
+    useFetchExecutors(
+      shouldLoadScoring ? { include_role: 'Scoring' } : undefined
+    );
 
   const branchOptions = useMemo(
     () => selectOptionsCreator(branches, { label: 'name', value: 'id' }),
@@ -179,7 +186,14 @@ export default function AdvancedFilterModal({
                   watchedMeetingDateStart={watchedMeetingDateStart}
                   watchedMeetingDateEnd={watchedMeetingDateEnd}
                 />
-
+                <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
+                  <SelectField
+                    name="status"
+                    label="Status"
+                    options={statusFilterOptions}
+                    control={control}
+                  />
+                </Col>
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
                   <SelectField
                     name="purchase"

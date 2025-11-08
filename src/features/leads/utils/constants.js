@@ -6,6 +6,8 @@ export const AVAILABLE_LEAD_SOURCES = [
   'Community',
 ];
 
+export const AVAILABLE_LEAD_STATUSES = ['Active', 'Archived', 'Processing'];
+
 export const REJECTION_REASON_OPTIONS = [
   { value: '', label: '' },
   { value: 'not_interested', label: 'Qiziqish bildirilmadi' },

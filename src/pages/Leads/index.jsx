@@ -183,6 +183,7 @@ export default function Leads() {
           <Row gutter={isMobile ? 4 : 6}>
             <Col fullWidth>
               <LeadsToolbar
+                user={user}
                 uiScale={uiScale}
                 onIncreaseUIScale={increaseScale}
                 onDecreaseUIScale={decreaseScale}

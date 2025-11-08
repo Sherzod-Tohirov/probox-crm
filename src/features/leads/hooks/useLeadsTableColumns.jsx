@@ -6,6 +6,7 @@ import iconsMap from '@utils/iconsMap';
 import { Badge } from '@/components/ui';
 import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 import formatterCurrency from '@/utils/formatterCurrency';
+import { AVAILABLE_LEAD_STATUSES } from '../utils/constants';
 
 /**
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
@@ -13,11 +14,35 @@ import formatterCurrency from '@/utils/formatterCurrency';
 
 const StatusBadge = ({ status }) => {
   if (status === null) return '-';
+
+  if (AVAILABLE_LEAD_STATUSES.includes(status)) {
+    const colorMap = {
+      Active: 'success',
+      Archived: 'danger',
+      Processing: 'warning',
+    };
+    const translationMap = {
+      Active: 'Active',
+      Archived: 'Arxivlangan',
+      Processing: 'Jarayonda',
+    };
+    return (
+      <Badge color={colorMap[status]} variant="soft" size="md">
+        {translationMap[status]}
+      </Badge>
+    );
+  } else {
+    return status;
+  }
+};
+
+const ConfirmBadge = ({ confirm }) => {
+  if (confirm === null) return '-';
   return (
-    <Badge color={status} variant="soft" size="md">
+    <Badge color={confirm} variant="soft" size="md">
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        {status ? iconsMap.tickCircle : iconsMap.closeCircle}
-        {status ? 'Ha' : "Yo'q"}
+        {confirm ? iconsMap.tickCircle : iconsMap.closeCircle}
+        {confirm ? 'Ha' : "Yo'q"}
       </span>
     </Badge>
   );
@@ -201,6 +226,17 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'status',
+        title: 'Status',
+        icon: 'status',
+        width: { xs: '20%', md: '12%', xl: '10%' },
+        minWidth: '120px',
+        renderCell: (column) => {
+          const { status } = column;
+          return <StatusBadge status={status} />;
+        },
+      },
+      {
         key: 'source',
         title: 'Manba',
         icon: 'globeFilled',
@@ -320,7 +356,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
           const value = row.called;
-          return <StatusBadge status={value} />;
+          return <ConfirmBadge confirm={value} />;
         },
       },
       {
@@ -331,7 +367,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
           const value = row.answered;
-          return <StatusBadge status={value} />;
+          return <ConfirmBadge confirm={value} />;
         },
       },
       {
@@ -376,7 +412,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
           const value = row.called2;
-          return <StatusBadge status={value} />;
+          return <ConfirmBadge confirm={value} />;
         },
       },
       {
@@ -387,7 +423,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
           const value = row.answered2;
-          return <StatusBadge status={value} />;
+          return <ConfirmBadge confirm={value} />;
         },
       },
       {
@@ -554,17 +590,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { purchase } = column;
-          if (purchase === null) return '-';
-          return (
-            <Badge color={purchase} variant="soft" size="md">
-              <span
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-              >
-                {purchase ? iconsMap.tickCircle : iconsMap.closeCircle}
-                {purchase ? 'Ha' : "Yo'q"}
-              </span>
-            </Badge>
-          );
+          return <ConfirmBadge confirm={purchase} />;
         },
       },
       {
@@ -575,7 +601,7 @@ export default function useLeadsTableColumns() {
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { meetingConfirmed } = column;
-          return <StatusBadge status={meetingConfirmed} />;
+          return <ConfirmBadge confirm={meetingConfirmed} />;
         },
       },
       {

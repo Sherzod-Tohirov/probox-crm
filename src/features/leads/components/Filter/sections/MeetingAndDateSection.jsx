@@ -1,6 +1,6 @@
 import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
-import { meetingOptions } from '../options';
+import { meetingOptions } from '../../../utils/options';
 import styles from '../style.module.scss';
 import moment from 'moment';
 

@@ -1,7 +1,7 @@
 import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
-import { booleanOptionsAll } from '../options';
+import { booleanOptionsAll } from '../../../utils/options';
 import styles from '../style.module.scss';
 import hasRole from '@/utils/hasRole';
 

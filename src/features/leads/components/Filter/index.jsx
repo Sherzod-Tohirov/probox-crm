@@ -18,7 +18,7 @@ import SelectField from './fields/SelectField';
 import {
   booleanOptionsAll,
   sourceOptions as leadSourceOptions,
-} from './options';
+} from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
 
 export default function LeadsFilter({

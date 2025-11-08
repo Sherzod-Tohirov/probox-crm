@@ -6,7 +6,7 @@ export function useSelectOptions(tab) {
   const { user } = useAuth();
 
   const { data: executors } = useFetchExecutors({
-    branch: user?.U_branch,
+    // branch: user?.U_branch,
     include_role: 'Seller',
   });
 
@@ -93,7 +93,7 @@ export function useSelectOptions(tab) {
 
     const branchOptions =
       branches
-        ?.filter((branch) => String(branch.id) === String(user?.U_branch))
+        // ?.filter((branch) => String(branch.id) === String(user?.U_branch))
         ?.map((branch) => ({
           value: branch.id,
           label: branch.name,

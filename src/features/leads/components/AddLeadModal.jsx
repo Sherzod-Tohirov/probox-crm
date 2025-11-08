@@ -7,9 +7,13 @@ import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { createLead } from '@services/leadsService';
 import FieldGroup from './LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
+import {
+  formatToReadablePhoneNumber,
+  formatUZPhone,
+} from '@/utils/formatPhoneNumber';
+import useAlert from '@/hooks/useAlert';
 
 const CATEGORY_OPTIONS_OTHERS = [
-  { value: 'Organika', label: 'Organika' },
   { value: 'Kiruvchi qongiroq', label: "Kiruvchi qo'ng'iroq" },
   { value: 'Community', label: 'Community' },
 ];
@@ -23,6 +27,7 @@ const COMMUNITY_CHANNELS = [
 ];
 
 export default function AddLeadModal({ isOpen, onClose, onCreated }) {
+  const { alert } = useAlert();
   const { data: branches = [], isLoading: isBranchesLoading } =
     useFetchBranches();
   const { user } = useAuth();
@@ -31,10 +36,11 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     defaultValues: {
       sourceCategory: 'Organika',
       clientName: '',
-      clientPhone: '',
+      clientPhone: '+998 ',
       branchId: '',
       seller: '',
-      platform: '',
+      source2: '',
+      comment: '',
     },
     mode: 'all',
   });
@@ -49,7 +55,10 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   );
 
   const branchOptions = useMemo(
-    () => branches?.map((b) => ({ value: b.id, label: b.name })) ?? [],
+    () =>
+      Array.isArray(branches) && branches.length > 0
+        ? branches?.map((b) => ({ value: b.id, label: b.name }))
+        : [],
     [branches]
   );
 
@@ -65,14 +74,13 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const canSubmit = () => {
     const name = watch('clientName');
     const phone = watch('clientPhone');
-    const comment = watch('comment');
 
-    if (!sourceCategory || !name || !phone || !comment) return false;
+    if (!sourceCategory || !name || !phone) return false;
 
     if (sourceCategory === 'Organika') {
       return Boolean(watch('branchId') && watch('seller'));
     }
-    return Boolean(watch('platform'));
+    return Boolean(watch('source2'));
   };
 
   const onSubmit = (values) => {
@@ -80,18 +88,19 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       clientName: values.clientName,
       clientPhone: values.clientPhone,
       source: values.sourceCategory,
-      comment: values.comment,
+      comment: values.comment ?? '',
     };
 
     if (values.sourceCategory === 'Organika') {
       payload.branch2 = values.branchId;
       payload.seller = values.seller;
     } else {
-      payload.platform = values.platform; // optional extra metadata
+      payload.source2 = values.source2; // optional extra metadata
     }
 
     mutation.mutate(payload, {
       onSuccess: (created) => {
+        alert('Lead muvaffaqiyatli yaratildi', { type: 'success' });
         onCreated?.(created);
         reset();
         onClose?.();
@@ -147,7 +156,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                 // reset dependent fields when category changes
                 setValue('branchId', '');
                 setValue('seller', '');
-                setValue('platform', '');
+                setValue('source2', '');
               }}
             />
           </Col>
@@ -178,10 +187,13 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                           size="full-grow"
                           variant="outlined"
                           label="Telefon raqami"
-                          placeholder="99 123 45 67"
+                          placeholder="+998 99 123 45 67"
                           value={watch('clientPhone')}
                           onChange={(e) =>
-                            setValue('clientPhone', e.target.value)
+                            setValue(
+                              'clientPhone',
+                              formatUZPhone(e.target.value)
+                            )
                           }
                         />
                       </Col>
@@ -199,6 +211,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                               type="select"
                               options={branchOptions}
                               isLoading={isBranchesLoading}
+                              placeholderOption={true}
                               value={watch('branchId')}
                               onChange={(e) =>
                                 setValue('branchId', e?.target?.value ?? e)
@@ -212,6 +225,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                               label="Sotuvchi"
                               type="select"
                               options={sellerOptions}
+                              placeholderOption={true}
                               isLoading={isSellersLoading}
                               disabled={!selectedBranchId}
                               value={watch('seller')}
@@ -229,9 +243,9 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                             label="Source"
                             type="select"
                             options={COMMUNITY_CHANNELS}
-                            value={watch('platform')}
+                            value={watch('source2')}
                             onChange={(e) =>
-                              setValue('platform', e?.target?.value ?? e)
+                              setValue('source2', e?.target?.value ?? e)
                             }
                           />
                         </Col>

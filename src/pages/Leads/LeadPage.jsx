@@ -39,6 +39,8 @@ import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import selectOptionsCreator from '@/utils/selectOptionsCreator';
 import { findExecutor } from '@/utils/findExecutorById';
 import formatterCurrency from '@/utils/formatterCurrency';
+import hasRole from '@/utils/hasRole';
+import { statusOptions } from '@/features/leads/utils/options';
 
 const regionOptions = [
   { value: 'Toshkent shahar', label: 'Toshkent shahar' },
@@ -150,6 +152,17 @@ export default function LeadPage() {
     handleSubmit: handleCommentsSubmit,
     reset: resetComments,
   } = commentsForm;
+  const statusForm = useForm({
+    defaultValues: {
+      status: lead?.status || '',
+    },
+  });
+  const {
+    control: statusControl,
+    handleSubmit: handleStatusSubmit,
+    reset: resetStatus,
+  } = statusForm;
+  const isStatusDirty = statusForm.formState.isDirty;
   const isCommentsDirty = commentsForm.formState.isDirty;
   const isAssignmentsDirty = assignmentsForm.formState.isDirty;
   // Update this useEffect to properly handle the form reset
@@ -173,6 +186,13 @@ export default function LeadPage() {
       comment: lead?.comment || '',
     });
   }, [lead, resetComments]);
+
+  useEffect(() => {
+    if (!lead) return;
+    resetStatus({
+      status: lead?.status || '',
+    });
+  }, [lead, resetStatus]);
 
   const updateLead = useMutateLead(id, {
     onSuccess: (updated) => {
@@ -207,6 +227,8 @@ export default function LeadPage() {
       canEditTab('scoring')
     );
   }, [currentUserRole]);
+
+  const canEditStatus = hasRole(currentUserRole, ['OperatorM']);
 
   const operator1Options = useMemo(() => {
     const operator1Executors = executors.filter(
@@ -264,6 +286,13 @@ export default function LeadPage() {
     updateLead.mutate(payload);
   });
 
+  const onSaveStatus = handleStatusSubmit((values) => {
+    const payload = {
+      status: values?.status ?? '',
+    };
+    updateLead.mutate(payload);
+  });
+
   // Custom breadcrumbs to show lead name instead of ID
   const customBreadcrumbs = useMemo(() => {
     if (!lead) return null;
@@ -291,342 +320,354 @@ export default function LeadPage() {
     console.log('Lead updated successfully:', updatedData);
   };
 
-  const commonFields = useMemo(
-    () => (
-      <div className={styles['fields-grid']}>
-        <FieldGroup title="Mijoz ma'lumotlari">
+  const commonFields = (
+    <div className={styles['fields-grid']}>
+      <FieldGroup title={"Status ma'lumotlari"}>
+        <form onSubmit={onSaveStatus} style={{ width: '100%' }}>
           <Row gutter={4}>
             <Col>
-              <Row direction={'row'} gutter={4} wrap>
-                <Col>
-                  <FormField
-                    name="clientName"
-                    label="Ismi"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 12 }}
-                    defaultValue={lead?.clientName}
-                  />
-                </Col>
-                <Col>
-                  <FormField
-                    name="clientPhone"
-                    label="Telefon"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 12 }}
-                    defaultValue={formatToReadablePhoneNumber(
-                      lead?.clientPhone,
-                      true
-                    )}
-                  />
-                </Col>
-                <Col>
-                  {' '}
-                  <FormField
-                    name="birthDate"
-                    label="Tug'ilgan sana"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 12 }}
-                    defaultValue={lead?.birthDate}
-                  />
-                </Col>
-                <Col>
-                  {' '}
-                  <FormField
-                    name="age"
-                    label="Yosh"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 12 }}
-                    defaultValue={lead?.age}
-                  />
-                </Col>
-              </Row>
+              <FormField
+                name="status"
+                label="Status"
+                type="select"
+                control={statusControl}
+                disabled={!canEditStatus}
+                span={{ xs: 24, md: 12 }}
+                placeholderOption={true}
+                options={statusOptions}
+                defaultValue={lead?.status}
+              />
             </Col>
             <Col>
-              <Row direction={'row'} gutter={4} wrap>
-                {' '}
-                <Col>
-                  <FormField
-                    name="passportId"
-                    label="Pasport ID"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 8 }}
-                    defaultValue={lead?.passportId}
-                  />
-                </Col>
-                <Col>
-                  <FormField
-                    name="jshshir2"
-                    label="JSHSHIR"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 8 }}
-                    defaultValue={lead?.jshshir2 || lead?.jshshir}
-                  />
-                </Col>
-                <Col>
-                  <FormField
-                    name="finalLimit"
-                    label="Yakuniy limit"
-                    control={null}
-                    disabled={true}
-                    span={{ xs: 24, md: 8 }}
-                    defaultValue={
-                      lead?.finalLimit
-                        ? formatterCurrency(lead?.finalLimit)
-                        : ''
-                    }
-                    iconText="so'm"
-                  />
-                </Col>
-              </Row>
+              {canEditStatus && (
+                <Row>
+                  <Col>
+                    <Button
+                      disabled={!isStatusDirty}
+                      variant="filled"
+                      type="submit"
+                    >
+                      Statusni saqlash
+                    </Button>
+                  </Col>
+                </Row>
+              )}
             </Col>
           </Row>
-        </FieldGroup>
-
-        <FieldGroup title="Manzil ma'lumotlari">
-          <FormField
-            name="region"
-            label="Viloyat"
-            control={addressControl}
-            type="select"
-            options={regionOptions}
-            placeholderOption={true}
-            disabled={!canEditAddress}
-          />
-          <FormField
-            name="district"
-            label="Tuman"
-            control={addressControl}
-            disabled={!canEditAddress}
-          />
-          <FormField
-            name="address"
-            label="Manzil"
-            control={addressControl}
-            disabled={!canEditAddress}
-          />
-          <Row gutter={2} style={{ marginTop: '8px' }}>
-            <Col>
-              <Button
-                variant="filled"
-                onClick={onSaveAddress}
-                disabled={!canEditAddress || updateLead.isPending}
-              >
-                Manzilni saqlash
-              </Button>
-            </Col>
-          </Row>
-        </FieldGroup>
-
-        <FieldGroup title="Asosiy ma'lumotlar">
-          <FormField
-            name="source"
-            label="Manba"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 8 }}
-            prefix={<Globe />}
-            defaultValue={lead?.source}
-          />
-
-          <FormField
-            name="time"
-            label="Yozilgan vaqt"
-            control={null}
-            disabled={true}
-            span={{ xs: 24, md: 24 }}
-            defaultValue={lead?.time}
-          />
-        </FieldGroup>
-        <FieldGroup title="Biriktirilgan xodimlar">
-          {isOperatorManager ? (
-            <form onSubmit={onSaveAssignments} style={{ width: '100%' }}>
-              <Row direction="row" gutter={2} wrap>
-                <Col span={{ xs: 24, md: 8 }}>
-                  <FormField
-                    name="operator"
-                    label="Operator 1"
-                    control={assignmentsControl}
-                    type="select"
-                    options={operator1Options}
-                    disabled={!isOperatorManager}
-                  />
-                </Col>
-                <Col span={{ xs: 24, md: 8 }}>
-                  <FormField
-                    name="operator2"
-                    label="Operator 2"
-                    control={assignmentsControl}
-                    type="select"
-                    options={operator2Options}
-                    disabled={!isOperatorManager}
-                  />
-                </Col>
-                <Col span={{ xs: 24, md: 8 }}>
-                  <FormField
-                    name="seller"
-                    label="Sotuvchi"
-                    control={null}
-                    disabled
-                    defaultValue={
-                      findExecutor(executors, lead?.seller)?.SlpName
-                    }
-                  />
-                </Col>
-                <Col span={{ xs: 24, md: 8 }}>
-                  <FormField
-                    name="scoring"
-                    label="Scoring"
-                    control={null}
-                    disabled
-                    defaultValue={
-                      findExecutor(executors, lead?.scoring)?.SlpName
-                    }
-                  />
-                </Col>
-              </Row>
-              <Row gutter={2} style={{ marginTop: '16px' }}>
-                <Col>
-                  <Button
-                    variant="filled"
-                    type="submit"
-                    disabled={!isAssignmentsDirty}
-                  >
-                    Biriktirishlarni saqlash
-                  </Button>
-                </Col>
-              </Row>
-            </form>
-          ) : (
-            <>
-              <FormField
-                name="operator"
-                label="Operator 1"
-                control={null}
-                disabled
-                span={{ xs: 24, md: 8 }}
-                defaultValue={operatorName}
-              />
-              <FormField
-                name="operator2"
-                label="Operator 2"
-                control={null}
-                disabled
-                span={{ xs: 24, md: 8 }}
-                defaultValue={operator2Name}
-              />
-              <FormField
-                name="seller"
-                label="Sotuvchi"
-                control={null}
-                disabled
-                span={{ xs: 24, md: 8 }}
-                defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
-              />
-              <FormField
-                name="scoring"
-                label="Scoring"
-                control={null}
-                disabled
-                span={{ xs: 24, md: 8 }}
-                defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
-              />
-            </>
-          )}
-        </FieldGroup>
-
-        <FieldGroup title="Izoh">
-          <form onSubmit={onSaveComment} style={{ width: '100%' }}>
-            <Row direction="row" gutter={2} wrap>
-              <Col span={{ xs: 24, md: 24 }}>
+        </form>
+      </FieldGroup>
+      <FieldGroup title="Mijoz ma'lumotlari">
+        <Row gutter={4}>
+          <Col>
+            <Row direction={'row'} gutter={4} wrap>
+              <Col>
                 <FormField
-                  name="comment"
-                  label="Izoh"
-                  control={commentsControl}
-                  type="textarea"
-                  span={{ xs: 24, md: 24 }}
+                  name="clientName"
+                  label="Ismi"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 12 }}
+                  defaultValue={lead?.clientName}
+                />
+              </Col>
+              <Col>
+                <FormField
+                  name="clientPhone"
+                  label="Telefon"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 12 }}
+                  defaultValue={formatToReadablePhoneNumber(
+                    lead?.clientPhone,
+                    true
+                  )}
+                />
+              </Col>
+              <Col>
+                {' '}
+                <FormField
+                  name="birthDate"
+                  label="Tug'ilgan sana"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 12 }}
+                  defaultValue={lead?.birthDate}
+                />
+              </Col>
+              <Col>
+                {' '}
+                <FormField
+                  name="age"
+                  label="Yosh"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 12 }}
+                  defaultValue={lead?.age}
                 />
               </Col>
             </Row>
-            <Row gutter={2} style={{ marginTop: '8px' }}>
+          </Col>
+          <Col>
+            <Row direction={'row'} gutter={4} wrap>
+              {' '}
+              <Col>
+                <FormField
+                  name="passportId"
+                  label="Pasport ID"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 8 }}
+                  defaultValue={lead?.passportId}
+                />
+              </Col>
+              <Col>
+                <FormField
+                  name="jshshir2"
+                  label="JSHSHIR"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 8 }}
+                  defaultValue={lead?.jshshir2 || lead?.jshshir}
+                />
+              </Col>
+              <Col>
+                <FormField
+                  name="finalLimit"
+                  label="Yakuniy limit"
+                  control={null}
+                  disabled={true}
+                  span={{ xs: 24, md: 8 }}
+                  defaultValue={
+                    lead?.finalLimit ? formatterCurrency(lead?.finalLimit) : ''
+                  }
+                  iconText="so'm"
+                />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </FieldGroup>
+
+      <FieldGroup title="Manzil ma'lumotlari">
+        <FormField
+          name="region"
+          label="Viloyat"
+          control={addressControl}
+          type="select"
+          options={regionOptions}
+          placeholderOption={true}
+          disabled={!canEditAddress}
+        />
+        <FormField
+          name="district"
+          label="Tuman"
+          control={addressControl}
+          disabled={!canEditAddress}
+        />
+        <FormField
+          name="address"
+          label="Manzil"
+          control={addressControl}
+          disabled={!canEditAddress}
+        />
+        <Row gutter={2} style={{ marginTop: '8px' }}>
+          <Col>
+            <Button
+              variant="filled"
+              onClick={onSaveAddress}
+              disabled={!canEditAddress || updateLead.isPending}
+            >
+              Manzilni saqlash
+            </Button>
+          </Col>
+        </Row>
+      </FieldGroup>
+
+      <FieldGroup title="Asosiy ma'lumotlar">
+        <FormField
+          name="source"
+          label="Manba"
+          control={null}
+          disabled={true}
+          span={{ xs: 24, md: 8 }}
+          prefix={<Globe />}
+          defaultValue={lead?.source}
+        />
+
+        <FormField
+          name="time"
+          label="Yozilgan vaqt"
+          control={null}
+          disabled={true}
+          span={{ xs: 24, md: 24 }}
+          defaultValue={lead?.time}
+        />
+      </FieldGroup>
+      <FieldGroup title="Biriktirilgan xodimlar">
+        {isOperatorManager ? (
+          <form onSubmit={onSaveAssignments} style={{ width: '100%' }}>
+            <Row direction="row" gutter={2} wrap>
+              <Col span={{ xs: 24, md: 8 }}>
+                <FormField
+                  name="operator"
+                  label="Operator 1"
+                  control={assignmentsControl}
+                  type="select"
+                  options={operator1Options}
+                  disabled={!isOperatorManager}
+                />
+              </Col>
+              <Col span={{ xs: 24, md: 8 }}>
+                <FormField
+                  name="operator2"
+                  label="Operator 2"
+                  control={assignmentsControl}
+                  type="select"
+                  options={operator2Options}
+                  disabled={!isOperatorManager}
+                />
+              </Col>
+              <Col span={{ xs: 24, md: 8 }}>
+                <FormField
+                  name="seller"
+                  label="Sotuvchi"
+                  control={null}
+                  disabled
+                  defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
+                />
+              </Col>
+              <Col span={{ xs: 24, md: 8 }}>
+                <FormField
+                  name="scoring"
+                  label="Scoring"
+                  control={null}
+                  disabled
+                  defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
+                />
+              </Col>
+            </Row>
+            <Row gutter={2} style={{ marginTop: '16px' }}>
               <Col>
                 <Button
                   variant="filled"
                   type="submit"
-                  disabled={!isCommentsDirty}
+                  disabled={!isAssignmentsDirty}
                 >
-                  Izohni saqlash
+                  Biriktirishlarni saqlash
                 </Button>
               </Col>
             </Row>
           </form>
-        </FieldGroup>
+        ) : (
+          <>
+            <FormField
+              name="operator"
+              label="Operator 1"
+              control={null}
+              disabled
+              span={{ xs: 24, md: 8 }}
+              defaultValue={operatorName}
+            />
+            <FormField
+              name="operator2"
+              label="Operator 2"
+              control={null}
+              disabled
+              span={{ xs: 24, md: 8 }}
+              defaultValue={operator2Name}
+            />
+            <FormField
+              name="seller"
+              label="Sotuvchi"
+              control={null}
+              disabled
+              span={{ xs: 24, md: 8 }}
+              defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
+            />
+            <FormField
+              name="scoring"
+              label="Scoring"
+              control={null}
+              disabled
+              span={{ xs: 24, md: 8 }}
+              defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
+            />
+          </>
+        )}
+      </FieldGroup>
 
-        <FieldGroup title="Pasport rasmlari">
-          <PassportUpload
-            disabled={!canEditTab('all') || mutateFileUpload.isLoading}
-            value={uploadValue}
-            onChange={setPassportFiles}
-          />
+      <FieldGroup title="Izoh">
+        <form onSubmit={onSaveComment} style={{ width: '100%' }}>
+          <Row direction="row" gutter={2} wrap>
+            <Col span={{ xs: 24, md: 24 }}>
+              <FormField
+                name="comment"
+                label="Izoh qoldirish"
+                control={commentsControl}
+                type="textarea"
+                span={{ xs: 24, md: 24 }}
+              />
+            </Col>
+          </Row>
           <Row gutter={2} style={{ marginTop: '8px' }}>
             <Col>
               <Button
                 variant="filled"
-                onClick={() => {
-                  if (!passportFiles?.length) return;
-                  const formData = new FormData();
-                  passportFiles.forEach((p) => {
-                    if (p?.file instanceof File) {
-                      formData.append('images', p.file, p.file.name);
-                    }
-                  });
-                  const cardCodeFinal = lead?.cardCode ?? id;
-                  mutateFileUpload.mutate(
-                    { cardCode: cardCodeFinal, formData },
-                    {
-                      onSuccess: () => {
-                        setPassportFiles([]);
-                        queryClient.invalidateQueries(['lead', id]);
-                        queryClient.invalidateQueries([
-                          'lead-files',
-                          cardCodeFinal,
-                        ]);
-                      },
-                    }
-                  );
-                }}
-                disabled={
-                  !canEditTab('all') ||
-                  passportFiles.length === 0 ||
-                  mutateFileUpload.isLoading
-                }
+                type="submit"
+                disabled={!isCommentsDirty}
               >
-                Hujjatlarni saqlash
+                Izohni saqlash
               </Button>
             </Col>
           </Row>
-        </FieldGroup>
-      </div>
-    ),
-    [
-      lead,
-      passportFiles,
-      mutateFileUpload?.isLoading,
-      canEditAddress,
-      addressControl,
-      updateLead?.isPending,
-      isCommentsDirty,
-      isAssignmentsDirty,
-      operator1Options,
-      operator2Options,
-      executors,
-      id,
-    ]
+        </form>
+      </FieldGroup>
+
+      <FieldGroup title="Pasport rasmlari">
+        <PassportUpload
+          disabled={!canEditTab('all') || mutateFileUpload.isLoading}
+          value={uploadValue}
+          onChange={setPassportFiles}
+        />
+        <Row gutter={2} style={{ marginTop: '8px' }}>
+          <Col>
+            <Button
+              variant="filled"
+              onClick={() => {
+                if (!passportFiles?.length) return;
+                const formData = new FormData();
+                passportFiles.forEach((p) => {
+                  if (p?.file instanceof File) {
+                    formData.append('images', p.file, p.file.name);
+                  }
+                });
+                const cardCodeFinal = lead?.cardCode ?? id;
+                mutateFileUpload.mutate(
+                  { cardCode: cardCodeFinal, formData },
+                  {
+                    onSuccess: () => {
+                      setPassportFiles([]);
+                      queryClient.invalidateQueries(['lead', id]);
+                      queryClient.invalidateQueries([
+                        'lead-files',
+                        cardCodeFinal,
+                      ]);
+                    },
+                  }
+                );
+              }}
+              disabled={
+                !canEditTab('all') ||
+                passportFiles.length === 0 ||
+                mutateFileUpload.isLoading
+              }
+            >
+              Hujjatlarni saqlash
+            </Button>
+          </Col>
+        </Row>
+      </FieldGroup>
+    </div>
   );
 
   const tabs = useMemo(

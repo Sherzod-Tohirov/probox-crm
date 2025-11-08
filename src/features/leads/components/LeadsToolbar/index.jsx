@@ -1,9 +1,11 @@
+import hasRole from '@/utils/hasRole';
 import { Button, Col, Row, Navigation } from '@components/ui';
 import styles from '@features/clients/components/ClientsToolbar/toolbar.module.scss';
 
 export default function LeadsToolbar({
   uiScale,
   tableDensity,
+  user,
   onIncreaseUIScale,
   onDecreaseUIScale,
   onResetUIScale,
@@ -105,14 +107,22 @@ export default function LeadsToolbar({
             aria-label="Toggle filter"
             className={styles['filter-button']}
           />
-          <Button
-            variant="text"
-            color="secondary"
-            icon="users"
-            iconSize={18}
-            aria-label="Add lead"
-            onClick={onAddLead}
-          />
+          {hasRole(user, [
+            'OperatorM',
+            'Operator1',
+            'Operator2',
+            'Seller',
+            'CEO',
+          ]) && (
+            <Button
+              variant="text"
+              color="secondary"
+              icon="users"
+              iconSize={18}
+              aria-label="Add lead"
+              onClick={onAddLead}
+            />
+          )}
 
           <span className={styles.divider} />
         </div>

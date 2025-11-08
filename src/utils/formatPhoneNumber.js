@@ -27,4 +27,24 @@ const formatToReadablePhoneNumber = (phone, extended = false) => {
   )} ${digits.slice(7)}`;
 };
 
-export { formatPhoneNumber, formatToReadablePhoneNumber };
+function formatUZPhone(input) {
+  // remove all non-digits
+  let digits = input.replace(/\D/g, '');
+  if (digits.startsWith('998')) {
+    digits = digits.slice(0, 12);
+  } else {
+    if (digits.length < 3) digits = '998';
+    else if (digits.length > 12) digits = digits.slice(-12);
+  }
+
+  const parts = [];
+  if (digits.length > 0) parts.push('+' + digits.slice(0, 3));
+  if (digits.length > 3) parts.push(digits.slice(3, 5));
+  if (digits.length > 5) parts.push(digits.slice(5, 8));
+  if (digits.length > 8) parts.push(digits.slice(8, 10));
+  if (digits.length > 10) parts.push(digits.slice(10, 12));
+
+  return parts.join(' ');
+}
+
+export { formatPhoneNumber, formatToReadablePhoneNumber, formatUZPhone };
