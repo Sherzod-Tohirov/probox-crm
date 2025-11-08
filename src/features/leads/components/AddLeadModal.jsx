@@ -26,15 +26,26 @@ const COMMUNITY_CHANNELS = [
   { value: 'Facebook', label: 'Facebook' },
 ];
 
+const getSourceOptions = (isSeller) => {
+  if (isSeller) {
+    return CATEGORY_OPTIONS_SELLER;
+  }
+  return CATEGORY_OPTIONS_OTHERS;
+};
+
 export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const { alert } = useAlert();
   const { data: branches = [], isLoading: isBranchesLoading } =
     useFetchBranches();
   const { user } = useAuth();
+
   const isSeller = user?.U_role === 'Seller';
+
+  const sourceOptions = getSourceOptions(isSeller);
+
   const { handleSubmit, reset, watch, setValue } = useForm({
     defaultValues: {
-      sourceCategory: 'Organika',
+      sourceCategory: sourceOptions[0].value,
       clientName: '',
       clientPhone: '+998 ',
       branchId: '',
@@ -147,9 +158,8 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
               variant="outlined"
               label="Manba turi"
               type="select"
-              options={
-                isSeller ? CATEGORY_OPTIONS_SELLER : CATEGORY_OPTIONS_OTHERS
-              }
+              options={sourceOptions}
+              placeholderOption={true}
               value={watch('sourceCategory')}
               onChange={(val) => {
                 setValue('sourceCategory', val?.target?.value ?? val);
@@ -243,6 +253,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                             label="Source"
                             type="select"
                             options={COMMUNITY_CHANNELS}
+                            placeholderOption={true}
                             value={watch('source2')}
                             onChange={(e) =>
                               setValue('source2', e?.target?.value ?? e)
