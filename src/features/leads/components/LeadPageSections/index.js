@@ -5,3 +5,5 @@ export { default as SourceInfoSection } from './SourceInfoSection';
 export { default as AssignmentsSection } from './AssignmentsSection';
 export { default as CommentSection } from './CommentSection';
 export { default as PassportSection } from './PassportSection';
+export { default as BlockedStatusSection } from './BlockedStatusSection';
+export { default as BlockedWarningCard } from './BlockedWarningCard';

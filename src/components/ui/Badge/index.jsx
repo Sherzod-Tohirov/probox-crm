@@ -10,10 +10,14 @@ function Badge(
     color = 'info',
     variant = 'soft',
     size = 'md',
+    filled = false,
     ...props
   },
   ref
 ) {
+  // If filled prop is used, override variant
+  const effectiveVariant = filled ? 'filled' : variant;
+  
   return (
     <span
       ref={ref}
@@ -22,7 +26,7 @@ function Badge(
         styles[
           typeof color === 'boolean' ? (color ? 'success' : 'danger') : color
         ],
-        styles[variant],
+        styles[effectiveVariant],
         styles[size],
         className
       )}
@@ -44,15 +48,18 @@ ForwardedBadge.propTypes = {
     'warning',
     'danger',
     'extrasuccess',
+    'black',
   ]),
-  variant: PropTypes.oneOf(['soft', 'solid', 'outlined']),
+  variant: PropTypes.oneOf(['soft', 'solid', 'outlined', 'filled']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  filled: PropTypes.bool,
 };
 
 ForwardedBadge.defaultProps = {
   color: 'info',
-  variant: 'soft',
+  variant: 'outlined',
   size: 'md',
+  filled: false,
 };
 
 export default ForwardedBadge;

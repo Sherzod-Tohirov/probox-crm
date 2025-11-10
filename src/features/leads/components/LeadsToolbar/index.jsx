@@ -121,6 +121,7 @@ export default function LeadsToolbar({
               iconSize={18}
               aria-label="Add lead"
               onClick={onAddLead}
+              className={styles['filter-button']}
             />
           )}
 

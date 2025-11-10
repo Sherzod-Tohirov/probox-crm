@@ -33,7 +33,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         rejectionReason: leadData.rejectionReason,
         passportVisit: leadData.passportVisit,
         jshshir: leadData.jshshir,
-        idX: leadData.idX,
+        passportId: leadData.passportId,
       });
     }
   }, [leadData, reset]);
@@ -133,7 +133,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
           <FormField
-            name="idX"
+            name="passportId"
             label="Passport ID"
             control={control}
             disabled={!canEdit}

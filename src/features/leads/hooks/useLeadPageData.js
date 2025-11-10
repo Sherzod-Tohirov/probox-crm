@@ -53,9 +53,13 @@ export default function useLeadPageData(leadId) {
   // User permissions
   const currentUserRole = user?.['U_role'] ?? '';
   const isOperatorManager = currentUserRole === 'OperatorM';
+  const isBlocked = lead?.isBlocked === true;
 
   const canEditTab = useCallback(
     (tabKey) => {
+      // If lead is blocked, no one can edit except for blocked status itself
+      if (isBlocked) return false;
+      
       if (tabKey === 'all') {
         return hasRole(currentUserRole, [
           'Operator1',
@@ -67,10 +71,11 @@ export default function useLeadPageData(leadId) {
       }
       return currentUserRole === TAB_TO_ROLE[tabKey];
     },
-    [currentUserRole]
+    [currentUserRole, isBlocked]
   );
 
   const canEditAddress = useMemo(() => {
+    if (isBlocked) return false;
     return (
       canEditTab('operator1') ||
       canEditTab('operator2') ||
@@ -78,9 +83,14 @@ export default function useLeadPageData(leadId) {
       canEditTab('seller') ||
       canEditTab('scoring')
     );
-  }, [canEditTab]);
+  }, [canEditTab, isBlocked]);
 
-  const canEditStatus = hasRole(currentUserRole, ['OperatorM']);
+  const canEditStatus = useMemo(() => {
+    if (isBlocked) return false;
+    return hasRole(currentUserRole, ['OperatorM']);
+  }, [currentUserRole, isBlocked]);
+
+  const canEditBlockedStatus = hasRole(currentUserRole, ['OperatorM', 'CEO']);
 
   // File handling
   const serverFiles = useMemo(() => {
@@ -148,9 +158,11 @@ export default function useLeadPageData(leadId) {
     executors,
     currentUserRole,
     isOperatorManager,
+    isBlocked,
     canEditTab,
     canEditAddress,
     canEditStatus,
+    canEditBlockedStatus,
     updateLead,
     passportFiles,
     setPassportFiles,

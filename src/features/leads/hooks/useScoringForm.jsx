@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import useAlert from '@/hooks/useAlert';
 import moment from 'moment';
 
 const normalizeNumber = (value) => {
@@ -52,6 +53,7 @@ const SCORING_FIELDS = [
 ];
 
 export default function useScoringForm(leadId, leadData, onSuccess) {
+  const { alert } = useAlert();
   const form = useForm({
     defaultValues: {
       clientFullName: leadData?.clientFullName || '',
@@ -80,10 +82,12 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
 
   const updateMutation = useMutateLead(leadId, {
     onSuccess: (data) => {
+      alert("Lead ma'lumotlari muvaffaqiyatli yangilandi", { type: 'success' });
       onSuccess?.(data);
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
     },
   });
 

@@ -69,12 +69,12 @@ export default function ClientInfoSection({ lead }) {
             </Col>
             <Col>
               <FormField
-                name="jshshir2"
+                name="jshshir"
                 label="JSHSHIR"
                 control={null}
                 disabled={true}
                 span={{ xs: 24, md: 8 }}
-                defaultValue={lead?.jshshir2 || lead?.jshshir}
+                defaultValue={lead?.jshshir}
               />
             </Col>
             <Col>
