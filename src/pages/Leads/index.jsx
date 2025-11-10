@@ -117,10 +117,16 @@ export default function Leads() {
   // Keep current page in bounds when filters change
   useEffect(() => {
     const totalPages = Number(meta?.totalPages ?? 0);
-    if (totalPages > 0 && currentPage >= totalPages) {
-      dispatch(setLeadsCurrentPage(Math.max(0, totalPages - 1)));
+    // Only adjust if we have valid data and current page is truly out of bounds
+    // Skip if loading or if totalPages is 0 (no data/error state)
+    if (totalPages > 0 && currentPage >= totalPages && !isLoadingLeads) {
+      const newPage = Math.max(0, totalPages - 1);
+      // Only dispatch if the new page is actually different
+      if (newPage !== currentPage) {
+        dispatch(setLeadsCurrentPage(newPage));
+      }
     }
-  }, [currentPage, meta?.totalPages, dispatch]);
+  }, [currentPage, meta?.totalPages, dispatch, isLoadingLeads]);
 
   // Initialize default visible columns if none are saved
   useEffect(() => {
@@ -155,14 +161,18 @@ export default function Leads() {
   const [highlighted, setHighlighted] = useState({}); // { [id]: true }
   useEffect(() => {
     const onNew = (e) => {
-      const id = e?.detail?.id;
-      if (!id) return;
-      setHighlighted((p) => ({ ...p, [id]: true }));
+      const records = e?.detail?.records;
+      if (!records) return;
+      records.forEach((record) => {
+        setHighlighted((p) => ({ ...p, [record.id]: true }));
+      });
       // auto clear after 4s
       setTimeout(() => {
         setHighlighted((p) => {
           const next = { ...p };
-          delete next[id];
+          records.forEach((record) => {
+            delete next[record.id];
+          });
           return next;
         });
       }, 4000);

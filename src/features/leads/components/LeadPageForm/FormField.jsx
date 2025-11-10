@@ -163,7 +163,6 @@ export default function FormField({
   if (!control) {
     const directProps = {
       ...commonProps,
-      defaultValue,
       value: defaultValue,
     };
 

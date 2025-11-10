@@ -21,11 +21,11 @@ export default function BlockedWarningCard() {
         </div>
         <div className={styles['warning-text']}>
           <Typography variant="h6" className={styles['warning-title']}>
-            Lead bloklangan
+            Lead qora ro'yxatda
           </Typography>
           <Typography variant="body2" className={styles['warning-description']}>
-            Bu lead bloklangan. Hech qanday o'zgartirishlar kiritib bo'lmaydi.
-            Blokni ochish uchun manager bilan bog'laning.
+            Bu lead qora ro'yxatda. Hech qanday o'zgartirishlar kiritib
+            bo'lmaydi. Blokni ochish uchun manager bilan bog'laning.
           </Typography>
         </div>
       </div>

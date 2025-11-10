@@ -4,8 +4,14 @@ import useSocketNotifications from '@/hooks/useSocketNotifications';
 import styles from './notifications.module.scss';
 
 export default function Notifications() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearAll } =
-    useSocketNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    removeNotification,
+    clearAll,
+  } = useSocketNotifications();
   const [open, setOpen] = useState(false);
   const [removingId, setRemovingId] = useState(null);
   const ref = useRef(null);
@@ -14,7 +20,6 @@ export default function Notifications() {
     () => notifications.filter((n) => !n.read),
     [notifications]
   );
-  console.log(notifications, 'notficiations');
 
   const toggle = useCallback(() => setOpen((p) => !p), []);
 
