@@ -24,6 +24,7 @@ const COMMUNITY_CHANNELS = [
   { value: 'Telegram', label: 'Telegram' },
   { value: 'Instagram', label: 'Instagram' },
   { value: 'Facebook', label: 'Facebook' },
+  { value: 'Other', label: 'Boshqa' },
 ];
 
 const getSourceOptions = (isSeller) => {
@@ -91,7 +92,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     if (sourceCategory === 'Organika') {
       return Boolean(watch('branchId') && watch('seller'));
     }
-    return Boolean(watch('source2'));
+    return true;
   };
 
   const onSubmit = (values) => {

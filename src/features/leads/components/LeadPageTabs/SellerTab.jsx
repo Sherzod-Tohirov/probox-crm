@@ -42,7 +42,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           : '',
         saleType: leadData.saleType,
         passportId: leadData.passportId,
-        jshshir2: leadData.jshshir2,
+        jshshir: leadData.jshshir,
       });
     }
   }, [leadData, reset]);
@@ -140,8 +140,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
           <FormField
-            name="jshshir2"
-            label="JSHSHIR (2)"
+            name="jshshir"
+            label="JSHSHIR"
             control={control}
             disabled={!canEdit}
           />

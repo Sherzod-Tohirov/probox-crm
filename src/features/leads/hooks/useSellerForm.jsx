@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import useAlert from '@/hooks/useAlert';
 import moment from 'moment';
 
 const SELLER_FIELDS = [
@@ -12,10 +13,11 @@ const SELLER_FIELDS = [
   'seller',
   'saleType',
   'passportId',
-  'jshshir2',
+  'jshshir',
 ];
 
 export default function useSellerForm(leadId, leadData, onSuccess) {
+  const { alert } = useAlert();
   const form = useForm({
     defaultValues: {
       meetingConfirmed: leadData?.meetingConfirmed || false,
@@ -31,16 +33,18 @@ export default function useSellerForm(leadId, leadData, onSuccess) {
         : '',
       saleType: leadData?.saleType || '',
       passportId: leadData?.passportId || '',
-      jshshir2: leadData?.jshshir2 || '',
+      jshshir: leadData?.jshshir || '',
     },
   });
 
   const updateMutation = useMutateLead(leadId, {
     onSuccess: (data) => {
+      alert("Lead ma'lumotlari muvaffaqiyatli yangilandi", { type: 'success' });
       onSuccess?.(data);
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
     },
   });
 

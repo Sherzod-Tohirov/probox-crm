@@ -162,7 +162,14 @@ export default function useLeadsTableColumns() {
         minWidth: '140px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
-          const { finalLimit } = column;
+          const { finalLimit, isBlocked } = column;
+          if (isBlocked) {
+            return (
+              <Badge color="black" variant="soft" size="md" filled>
+                Bloklangan
+              </Badge>
+            );
+          }
           return getLimitText(finalLimit);
         },
       },
@@ -210,7 +217,7 @@ export default function useLeadsTableColumns() {
         minWidth: '100px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
-          const jshshir = row.jshshir2 ?? row.jshshir ?? '';
+          const jshshir = row.jshshir ?? '';
           if (!jshshir) return '-';
           const isMale = parseInt(jshshir.slice(0, 1)) % 2 !== 0;
           return (
@@ -546,18 +553,18 @@ export default function useLeadsTableColumns() {
         },
       },
       {
-        key: 'idX',
+        key: 'passportId',
         title: 'Passport ID',
         icon: 'barCodeFilled',
         width: { xs: '20%', md: '12%', xl: '10%' },
-        minWidth: '140px',
+        minWidth: '100px',
         cellStyle: {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         },
         renderCell: (row) => {
-          const value = row.idX;
+          const value = row.passportId;
           return (
             <span
               style={{
@@ -586,7 +593,7 @@ export default function useLeadsTableColumns() {
           textOverflow: 'ellipsis',
         },
         renderCell: (row) => {
-          const value = row.jshshir2 ?? row.jshshir ?? '';
+          const value = row.jshshir ?? '';
           return (
             <span
               style={{

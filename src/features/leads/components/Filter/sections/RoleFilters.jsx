@@ -173,7 +173,7 @@ export default function RoleFilters({
               type="select"
               options={booleanOptionsAll}
               control={control}
-              {...register('jshshir2')}
+              {...register('jshshir')}
             />
           </Col>
           <Col

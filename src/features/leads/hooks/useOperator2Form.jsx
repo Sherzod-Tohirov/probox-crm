@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import useAlert from '@/hooks/useAlert';
 import moment from 'moment';
 
 const OPERATOR2_FIELDS = [
@@ -14,6 +15,7 @@ const OPERATOR2_FIELDS = [
 ];
 
 export default function useOperator2Form(leadId, leadData, onSuccess) {
+  const { alert } = useAlert();
   const form = useForm({
     defaultValues: {
       called2: leadData?.called2,
@@ -39,10 +41,12 @@ export default function useOperator2Form(leadId, leadData, onSuccess) {
 
   const updateMutation = useMutateLead(leadId, {
     onSuccess: (data) => {
+      alert("Lead ma'lumotlari muvaffaqiyatli yangilandi", { type: 'success' });
       onSuccess?.(data);
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
     },
   });
 

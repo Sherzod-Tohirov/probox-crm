@@ -29,6 +29,8 @@ import {
   AssignmentsSection,
   CommentSection,
   PassportSection,
+  BlockedStatusSection,
+  BlockedWarningCard,
 } from '@/features/leads/components/LeadPageSections';
 
 import styles from './style.module.scss';
@@ -43,9 +45,11 @@ export default function LeadPage() {
     isLoading,
     executors,
     isOperatorManager,
+    isBlocked,
     canEditTab,
     canEditAddress,
     canEditStatus,
+    canEditBlockedStatus,
     updateLead,
     passportFiles,
     setPassportFiles,
@@ -55,7 +59,6 @@ export default function LeadPage() {
     customBreadcrumbs,
     defaultTab,
   } = useLeadPageData(id);
-
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   // Save handlers
@@ -66,6 +69,11 @@ export default function LeadPage() {
   // Render sections
   const commonFields = (
     <div className={styles['fields-grid']}>
+      <BlockedStatusSection
+        lead={lead}
+        canEdit={canEditBlockedStatus}
+        onSave={handleSave}
+      />
       <StatusSection lead={lead} canEdit={canEditStatus} onSave={handleSave} />
       <ClientInfoSection lead={lead} />
       <AddressSection
@@ -198,6 +206,13 @@ export default function LeadPage() {
 
         <Col fullWidth>
           <Row gutter={isMobile ? 4 : 6}>
+            {/* Blocked Warning Card */}
+            {isBlocked && (
+              <Col fullWidth>
+                <BlockedWarningCard />
+              </Col>
+            )}
+
             {/* Common Fields Card */}
             <Col fullWidth>
               <Card title="Umumiy ma'lumotlar">{commonFields}</Card>

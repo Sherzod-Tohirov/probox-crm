@@ -1,0 +1,55 @@
+@use '@styles/variables' as v;
+
+.blocked-warning {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+  border: 2px solid #000 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+
+  [data-theme='dark'] & {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%) !important;
+    border: 2px solid #000 !important;
+  }
+}
+
+.warning-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 8px;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  color: #fff;
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.warning-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warning-title {
+  color: #fff !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.warning-description {
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin: 0 !important;
+  line-height: 1.5 !important;
+}
