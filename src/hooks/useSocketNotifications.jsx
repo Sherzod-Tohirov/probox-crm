@@ -174,22 +174,19 @@ export default function useSocketNotifications() {
     const onNewLeads = (payload) => {
       console.log(payload, 'socket payload');
       const records = Array.isArray(payload) ? payload : [payload];
+
       records.forEach((lead) => {
         if (!user || !lead) return;
         if (belongsToCurrentUser(lead, user)) {
           const notif = normalizeLeadToNotification(lead);
           addNotification(notif);
         }
-        try {
-          const id = lead?.id ?? lead?._id ?? null;
-          console.log(id, 'id socket', lead);
-          if (id) {
-            window.dispatchEvent(
-              new CustomEvent('probox:new-lead', { detail: { id, lead } })
-            );
-          }
-        } catch (_) {}
       });
+      if (records.length) {
+        window.dispatchEvent(
+          new CustomEvent('probox:new-lead', { detail: { records } })
+        );
+      }
     };
 
     socket.on('connect', onConnect);

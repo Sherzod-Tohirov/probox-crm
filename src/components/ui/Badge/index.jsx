@@ -57,7 +57,7 @@ ForwardedBadge.propTypes = {
 
 ForwardedBadge.defaultProps = {
   color: 'info',
-  variant: 'outlined',
+  variant: 'soft',
   size: 'md',
   filled: false,
 };

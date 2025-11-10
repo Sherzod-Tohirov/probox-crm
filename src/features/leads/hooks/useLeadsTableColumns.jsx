@@ -166,7 +166,7 @@ export default function useLeadsTableColumns() {
           if (isBlocked) {
             return (
               <Badge color="black" variant="soft" size="md" filled>
-                Bloklangan
+                Qora ro'yxatda
               </Badge>
             );
           }

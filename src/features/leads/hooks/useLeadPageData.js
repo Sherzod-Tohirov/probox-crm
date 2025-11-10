@@ -43,7 +43,6 @@ export default function useLeadPageData(leadId) {
   // Mutations
   const updateLead = useMutateLead(leadId, {
     onSuccess: () => {
-      queryClient.invalidateQueries(['lead', leadId]);
       alert("Lead ma'lumotlari muvaffaqiyatli yangilandi", { type: 'success' });
     },
   });

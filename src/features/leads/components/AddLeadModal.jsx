@@ -81,6 +81,10 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
 
   const mutation = useMutation({
     mutationFn: (payload) => createLead(payload),
+    onError: (error) => {
+      console.error('Error creating lead:', error);
+      alert("Lead yaratishda xatolik yuz berdi", { type: 'error' });
+    },
   });
 
   const canSubmit = () => {
