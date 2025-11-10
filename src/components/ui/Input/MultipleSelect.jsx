@@ -55,25 +55,7 @@ const MultipleSelect = ({
     setMenuOpen(false);
   }, []);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-
-    const handlePointerDown = (event) => {
-      const inWrapper = wrapperRef.current?.contains?.(event.target);
-      const inMenu = !!(
-        event.target.closest && event.target.closest('.react-select__menu')
-      );
-      if (inWrapper || inMenu) return;
-      selectRef.current?.blur?.();
-      activeSelectInstance = null;
-      setMenuOpen(false);
-    };
-
-    document.addEventListener('pointerdown', handlePointerDown, true);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown, true);
-    };
-  }, [menuOpen]);
+  // Removed blocking pointerdown listener to allow normal interactions
 
   return (
     <div ref={wrapperRef} style={{ width: '100%' }}>
@@ -86,10 +68,15 @@ const MultipleSelect = ({
         isSearchable={props.isSearchable ?? false}
         menuPlacement={props.menuPlacement || 'auto'}
         menuShouldScrollIntoView={true}
-        menuShouldBlockScroll={true}
+        menuShouldBlockScroll={false}
         backspaceRemovesValue={true}
         blurInputOnSelect={false}
-        closeMenuOnScroll={false}
+        closeMenuOnScroll={(e) => {
+          // Close on scroll outside the menu
+          const target = e?.target;
+          if (!target) return false;
+          return !target.classList?.contains('react-select__menu-list');
+        }}
         noOptionsMessage={() => 'Hech narsa topilmadi'}
         menuPortalTarget={
           props.menuPortalTarget ||
@@ -104,21 +91,14 @@ const MultipleSelect = ({
             minWidth: 0,
             flex: '1 1 auto',
             overflow: 'hidden',
-            border: `1px solid ${
-              state.isFocused || state.menuIsOpen ? '#0a4d68' : '#D6DFEB'
-            }`,
-            boxShadow:
-              state.isFocused || state.menuIsOpen
-                ? '0 0 0 2px rgba(10, 77, 104, 0.12)'
-                : 'none',
-            outline: 'none',
-            backgroundColor:
-              state.isFocused || state.menuIsOpen ? '#fff' : '#f8fafc',
-            transition:
-              'border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease',
+            border: `1px solid ${state.isFocused ? '#D6DFEB' : '#D6DFEB'}`,
+            boxShadow: 'none',
+            outline: state.isFocused ? '2px solid #4A90E2' : 'none',
+            outlineOffset: state.isFocused ? '-3px' : '0',
+            backgroundColor: state.isFocused ? '#fff' : '#f8fafc',
+            transition: 'outline 0.15s ease, outline-offset 0.15s ease, background-color 0.15s ease',
             '&:hover': {
-              borderColor:
-                state.isFocused || state.menuIsOpen ? '#0a4d68' : '#B6C2D4',
+              borderColor: state.isFocused ? '#D6DFEB' : '#B6C2D4',
             },
             ...(props.style || {}),
           }),

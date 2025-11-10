@@ -19,7 +19,7 @@ export default function RoleFilters({
 
   return (
     <>
-      {hasRole(role, ['Operator1', 'OperatorM']) && (
+      {hasRole(role, ['Operator1', 'OperatorM', 'CEO']) && (
         <>
           <Col
             xs={12}
@@ -75,7 +75,7 @@ export default function RoleFilters({
         </>
       )}
 
-      {hasRole(role, ['Operator2', 'OperatorM']) && (
+      {hasRole(role, ['Operator2', 'OperatorM', 'CEO']) && (
         <>
           <Col
             xs={12}
@@ -114,7 +114,7 @@ export default function RoleFilters({
         </>
       )}
 
-      {hasRole(role, ['Operator1', 'Operator2', 'OperatorM']) && (
+      {hasRole(role, ['Operator1', 'Operator2', 'OperatorM', 'CEO']) && (
         <Col
           xs={12}
           sm={6}

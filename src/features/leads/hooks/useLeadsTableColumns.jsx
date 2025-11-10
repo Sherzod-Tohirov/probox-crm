@@ -203,6 +203,27 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'gender',
+        title: 'Jinsi',
+        icon: 'users',
+        width: { xs: '14%', md: '8%', xl: '6%' },
+        minWidth: '100px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const jshshir = row.jshshir2 ?? row.jshshir ?? '';
+          if (!jshshir) return '-';
+          const isMale = parseInt(jshshir.slice(0, 1)) % 2 !== 0;
+          return (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {iconsMap.avatar}
+              {isMale ? 'Erkak' : 'Ayol'}
+            </span>
+          );
+        },
+      },
+      {
         key: 'clientPhone',
         title: 'Telefon',
         icon: 'telephoneFilled',
