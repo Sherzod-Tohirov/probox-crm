@@ -179,7 +179,8 @@ const ExecutorCell = ({ column }) => {
                 variant={'outlined'}
                 options={executorsOptions}
                 canClickIcon={false}
-                {...register('slpCode')}
+                control={control}
+                name="slpCode"
               />
             </Col>
             <Col>
