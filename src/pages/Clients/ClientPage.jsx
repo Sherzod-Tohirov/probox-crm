@@ -75,7 +75,6 @@ export default function ClientPage() {
         'DD.MM.YYYY',
         'YYYY.MM.DD'
       );
-
       const formattedDueDate = moment(currentClient['DueDate']).format(
         'YYYY.MM.DD'
       );
@@ -111,7 +110,7 @@ export default function ClientPage() {
     },
     [currentClient, updateMutation]
   );
-
+  console.log(isSaveButtonDisabled, 'isSaveButtonDisabled');
   const remainingAmount = useMemo(() => {
     if (isCurrencyLoading) return <ClipLoader color="grey" size={12} />;
     const docCurrency = currentClient?.DocCur;

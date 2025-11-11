@@ -21,11 +21,9 @@ const useMutateClientPageForm = () => {
         setCurrentClient({
           ...currentClient,
           ...(response?.slpCode ? { SlpCode: Number(response.slpCode) } : {}),
-          ...(response?.Phone1 ? { Phone1: Number(response.Phone1) } : {}),
-          ...(response?.Phone2 ? { Phone2: Number(response.Phone2) } : {}),
-          ...(response?.newDueDate
-            ? { NewDueDate: Number(response.newDueDate) }
-            : {}),
+          ...(response?.Phone1 ? { Phone1: response.Phone1 } : {}),
+          ...(response?.Phone2 ? { Phone2: response.Phone2 } : {}),
+          ...(response?.newDueDate ? { NewDueDate: response.newDueDate } : {}),
         })
       );
       // Invalidate clients list query to refresh data when navigating back
