@@ -5,14 +5,6 @@ import classNames from 'classnames';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
-// Default breakpoints (consistent with Row component)
-const breakpoints = {
-  xs: '0px', // Extra small (mobile)
-  sm: '576px', // Small
-  md: '768px', // Medium (tablet)
-  lg: '992px', // Large (desktop)
-};
-
 /**
  * Col Component - Flexible column component with responsive support
  * @param {Object} props - Component props
