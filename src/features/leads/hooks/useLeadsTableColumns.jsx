@@ -593,7 +593,7 @@ export default function useLeadsTableColumns() {
           textOverflow: 'ellipsis',
         },
         renderCell: (row) => {
-          const value = row.jshshir ?? '';
+          const value = row.jsshir ?? row.jshshir ?? '-';
           return (
             <span
               style={{

@@ -189,14 +189,32 @@ export default function useSocketNotifications() {
       }
     };
 
+    const onScoringLead = (payload) => {
+      console.log(payload, 'socket payload scoring');
+      const records = Array.isArray(payload) ? payload : [payload];
+
+      records.forEach((lead) => {
+        if (!user || !lead) return;
+        const notif = normalizeLeadToNotification(lead);
+        addNotification(notif);
+      });
+      if (records.length) {
+        window.dispatchEvent(
+          new CustomEvent('probox:new-lead', { detail: { records } })
+        );
+      }
+    };
+
     socket.on('connect', onConnect);
     socket.on('connect_error', onError);
     socket.on('new_leads', onNewLeads);
+    socket.on('scoring_lead', onScoringLead);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('connect_error', onError);
       socket.off('new_leads', onNewLeads);
+      socket.off('scoring_lead', onScoringLead);
       socket.disconnect();
     };
   }, [user, token, addNotification]);
