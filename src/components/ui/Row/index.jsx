@@ -6,14 +6,6 @@ import { motion } from 'framer-motion';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
-// Default breakpoints (customize as needed)
-const breakpoints = {
-  xs: '0px', // Extra small (mobile)
-  sm: '576px', // Small
-  md: '768px', // Medium (tablet)
-  lg: '992px', // Large (desktop)
-};
-
 /**
  * Row Component - Flexible row container with responsive support
  * @param {Object} props - Component props
@@ -85,7 +77,7 @@ function Row(
   // Handle responsive gutter with CSS custom properties
   const getResponsiveGutterStyles = () => {
     if (!isResponsiveProp(gutter)) return {};
-    
+
     const responsiveStyles = {};
     Object.keys(gutter).forEach((bp) => {
       const gutterValue = gutter[bp];
@@ -97,7 +89,7 @@ function Row(
   // Build responsive gutter data attributes
   const getGutterDataAttributes = () => {
     if (!isResponsiveProp(gutter)) return {};
-    
+
     const dataAttributes = {};
     Object.keys(gutter).forEach((bp) => {
       dataAttributes[`data-gutter-${bp}`] = true;

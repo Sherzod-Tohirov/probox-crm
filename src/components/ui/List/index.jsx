@@ -23,10 +23,11 @@ function List({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const listStyles = {
+    ...style,
     display: 'flex',
     flexDirection: direction,
+    width: '100% !important',
     gap: `${gutter}rem`,
-    ...style,
   };
 
   const renderList = useCallback(
@@ -52,7 +53,10 @@ function List({
   const ListComponent = animated ? motion.ul : 'ul';
   return (
     <Box dir="column" align="start">
-      <motion.div className={classNames(styles.listWrapper)}>
+      <motion.div
+        className={classNames(styles.listWrapper)}
+        style={{ width: '100%' }}
+      >
         <ListComponent
           style={listStyles}
           className={classNames(
