@@ -35,3 +35,72 @@
   margin-top: 16px;
   font-size: 14px;
 }
+
+.search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.search-field-wrapper {
+  position: relative;
+}
+
+.search-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.search-item-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.search-item-meta {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.search-item-price {
+  font-size: 13px;
+  color: var(--accent-color, #2563eb);
+  font-weight: 500;
+}
+
+.selected-device {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  background-color: var(--card-bg, #f9fafb);
+}
+
+.selected-device-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #6b7280);
+}
+
+.selected-device-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.selected-device-meta {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.selected-device-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-color, #2563eb);
+}

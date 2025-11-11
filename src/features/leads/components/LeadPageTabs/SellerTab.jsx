@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Row } from '@components/ui';
+import { useEffect, useState, useCallback } from 'react';
+import { Row, Input } from '@components/ui';
 import FormField from '../LeadPageForm/FormField';
 import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
@@ -7,6 +7,82 @@ import useSellerForm from '../../hooks/useSellerForm.jsx';
 import styles from './leadPageTabs.module.scss';
 import { useSelectOptions } from '../../hooks/useSelectOptions.jsx';
 import moment from 'moment';
+import SearchField from '@components/ui/Input/SearchField';
+
+const MOCK_IPHONES = [
+  {
+    id: '16pm-256',
+    name: 'iPhone 16 Pro Max',
+    storage: '256 GB',
+    color: 'Natural Titanium',
+    price: "17 990 000 so'm",
+  },
+  {
+    id: '16pm-512',
+    name: 'iPhone 16 Pro Max',
+    storage: '512 GB',
+    color: 'White Titanium',
+    price: "19 490 000 so'm",
+  },
+  {
+    id: '16p-256',
+    name: 'iPhone 16 Pro',
+    storage: '256 GB',
+    color: 'Desert Titanium',
+    price: "16 790 000 so'm",
+  },
+  {
+    id: '16p-512',
+    name: 'iPhone 16 Pro',
+    storage: '512 GB',
+    color: 'Black Titanium',
+    price: "18 290 000 so'm",
+  },
+  {
+    id: '16-128',
+    name: 'iPhone 16',
+    storage: '128 GB',
+    color: 'Ultramarine',
+    price: "12 990 000 so'm",
+  },
+  {
+    id: '16-256',
+    name: 'iPhone 16',
+    storage: '256 GB',
+    color: 'Blush Pink',
+    price: "13 790 000 so'm",
+  },
+  {
+    id: '16plus-128',
+    name: 'iPhone 16 Plus',
+    storage: '128 GB',
+    color: 'Teal',
+    price: "13 990 000 so'm",
+  },
+  {
+    id: '16plus-256',
+    name: 'iPhone 16 Plus',
+    storage: '256 GB',
+    color: 'Stone',
+    price: "14 990 000 so'm",
+  },
+  {
+    id: '15pm-256',
+    name: 'iPhone 15 Pro Max',
+    storage: '256 GB',
+    color: 'Blue Titanium',
+    price: "15 290 000 so'm",
+  },
+  {
+    id: '15p-128',
+    name: 'iPhone 15 Pro',
+    storage: '128 GB',
+    color: 'Natural Titanium',
+    price: "13 790 000 so'm",
+  },
+];
+
+const PAGE_SIZE = 5;
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -53,6 +129,68 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       setValue('purchaseDate', moment().format('DD.MM.YYYY'));
     }
   }, [fieldSellType, setValue, fieldPurchase]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+
+  const handleSearchInput = useCallback((event) => {
+    const value = event?.target?.value ?? '';
+    setSearchTerm(value);
+    if (!value) {
+      setSelectedDevice(null);
+      setIsSuggestionsOpen(false);
+    } else {
+      setIsSuggestionsOpen(true);
+    }
+  }, []);
+
+  const handleDeviceSearch = useCallback(async (text, page = 1) => {
+    const normalized = text.trim().toLowerCase();
+    const filtered = normalized
+      ? MOCK_IPHONES.filter(
+          (item) =>
+            item.name.toLowerCase().includes(normalized) ||
+            item.color.toLowerCase().includes(normalized) ||
+            item.storage.toLowerCase().includes(normalized)
+        )
+      : MOCK_IPHONES;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const pageData = filtered.slice(start, end);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: pageData,
+          total,
+          totalPages,
+        });
+      }, 200);
+    });
+  }, []);
+
+  const handleSelectDevice = useCallback((item) => {
+    setSelectedDevice(item);
+    setSearchTerm('');
+    setIsSuggestionsOpen(false);
+  }, []);
+
+  const renderIphoneItem = useCallback(
+    (item) => (
+      <div className={styles['search-item']}>
+        <span className={styles['search-item-name']}>{item.name}</span>
+        <span className={styles['search-item-meta']}>
+          {item.storage} • {item.color}
+        </span>
+        <span className={styles['search-item-price']}>{item.price}</span>
+      </div>
+    ),
+    []
+  );
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -147,6 +285,56 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           />
         </FieldGroup>
       </form>
+      <FieldGroup title="Shartnoma ma'lumotlari">
+        <div className={styles['search-section']}>
+          <div className={styles['search-field-wrapper']}>
+            <Input
+              size="longer"
+              variant="outlined"
+              label="Qidirish"
+              type="search"
+              disabled={!canEdit}
+              placeholder={
+                selectedDevice
+                  ? selectedDevice.name
+                  : 'iPhone modelini qidirish'
+              }
+              icon="search"
+              value={searchTerm}
+              onChange={handleSearchInput}
+              onFocus={() => {
+                if (searchTerm.trim()) {
+                  setIsSuggestionsOpen(true);
+                }
+              }}
+            />
+            {isSuggestionsOpen && searchTerm.trim() && canEdit && (
+              <SearchField
+                renderItem={renderIphoneItem}
+                searchText={searchTerm}
+                onSearch={handleDeviceSearch}
+                onSelect={handleSelectDevice}
+              />
+            )}
+          </div>
+          {selectedDevice && (
+            <div className={styles['selected-device']}>
+              <span className={styles['selected-device-label']}>
+                Tanlangan qurilma
+              </span>
+              <span className={styles['selected-device-name']}>
+                {selectedDevice.name}
+              </span>
+              <span className={styles['selected-device-meta']}>
+                {selectedDevice.storage} • {selectedDevice.color}
+              </span>
+              <span className={styles['selected-device-price']}>
+                {selectedDevice.price}
+              </span>
+            </div>
+          )}
+        </div>
+      </FieldGroup>
 
       {error && (
         <Row className={styles['error-message']}>

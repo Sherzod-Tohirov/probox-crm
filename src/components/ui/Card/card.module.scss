@@ -5,7 +5,7 @@
   border: 1px solid v.$primary-border-color;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
+  // overflow: hidden;
   transition: all 0.2s ease;
   width: 100%;
 
@@ -17,7 +17,11 @@
 .card-header {
   padding: 20px 24px 16px;
   border-bottom: 1px solid v.$primary-border-color;
-  background: linear-gradient(135deg, v.$primary-table-bg 0%, rgba(v.$primary-color, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    v.$primary-table-bg 0%,
+    rgba(v.$primary-color, 0.02) 100%
+  );
 }
 
 .card-title {

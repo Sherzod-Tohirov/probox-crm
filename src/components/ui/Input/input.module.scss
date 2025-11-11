@@ -257,7 +257,8 @@
   top: 120% !important;
   bottom: 0;
   z-index: 1000;
-  width: 480px;
+  width: 100%;
+  max-width: 520px;
   min-height: 180px;
   max-height: 500px;
   overflow-y: auto;
