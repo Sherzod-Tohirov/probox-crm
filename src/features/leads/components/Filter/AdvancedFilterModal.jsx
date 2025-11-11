@@ -188,6 +188,14 @@ export default function AdvancedFilterModal({
                 />
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
                   <SelectField
+                    name="isBlocked"
+                    label="Qora ro'yxat"
+                    options={booleanOptionsAll}
+                    control={control}
+                  />
+                </Col>
+                <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
+                  <SelectField
                     name="status"
                     label="Status"
                     options={statusFilterOptions}
