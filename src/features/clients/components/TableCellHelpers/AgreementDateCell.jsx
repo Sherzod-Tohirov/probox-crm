@@ -89,13 +89,13 @@ const AgreementDateCell = ({ column }) => {
         }}
       >
         <Input
+          name={'agreementDate'}
           inputBoxClassName={styles['modal-input-wrapper']}
           className={styles['modal-input']}
           type="date"
           variant={'outlined'}
           canClickIcon={false}
           control={control}
-          {...register('agreementDate')}
         />
       </ModalCell>
     </ModalWrapper>

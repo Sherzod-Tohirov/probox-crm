@@ -214,7 +214,7 @@ function ClientPageForm({
     );
 
     if (foundExecutor) {
-      setValue('executor', foundExecutor.SlpCode);
+      setValue('executor', foundExecutor.SlpCode, { shouldDirty: false });
     }
   }, [executors]);
 
@@ -245,9 +245,40 @@ function ClientPageForm({
         docCurrency,
         rate?.Rate
       );
-      setValue('debtClient', value);
+      setValue('debtClient', value, { shouldDirty: false });
     }
   }, [rate]);
+
+  // Reset form with current client data to ensure isDirty works correctly
+  useEffect(() => {
+    if (currentClient && executorsOptions.length > 0) {
+      const foundExecutor = executorsOptions.find(
+        (executor) =>
+          Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
+      );
+
+      const formData = {
+        name: currentClient?.['CardName'] || 'Mavjud emas',
+        executor: foundExecutor?.SlpCode || executorsOptions?.[0]?.value,
+        photo: [],
+        telephone: currentClient?.['Phone1'] || '+998 00 000 00 00',
+        additional_telephone: currentClient?.['Phone2'] || '',
+        code: currentClient?.['CardCode'] || '00000',
+        debtClient: formatterCurrency(
+          currentClient?.['MaxDocTotal'] || '0',
+          'USD'
+        ),
+        passportSeries: currentClient?.['Cellular'] || 'Mavjud emas',
+        product:
+          currentClient?.['Dscription'] || 'iPhone 16 Pro max 256gb desert',
+        deadline: formatDate(currentClient?.['DueDate']),
+        agreementDate: formatDate(currentClient?.['NewDueDate']) || '',
+        imei: currentClient?.['IntrSerial'] || '0000000000000000',
+      };
+
+      reset(formData);
+    }
+  }, [currentClient, executorsOptions, reset]);
 
   return (
     <form
@@ -432,12 +463,12 @@ function ClientPageForm({
                   <InputGroup>
                     <Label icon="calendar">Kelishilgan sana</Label>
                     <Input
+                      name={'agreementDate'}
                       type="date"
                       variant={'filled'}
                       size={isMobile ? 'full' : 'long'}
-                      control={control}
                       hasIcon={false}
-                      {...register('agreementDate')}
+                      control={control}
                     />
                   </InputGroup>
                 </Col>

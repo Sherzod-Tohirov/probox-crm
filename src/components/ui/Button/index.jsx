@@ -154,7 +154,8 @@ function Button(
             },
           }
         : {})}
-      disabled={isLoading}
+      disabled={disabled || isLoading}
+      aria-disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (

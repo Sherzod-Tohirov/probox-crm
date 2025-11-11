@@ -195,8 +195,10 @@ export default function useSocketNotifications() {
 
       records.forEach((lead) => {
         if (!user || !lead) return;
-        const notif = normalizeLeadToNotification(lead);
-        addNotification(notif);
+        if (user?.U_role === 'Scoring') {
+          const notif = normalizeLeadToNotification(lead);
+          addNotification(notif);
+        }
       });
       if (records.length) {
         window.dispatchEvent(

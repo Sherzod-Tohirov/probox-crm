@@ -89,6 +89,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
   });
 
   const watchedFields = useWatchFilterFields(watch);
+  console.log(watchedFields, 'watched fields');
   const handleSearchSelect = useCallback((clientData, filterKey) => {
     setValue(filterKey, clientData);
     dispatch(
@@ -197,29 +198,12 @@ export default function Filter({ onFilter, isExpanded = false }) {
     }
   }, [clientsPageState, statusOptions, executorsOptions]);
 
-  // Track if end date was manually changed
-  const endDateManuallyChanged = useRef(false);
-
-  // Handle date changes
+  // Auto-set end date to end of selected start date month
   useEffect(() => {
     const startDate = moment(watchedFields.startDate, 'DD.MM.YYYY');
-    const endDate = moment(watchedFields.endDate, 'DD.MM.YYYY');
-
     if (!startDate.isValid()) return;
 
-    // When start date changes and end date hasn't been manually changed
-    if (startDate.isValid() && !endDateManuallyChanged.current) {
-      setValue(
-        'endDate',
-        moment(startDate).endOf('month').format('DD.MM.YYYY')
-      );
-    }
-    // If end date is before start date (manual change)
-    if (endDate.isValid() && endDate.isBefore(startDate, 'day')) {
-      setValue('endDate', startDate.format('DD.MM.YYYY'), {
-        shouldValidate: true,
-      });
-    }
+    setValue('endDate', moment(startDate).endOf('month').format('DD.MM.YYYY'));
   }, [watchedFields.startDate, setValue]);
 
   useEffect(() => {
@@ -370,35 +354,25 @@ export default function Filter({ onFilter, isExpanded = false }) {
               <Col flexGrow>
                 <Input
                   id={'startDate'}
+                  name={'startDate'}
                   size={'full-grow'}
                   variant={'outlined'}
                   label={'Boshlanish vaqti'}
                   canClickIcon={false}
                   type={'date'}
-                  datePickerOptions={{
-                    maxDate: watchedFields.endDate
-                      ? moment(watchedFields.endDate, 'DD.MM.YYYY').toDate()
-                      : undefined,
-                  }}
                   control={control}
-                  {...register('startDate')}
                 />
               </Col>
               <Col flexGrow>
                 <Input
+                  name={'endDate'}
                   size={'full-grow'}
                   variant={'outlined'}
                   label={'Tugash vaqti'}
                   canClickIcon={false}
                   type={'date'}
-                  datePickerOptions={{
-                    minDate: watchedFields.startDate
-                      ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
-                      : undefined,
-                  }}
                   error={errors?.endDate?.message}
                   control={control}
-                  {...register('endDate')}
                 />
               </Col>
               <Col flexGrow>
