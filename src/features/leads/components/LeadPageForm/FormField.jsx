@@ -68,7 +68,7 @@ export default function FormField({
       case 'confirm':
         return (
           <Input
-            {...fieldProps}
+            {...omit(fieldProps, ['control', 'onChange', 'value'])}
             type="select"
             placeholder={`${label} tanlang`}
             options={confirmOptions}
@@ -80,8 +80,10 @@ export default function FormField({
                   : 'null'
             }
             onChange={(val) => {
+              // Handle both event objects and direct values
+              const rawVal = val?.target?.value ?? val;
               const out =
-                val === 'true' ? true : val === 'false' ? false : null;
+                rawVal === 'true' ? true : rawVal === 'false' ? false : null;
               field.onChange(out);
             }}
             placeholderOption={false}
@@ -90,14 +92,16 @@ export default function FormField({
       case 'confirmOnlyFalse':
         return (
           <Input
-            {...fieldProps}
+            {...omit(fieldProps, ['control', 'onChange', 'value'])}
             type="select"
             placeholder={`${label} tanlang`}
             options={confirmOnlyFalseOptions}
             value={field.value === false ? 'false' : 'null'}
             onChange={(val) => {
+              // Handle both event objects and direct values
+              const rawVal = val?.target?.value ?? val;
               const out =
-                val === 'true' ? true : val === 'false' ? false : null;
+                rawVal === 'true' ? true : rawVal === 'false' ? false : null;
               field.onChange(out);
             }}
             placeholderOption={false}
