@@ -12,28 +12,6 @@
   }
 }
 
-.content-container {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.table-container {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  box-sizing: border-box;
-  -webkit-overflow-scrolling: touch;
-
-  @media (max-width: (v.$breakpoint-md - 1)) {
-    margin-top: 2rem;
-  }
-}
-
-
 .sticky-column {
   position: sticky;
   top: 105px;
