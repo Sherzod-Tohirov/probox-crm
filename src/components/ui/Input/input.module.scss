@@ -53,6 +53,8 @@
   &.select {
     appearance: none;
     color: v.$filter-input-placeholder-color !important;
+    min-width: 0; // Prevent content-based width in flex containers
+    width: 100%;
   }
 
   &.select.filled {
@@ -175,6 +177,12 @@
   &.full-grow {
     width: 100% !important;
     flex-grow: 1 !important;
+    min-width: 0; // Prevent flex shrinking
+
+    & select {
+      width: 100%;
+      min-width: 0;
+    }
   }
 }
 

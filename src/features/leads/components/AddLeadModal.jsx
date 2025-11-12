@@ -7,18 +7,23 @@ import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { createLead } from '@services/leadsService';
 import FieldGroup from './LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
-import {
-  formatToReadablePhoneNumber,
-  formatUZPhone,
-} from '@/utils/formatPhoneNumber';
+import { formatUZPhone, isValidPhonenumber } from '@/utils/formatPhoneNumber';
 import useAlert from '@/hooks/useAlert';
 
+const category = {
+  incomingCall: 'Kiruvchi qongiroq',
+  community: 'Community',
+  organika: 'Organika',
+};
+
 const CATEGORY_OPTIONS_OTHERS = [
-  { value: 'Kiruvchi qongiroq', label: "Kiruvchi qo'ng'iroq" },
-  { value: 'Community', label: 'Community' },
+  { value: category.incomingCall, label: "Kiruvchi qo'ng'iroq" },
+  { value: category.community, label: 'Community' },
 ];
 
-const CATEGORY_OPTIONS_SELLER = [{ value: 'Organika', label: 'Organika' }];
+const CATEGORY_OPTIONS_SELLER = [
+  { value: category.organika, label: 'Organika' },
+];
 
 const COMMUNITY_CHANNELS = [
   { value: 'Telegram', label: 'Telegram' },
@@ -34,15 +39,33 @@ const getSourceOptions = (isSeller) => {
   return CATEGORY_OPTIONS_OTHERS;
 };
 
+const getOperatorOptions = (operators) => {
+  if (!operators) return [];
+
+  const filteredOperators = operators.filter((operator) =>
+    Boolean(operator.U_workDay)
+  );
+
+  return filteredOperators?.map((operator) => ({
+    value: operator.SlpCode,
+    label: operator.SlpName,
+  }));
+};
+
 export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const { alert } = useAlert();
   const { data: branches = [], isLoading: isBranchesLoading } =
     useFetchBranches();
+
   const { user } = useAuth();
+
+  const { data: operators = [], isLoading: isOperatorsLoading } =
+    useFetchExecutors({ include_role: 'Operator1' });
 
   const isSeller = user?.U_role === 'Seller';
 
   const sourceOptions = getSourceOptions(isSeller);
+  const operatorOptions = getOperatorOptions(operators);
 
   const { handleSubmit, reset, watch, setValue } = useForm({
     defaultValues: {
@@ -53,6 +76,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       seller: '',
       source2: '',
       comment: '',
+      operator1: '',
     },
     mode: 'all',
   });
@@ -83,7 +107,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     mutationFn: (payload) => createLead(payload),
     onError: (error) => {
       console.error('Error creating lead:', error);
-      alert("Lead yaratishda xatolik yuz berdi", { type: 'error' });
+      alert('Lead yaratishda xatolik yuz berdi', { type: 'error' });
     },
   });
 
@@ -91,11 +115,17 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     const name = watch('clientName');
     const phone = watch('clientPhone');
 
-    if (!sourceCategory || !name || !phone) return false;
+    if (!sourceCategory || !name || !phone || !isValidPhonenumber(phone))
+      return false;
 
-    if (sourceCategory === 'Organika') {
+    if (sourceCategory === category.organika) {
       return Boolean(watch('branchId') && watch('seller'));
     }
+
+    if (sourceCategory === category.incomingCall) {
+      return Boolean(watch('operator1'));
+    }
+
     return true;
   };
 
@@ -106,8 +136,11 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       source: values.sourceCategory,
       comment: values.comment ?? '',
     };
+    if (values.sourceCategory === category.incomingCall) {
+      payload.operator1 = values.operator1;
+    }
 
-    if (values.sourceCategory === 'Organika') {
+    if (values.sourceCategory === category.organika) {
       payload.branch2 = values.branchId;
       payload.seller = values.seller;
     } else {
@@ -172,6 +205,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                 setValue('branchId', '');
                 setValue('seller', '');
                 setValue('source2', '');
+                setValue('operator1', '');
               }}
             />
           </Col>
@@ -216,7 +250,26 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                   </Col>
                   <Col fullWidth>
                     <Row direction="row" gutter={2} wrap>
-                      {sourceCategory === 'Organika' ? (
+                      {sourceCategory === category.incomingCall ? (
+                        <Col xs={12} md={6} flexGrow>
+                          <Input
+                            size="full-grow"
+                            variant="outlined"
+                            label="Operator"
+                            type="select"
+                            options={operatorOptions}
+                            isLoading={isOperatorsLoading}
+                            placeholderOption={true}
+                            value={watch('operator1')}
+                            onChange={(e) =>
+                              setValue('operator1', e?.target?.value ?? e)
+                            }
+                          />
+                        </Col>
+                      ) : (
+                        ''
+                      )}
+                      {sourceCategory === category.organika ? (
                         <>
                           <Col xs={12} md={6} flexGrow>
                             <Input

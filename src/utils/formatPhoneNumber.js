@@ -47,4 +47,14 @@ function formatUZPhone(input) {
   return parts.join(' ');
 }
 
-export { formatPhoneNumber, formatToReadablePhoneNumber, formatUZPhone };
+function isValidPhonenumber(phone) {
+  const digits = phone.replace(/\D/g, '');
+  return digits.startsWith('998') && digits.length === 12;
+}
+
+export {
+  formatPhoneNumber,
+  formatToReadablePhoneNumber,
+  formatUZPhone,
+  isValidPhonenumber,
+};
