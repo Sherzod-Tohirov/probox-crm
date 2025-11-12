@@ -217,7 +217,7 @@ export default function useLeadsTableColumns() {
         minWidth: '100px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
-          const jshshir = row.jshshir ?? '';
+          const jshshir = row.jsshir ?? row.jshshir ?? '';
           if (!jshshir) return '-';
           const isMale = parseInt(jshshir.slice(0, 1)) % 2 !== 0;
           return (

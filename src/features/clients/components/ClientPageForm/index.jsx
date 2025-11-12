@@ -101,7 +101,9 @@ function ClientPageForm({
       product:
         currentClient?.['Dscription'] || 'iPhone 16 Pro max 256gb desert',
       deadline: formatDate(currentClient?.['DueDate']),
-      agreementDate: formatDate(currentClient?.['NewDueDate']) || '',
+      agreementDate: currentClient?.['NewDueDate']
+        ? formatDate(currentClient['NewDueDate'])
+        : '',
       imei: currentClient?.['IntrSerial'] || '0000000000000000',
     },
   });
@@ -353,7 +355,8 @@ function ClientPageForm({
                       canClickIcon={false}
                       size={isMobile ? 'full' : 'long'}
                       disabled={!hasRole(user, ['Manager'])}
-                      {...register('executor')}
+                      control={control}
+                      name={'executor'}
                     />
                   </InputGroup>
                 </Col>

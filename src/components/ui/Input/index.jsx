@@ -452,6 +452,86 @@ const Input = forwardRef(
               );
             }}
           />
+        ) : props.control ? (
+          <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }) => (
+              <select
+                {...commonProps}
+                {...omit(
+                  [
+                    'images',
+                    'accept',
+                    'multiple',
+                    'control',
+                    'datePickerOptions',
+                    'placeholderOption',
+                    'name',
+                  ],
+                  props
+                )}
+                value={
+                  field.value !== undefined && field.value !== null
+                    ? String(field.value)
+                    : field.value
+                }
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  // Find the original option to preserve type (boolean/number/etc.)
+                  const match = options.find(
+                    (opt) => String(opt.value) === raw
+                  );
+                  const parsed = match ? match.value : raw;
+                  field.onChange(parsed);
+                }}
+                onBlur={field.onBlur}
+              >
+                {(() => {
+                  const defaultPlaceholder = { value: '', label: '-' };
+                  const ph =
+                    typeof props.placeholderOption === 'boolean'
+                      ? defaultPlaceholder
+                      : props.placeholderOption;
+                  if (!ph) return null;
+                  const currentValueStr =
+                    field.value !== undefined && field.value !== null
+                      ? String(field.value)
+                      : undefined;
+                  const hasValue =
+                    currentValueStr !== undefined && currentValueStr !== null;
+                  const existsInOptions = hasValue
+                    ? options.some(
+                        (opt) => String(opt.value) === currentValueStr
+                      )
+                    : false;
+                  // Show placeholder only if value is unset, equals placeholder value, or not found in options
+                  const showPlaceholder =
+                    !hasValue ||
+                    currentValueStr === String(ph.value) ||
+                    !existsInOptions;
+                  return showPlaceholder ? (
+                    <option
+                      disabled
+                      key={`placeholder-${String(ph.value)}`}
+                      value={String(ph.value)}
+                    >
+                      {ph.label}
+                    </option>
+                  ) : null;
+                })()}
+                {options.map((option) => (
+                  <option
+                    disabled={option.isNotSelectable}
+                    key={String(option.value)}
+                    value={String(option.value)}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
         ) : (
           <select
             {...commonProps}
