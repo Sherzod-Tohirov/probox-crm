@@ -12,6 +12,7 @@ export default function MeetingAndDateSection({
   watchedMeetingDateEnd,
   inline = false,
 }) {
+
   const content = (
     <>
       <Col
