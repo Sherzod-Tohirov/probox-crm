@@ -100,7 +100,6 @@ export default function LeadsFilter({
   const meeting = watch('meeting');
   const search = watch('search');
   const lastSearchRef = useRef(search ?? '');
-
   // Reset form when normalized filter state changes, only if different
   useEffect(() => {
     const current = getValues();
@@ -113,23 +112,42 @@ export default function LeadsFilter({
     }
   }, [normalizedFilterState, reset, getValues]);
 
+  // Set default dates when meeting option is selected
   useEffect(() => {
     const meetingValue = typeof meeting === 'object' ? meeting?.value : meeting;
+
     if (
       meetingValue === '' ||
       meetingValue === undefined ||
       meetingValue === null
     ) {
       // Clear dates when meeting is 'All'
-      if (watchedMeetingDateStart) setValue('meetingDateStart', '');
-      if (watchedMeetingDateEnd) setValue('meetingDateEnd', '');
+      setValue('meetingDateStart', '');
+      setValue('meetingDateEnd', '');
       return;
     }
-    const start = moment().startOf('month').format('DD.MM.YYYY');
-    const end = moment().endOf('month').format('DD.MM.YYYY');
-    if (!watchedMeetingDateStart) setValue('meetingDateStart', start);
-    if (!watchedMeetingDateEnd) setValue('meetingDateEnd', end);
-  }, [meeting, watchedMeetingDateStart, watchedMeetingDateEnd, setValue]);
+
+    // Only set default dates if both are empty (when meeting option is first selected)
+    if (!watchedMeetingDateStart && !watchedMeetingDateEnd) {
+      const start = moment().startOf('month').format('DD.MM.YYYY');
+      const end = moment().endOf('month').format('DD.MM.YYYY');
+      setValue('meetingDateStart', start);
+      setValue('meetingDateEnd', end);
+    }
+  }, [meeting, setValue]);
+
+  // Update end date if it's before start date
+  useEffect(() => {
+    if (watchedMeetingDateStart && watchedMeetingDateEnd) {
+      const startMoment = moment(watchedMeetingDateStart, 'DD.MM.YYYY');
+      const endMoment = moment(watchedMeetingDateEnd, 'DD.MM.YYYY');
+
+      // If end date is before start date, update end date to match start date
+      if (endMoment.isBefore(startMoment)) {
+        setValue('meetingDateEnd', watchedMeetingDateStart);
+      }
+    }
+  }, [watchedMeetingDateStart, watchedMeetingDateEnd, setValue]);
 
   // Debounced real-time search (only for 'search' field) with loop guard
   useEffect(() => {
