@@ -686,12 +686,14 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             name="passportId"
             label="Pasport ID"
             control={control}
+            type="passportId"
             disabled={!canEdit}
           />
           <FormField
             name="jshshir"
             label="JSHSHIR"
             control={control}
+            type="jshshir"
             disabled={!canEdit}
           />
         </FieldGroup>

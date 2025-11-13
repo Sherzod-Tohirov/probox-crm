@@ -147,6 +147,39 @@ export default function FormField({
       case 'datetime-local':
         return <Input {...fieldProps} type="datetime-local" />;
 
+      case 'jshshir':
+        return (
+          <Input
+            {...fieldProps}
+            type="text"
+            inputMode="numeric"
+            maxLength={14}
+            onChange={(e) => {
+              const raw = e?.target?.value ?? '';
+              const digits = String(raw).replace(/[^0-9]/g, '');
+              field.onChange(digits.slice(0, 14));
+            }}
+          />
+        );
+
+      case 'passportId':
+        return (
+          <Input
+            {...fieldProps}
+            type="text"
+            maxLength={9}
+            onChange={(e) => {
+              const raw = e?.target?.value ?? '';
+              // Allow only 2 capital letters followed by up to 7 digits
+              const formatted = String(raw)
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .replace(/^([A-Z]{0,2})([0-9]{0,7}).*/, '$1$2');
+              field.onChange(formatted);
+            }}
+          />
+        );
+
       case 'select':
         return (
           <Input
@@ -267,6 +300,25 @@ export default function FormField({
         return (
           <Col span={span}>
             <Input {...directProps} type="datetime-local" />
+          </Col>
+        );
+
+      case 'jshshir':
+        return (
+          <Col span={span}>
+            <Input
+              {...directProps}
+              type="text"
+              inputMode="numeric"
+              maxLength={14}
+            />
+          </Col>
+        );
+
+      case 'passportId':
+        return (
+          <Col span={span}>
+            <Input {...directProps} type="text" maxLength={9} />
           </Col>
         );
 

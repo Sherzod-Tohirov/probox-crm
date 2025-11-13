@@ -62,6 +62,7 @@ export default function ClientInfoSection({ lead }) {
                 name="passportId"
                 label="Pasport ID"
                 control={null}
+                type="passportId"
                 disabled={true}
                 span={{ xs: 24, md: 8 }}
                 defaultValue={lead?.passportId}
@@ -72,6 +73,7 @@ export default function ClientInfoSection({ lead }) {
                 name="jshshir"
                 label="JSHSHIR"
                 control={null}
+                type="jshshir"
                 disabled={true}
                 span={{ xs: 24, md: 8 }}
                 defaultValue={lead?.jshshir}
