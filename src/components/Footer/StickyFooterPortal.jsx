@@ -15,17 +15,21 @@ export default function StickyFooterPortal({ children }) {
     const paddingLeft = parseFloat(computed.paddingLeft || '0');
     const paddingRight = parseFloat(computed.paddingRight || '0');
 
-    // Detect sidebar and exclude it from footer area
-    // Sidebar class may be CSS-moduled; match by substring
-    const sidebar =
-      document.querySelector('[class*="sidebar-layout"]') ||
-      document.querySelector('.sidebar-layout');
+    // Detect sidebar and exclude it from footer area on desktop only.
+    // On mobile/tablet we overlay the sidebar, so it must not affect footer width.
+    const isSmallViewport = window.innerWidth < 1200; // match md breakpoint
     let sidebarRight = 0;
-    if (sidebar) {
-      const sidebarRect = sidebar.getBoundingClientRect();
-      // If sidebar is visible and overlaps the main's left region, keep footer to its right
-      if (sidebarRect.width > 0 && sidebarRect.right > 0) {
-        sidebarRight = sidebarRect.right;
+    if (!isSmallViewport) {
+      // Sidebar class may be CSS-moduled; match by substring
+      const sidebar =
+        document.querySelector('[class*="sidebar-layout"]') ||
+        document.querySelector('.sidebar-layout');
+      if (sidebar) {
+        const sidebarRect = sidebar.getBoundingClientRect();
+        // If sidebar is visible and overlaps the main's left region, keep footer to its right
+        if (sidebarRect.width > 0 && sidebarRect.right > 0) {
+          sidebarRight = sidebarRect.right;
+        }
       }
     }
 

@@ -7,7 +7,7 @@ import useSellerForm from '../../hooks/useSellerForm.jsx';
 import styles from './leadPageTabs.module.scss';
 import { useSelectOptions } from '../../hooks/useSelectOptions.jsx';
 import moment from 'moment';
-import SearchField from '@components/ui/Input/SearchField';
+import SearchField from '@components/ui/Input/components/SearchField';
 import useIsMobile from '@hooks/useIsMobile';
 import { Button } from '@components/ui';
 

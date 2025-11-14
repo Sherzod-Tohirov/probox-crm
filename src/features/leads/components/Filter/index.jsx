@@ -210,7 +210,12 @@ export default function LeadsFilter({
         className={styles['filter-form']}
         style={{ width: '100%' }}
       >
-        <Row direction={'row'} justify={'between'} gutter={12} wrap>
+        <Row
+          direction={'row'}
+          justify={'between'}
+          gutter={{ xs: 2, sm: 4, md: 6 }}
+          wrap
+        >
           <Col flexGrow>
             <HeaderFilters
               control={control}
@@ -223,6 +228,7 @@ export default function LeadsFilter({
               isOperator1Loading={isOperator1Loading}
               isOperator2Loading={isOperator2Loading}
               minimal
+              onSearchSubmit={submitForm}
             />
           </Col>
           <Col style={{ alignSelf: 'end' }}>
@@ -293,6 +299,7 @@ export default function LeadsFilter({
                   isBranchesLoading={isBranchesLoading}
                   isOperator1Loading={isOperator1Loading}
                   isOperator2Loading={isOperator2Loading}
+                  onSearchSubmit={submitForm}
                 />
               </Col>
 

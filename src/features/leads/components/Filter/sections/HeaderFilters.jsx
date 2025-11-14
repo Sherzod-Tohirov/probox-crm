@@ -45,78 +45,81 @@ export default function HeaderFilters({
           {...register('search')}
         />
       </Col>
+      {!isMobile && (
+        <>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.5}
+            className={styles.compactCol}
+          >
+            <MultiSelectField
+              name="source"
+              label="Manba"
+              options={sourceOptions}
+              control={control}
+              isSearchable={false}
+            />
+          </Col>
 
-      <Col
-        xs={12}
-        sm={6}
-        md={2}
-        lg={1.5}
-        xl={1.5}
-        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-      >
-        <MultiSelectField
-          name="source"
-          label="Manba"
-          options={sourceOptions}
-          control={control}
-          isSearchable={false}
-        />
-      </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={styles.compactCol}
+          >
+            <MultiSelectField
+              name="branch"
+              label="Filial"
+              options={branchOptions}
+              isLoading={isBranchesLoading}
+              control={control}
+            />
+          </Col>
 
-      <Col
-        xs={12}
-        sm={6}
-        md={2}
-        lg={1.5}
-        xl={1.2}
-        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-      >
-        <MultiSelectField
-          name="branch"
-          label="Filial"
-          options={branchOptions}
-          isLoading={isBranchesLoading}
-          control={control}
-        />
-      </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={styles.compactCol}
+          >
+            <MultiSelectField
+              name="operator"
+              label="Operator 1"
+              options={operator1Options}
+              isLoading={isOperator1Loading}
+              control={control}
+              showAvatars={true}
+              avatarSize={22}
+            />
+          </Col>
 
-      <Col
-        xs={12}
-        sm={6}
-        md={2}
-        lg={1.5}
-        xl={1.2}
-        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-      >
-        <MultiSelectField
-          name="operator"
-          label="Operator 1"
-          options={operator1Options}
-          isLoading={isOperator1Loading}
-          control={control}
-          showAvatars={true}
-          avatarSize={22}
-        />
-      </Col>
-
-      <Col
-        xs={12}
-        sm={6}
-        md={2}
-        lg={1.5}
-        xl={1.2}
-        className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
-      >
-        <MultiSelectField
-          name="operator2"
-          label="Operator 2"
-          options={operator2Options}
-          isLoading={isOperator2Loading}
-          control={control}
-          showAvatars={true}
-          avatarSize={22}
-        />
-      </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={styles.compactCol}
+          >
+            <MultiSelectField
+              name="operator2"
+              label="Operator 2"
+              options={operator2Options}
+              isLoading={isOperator2Loading}
+              control={control}
+              showAvatars={true}
+              avatarSize={22}
+            />
+          </Col>
+        </>
+      )}
     </Row>
   );
 }

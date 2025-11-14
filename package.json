@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview --port 5646 --host",
-    "prod": "git pull && npm run build sudo cp -r dist/* /var/www/work/ &&sudo systemctl reload nginx && pm2 restart 1"
+    "prod": "git pull && npm run build && sudo cp -r dist/* /var/www/work/ && sudo systemctl reload nginx && pm2 restart 1"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",

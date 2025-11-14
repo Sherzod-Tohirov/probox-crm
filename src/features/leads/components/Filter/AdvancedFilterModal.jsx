@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Modal, Row, Col, Button } from '@components/ui';
 import SelectField from './fields/SelectField';
+import MultiSelectField from './fields/MultiSelectField';
 import MeetingAndDateSection from './sections/MeetingAndDateSection';
 import RoleFilters from './sections/RoleFilters';
 import useIsMobile from '@/hooks/useIsMobile';
@@ -179,6 +180,23 @@ export default function AdvancedFilterModal({
                 Boshqa filterlar
               </div>
               <Row direction="row" gutter={2} wrap>
+                <Col xs={12} sm={6} md={2} lg={1.5} xl={1.5}>
+                  <MultiSelectField
+                    name="source"
+                    label="Manba"
+                    options={leadSourceOptions}
+                    control={control}
+                    isSearchable={false}
+                  />
+                </Col>
+                <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
+                  <MultiSelectField
+                    name="branch"
+                    label="Filial"
+                    options={branchOptions}
+                    control={control}
+                  />
+                </Col>
                 <MeetingAndDateSection
                   control={control}
                   isMobile={isMobile}

@@ -130,9 +130,13 @@ const MessageForm = ({ onSubmit, size = '' }) => {
               <Row direction="row" gutter={2} align="end">
                 <Col>
                   <Box>
-                    <label className={styles['file-input-label']}>
+                    <label
+                      className={classNames(
+                        styles['file-input-label'],
+                        styles[size]
+                      )}
+                    >
                       {iconsMap['addCircle']}
-
                       <input
                         {...register('msgPhoto')}
                         className={styles['file-input']}
