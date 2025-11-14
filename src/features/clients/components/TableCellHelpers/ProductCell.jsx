@@ -1,25 +1,25 @@
-import moment from "moment";
-import { memo, useCallback, useEffect, useMemo } from "react";
-import { Input, Status } from "@components/ui";
-import { useForm } from "react-hook-form";
-import ModalCell from "./helper/ModalCell";
-import ModalWrapper from "./helper/ModalWrapper";
-import useMutatePhoneConfiscated from "@hooks/data/clients/useMutatePhoneConfiscated";
-import useAuth from "@hooks/useAuth";
-import hasRole from "@utils/hasRole";
+import moment from 'moment';
+import { memo, useCallback, useEffect, useMemo } from 'react';
+import { Input, Status } from '@components/ui';
+import { useForm } from 'react-hook-form';
+import ModalCell from './helper/ModalCell';
+import ModalWrapper from './helper/ModalWrapper';
+import useMutatePhoneConfiscated from '@hooks/data/clients/useMutatePhoneConfiscated';
+import useAuth from '@hooks/useAuth';
+import hasRole from '@utils/hasRole';
 
-import { useQueryClient } from "@tanstack/react-query";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleModal } from "@store/slices/toggleSlice";
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleModal } from '@store/slices/toggleSlice';
 const Title = ({ column }) => {
-  let status = "unpaid";
-  if (column.phoneConfiscated) status = "product";
-  else if (column.partial) status = "manual_paid";
+  let status = 'unpaid';
+  if (column.phoneConfiscated) status = 'product';
+  else if (column.partial) status = 'manual_paid';
   else {
     const statusCalc =
       parseFloat(column.InsTotal) - parseFloat(column.PaidToDate);
-    if (statusCalc > 0 && statusCalc < column.InsTotal) status = "partial";
-    if (statusCalc === 0) status = "paid";
+    if (statusCalc > 0 && statusCalc < column.InsTotal) status = 'partial';
+    if (statusCalc === 0) status = 'paid';
   }
 
   return <Status status={status} />;
@@ -30,31 +30,31 @@ const useProductCell = (column) => {
   const productOptions = useMemo(
     () => [
       {
-        value: "true",
-        label: "Buyum bilan",
+        value: 'true',
+        label: 'Buyum bilan',
       },
       {
-        value: "false",
-        label: "Buyumsiz",
+        value: 'false',
+        label: 'Buyumsiz',
       },
     ],
     []
   );
   const canUserModify =
-    hasRole(user, ["Manager", "Cashier"]) && !column.partial;
+    hasRole(user, ['Manager', 'Cashier']) && !column.partial;
   return { productOptions, canUserModify };
 };
 const ProductCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-product-modal`;
+  const modalId = `${column?.['DocEntry']}-product-modal`;
   const {
     reset,
-    register,
     handleSubmit,
     setValue,
+    control,
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      phoneConfiscated: column?.["phoneConfiscated"],
+      phoneConfiscated: column?.['phoneConfiscated'],
     },
   });
 
@@ -65,22 +65,22 @@ const ProductCell = ({ column }) => {
   const queryClient = useQueryClient();
   const handleApply = useCallback(
     async (data) => {
-      const formattedDueDate = moment(currentClient["DueDate"]).format(
-        "YYYY.MM.DD"
+      const formattedDueDate = moment(currentClient['DueDate']).format(
+        'YYYY.MM.DD'
       );
 
       const payload = {
-        docEntry: currentClient?.["DocEntry"],
-        installmentId: currentClient?.["InstlmntID"],
+        docEntry: currentClient?.['DocEntry'],
+        installmentId: currentClient?.['InstlmntID'],
         data: {
-          phoneConfiscated: data.phoneConfiscated === "true",
+          phoneConfiscated: data.phoneConfiscated === 'true',
           DueDate: formattedDueDate,
         },
       };
       try {
         await mutation.mutateAsync(payload);
         queryClient.invalidateQueries({
-          queryKey: ["clients"],
+          queryKey: ['clients'],
         });
       } catch (error) {
         console.log(error);
@@ -93,19 +93,20 @@ const ProductCell = ({ column }) => {
 
   // Sync form with column changes
   useEffect(() => {
-    if (column?.["phoneConfiscated"] !== undefined) {
-      setValue("phoneConfiscated", Boolean(column["phoneConfiscated"]), {
+    if (column?.['phoneConfiscated'] !== undefined) {
+      setValue('phoneConfiscated', Boolean(column['phoneConfiscated']), {
         shouldDirty: false,
         shouldTouch: false,
       });
     }
-  }, [column?.["phoneConfiscated"], setValue]);
+  }, [column?.['phoneConfiscated'], setValue]);
   return (
     <ModalWrapper
       allowClick={!canUserModify}
       modalId={modalId}
       column={column}
-      title={<Title column={column} />}>
+      title={<Title column={column} />}
+    >
       {canUserModify ? (
         <ModalCell
           title={"Buyum holatini o'zgartirish"}
@@ -117,14 +118,16 @@ const ProductCell = ({ column }) => {
           applyButtonProps={{
             disabled: !isDirty,
             isLoading: mutation.isPending,
-          }}>
+          }}
+        >
           <Input
-            type={"select"}
-            size={"full-grow"}
+            type={'select'}
+            size={'full-grow'}
             canClickIcon={false}
+            control={control}
             options={productOptions}
-            variant={"outlined"}
-            {...register("phoneConfiscated")}
+            variant={'outlined'}
+            name="phoneConfiscated"
           />
         </ModalCell>
       ) : null}

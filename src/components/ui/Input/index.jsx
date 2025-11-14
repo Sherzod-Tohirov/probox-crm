@@ -1,5 +1,7 @@
+import 'flatpickr/dist/themes/airbnb.css';
+import 'react-phone-input-2/lib/style.css';
+
 import { forwardRef, useCallback, useMemo, useState } from 'react';
-import Flatpickr from 'react-flatpickr';
 import classNames from 'classnames';
 import styles from './input.module.scss';
 import iconsMap from '@utils/iconsMap';
@@ -8,15 +10,16 @@ import { Box, Col, Row } from '@components/ui';
 import { omit } from 'ramda';
 import { Controller } from 'react-hook-form';
 import PhoneInput from 'react-phone-input-2';
-import moment from 'moment';
 import * as r from 'ramda';
-import 'flatpickr/dist/themes/airbnb.css';
-import 'react-phone-input-2/lib/style.css';
+
 import { AnimatePresence, motion } from 'framer-motion';
-import SearchField from './SearchField';
 import { formatPhoneNumber } from '@utils/formatPhoneNumber';
-import MultipleSelect from './MultipleSelect';
+import MultipleSelect from './components/MultipleSelect';
 import Skeleton from 'react-loading-skeleton';
+import InputWrapper from './components/InputWrapper';
+import DateInput from './components/DateInput';
+import TimeInput from './components/TimeInput';
+import DateTimeLocalInput from './components/DateTimeLocalInput';
 
 const inputIcons = {
   email: 'email',
@@ -145,6 +148,8 @@ const Input = forwardRef(
       [inputStyle, classes, disabled, ref, id, uniqueId]
     );
 
+    // hour-only logic is handled inside subcomponents
+
     const inputTypeMatcher = useMemo(
       () => ({
         textarea: props.control ? (
@@ -186,60 +191,24 @@ const Input = forwardRef(
             name={props.name}
             control={props.control}
             render={({ field }) => (
-              <Flatpickr
-                key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
+              <DateInput
+                includeTime={props.includeTime}
+                datePickerOptions={props.datePickerOptions}
                 value={field.value || props.defaultValue}
-                {...commonProps}
-                options={{
-                  enableTime: !!props.includeTime,
-                  defaultDate: field.value || props.defaultValue || new Date(),
-                  dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
-                  ...(props.includeTime ? { time_24hr: true } : {}),
-                  locale: { firstDayOfWeek: 1 },
-                  clickOpens: true,
-                  allowInput: false,
-                  disableMobile: true,
-                  static: false,
-                  ...(props.datePickerOptions || {}),
-                }}
-                onChange={(dateArr) => {
-                  const formatted = dateArr[0]
-                    ? moment(dateArr[0]).format(
-                        props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
-                      )
-                    : '';
-                  field.onChange(formatted);
-                }}
-                {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
+                defaultValue={props.defaultValue}
+                onChange={field.onChange}
+                commonProps={commonProps}
               />
             )}
           />
         ) : (
-          <Flatpickr
-            key={`fp-date-${props.includeTime ? 'dt' : 'd'}`}
-            value={props.value || props.defaultValue}
-            {...commonProps}
-            options={{
-              enableTime: !!props.includeTime,
-              defaultDate: props.value || props.defaultValue || new Date(),
-              dateFormat: props.includeTime ? 'd.m.Y H:i' : 'd.m.Y',
-              ...(props.includeTime ? { time_24hr: true } : {}),
-              locale: { firstDayOfWeek: 1 },
-              clickOpens: true,
-              allowInput: false,
-              static: false,
-              ...(props.datePickerOptions || {}),
-            }}
-            onChange={(dateArr) => {
-              console.log(dateArr, 'datee');
-              const formatted = dateArr[0]
-                ? moment(dateArr[0]).format(
-                    props.includeTime ? 'DD.MM.YYYY HH:mm' : 'DD.MM.YYYY'
-                  )
-                : '';
-              props.onChange?.(formatted);
-            }}
-            {...omit(['datePickerOptions', 'includeTime', 'type'], props)}
+          <DateInput
+            includeTime={props.includeTime}
+            datePickerOptions={props.datePickerOptions}
+            value={props.value}
+            defaultValue={props.defaultValue}
+            onChange={props.onChange}
+            commonProps={commonProps}
           />
         ),
         time: props.control ? (
@@ -247,53 +216,22 @@ const Input = forwardRef(
             name={props.name}
             control={props.control}
             render={({ field }) => (
-              <Flatpickr
+              <TimeInput
+                datePickerOptions={props.datePickerOptions}
                 value={field.value || props.defaultValue}
-                {...commonProps}
-                options={{
-                  enableTime: true,
-                  noCalendar: true,
-                  dateFormat: 'H:i',
-                  time_24hr: true,
-                  clickOpens: true,
-                  allowInput: false,
-                  disableMobile: true,
-                  static: false,
-                  ...(props.datePickerOptions || {}),
-                }}
-                onChange={(dateArr) => {
-                  console.log(dateArr, 'datee');
-                  const formatted = dateArr[0]
-                    ? moment(dateArr[0]).format('HH:mm')
-                    : '';
-                  field.onChange(formatted);
-                }}
-                {...omit(['datePickerOptions', 'type'], props)}
+                defaultValue={props.defaultValue}
+                onChange={field.onChange}
+                commonProps={commonProps}
               />
             )}
           />
         ) : (
-          <Flatpickr
-            value={props.value || props.defaultValue}
-            {...commonProps}
-            options={{
-              enableTime: true,
-              noCalendar: true,
-              dateFormat: 'H:i',
-              time_24hr: true,
-              clickOpens: true,
-              allowInput: false,
-              disableMobile: true,
-              static: false,
-              ...(props.datePickerOptions || {}),
-            }}
-            onChange={(dateArr) => {
-              const formatted = dateArr[0]
-                ? moment(dateArr[0]).format('HH:mm')
-                : '';
-              props.onChange?.(formatted);
-            }}
-            {...omit(['datePickerOptions', 'type'], props)}
+          <TimeInput
+            datePickerOptions={props.datePickerOptions}
+            value={props.value}
+            defaultValue={props.defaultValue}
+            onChange={props.onChange}
+            commonProps={commonProps}
           />
         ),
         'datetime-local': props.control ? (
@@ -301,50 +239,22 @@ const Input = forwardRef(
             name={props.name}
             control={props.control}
             render={({ field }) => (
-              <Flatpickr
+              <DateTimeLocalInput
+                datePickerOptions={props.datePickerOptions}
                 value={field.value || props.defaultValue}
-                {...commonProps}
-                options={{
-                  enableTime: true,
-                  dateFormat: 'd.m.Y H:i',
-                  time_24hr: true,
-                  clickOpens: true,
-                  allowInput: false,
-                  disableMobile: true,
-                  static: false,
-                  ...(props.datePickerOptions || {}),
-                }}
-                onChange={(dateArr) => {
-                  const formatted = dateArr[0]
-                    ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
-                    : '';
-                  field.onChange(formatted);
-                }}
-                {...omit(['datePickerOptions', 'type'], props)}
+                defaultValue={props.defaultValue}
+                onChange={field.onChange}
+                commonProps={commonProps}
               />
             )}
           />
         ) : (
-          <Flatpickr
-            value={props.value || props.defaultValue}
-            {...commonProps}
-            options={{
-              enableTime: true,
-              dateFormat: 'd.m.Y H:i',
-              time_24hr: true,
-              clickOpens: true,
-              allowInput: false,
-              disableMobile: true,
-              static: false,
-              ...(props.datePickerOptions || {}),
-            }}
-            onChange={(dateArr) => {
-              const formatted = dateArr[0]
-                ? moment(dateArr[0]).format('DD.MM.YYYY HH:mm')
-                : '';
-              props.onChange?.(formatted);
-            }}
-            {...omit(['datePickerOptions', 'type'], props)}
+          <DateTimeLocalInput
+            datePickerOptions={props.datePickerOptions}
+            value={props.value}
+            defaultValue={props.defaultValue}
+            onChange={props.onChange}
+            commonProps={commonProps}
           />
         ),
         number: (
@@ -842,81 +752,29 @@ const Input = forwardRef(
     }
 
     return (
-      <Row className={styles['input-wrapper']} gutter={1.5}>
-        {label && (
-          <Col>
-            <Typography
-              element="label"
-              className={classNames(styles['label'], {
-                [styles['label-disabled']]: disabled,
-              })}
-            >
-              {label}
-            </Typography>
-          </Col>
-        )}
-
-        <Col fullWidth>
-          <Box pos={'relative'} dir="column" gap={1}>
-            <Box
-              pos="relative"
-              style={inputBoxStyle}
-              className={classNames(
-                styles['input-box'],
-                styles[variant],
-                styles[type],
-                styles[size],
-                inputBoxClassName
-              )}
-            >
-              {inputTypeMatcher[type] || inputTypeMatcher.default}
-              {showIcon ? (
-                <Typography
-                  style={{
-                    cursor: onIconClick ? 'pointer' : 'default',
-                    pointerEvents: canClickIcon ? 'auto' : 'none',
-                  }}
-                  element="span"
-                  className={styles['icon']}
-                  {...(onIconClick ? { onClick: onIconClick } : {})}
-                  disabled={disabled}
-                >
-                  {iconText || iconsMap[icon || inputIcons[type]]}
-                </Typography>
-              ) : (
-                ''
-              )}
-            </Box>
-            <AnimatePresence mode="popLayout">
-              {searchable && searchText?.length && searchText !== '998' ? (
-                <SearchField
-                  renderItem={renderSearchItem}
-                  onSearch={onSearch}
-                  searchText={searchText}
-                  onSelect={onSearchSelect}
-                />
-              ) : (
-                ''
-              )}
-            </AnimatePresence>
-            <AnimatePresence mode="popLayout">
-              {error ? (
-                <motion.span
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className={styles['error-text']}
-                >
-                  {error}
-                </motion.span>
-              ) : (
-                ''
-              )}
-            </AnimatePresence>
-          </Box>
-        </Col>
-      </Row>
+      <InputWrapper
+        label={label}
+        disabled={disabled}
+        variant={variant}
+        type={type}
+        size={size}
+        inputBoxStyle={inputBoxStyle}
+        inputBoxClassName={inputBoxClassName}
+        hasIcon={hasIcon}
+        showIcon={showIcon}
+        icon={icon || inputIcons[type]}
+        iconText={iconText}
+        canClickIcon={canClickIcon}
+        onIconClick={onIconClick}
+        error={error}
+        searchable={searchable}
+        searchText={searchText}
+        renderSearchItem={renderSearchItem}
+        onSearch={onSearch}
+        onSearchSelect={onSearchSelect}
+      >
+        {inputTypeMatcher[type] || inputTypeMatcher.default}
+      </InputWrapper>
     );
   }
 );

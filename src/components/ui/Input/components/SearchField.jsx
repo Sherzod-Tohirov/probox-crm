@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import styles from './input.module.scss';
-import Typography from '../Typography';
+import styles from '../input.module.scss';
+import Typography from '../../Typography';
 import { Box, List } from '@components/ui';
 import 'flatpickr/dist/themes/airbnb.css';
 import 'react-phone-input-2/lib/style.css';
