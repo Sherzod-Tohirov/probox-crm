@@ -50,7 +50,7 @@ const SCORING_FIELDS = [
   'officialSalary',
   'finalLimit',
   'finalPercentage',
-];
+  'acceptedReason'];
 
 export default function useScoringForm(leadId, leadData, onSuccess) {
   const { alert } = useAlert();
@@ -61,7 +61,9 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
         ? moment(leadData.birthDate, 'YYYY.MM.DD', true).format('DD.MM.YYYY')
         : '',
       applicationDate: leadData?.applicationDate
-        ? moment(leadData.applicationDate, 'YYYY.MM.DD', true).format('DD.MM.YYYY')
+        ? moment(leadData.applicationDate, 'YYYY.MM.DD', true).format(
+            'DD.MM.YYYY'
+          )
         : '',
       age: parseNumber(leadData?.age),
       score: parseNumber(leadData?.score),
@@ -77,6 +79,7 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
       officialSalary: parseNumber(leadData?.officialSalary),
       finalLimit: parseNumber(leadData?.finalLimit),
       finalPercentage: parseNumber(leadData?.finalPercentage),
+      acceptedReason: leadData?.acceptedReason || '',
     },
   });
 
@@ -87,7 +90,9 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
-      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", {
+        type: 'error',
+      });
     },
   });
 
