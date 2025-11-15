@@ -654,7 +654,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         {!leadData?.finalLimit &&
           fieldSellType === 'nasiya' &&
           canEdit &&
-          !isAcceptedFinalPercentage && (
+          !isAcceptedFinalPercentage &&
+          !leadData?.acceptedReason && (
             <Row className={styles['error-message']}>
               Xaridni tasdiqlash uchun limit mavjud emas
             </Row>
@@ -675,7 +676,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             type={
               !leadData.finalLimit &&
               fieldSellType === 'nasiya' &&
-              !isAcceptedFinalPercentage
+              !isAcceptedFinalPercentage &&
+              !leadData?.acceptedReason
                 ? 'confirmOnlyFalse'
                 : 'confirm'
             }
