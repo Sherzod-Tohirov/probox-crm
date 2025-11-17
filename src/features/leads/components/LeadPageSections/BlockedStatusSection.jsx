@@ -48,7 +48,7 @@ export default function BlockedStatusSection({ lead, canEdit, onSave }) {
               label="Holat"
               type="select"
               control={blockedControl}
-              disabled={true}
+              disabled={!canEdit}
               span={{ xs: 24, md: 12 }}
               placeholderOption={false}
               options={blockedOptions}

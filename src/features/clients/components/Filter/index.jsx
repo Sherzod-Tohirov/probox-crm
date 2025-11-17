@@ -89,7 +89,6 @@ export default function Filter({ onFilter, isExpanded = false }) {
   });
 
   const watchedFields = useWatchFilterFields(watch);
-  console.log(watchedFields, 'watched fields');
   const handleSearchSelect = useCallback((clientData, filterKey) => {
     setValue(filterKey, clientData);
     dispatch(
