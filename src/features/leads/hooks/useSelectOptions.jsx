@@ -97,6 +97,7 @@ export function useSelectOptions(tab) {
         ?.map((branch) => ({
           value: branch.id,
           label: branch.name,
+          code: branch.code,
         })) ?? [];
 
     return {

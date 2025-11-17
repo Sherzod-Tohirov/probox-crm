@@ -193,15 +193,5 @@ function Button(
 
 const ForwardedButton = memo(forwardRef(Button));
 ForwardedButton.propTypes = buttonPropTypes;
-ForwardedButton.defaultProps = {
-  variant: 'filled',
-  iconPosition: 'left',
-  iconSize: 24,
-  isLoading: false,
-  fullWidth: false,
-  disabled: false,
-  animated: true,
-  type: 'button',
-};
 
 export default ForwardedButton;

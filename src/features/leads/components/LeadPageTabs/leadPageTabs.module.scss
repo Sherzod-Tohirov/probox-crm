@@ -92,6 +92,43 @@
   font-weight: 800;
   margin: 12px 0;
 }
+
+.selected-device-imei {
+  font-size: 13px;
+  color: var(--text-primary, #1f2937);
+  font-weight: 500;
+  display: inline-block;
+}
+
+.selected-device-imei-error {
+  font-size: 12px;
+  color: var(--error-text, #dc2626);
+  font-weight: 600;
+  display: inline-block;
+}
+
+.selected-device-imei-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.selected-device-whs-name {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.search-item-imei {
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+.search-item-onhand {
+  font-weight: 500;
+  color: var(--accent-color, #2563eb);
+}
 .signature-wrapper {
   display: flex;
   flex-direction: column;

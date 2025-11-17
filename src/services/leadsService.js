@@ -82,3 +82,36 @@ export const postFileUpload = async ({ cardCode, formData }) => {
     throw error.response?.data || error;
   }
 };
+
+// seeller tab leads's contract terms api
+// api/items?whsCode=01&search=iphone 16&condition=Yangi
+
+export const fetchContractTermsItems = async ({ whsCode, search, condition }) => {
+  try {
+    const response = await api.get('/items', {
+      params: {
+        whsCode,
+        search,
+        condition,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const fetchItemSeries = async ({ whsCode, itemCode }) => {
+  try {
+    const response = await api.get('/item-series', {
+      params: {
+        whsCode,
+        itemCode,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
