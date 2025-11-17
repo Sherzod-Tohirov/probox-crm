@@ -348,6 +348,10 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     );
   }, []);
 
+  const handleDeleteDevice = useCallback((deviceId) => {
+    setSelectedDevices((prev) => prev.filter((device) => device.id !== deviceId));
+  }, []);
+
   const handleRentPeriodChange = useCallback((deviceId, value) => {
     setSelectedDevices((prev) =>
       prev.map((device) =>
@@ -648,7 +652,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         horizontal: 'start',
         width: '10%',
         renderCell: (row) => (
-          <span className={styles['selected-device-price']}>{row.price}</span>
+          <span className={styles['selected-device-price']}>{row.price ? row.price : '0 so\'m'}</span>
         ),
       },
       {
@@ -706,10 +710,27 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           </span>
         ),
       },
+      {
+        key: 'actions',
+        title: '',
+        horizontal: 'center',
+        width: '5%',
+        renderCell: (row) => (
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => handleDeleteDevice(row.id)}
+            disabled={!canEdit}
+          >
+            ×
+          </Button>
+        ),
+      },
     ],
     
     [
       canEdit,
+      handleDeleteDevice,
       handleFirstPaymentChange,
       handleImeiSelect,
       handleRentPeriodChange,
