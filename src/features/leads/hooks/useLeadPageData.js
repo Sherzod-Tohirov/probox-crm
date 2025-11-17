@@ -89,7 +89,7 @@ export default function useLeadPageData(leadId) {
     return hasRole(currentUserRole, ['OperatorM', 'CEO', 'Scoring']);
   }, [currentUserRole, isBlocked]);
 
-  const canEditBlockedStatus = hasRole(currentUserRole, ['OperatorM', 'CEO']);
+  const canEditBlockedStatus = hasRole(currentUserRole, ['CEO']);
 
   // File handling
   const serverFiles = useMemo(() => {
