@@ -24,8 +24,8 @@ export default function useClientPageSubmit(currentClient, onSuccess) {
       ) {
         formattedAgreementDate = formatDate(
           data.agreementDate,
-          'DD.MM.YYYY',
-          'YYYY.MM.DD'
+          'DD.MM.YYYY hh:mm',
+          'YYYY.MM.DD hh:mm'
         );
         // Check if formatting resulted in invalid date
         if (formattedAgreementDate === 'Invalid date') {

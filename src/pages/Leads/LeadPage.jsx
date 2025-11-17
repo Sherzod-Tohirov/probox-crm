@@ -34,6 +34,8 @@ import {
 } from '@/features/leads/components/LeadPageSections';
 
 import styles from './style.module.scss';
+import Offline from '@/pages/helper/Offline';
+import Error from '@/pages/helper/Error';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -43,6 +45,8 @@ export default function LeadPage() {
   const {
     lead,
     isLoading,
+    isError,
+    error,
     executors,
     isOperatorManager,
     isBlocked,
@@ -184,6 +188,24 @@ export default function LeadPage() {
           </Col>
         </Row>
       </>
+    );
+  }
+
+  // Offline or error state: render stable page to avoid loops
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    return <Offline />;
+  }
+  if (isError) {
+    return (
+      <Error
+        error={
+          error || {
+            message:
+              "Lead ma'lumotlarini yuklab bo'lmadi. Iltimos, keyinroq qayta urinib ko'ring.",
+          }
+        }
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 

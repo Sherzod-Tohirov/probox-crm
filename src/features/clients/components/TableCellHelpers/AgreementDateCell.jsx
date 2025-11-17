@@ -96,6 +96,11 @@ const AgreementDateCell = ({ column }) => {
           variant={'outlined'}
           canClickIcon={false}
           control={control}
+          includeTime
+          datePickerOptions={{
+            minuteIncrement: 60,
+            allowInput: false,
+          }}
         />
       </ModalCell>
     </ModalWrapper>

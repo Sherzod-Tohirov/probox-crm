@@ -1,4 +1,4 @@
-export function calculateLeadLimit(lead, pult) {
+export function calculateLeadLimit(lead, pult, options) {
   const defaultValue = 0;
 
   const toNumber = (v) => {
@@ -44,6 +44,7 @@ export function calculateLeadLimit(lead, pult) {
   const katmPayment = toNumber(lead?.katmPayment);
   const katmScore = lead?.katmScore ?? lead?.katm;
   const katmHistory = lead?.katmHistory ?? lead?.paymentHistory;
+
   if (
     !Number.isFinite(age) ||
     age < pult.minLeadAge ||
@@ -83,9 +84,16 @@ export function calculateLeadLimit(lead, pult) {
     pult.katmScorePercents
   );
   const result = afterHistory * (1 - scorePercent);
-
+  console.log(result, 'result');
   if (!Number.isFinite(result) || result <= 0) return defaultValue;
 
-  const monthly = result * 1; // for one month
+  let monthly = result * 1; // for one month
+  if (options.specialRegions && Array.isArray(options.specialRegions)) {
+    if (salary <= 0) {
+      if (options.specialRegions.includes(lead?.region)) {
+        monthly *= 0.5;
+      }
+    }
+  }
   return monthly > 30_000_000 ? 30_000_000 : Math.round(monthly);
 }

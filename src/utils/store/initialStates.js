@@ -33,6 +33,7 @@ export const initialLeadsFilterState = {
   meetingDateStart: '',
   meetingDateEnd: '',
   meetingHappened: '',
+  passportVisit: '',
   purchase: '',
   called: '',
   answered: '',

@@ -63,7 +63,7 @@ export function useSelectOptions(tab) {
     const passportVisitOptions = [
       { value: 'Passport', label: 'Pasport' },
       { value: 'Visit', label: 'Tashrif' },
-      { value: 'Process', label: 'Jarayonda' },
+      { value: 'Processing', label: 'Jarayonda' },
     ];
 
     return { passportVisitOptions };

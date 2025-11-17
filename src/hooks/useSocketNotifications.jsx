@@ -34,6 +34,9 @@ function getSocketBaseUrl() {
 function belongsToCurrentUser(lead, user) {
   if (!lead || !user) return false;
   const userCode = String(user?.SlpCode ?? '');
+  if (lead?.SlpCode) {
+    return lead?.SlpCode == userCode;
+  }
   const operator =
     lead?.operator ?? lead?.Operator ?? lead?.slpCode ?? lead?.SlpCode;
   const operator2 = lead?.operator2 ?? lead?.Operator2;
@@ -62,6 +65,16 @@ function normalizeLeadToNotification(lead) {
     read: false,
     link,
     data: lead,
+  };
+}
+
+function normalizeAgreementDateNotification(payload) {
+  const id =
+    payload?.DocEntry ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return {
+    id,
+    client: payload,
+    link: payload?.CardCode ? `/clients/${payload.CardCode}` : undefined,
   };
 }
 
@@ -207,11 +220,30 @@ export default function useSocketNotifications() {
       }
     };
 
+    const onNewDueDateClientNotification = (payload) => {
+      console.log(payload, 'socket payload');
+      const records = Array.isArray(payload) ? payload : [payload];
+
+      records.forEach((client) => {
+        if (!user || !client) return;
+        if (belongsToCurrentUser(client, user)) {
+          const notif = normalizeAgreementDateNotification(client);
+          addNotification(notif);
+        }
+      });
+      if (records.length) {
+        window.dispatchEvent(
+          new CustomEvent('invoice:agreement-date', { detail: { records } })
+        );
+      }
+    };
+
     socket.on('connect', onConnect);
     socket.on('connect_error', onError);
     socket.on('new_leads', onNewLeads);
     socket.on('scoring_lead', onScoringLead);
-    
+    socket.on('invoice:newDueDateNotification', onNewDueDateClientNotification);
+
     return () => {
       socket.off('connect', onConnect);
       socket.off('connect_error', onError);

@@ -29,6 +29,13 @@ export const statusOptions = [
   { value: 'Processing', label: 'Jarayonda' },
 ];
 
+export const passportVisitOptions = [
+  { value: '', label: 'Hammasi' },
+  { value: 'Passport', label: 'Passport' },
+  { value: 'Visit', label: 'Tashrif' },
+  { value: 'Processing', label: 'Jarayonda' },
+];
+
 export const statusFilterOptions = [
   { value: 'unmarked', label: 'Barchasi' },
   { value: 'Active', label: 'Active' },

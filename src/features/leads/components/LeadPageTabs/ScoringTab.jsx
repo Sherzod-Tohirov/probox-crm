@@ -188,8 +188,10 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         mibIrresponsible: fieldMibIrresponsible,
         alimentDebt: fieldAliment,
         salary: fieldOfficialSalary,
+        region: leadData.region,
       },
-      PULT
+      PULT,
+      { specialRegions: ['Toshkent', 'Sirdaryo', 'Jizzax'] }
     );
 
     setValue('finalLimit', formatterCurrency(_.round(computed, -3)), {
@@ -386,7 +388,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
                         disabled={true}
                       />
                     </Col>
-                    {leadData?.finalPercentage && (
+                    {leadData?.finalLimit && (
                       <Col>
                         <Typography variant="caption" color="warning">
                           Limit 1 oy uchun keltirilgan

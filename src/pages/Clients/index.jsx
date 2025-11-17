@@ -23,6 +23,7 @@ import useModalAutoClose from '@features/clients/hooks/useModalAutoClose';
 
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
+import moment from 'moment';
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -30,10 +31,10 @@ export default function Clients() {
   const isMobile = useIsMobile();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-  
+
   // Refs
   const clientsTableRef = useRef(null);
-  
+
   // Redux state
   const { currentPage, filter, currentClient } = useSelector(
     (state) => state.page.clients
@@ -55,7 +56,7 @@ export default function Clients() {
     params,
   });
   const { clientsTableColumns } = useClientsTableColumns();
-  
+
   const {
     uiScale,
     increaseScale,
@@ -65,7 +66,7 @@ export default function Clients() {
     canDecrease,
     isDefault: isDefaultUI,
   } = useUIScale();
-  
+
   const {
     tableDensityClass,
     increaseDensity,
@@ -75,13 +76,13 @@ export default function Clients() {
     isMaxDensity,
     isDefaultDensity,
   } = useTableDensity('clientsTableDensity');
-  
+
   const { saveScrollPosition } = useScrollRestoration({
     scrollContainerRef: clientsTableRef,
     storageKey: 'scrollPositionClients',
     hasData: data?.data?.length > 0,
   });
-  
+
   useModalAutoClose(clientsTableRef);
 
   // Handlers
@@ -184,6 +185,21 @@ export default function Clients() {
                       ? 'rgba(96, 165, 250, 0.15)'
                       : 'rgba(206, 236, 249, 0.94)',
                 };
+              }
+
+              const paymentDate = moment(
+                row?.DueDate ?? row?.NewDueDate ?? null
+              );
+              const today = moment();
+              const isTodayPayment = paymentDate.isSame(today, 'day');
+              if (isTodayPayment) {
+                return {
+                  backgroundColor:
+                    currentTheme === 'dark'
+                      ? 'rgba(115, 115, 87, 0.73)'
+                      : 'rgba(244, 244, 173, 0.76)',
+                };
+                ('rgba(244, 244, 173, 0.76)');
               }
             }}
           />
