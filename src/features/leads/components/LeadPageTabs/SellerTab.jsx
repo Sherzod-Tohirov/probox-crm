@@ -158,8 +158,6 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const isAcceptedFinalPercentage =
     Number(leadData.finalPercentage) > 0 &&
     Number(leadData.finalPercentage) <= 25;
-  console.log(isAcceptedFinalPercentage, 'isAcceptedPercentage');
-  console.log(leadData.finalPercentage, 'finalPercentage');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
