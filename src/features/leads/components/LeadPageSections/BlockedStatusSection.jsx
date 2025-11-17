@@ -55,7 +55,7 @@ export default function BlockedStatusSection({ lead, canEdit, onSave }) {
               defaultValue={lead?.isBlocked ? 'true' : 'false'}
             />
           </Col>
-          {/* <Col>
+          <Col>
             {canEdit && (
               <Row>
                 <Col>
@@ -69,7 +69,7 @@ export default function BlockedStatusSection({ lead, canEdit, onSave }) {
                 </Col>
               </Row>
             )}
-          </Col> */}
+          </Col>
         </Row>
       </form>
     </FieldGroup>
