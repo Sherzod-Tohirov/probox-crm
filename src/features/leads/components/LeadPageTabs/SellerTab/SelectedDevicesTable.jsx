@@ -11,7 +11,7 @@ export default function SelectedDevicesTable({
   onRentPeriodChange,
   onFirstPaymentChange,
   onDeleteDevice,
-  totalSelectedPrice,
+  totalGrandTotal,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
@@ -45,7 +45,7 @@ export default function SelectedDevicesTable({
       </Col>
       <Col>
         <div className={styles['selected-device-table-total-price']}>
-          Umumiy narx: {formatCurrencyUZS(totalSelectedPrice)}
+          Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
         </div>
       </Col>
     </>

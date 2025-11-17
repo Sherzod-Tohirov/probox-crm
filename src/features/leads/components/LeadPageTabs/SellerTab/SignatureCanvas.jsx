@@ -36,11 +36,13 @@ export default function SignatureCanvas({ canEdit, onSignatureChange }) {
         <Button
           variant="outlined"
           type="button"
+          icon="close"
+          iconSize={16}
           onClick={clearSignature}
           disabled={!canEdit || !hasSignature}
-        >
-          Cancel
-        </Button>
+          aria-label="Imzoni o'chirish"
+          className={styles['signature-clear-button']}
+        />
       </div>
     </Col>
   );

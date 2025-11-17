@@ -50,23 +50,34 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
   const rentPeriodOptions = useMemo(
     () =>
-      Array.from({ length: 10 }, (_, index) => {
+      Array.from({ length: 15 }, (_, index) => {
         const month = index + 1;
         return { value: month, label: String(month) };
       }),
     []
   );
 
+  const monthlyLimit = useMemo(() => {
+    // Oylik limit = finalLimit / muddat (agar finalLimit bo'lsa)
+    // Yoki finalLimit ni oylik limit sifatida ishlatish
+    if (leadData?.finalLimit === null || leadData?.finalLimit === undefined) {
+      return null;
+    }
+    const limit = Number(leadData.finalLimit);
+    return Number.isFinite(limit) && limit > 0 ? limit : null;
+  }, [leadData?.finalLimit]);
+
   const {
     selectedDevices,
     setSelectedDevices,
     selectedDeviceData,
     totalSelectedPrice,
+    totalGrandTotal,
     handleImeiSelect,
     handleDeleteDevice,
     handleRentPeriodChange,
     handleFirstPaymentChange,
-  } = useSelectedDevices({ rentPeriodOptions });
+  } = useSelectedDevices({ rentPeriodOptions, monthlyLimit });
 
   const { fetchDeviceSeries } = useDeviceSeries({
     branchCodeToNameMap,
@@ -161,7 +172,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 onRentPeriodChange={handleRentPeriodChange}
                 onFirstPaymentChange={handleFirstPaymentChange}
                 onDeleteDevice={handleDeleteDevice}
-                totalSelectedPrice={totalSelectedPrice}
+                totalGrandTotal={totalGrandTotal}
               />
             )}
 
