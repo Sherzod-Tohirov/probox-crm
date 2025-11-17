@@ -171,6 +171,8 @@ const Box = forwardRef(({
       align,
       justify,
       pos,
+      width,
+      height,
       padding,
       paddingX,
       paddingY,
@@ -185,6 +187,7 @@ const Box = forwardRef(({
       marginBottom,
       marginLeft,
       marginRight,
+      props.style,
     ]
   );
   const Component = component || motion.div;
@@ -201,28 +204,5 @@ const Box = forwardRef(({
 
 const ForwardedBox = memo(Box);
 ForwardedBox.propTypes = boxPropTypes;
-ForwardedBox.defaultProps = {
-  dir: 'row',
-  align: 'start',
-  justify: 'start',
-  gap: 0,
-  pos: 'static',
-  height: 'auto',
-  width: '100%',
-  padding: 0,
-  paddingX: 0,
-  paddingY: 0,
-  paddingTop: 0,
-  paddingBottom: 0,
-  paddingLeft: 0,
-  paddingRight: 0,
-  margin: 0,
-  marginX: 0,
-  marginY: 0,
-  marginTop: 0,
-  marginBottom: 0,
-  marginLeft: 0,
-  marginRight: 0,
-};
 
 export default ForwardedBox;

@@ -10,81 +10,11 @@ import moment from 'moment';
 import SearchField from '@components/ui/Input/SearchField';
 import useIsMobile from '@hooks/useIsMobile';
 import { Button } from '@components/ui';
+import useMutateContractTerms from '@/hooks/data/leads/useMutateContractTerms';
+import useFetchItemSeries from '@/hooks/data/leads/useFetchItemSeries';
+import useAlert from '@hooks/useAlert';
 
-const MOCK_IPHONES = [
-  {
-    id: '1',
-    name: 'iPhone 16 Pro Max',
-    storage: '256 GB',
-    color: 'Natural Titanium',
-    price: "17 990 000 so'm",
-  },
-  {
-    id: '2',
-    name: 'iPhone 16 Pro Max',
-    storage: '512 GB',
-    color: 'White Titanium',
-    price: "19 490 000 so'm",
-  },
-  {
-    id: '3',
-    name: 'iPhone 16 Pro',
-    storage: '256 GB',
-    color: 'Desert Titanium',
-    price: "16 790 000 so'm",
-  },
-  {
-    id: '4',
-    name: 'iPhone 16 Pro',
-    storage: '512 GB',
-    color: 'Black Titanium',
-    price: "18 290 000 so'm",
-  },
-  {
-    id: '5',
-    name: 'iPhone 16',
-    storage: '128 GB',
-    color: 'Ultramarine',
-    price: "12 990 000 so'm",
-  },
-  {
-    id: '6',
-    name: 'iPhone 16',
-    storage: '256 GB',
-    color: 'Blush Pink',
-    price: "13 790 000 so'm",
-  },
-  {
-    id: '7',
-    name: 'iPhone 16 Plus',
-    storage: '128 GB',
-    color: 'Teal',
-    price: "13 990 000 so'm",
-  },
-  {
-    id: '8',
-    name: 'iPhone 16 Plus',
-    storage: '256 GB',
-    color: 'Stone',
-    price: "14 990 000 so'm",
-  },
-  {
-    id: '9',
-    name: 'iPhone 15 Pro Max',
-    storage: '256 GB',
-    color: 'Blue Titanium',
-    price: "15 290 000 so'm",
-  },
-  {
-    id: '10',
-    name: 'iPhone 15 Pro',
-    storage: '128 GB',
-    color: 'Natural Titanium',
-    price: "13 790 000 so'm",
-  },
-];
-
-const PAGE_SIZE = 5;
+const DEFAULT_CONTRACT_CONDITION = 'Yangi';
 const DEFAULT_RENT_PERIOD = 1;
 
 const extractNumericValue = (priceText) => {
@@ -116,13 +46,109 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset, watch, setValue } = form || {};
-  const { isMobile } = useIsMobile();
-
-  // Reset form when leadData changes
   const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
 
+  const { control, reset, watch, setValue } = form || {};
+  const { isMobile } = useIsMobile();
+  const { alert } = useAlert();
+  const { mutateAsync: fetchItemSeries } = useFetchItemSeries();
+
+  const branchCodeMap = useMemo(() => {
+    if (!branchOptions?.length) return new Map();
+    return branchOptions.reduce((map, option) => {
+      const key = String(option.value ?? '');
+      if (!key) return map;
+      map.set(key, option.code ?? key);
+      return map;
+    }, new Map());
+  }, [branchOptions]);
+
+  const branchCodeToNameMap = useMemo(() => {
+    if (!branchOptions?.length) return new Map();
+    return branchOptions.reduce((map, option) => {
+      const code = String(option.code ?? option.value ?? '');
+      const name = option.label || option.name || '';
+      if (code && name) {
+        map.set(code, name);
+      }
+      return map;
+    }, new Map());
+  }, [branchOptions]);
+
+  const fieldBranch = watch?.('branch2');
+  const searchBranchFilter = watch?.('searchBranchFilter');
+  const branchFilterInitializedRef = useRef(false);
+  
+  const normalizedBranchValue =
+    fieldBranch && fieldBranch !== 'null' ? fieldBranch : '';
+  const normalizedLeadBranch =
+    leadData?.branch2 && leadData.branch2 !== 'null' ? leadData.branch2 : '';
+  const selectedBranchValue =
+    normalizedBranchValue || normalizedLeadBranch || '';
+  const contractWhsCode =
+    branchCodeMap.get(String(selectedBranchValue)) ??
+    (selectedBranchValue ? String(selectedBranchValue) : '');
+  const activeWhsCode = useMemo(() => {
+    if (searchBranchFilter && searchBranchFilter !== 'all') {
+      return searchBranchFilter;
+    }
+    return contractWhsCode || '';
+  }, [contractWhsCode, searchBranchFilter]);
+
+  const branchFilterOptions = useMemo(() => {
+    const normalized =
+      branchOptions?.map((branch) => ({
+        value: branch.code ?? String(branch.value ?? ''),
+        label: branch.label,
+      })) ?? [];
+
+    const uniqueByValue = normalized.reduce((acc, option) => {
+      if (!option.value || acc.some((item) => item.value === option.value)) {
+        return acc;
+      }
+      return [...acc, option];
+    }, []);
+
+    return [
+      { value: 'all', label: 'Barcha filiallar' },
+      ...uniqueByValue,
+    ];
+  }, [branchOptions]);
+
+  useEffect(() => {
+    branchFilterInitializedRef.current = false;
+  }, [leadId]);
+
+  // contractWhsCode ni ref da saqlash, o'zgarishni kuzatish uchun
+  const contractWhsCodeRef = useRef(contractWhsCode);
+  
+  useEffect(() => {
+    if (!form || !branchFilterOptions?.length || !setValue) return;
+    
+    // Automatic select qilish uchun qiymatni aniqlash
+    const currentValue = watch?.('searchBranchFilter');
+    const hasContractWhsCode = contractWhsCode && branchFilterOptions.some(
+      (opt) => String(opt.value) === String(contractWhsCode)
+    );
+    const initialValue = hasContractWhsCode ? contractWhsCode : 'all';
+    
+    const contractWhsCodeChanged = contractWhsCodeRef.current !== contractWhsCode;
+    contractWhsCodeRef.current = contractWhsCode;
+    
+    // Agar searchBranchFilter undefined bo'lsa yoki bo'sh bo'lsa, automatic select qilish
+    if (!currentValue || currentValue === '' || !branchFilterInitializedRef.current) {
+      setValue('searchBranchFilter', initialValue);
+      branchFilterInitializedRef.current = true;
+    } else if (hasContractWhsCode && contractWhsCodeChanged && contractWhsCode) {
+      // Agar contractWhsCode o'zgarganda va mavjud bo'lsa, uni tanlash
+      setValue('searchBranchFilter', contractWhsCode);
+    }
+  }, [contractWhsCode, form, setValue, watch, branchFilterOptions]);
+
+  const { mutateAsync: mutateContractTerms } = useMutateContractTerms();
+
+  // Reset form when leadData changes
   const fieldPurchase = watch('purchase');
   const fieldSellType = watch('saleType');
 
@@ -174,6 +200,151 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       }),
     []
   );
+
+  const normalizeContractItems = useCallback((items = []) => {
+    return items.map((item, index) => {
+      const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
+      const priceText =
+        priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
+          ? formatCurrencyUZS(priceValue)
+          : '';
+
+      const onHand = item?.OnHand ?? item?.onHand ?? 0;
+      const onHandText = onHand > 0 ? `${onHand}ta bor` : '';
+
+      const whsCode = item?.WhsCode ?? item?.whsCode ?? '';
+      // Agar WhsName kelmasa, branchCodeToNameMap dan WhsCode orqali topish
+      const whsName = item?.WhsName ?? item?.whsName ?? branchCodeToNameMap.get(String(whsCode)) ?? '';
+
+      return {
+        id:
+          item?.id ??
+          item?.itemCode ??
+          item?.ItemCode ??
+          `${item?.name ?? item?.ItemName ?? 'contract-item'}-${index}`,
+        name: item?.ItemName ?? item?.name ?? "Noma'lum qurilma",
+        storage: item?.U_Memory ?? item?.storage ?? item?.memory ?? item?.Storage ?? '',
+        color: item?.U_Color ?? item?.color ?? item?.Color ?? '',
+        price: priceText,
+        imei: item?.IMEI ?? item?.imei ?? '',
+        onHand: onHandText,
+        whsCode: whsCode,
+        whsName: whsName,
+        raw: item,
+      };
+    });
+  }, [branchCodeToNameMap]);
+
+  const resolveItemCode = useCallback((item) => {
+    if (!item) return '';
+    return (
+      item?.raw?.ItemCode ??
+      item?.raw?.itemCode ??
+      item?.ItemCode ??
+      item?.itemCode ??
+      item?.id ??
+      ''
+    );
+  }, []);
+
+  const fetchDeviceSeries = useCallback(
+    async ({ deviceId, itemCode, whsCode, whsName }) => {
+      if (!deviceId) return;
+
+      // Agar whsName kelmasa, branchCodeToNameMap dan whsCode orqali topish
+      const deviceWhsName = whsName || branchCodeToNameMap.get(String(whsCode || '')) || '';
+
+      setSelectedDevices((prev) =>
+        prev.map((device) =>
+          device.id === deviceId
+            ? { ...device, imeiLoading: true, imeiError: null }
+            : device
+        )
+      );
+
+      if (!itemCode || !whsCode) {
+        setSelectedDevices((prev) =>
+          prev.map((device) =>
+            device.id === deviceId
+              ? {
+                  ...device,
+                  imeiLoading: false,
+                  imeiOptions: [],
+                  imeiValue: '',
+                  imeiError: !whsCode
+                    ? "Filial tanlanmagani uchun IMEI olinmadi"
+                    : 'ItemCode topilmadi',
+                }
+              : device
+          )
+        );
+        return;
+      }
+
+      try {
+        const response = await fetchItemSeries({ whsCode, itemCode });
+        const seriesItems = Array.isArray(response?.items)
+          ? response.items
+          : Array.isArray(response)
+            ? response
+            : response?.data ?? [];
+        
+        // Options yaratishda faqat IMEI ko'rsatish
+        const options = seriesItems.map((series) => {
+          return {
+            value: series.DistNumber,
+            label: series.DistNumber,
+            meta: series,
+          };
+        });
+
+        setSelectedDevices((prev) =>
+          prev.map((device) =>
+            device.id === deviceId
+              ? {
+                  ...device,
+                  imeiOptions: options,
+                  imeiValue:
+                    options.length === 1
+                      ? options[0].value
+                      : device.imeiValue || '',
+                  imeiLoading: false,
+                  imeiError: null,
+                  rawSeries: seriesItems,
+                }
+              : device
+          )
+        );
+      } catch (err) {
+        const errorMessage =
+          err?.response?.data?.message ||
+          err?.message ||
+          "IMEI ma'lumotini olishda xatolik";
+        setSelectedDevices((prev) =>
+          prev.map((device) =>
+            device.id === deviceId
+              ? {
+                  ...device,
+                  imeiLoading: false,
+                  imeiOptions: [],
+                  imeiValue: '',
+                  imeiError: errorMessage,
+                }
+              : device
+          )
+        );
+      }
+    },
+    [fetchItemSeries, branchCodeToNameMap]
+  );
+
+  const handleImeiSelect = useCallback((deviceId, value) => {
+    setSelectedDevices((prev) =>
+      prev.map((device) =>
+        device.id === deviceId ? { ...device, imeiValue: value } : device
+      )
+    );
+  }, []);
 
   const handleRentPeriodChange = useCallback((deviceId, value) => {
     setSelectedDevices((prev) =>
@@ -411,6 +582,65 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         width: '18%',
       },
       {
+        key: 'imei',
+        title: 'IMEI/SN',
+        horizontal: 'start',
+        width: '18%',
+        renderCell: (row) => {
+          if (row.imeiLoading) {
+            return (
+              <span className={styles['selected-device-imei']}>
+                IMEI yuklanmoqda...
+              </span>
+            );
+          }
+
+          if (row.imeiError) {
+            return (
+              <span className={styles['selected-device-imei-error']}>
+                {row.imeiError}
+              </span>
+            );
+          }
+
+          if (!row?.imeiOptions?.length) {
+            return (
+              <span className={styles['selected-device-imei']}>
+                IMEI topilmadi
+              </span>
+            );
+          }
+
+          if (row.imeiOptions.length === 1) {
+            return (
+              <div className={styles['selected-device-imei-wrapper']}>
+                <span className={styles['selected-device-imei']}>
+                  {row.imeiOptions[0].value}
+                </span>
+                
+              </div>
+            );
+          }
+
+          return (
+            <div className={styles['selected-device-imei-wrapper']}>
+              <Input
+                type="select"
+                options={row.imeiOptions}
+                value={row.imeiValue || ''}
+                placeholderOption={{ value: '', label: 'IMEI tanlang' }}
+                onChange={(value) => handleImeiSelect(row.id, value)}
+                disabled={!canEdit}
+                width="100%"
+                variant="outlined"
+                hasIcon={true}
+              />
+              
+            </div>
+          );
+        },
+      },
+      {
         key: 'price',
         title: 'Narx',
         horizontal: 'start',
@@ -475,9 +705,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         ),
       },
     ],
+    
     [
       canEdit,
       handleFirstPaymentChange,
+      handleImeiSelect,
       handleRentPeriodChange,
       rentPeriodOptions,
     ]
@@ -491,6 +723,18 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         storage: device.storage,
         color: device.color,
         price: device.price,
+        whsName: device.whsName || '',
+        imeiOptions: device.imeiOptions ?? [],
+        imeiValue:
+          device.imeiValue ??
+          (Array.isArray(device.imeiOptions) && device.imeiOptions.length === 1
+            ? device.imeiOptions[0].value
+            : ''),
+        imeiLoading: Boolean(device.imeiLoading),
+        imeiError:
+          device.imeiError === undefined || device.imeiError === null
+            ? ''
+            : device.imeiError,
         rentPeriod:
           Number(device.rentPeriod) ||
           rentPeriodOptions[0]?.value ||
@@ -534,61 +778,124 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const handleSearchInput = useCallback((event) => {
     const value = event?.target?.value ?? '';
     setSearchTerm(value);
-    if (!value) {
-      setIsSuggestionsOpen(false);
-    } else {
-      setIsSuggestionsOpen(true);
-    }
+    const hasValue = Boolean(value.trim());
+    setIsSuggestionsOpen(hasValue);
   }, []);
 
-  const handleDeviceSearch = useCallback(async (text, page = 1) => {
-    const normalized = text.trim().toLowerCase();
-    const filtered = normalized
-      ? MOCK_IPHONES.filter(
-          (item) =>
-            item.name.toLowerCase().includes(normalized) ||
-            item.color.toLowerCase().includes(normalized) ||
-            item.storage.toLowerCase().includes(normalized)
-        )
-      : MOCK_IPHONES;
-
-    const total = filtered.length;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const start = (page - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    const pageData = filtered.slice(start, end);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          data: pageData,
-          total,
-          totalPages,
-        });
-      }, 200);
-    });
-  }, []);
-
-  const handleSelectDevice = useCallback((item) => {
-    const deviceId = item.id ?? item.name;
-    setSelectedDevices((prev) => {
-      const exists = prev.some((device) => device.id === deviceId);
-      if (exists) {
-        return prev;
+  const handleDeviceSearch = useCallback(
+    async (text, page = 1) => {
+      const query = text?.trim();
+      
+      if (!query) {
+        return { data: [], total: 0, totalPages: 0 };
       }
-      return [
-        ...prev,
-        {
-          ...item,
-          id: deviceId,
-          rentPeriod: DEFAULT_RENT_PERIOD,
-          firstPayment: '',
-        },
-      ];
-    });
-    setSearchTerm('');
-    setIsSuggestionsOpen(false);
-  }, []);
+
+      // Agar searchBranchFilter undefined bo'lsa va activeWhsCode ham bo'sh bo'lsa, "Barcha filiallar" deb qabul qilamiz
+      // Yoki agar searchBranchFilter tanlanmagan bo'lsa, request yubormaslik
+      const effectiveSearchBranchFilter = searchBranchFilter || (!activeWhsCode ? 'all' : null);
+      
+      if (!effectiveSearchBranchFilter) {
+        return { data: [], total: 0, totalPages: 0 };
+      }
+
+      const isAllBranches = effectiveSearchBranchFilter === 'all';
+
+      try {
+        const params = {
+          search: query,
+          condition: DEFAULT_CONTRACT_CONDITION,
+          page,
+        };
+
+        // Faqat "Barcha filiallar" tanlanmagan va activeWhsCode mavjud bo'lsa whsCode qo'shish
+        // "Barcha filiallar" tanlanganida whsCode umuman yuborilmaydi
+        if (!isAllBranches && activeWhsCode) {
+          params.whsCode = activeWhsCode;
+        }
+
+        const response = await mutateContractTerms(params);
+
+        const items = Array.isArray(response?.items)
+          ? response.items
+          : Array.isArray(response)
+            ? response
+            : response?.data || [];
+
+        const normalizedItems = normalizeContractItems(items);
+
+        return {
+          data: normalizedItems,
+          total: normalizedItems.length,
+          totalPages: 1,
+        };
+      } catch (err) {
+        return { data: [], total: 0, totalPages: 0 };
+      }
+    },
+    [activeWhsCode, contractWhsCode, mutateContractTerms, normalizeContractItems, searchBranchFilter]
+  );
+
+  const handleSelectDevice = useCallback(
+    (item) => {
+      const deviceId = item.id ?? item.name;
+      const itemCode = resolveItemCode(item);
+      // Item ichida WhsCode bo'lsa, uni ishlatish, aks holda activeWhsCode dan foydalanish
+      const itemWhsCode = item?.whsCode || item?.raw?.WhsCode || activeWhsCode;
+      const itemWhsName = item?.whsName || item?.raw?.WhsName || '';
+      let wasAdded = false;
+
+      setSelectedDevices((prev) => {
+        const exists = prev.some((device) => device.id === deviceId);
+        if (exists) {
+          return prev;
+        }
+        wasAdded = true;
+        return [
+          ...prev,
+          {
+            ...item,
+            id: deviceId,
+            rentPeriod: DEFAULT_RENT_PERIOD,
+            firstPayment: '',
+            imeiOptions: [],
+            imeiValue: '',
+            imeiLoading: true,
+            imeiError: null,
+            whsCode: itemWhsCode,
+            whsName: itemWhsName,
+          },
+        ];
+      });
+
+      setSearchTerm('');
+      setIsSuggestionsOpen(false);
+
+      // Agar item ichida whsCode bo'lsa va u branchFilterOptions ichida bo'lsa, searchBranchFilter ni o'rnatish
+      if (wasAdded && itemWhsCode && branchFilterOptions?.length && setValue) {
+        const hasItemWhsCode = branchFilterOptions.some(
+          (opt) => String(opt.value) === String(itemWhsCode)
+        );
+        if (hasItemWhsCode) {
+          setValue('searchBranchFilter', itemWhsCode);
+        }
+        
+        fetchDeviceSeries({
+          deviceId,
+          itemCode,
+          whsCode: itemWhsCode,
+          whsName: itemWhsName,
+        });
+      } else if (wasAdded && itemWhsCode) {
+        fetchDeviceSeries({
+          deviceId,
+          itemCode,
+          whsCode: itemWhsCode,
+          whsName: itemWhsName,
+        });
+      }
+    },
+    [activeWhsCode, fetchDeviceSeries, resolveItemCode, branchFilterOptions, setValue]
+  );
 
   const renderIphoneItem = useCallback(
     (item) => (
@@ -596,6 +903,22 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         <span className={styles['search-item-name']}>{item.name}</span>
         <span className={styles['search-item-meta']}>
           {item.storage} • {item.color}
+          {item.imei && (
+            <>
+              {' • '}
+              <span className={styles['search-item-imei']}>
+                IMEI: {item.imei}
+              </span>
+            </>
+          )}
+          {item.onHand && (
+            <>
+              {' • '}
+              <span className={styles['search-item-onhand']}>
+                {item.onHand}
+              </span>
+            </>
+          )}
         </span>
         <span className={styles['search-item-price']}>{item.price}</span>
       </div>
@@ -725,10 +1048,23 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 }}
               />
               <span className={styles['search-field-wrapper-inner-text']}>
-                Maximum limit: 20 000 000 so'm
-                {/* {formatCurrencyUZS(leadData?.finalLimit)} */}
+                Maximum limit:{' '}
+                {leadData?.finalLimit
+                  ? formatCurrencyUZS(leadData.finalLimit)
+                  : "Ma'lumot yo'q"}
               </span>
-
+              {branchFilterOptions.length > 0 && (
+                <div className={styles['search-field-branch-filter']}>
+                  <FormField
+                    label="Filial bo'yicha qidirish"
+                    type="select"
+                    options={branchFilterOptions}
+                    name="searchBranchFilter"
+                    disabled={!canEdit}
+                    control={control}
+                  />
+                </div>
+              )}
               {isSuggestionsOpen && searchTerm.trim() && canEdit && (
                 <SearchField
                   renderItem={renderIphoneItem}

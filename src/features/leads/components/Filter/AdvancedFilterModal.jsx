@@ -113,8 +113,11 @@ export default function AdvancedFilterModal({
   });
 
   useEffect(() => {
-    reset(defaults);
-  }, [defaults, reset]);
+    if (isOpen) {
+      reset(defaults);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaults, isOpen]);
 
   // Sync local columns when modal opens or external state changes
   useEffect(() => {

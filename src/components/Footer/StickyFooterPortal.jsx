@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export default function StickyFooterPortal({ children }) {
   const [style, setStyle] = useState({});
+  const styleRef = useRef({});
 
   const update = useCallback(() => {
     if (typeof document === 'undefined') return;
@@ -43,14 +44,24 @@ export default function StickyFooterPortal({ children }) {
       width = Math.max(0, rightEdge - left);
     }
 
-    setStyle({
+    const newStyle = {
       position: 'fixed',
       left: `${left}px`,
       width: `${width}px`,
       bottom: 0,
       zIndex: 999,
       pointerEvents: 'auto',
-    });
+    };
+
+    // Faqat o'zgarganda setStyle ni chaqirish
+    const currentStyle = styleRef.current;
+    if (
+      currentStyle.left !== newStyle.left ||
+      currentStyle.width !== newStyle.width
+    ) {
+      styleRef.current = newStyle;
+      setStyle(newStyle);
+    }
   }, []);
 
   useEffect(() => {
