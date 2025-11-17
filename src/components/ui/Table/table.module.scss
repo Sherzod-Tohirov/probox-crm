@@ -72,6 +72,7 @@
 
   @media (max-width: (v.$breakpoint-md - 1)) {
     font-size: 3rem; // Smaller font for mobile
+    width: 100%; // Fill container width on tablet/mobile
     min-width: 600px; // Ensure horizontal scrolling on mobile
   }
 

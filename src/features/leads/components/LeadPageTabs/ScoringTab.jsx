@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Row } from '@components/ui';
+import { Col, Row, Typography } from '@components/ui';
 import FormField from '../LeadPageForm/FormField';
 import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
@@ -10,7 +10,9 @@ import { getAge } from '@/utils/getAge';
 import { calculateLeadLimit } from '@/utils/calculateLeadLimit';
 import { PULT } from '../../utils/constants';
 import formatterCurrency from '@/utils/formatterCurrency';
+import { normalizeNumber } from '../../utils/helpers';
 import moment from 'moment';
+import _ from 'lodash';
 
 // Address fields moved to General Information in LeadPage
 
@@ -96,6 +98,11 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
           ? ''
           : value;
       };
+      const formatCurrencyValue = (value) => {
+        const num = normalizeNumber(value);
+        if (num === null) return '';
+        return formatterCurrency(num);
+      };
       reset({
         clientFullName: leadData.clientFullName,
         birthDate: formatDate(leadData.birthDate),
@@ -103,13 +110,13 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         age: leadData.age,
         score: leadData.score,
         katm: isNotFalsy(leadData.katm),
-        katmPayment: isNotFalsy(leadData.katmPayment),
+        katmPayment: formatCurrencyValue(leadData.katmPayment),
         paymentHistory: isNotFalsy(leadData.paymentHistory),
-        mib: isNotFalsy(leadData.mib),
+        mib: formatCurrencyValue(leadData.mib),
         mibIrresponsible: leadData.mibIrresponsible,
-        aliment: isNotFalsy(leadData.aliment),
-        officialSalary: isNotFalsy(leadData.officialSalary),
-        finalLimit: isNotFalsy(leadData.finalLimit),
+        aliment: formatCurrencyValue(leadData.aliment),
+        officialSalary: formatCurrencyValue(leadData.officialSalary),
+        finalLimit: formatCurrencyValue(leadData.finalLimit),
         finalPercentage: isNotFalsy(leadData.finalPercentage),
         acceptedReason: isNotFalsy(leadData.acceptedReason),
       });
@@ -185,7 +192,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
       PULT
     );
 
-    setValue('finalLimit', formatterCurrency(computed), {
+    setValue('finalLimit', formatterCurrency(_.round(computed, -3)), {
       shouldValidate: true,
     });
     if (!computed || computed <= 0) {
@@ -347,45 +354,70 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         </FieldGroup>
 
         <FieldGroup title="Yakuniy ma'lumotlar">
-          <Row>
-            <span
-              style={{
-                fontSize: '3.5rem',
-                fontWeight: 600,
-                color:
-                  limitStatus === 'in_progress'
-                    ? 'var(--info-color)'
-                    : limitStatus === 'no_limit'
-                      ? 'var(--danger-color)'
-                      : 'var(--success-color)',
-              }}
-            >
-              {getLimitText(limitStatus)}
-            </span>
+          <Row gutter={3}>
+            <Col>
+              <Row>
+                <span
+                  style={{
+                    fontSize: '3.5rem',
+                    fontWeight: 600,
+                    color:
+                      limitStatus === 'in_progress'
+                        ? 'var(--info-color)'
+                        : limitStatus === 'no_limit'
+                          ? 'var(--danger-color)'
+                          : 'var(--success-color)',
+                  }}
+                >
+                  {getLimitText(limitStatus)}
+                </span>
+              </Row>
+            </Col>
+            <Col>
+              <Row direction={'row'} gutter={4}>
+                <Col>
+                  <Row gutter={1}>
+                    <Col>
+                      <FormField
+                        name="finalLimit"
+                        label="Yakuniy limit"
+                        control={control}
+                        type="currency"
+                        disabled={true}
+                      />
+                    </Col>
+                    {leadData?.finalPercentage && (
+                      <Col>
+                        <Typography variant="caption" color="warning">
+                          Limit 1 oy uchun keltirilgan
+                        </Typography>
+                      </Col>
+                    )}
+                  </Row>
+                </Col>
+                <Col>
+                  <FormField
+                    name="finalPercentage"
+                    label="Yakuniy foiz"
+                    control={control}
+                    type="number"
+                    disabled={!canEdit}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="acceptedReason"
+                    label="Qabul qilingan sabab"
+                    control={control}
+                    type="select"
+                    options={acceptedReasonOptions}
+                    placeholderOption={true}
+                    disabled={!canEdit}
+                  />
+                </Col>
+              </Row>
+            </Col>
           </Row>
-          <FormField
-            name="finalLimit"
-            label="Yakuniy limit"
-            control={control}
-            type="currency"
-            disabled={true}
-          />
-          <FormField
-            name="finalPercentage"
-            label="Yakuniy foiz"
-            control={control}
-            type="number"
-            disabled={!canEdit}
-          />
-          <FormField
-            name="acceptedReason"
-            label="Qabul qilingan sabab"
-            control={control}
-            type="select"
-            options={acceptedReasonOptions}
-            placeholderOption={true}
-            disabled={!canEdit}
-          />
         </FieldGroup>
       </form>
 

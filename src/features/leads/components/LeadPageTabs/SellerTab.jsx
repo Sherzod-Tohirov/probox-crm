@@ -7,7 +7,7 @@ import useSellerForm from '../../hooks/useSellerForm.jsx';
 import styles from './leadPageTabs.module.scss';
 import { useSelectOptions } from '../../hooks/useSelectOptions.jsx';
 import moment from 'moment';
-import SearchField from '@components/ui/Input/SearchField';
+import SearchField from '@components/ui/Input/components/SearchField';
 import useIsMobile from '@hooks/useIsMobile';
 import { Button } from '@components/ui';
 import useMutateContractTerms from '@/hooks/data/leads/useMutateContractTerms';
@@ -181,7 +181,9 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       setValue('purchaseDate', moment().format('DD.MM.YYYY'));
     }
   }, [fieldSellType, setValue, fieldPurchase]);
-
+  const isAcceptedFinalPercentage =
+    Number(leadData.finalPercentage) > 0 &&
+    Number(leadData.finalPercentage) <= 25;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
@@ -970,11 +972,15 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             disabled={!canEdit}
           />
         </FieldGroup>
-        {!leadData?.finalLimit && fieldSellType === 'nasiya' && canEdit && (
-          <Row className={styles['error-message']}>
-            Xaridni tasdiqlash uchun limit mavjud emas
-          </Row>
-        )}
+        {!leadData?.finalLimit &&
+          fieldSellType === 'nasiya' &&
+          canEdit &&
+          !isAcceptedFinalPercentage &&
+          !leadData?.acceptedReason && (
+            <Row className={styles['error-message']}>
+              Xaridni tasdiqlash uchun limit mavjud emas
+            </Row>
+          )}
         <FieldGroup title="Xarid ma'lumotlari">
           <FormField
             name="saleType"
@@ -989,7 +995,10 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             label="Xarid amalga oshdimi?"
             control={control}
             type={
-              !leadData.finalLimit && fieldSellType === 'nasiya'
+              !leadData.finalLimit &&
+              fieldSellType === 'nasiya' &&
+              !isAcceptedFinalPercentage &&
+              !leadData?.acceptedReason
                 ? 'confirmOnlyFalse'
                 : 'confirm'
             }
@@ -1009,12 +1018,14 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             name="passportId"
             label="Pasport ID"
             control={control}
+            type="passportId"
             disabled={!canEdit}
           />
           <FormField
             name="jshshir"
             label="JSHSHIR"
             control={control}
+            type="jshshir"
             disabled={!canEdit}
           />
         </FieldGroup>

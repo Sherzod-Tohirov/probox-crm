@@ -633,6 +633,17 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'meetingHappened',
+        title: "Uchrashuv bo'ldimi",
+        icon: 'calendar',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (column) => {
+          const { meetingHappened } = column;
+          return <ConfirmBadge confirm={meetingHappened} />;
+        },
+      },
+      {
         key: 'meetingDate',
         title: 'Uchrashuv sanasi',
         icon: 'calendar',

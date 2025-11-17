@@ -82,10 +82,10 @@ const ManualPaymentCell = ({ column }) => {
   const modalId = `${column?.['DocEntry']}-manual-payment-modal`;
   const {
     reset,
-    register,
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { isDirty },
   } = useForm({
     defaultValues: {
@@ -176,8 +176,9 @@ const ManualPaymentCell = ({ column }) => {
             canClickIcon={false}
             options={paymentOptions}
             variant={'outlined'}
-            value={partialField} // Add controlled value
-            {...register('partial')}
+            control={control}
+            value={partialField}
+            name="partial"
           />
         </ModalCell>
       ) : null}

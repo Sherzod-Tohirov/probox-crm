@@ -89,7 +89,6 @@ export default function Filter({ onFilter, isExpanded = false }) {
   });
 
   const watchedFields = useWatchFilterFields(watch);
-  console.log(watchedFields, 'watched fields');
   const handleSearchSelect = useCallback((clientData, filterKey) => {
     setValue(filterKey, clientData);
     dispatch(
@@ -359,6 +358,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   variant={'outlined'}
                   label={'Boshlanish vaqti'}
                   canClickIcon={false}
+                  datePickerOptions={{ maxDate: watchedFields.endDate }}
                   type={'date'}
                   control={control}
                 />
@@ -370,6 +370,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
                   variant={'outlined'}
                   label={'Tugash vaqti'}
                   canClickIcon={false}
+                  datePickerOptions={{ minDate: watchedFields.startDate }}
                   type={'date'}
                   error={errors?.endDate?.message}
                   control={control}

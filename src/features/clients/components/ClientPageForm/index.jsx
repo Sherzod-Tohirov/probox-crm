@@ -468,8 +468,13 @@ function ClientPageForm({
                     <Input
                       name={'agreementDate'}
                       type="date"
+                      includeTime
                       variant={'filled'}
                       size={isMobile ? 'full' : 'long'}
+                      datePickerOptions={{
+                        minuteIncrement: 60,
+                        allowInput: false,
+                      }}
                       hasIcon={false}
                       control={control}
                     />

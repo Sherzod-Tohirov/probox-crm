@@ -58,7 +58,7 @@ export default function useLeadPageData(leadId) {
     (tabKey) => {
       // If lead is blocked, no one can edit except for blocked status itself
       if (isBlocked) return false;
-      
+
       if (tabKey === 'all') {
         return hasRole(currentUserRole, [
           'Operator1',
@@ -86,14 +86,14 @@ export default function useLeadPageData(leadId) {
 
   const canEditStatus = useMemo(() => {
     if (isBlocked) return false;
-    return hasRole(currentUserRole, ['OperatorM']);
+    return hasRole(currentUserRole, ['OperatorM', 'CEO', 'Scoring']);
   }, [currentUserRole, isBlocked]);
 
-  const canEditBlockedStatus = hasRole(currentUserRole, ['OperatorM', 'CEO']);
+  const canEditBlockedStatus = hasRole(currentUserRole, ['CEO']);
 
   // File handling
   const serverFiles = useMemo(() => {
-    const list = Array.isArray(filesData) ? filesData : filesData?.data ?? [];
+    const list = Array.isArray(filesData) ? filesData : (filesData?.data ?? []);
     return list.map((f) => ({
       id: f._id || f.id || f.key,
       preview: f.url,

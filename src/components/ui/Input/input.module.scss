@@ -53,7 +53,7 @@
   &.select {
     appearance: none;
     color: v.$filter-input-placeholder-color !important;
-    min-width: 0; // Prevent content-based width in flex containers
+    min-width: 65px; // Prevent content-based width in flex containers
     width: 100%;
   }
 

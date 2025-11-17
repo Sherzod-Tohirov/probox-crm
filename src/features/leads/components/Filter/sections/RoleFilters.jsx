@@ -111,6 +111,23 @@ export default function RoleFilters({
               control={control}
             />
           </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <SelectField
+              name="meetingHappened"
+              label="Uchrashuv bo'ldimi"
+              options={booleanOptionsAll}
+              control={control}
+            />
+          </Col>
         </>
       )}
 

@@ -130,12 +130,14 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="jshshir"
             label="JSHSHIR"
             control={control}
+            type="jshshir"
             disabled={!canEdit}
           />
           <FormField
             name="passportId"
             label="Passport ID"
             control={control}
+            type="passportId"
             disabled={!canEdit}
           />
         </FieldGroup>

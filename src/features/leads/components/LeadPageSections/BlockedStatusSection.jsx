@@ -48,14 +48,14 @@ export default function BlockedStatusSection({ lead, canEdit, onSave }) {
               label="Holat"
               type="select"
               control={blockedControl}
-              disabled={true}
+              disabled={!canEdit}
               span={{ xs: 24, md: 12 }}
               placeholderOption={false}
               options={blockedOptions}
               defaultValue={lead?.isBlocked ? 'true' : 'false'}
             />
           </Col>
-          {/* <Col>
+          <Col>
             {canEdit && (
               <Row>
                 <Col>
@@ -69,7 +69,7 @@ export default function BlockedStatusSection({ lead, canEdit, onSave }) {
                 </Col>
               </Row>
             )}
-          </Col> */}
+          </Col>
         </Row>
       </form>
     </FieldGroup>
