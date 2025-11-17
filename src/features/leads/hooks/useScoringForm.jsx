@@ -2,38 +2,12 @@ import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
 import useAlert from '@/hooks/useAlert';
 import moment from 'moment';
-
-const normalizeNumber = (value) => {
-  if (value === null || value === undefined || value === '') return null;
-  if (typeof value === 'number') {
-    return Number.isNaN(value) ? null : value;
-  }
-  if (typeof value === 'string') {
-    const cleaned = value.replace(/[^0-9,.-]/g, '').replace(/,/g, '.');
-    if (!cleaned || cleaned === '-' || cleaned === '.') return null;
-    const num = Number(cleaned);
-    return Number.isNaN(num) ? null : num;
-  }
-  return null;
-};
-
-const parseNumber = (value) => {
-  const normalized = normalizeNumber(value);
-  return normalized === null ? '' : normalized;
-};
-
-const parseBoolean = (value) => {
-  if (value === '' || value === null || value === undefined) return '';
-  if (typeof value === 'boolean') return value;
-  if (typeof value === 'number') return value > 0;
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === 'null' || normalized === '-') return '';
-    if (['true', '1', 'ha', 'yes'].includes(normalized)) return true;
-    if (['false', '0', "yo'q", 'no'].includes(normalized)) return false;
-  }
-  return Boolean(value);
-};
+import formatterCurrency from '@/utils/formatterCurrency';
+import {
+  normalizeNumber,
+  parseNumber,
+  parseBoolean,
+} from '@/features/leads/utils/helpers';
 
 const SCORING_FIELDS = [
   'clientFullName',
@@ -50,10 +24,17 @@ const SCORING_FIELDS = [
   'officialSalary',
   'finalLimit',
   'finalPercentage',
-  'acceptedReason'];
+  'acceptedReason',
+];
 
 export default function useScoringForm(leadId, leadData, onSuccess) {
   const { alert } = useAlert();
+  const formatCurrencyValue = (value) => {
+    const num = normalizeNumber(value);
+    if (num === null) return '';
+    return formatterCurrency(num);
+  };
+
   const form = useForm({
     defaultValues: {
       clientFullName: leadData?.clientFullName || '',
@@ -68,16 +49,16 @@ export default function useScoringForm(leadId, leadData, onSuccess) {
       age: parseNumber(leadData?.age),
       score: parseNumber(leadData?.score),
       katm: parseNumber(leadData?.katm),
-      katmPayment: parseNumber(leadData?.katmPayment),
+      katmPayment: formatCurrencyValue(leadData?.katmPayment),
       paymentHistory: leadData?.paymentHistory || '',
-      mib: parseNumber(leadData?.mib),
+      mib: formatCurrencyValue(leadData?.mib),
       mibIrresponsible:
         leadData?.mibIrresponsible === undefined
           ? ''
           : parseNumber(leadData?.mibIrresponsible),
-      aliment: parseNumber(leadData?.aliment),
-      officialSalary: parseNumber(leadData?.officialSalary),
-      finalLimit: parseNumber(leadData?.finalLimit),
+      aliment: formatCurrencyValue(leadData?.aliment),
+      officialSalary: formatCurrencyValue(leadData?.officialSalary),
+      finalLimit: formatCurrencyValue(leadData?.finalLimit),
       finalPercentage: parseNumber(leadData?.finalPercentage),
       acceptedReason: leadData?.acceptedReason || '',
     },

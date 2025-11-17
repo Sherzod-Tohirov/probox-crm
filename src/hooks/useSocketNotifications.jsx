@@ -211,7 +211,7 @@ export default function useSocketNotifications() {
     socket.on('connect_error', onError);
     socket.on('new_leads', onNewLeads);
     socket.on('scoring_lead', onScoringLead);
-
+    
     return () => {
       socket.off('connect', onConnect);
       socket.off('connect_error', onError);
