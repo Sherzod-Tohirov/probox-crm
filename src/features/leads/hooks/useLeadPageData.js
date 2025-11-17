@@ -31,14 +31,28 @@ export default function useLeadPageData(leadId) {
   const [passportFiles, setPassportFiles] = useState([]);
 
   // Fetch data
-  const { data, isLoading } = useFetchLeadById(leadId);
+  const { data, isLoading, isError, error } = useFetchLeadById(leadId, {
+    queryOptions: {
+      retry: 0,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  });
   const { data: lead } = data ?? {};
   const { data: executors = [] } = useFetchExecutors({
     include_role: ['Operator1', 'Operator2', 'Seller', 'Scoring', 'OperatorM'],
   });
 
   const cardCode = lead?.cardCode ?? leadId;
-  const { data: filesData } = useFetchLeadFiles(cardCode, { retry: 2 });
+  const { data: filesData } = useFetchLeadFiles(cardCode, {
+    retry: 2,
+    enabled: !!cardCode && !isError,
+    queryOptions: {
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    },
+  });
 
   // Mutations
   const updateLead = useMutateLead(leadId, {
@@ -154,6 +168,8 @@ export default function useLeadPageData(leadId) {
   return {
     lead,
     isLoading,
+    isError,
+    error,
     executors,
     currentUserRole,
     isOperatorManager,
