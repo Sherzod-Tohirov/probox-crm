@@ -183,7 +183,7 @@ export default function Leads() {
     };
 
     window.addEventListener('probox:new-lead', onNew);
-    return () => window.removeEventListener('probox:new-lead', onNew);
+    return () => window.removeEventListener('', onNew);
   }, [refetch]);
 
   return (
