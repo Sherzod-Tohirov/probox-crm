@@ -1,7 +1,10 @@
 import { Col, Input } from '@components/ui';
 import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
-import { booleanOptionsAll } from '../../../utils/options';
+import {
+  booleanOptionsAll,
+  passportVisitOptions,
+} from '../../../utils/options';
 import styles from '../style.module.scss';
 import hasRole from '@/utils/hasRole';
 
@@ -69,6 +72,23 @@ export default function RoleFilters({
               name="interested"
               label="Qiziqish bildirildimi"
               options={booleanOptionsAll}
+              control={control}
+            />
+          </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <SelectField
+              name="passportVisit"
+              label="Passport/Tashrif"
+              options={passportVisitOptions}
               control={control}
             />
           </Col>
