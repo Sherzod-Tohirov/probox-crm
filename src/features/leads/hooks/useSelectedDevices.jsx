@@ -7,7 +7,7 @@ import {
   calculatePaymentDetails,
 } from '../utils/deviceUtils';
 
-export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
+export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionFilter }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
 
   const handleImeiSelect = useCallback((deviceId, value) => {
@@ -137,8 +137,17 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
   }, [rentPeriodOptions, monthlyLimit]);
 
   const selectedDeviceData = useMemo(
-    () =>
-      selectedDevices.map((device) => ({
+    () => {
+      // Condition filter bo'yicha filter qilish
+      let filteredDevices = selectedDevices;
+      if (conditionFilter && conditionFilter !== 'all') {
+        filteredDevices = selectedDevices.filter((device) => {
+          const deviceCondition = device?.condition ?? device?.raw?.U_PROD_CONDITION ?? device?.raw?.u_prod_condition ?? '';
+          return deviceCondition === conditionFilter;
+        });
+      }
+
+      return filteredDevices.map((device) => ({
         id: device.id ?? device.name,
         name: device.name,
         storage: device.storage,
@@ -180,6 +189,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
           const actual = getActualFirstPayment(device);
           return actual || '';
         })(),
+        condition: device?.condition ?? device?.raw?.U_PROD_CONDITION ?? device?.raw?.u_prod_condition ?? '',
         monthlyPayment: (() => {
           const totalPrice = extractNumericValue(device.price);
           const period =
@@ -226,8 +236,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
 
           return formatCurrencyUZS(paymentDetails.grandTotal);
         })(),
-      })),
-    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment]
+      }));
+    },
+    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment, conditionFilter]
   );
 
   const totalSelectedPrice = useMemo(

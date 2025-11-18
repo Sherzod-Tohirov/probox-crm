@@ -37,6 +37,9 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap) => {
     const whsCode = item?.WhsCode ?? item?.whsCode ?? '';
     const whsName = item?.WhsName ?? item?.whsName ?? branchCodeToNameMap.get(String(whsCode)) ?? '';
 
+    // Condition ma'lumotini U_PROD_CONDITION maydonidan olamiz
+    const condition = item?.U_PROD_CONDITION ?? item?.u_prod_condition ?? '';
+
     return {
       id:
         item?.id ??
@@ -51,6 +54,7 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap) => {
       onHand: onHandText,
       whsCode: whsCode,
       whsName: whsName,
+      condition: condition,
       raw: item,
     };
   });
@@ -70,6 +74,12 @@ export const resolveItemCode = (item) => {
 
 export const DEFAULT_CONTRACT_CONDITION = 'Yangi';
 export const DEFAULT_RENT_PERIOD = 1;
+
+export const CONTRACT_CONDITION_OPTIONS = [
+  { value: 'all', label: 'Barchasi' },
+  { value: 'Yangi', label: 'Yangi' },
+  { value: 'B/U', label: 'B/U' },
+];
 
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {

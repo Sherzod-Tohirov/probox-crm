@@ -88,13 +88,19 @@ export const postFileUpload = async ({ cardCode, formData }) => {
 
 export const fetchContractTermsItems = async ({ whsCode, search, condition }) => {
   try {
-    const response = await api.get('/items', {
-      params: {
-        whsCode,
-        search,
-        condition,
-      },
-    });
+    const params = {
+      search,
+    };
+
+    if (whsCode) {
+      params.whsCode = whsCode;
+    }
+
+    if (condition) {
+      params.condition = condition;
+    }
+
+    const response = await api.get('/items', { params });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

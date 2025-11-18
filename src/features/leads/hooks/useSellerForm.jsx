@@ -34,6 +34,8 @@ export default function useSellerForm(leadId, leadData, onSuccess) {
       saleType: leadData?.saleType || '',
       passportId: leadData?.passportId || '',
       jshshir: leadData?.jshshir || '',
+      conditionFilter: 'all',
+      searchBranchFilter: 'all',
     },
   });
 
