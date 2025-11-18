@@ -3,7 +3,7 @@ import { Col, Input } from '@components/ui';
 import FormField from '../../LeadPageForm/FormField';
 import SearchField from '@components/ui/Input/components/SearchField';
 import styles from '../leadPageTabs.module.scss';
-import { formatCurrencyUZS } from '../../../utils/deviceUtils';
+import { formatCurrencyUZS, CONTRACT_CONDITION_OPTIONS } from '../../../utils/deviceUtils';
 
 export default function DeviceSearchField({
   canEdit,
@@ -102,6 +102,16 @@ export default function DeviceSearchField({
           />
         </div>
       )}
+      <div className={styles['search-field-branch-filter']}>
+        <FormField
+          label="Holat bo'yicha qidirish"
+          type="select"
+          options={CONTRACT_CONDITION_OPTIONS}
+          name="conditionFilter"
+          disabled={!canEdit}
+          control={control}
+        />
+      </div>
       {isSuggestionsOpen && searchTerm.trim() && canEdit && (
         <SearchField
           renderItem={renderIphoneItem}
