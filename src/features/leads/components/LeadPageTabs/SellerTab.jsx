@@ -29,6 +29,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { control, reset, watch, setValue } = form || {};
   const fieldBranch = watch?.('branch2');
   const searchBranchFilter = watch?.('searchBranchFilter');
+  const conditionFilter = watch?.('conditionFilter');
   const fieldPurchase = watch('purchase');
   const fieldSellType = watch('saleType');
 
@@ -77,7 +78,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     handleDeleteDevice,
     handleRentPeriodChange,
     handleFirstPaymentChange,
-  } = useSelectedDevices({ rentPeriodOptions, monthlyLimit });
+  } = useSelectedDevices({ rentPeriodOptions, monthlyLimit, conditionFilter });
 
   const { fetchDeviceSeries } = useDeviceSeries({
     branchCodeToNameMap,
@@ -88,6 +89,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     activeWhsCode,
     searchBranchFilter,
     branchCodeToNameMap,
+    conditionFilter,
   });
 
   const { handleSelectDevice } = useDeviceSelection({
@@ -117,6 +119,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         saleType: leadData.saleType,
         passportId: leadData.passportId,
         jshshir: leadData.jshshir,
+        conditionFilter: 'all',
+        searchBranchFilter: 'all',
       });
     }
   }, [leadData, reset, form]);

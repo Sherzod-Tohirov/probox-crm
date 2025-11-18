@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 import useMutateContractTerms from '@/hooks/data/leads/useMutateContractTerms';
-import { normalizeContractItems, DEFAULT_CONTRACT_CONDITION } from '../utils/deviceUtils';
+import { normalizeContractItems } from '../utils/deviceUtils';
 
 export const useDeviceSearch = ({
   activeWhsCode,
   searchBranchFilter,
   branchCodeToNameMap,
+  conditionFilter,
 }) => {
   const { mutateAsync: mutateContractTerms } = useMutateContractTerms();
 
@@ -28,12 +29,16 @@ export const useDeviceSearch = ({
       try {
         const params = {
           search: query,
-          condition: DEFAULT_CONTRACT_CONDITION,
           page,
         };
 
         if (!isAllBranches && activeWhsCode) {
           params.whsCode = activeWhsCode;
+        }
+
+        // condition parametrini faqat 'all' dan boshqa bo'lsa yuboramiz
+        if (conditionFilter && conditionFilter !== 'all') {
+          params.condition = conditionFilter;
         }
 
         const response = await mutateContractTerms(params);
@@ -55,7 +60,7 @@ export const useDeviceSearch = ({
         return { data: [], total: 0, totalPages: 0 };
       }
     },
-    [activeWhsCode, searchBranchFilter, mutateContractTerms, branchCodeToNameMap]
+    [activeWhsCode, searchBranchFilter, conditionFilter, mutateContractTerms, branchCodeToNameMap]
   );
 
   return { handleDeviceSearch };

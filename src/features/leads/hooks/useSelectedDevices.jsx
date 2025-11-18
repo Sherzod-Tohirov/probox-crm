@@ -7,7 +7,7 @@ import {
   calculatePaymentDetails,
 } from '../utils/deviceUtils';
 
-export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
+export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionFilter }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
 
   const handleImeiSelect = useCallback((deviceId, value) => {
@@ -23,8 +23,8 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
   }, []);
 
   const handleRentPeriodChange = useCallback((deviceId, value) => {
-    setSelectedDevices((prev) =>
-      prev.map((device) => {
+    setSelectedDevices((prev) => {
+      const updated = prev.map((device) => {
         if (device.id !== deviceId) return device;
 
         const newPeriod =
@@ -35,30 +35,44 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
         // Agar firstPayment bo'sh bo'lsa, avtomatik hisoblaymiz
         const totalPrice = extractNumericValue(device.price);
         const currentFirstPayment =
-          device.firstPayment === '' || device.firstPayment === null
-            ? 0
+          device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+            ? null
             : Number(device.firstPayment);
 
         let newFirstPayment = currentFirstPayment;
+        const isManual = device.isFirstPaymentManual === true;
 
-        // Agar firstPayment bo'sh bo'lsa yoki 0 bo'lsa, avtomatik hisoblaymiz
-        if (!currentFirstPayment && totalPrice && monthlyLimit) {
+        // Agar firstPayment bo'sh bo'lsa yoki null bo'lsa, avtomatik hisoblaymiz
+        // Agar foydalanuvchi qo'lda kiritgan bo'lsa, uni saqlaymiz
+        // Aks holda (avtomatik hisoblangan bo'lsa), period o'zgarganda yangi calculatedFirstPayment ni ishlatamiz
+        if (totalPrice && monthlyLimit) {
           const paymentDetails = calculatePaymentDetails({
             price: totalPrice,
             period: newPeriod,
-            monthlyLimit: monthlyLimit || 0,
+            monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: 0,
           });
-          newFirstPayment = paymentDetails.calculatedFirstPayment;
+          
+          // Agar foydalanuvchi qo'lda kiritgan bo'lsa, uni saqlaymiz
+          if (isManual && currentFirstPayment !== null && currentFirstPayment !== undefined && currentFirstPayment > 0) {
+            newFirstPayment = currentFirstPayment;
+          } else {
+            // Avtomatik hisoblangan yoki bo'sh bo'lsa, yangi calculatedFirstPayment ni ishlatamiz
+            newFirstPayment = paymentDetails.calculatedFirstPayment;
+          }
         }
 
         return {
           ...device,
           rentPeriod: newPeriod,
-          firstPayment: newFirstPayment || '',
+          firstPayment: newFirstPayment !== null && newFirstPayment !== undefined ? newFirstPayment : '',
+          // Agar avtomatik hisoblangan bo'lsa, flag ni false qilib qo'yamiz
+          isFirstPaymentManual: isManual && newFirstPayment === currentFirstPayment,
         };
-      })
-    );
+      });
+      
+      return updated;
+    });
   }, [monthlyLimit]);
 
   const handleFirstPaymentChange = useCallback((deviceId, rawValue) => {
@@ -81,6 +95,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
                 const parsed = Number(sanitized);
                 return Number.isNaN(parsed) ? '' : parsed;
               })(),
+              isFirstPaymentManual: true, // Foydalanuvchi qo'lda kiritdi
             }
           : device
       )
@@ -122,8 +137,17 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
   }, [rentPeriodOptions, monthlyLimit]);
 
   const selectedDeviceData = useMemo(
-    () =>
-      selectedDevices.map((device) => ({
+    () => {
+      // Condition filter bo'yicha filter qilish
+      let filteredDevices = selectedDevices;
+      if (conditionFilter && conditionFilter !== 'all') {
+        filteredDevices = selectedDevices.filter((device) => {
+          const deviceCondition = device?.condition ?? device?.raw?.U_PROD_CONDITION ?? device?.raw?.u_prod_condition ?? '';
+          return deviceCondition === conditionFilter;
+        });
+      }
+
+      return filteredDevices.map((device) => ({
         id: device.id ?? device.name,
         name: device.name,
         storage: device.storage,
@@ -151,16 +175,21 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
             return '';
           }
 
-          const actual = getActualFirstPayment(device);
           const userFirstPayment =
             device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
               ? null
               : Number(device.firstPayment);
-          // Agar foydalanuvchi kiritgan bo'lsa, uni qaytaramiz, aks holda calculated
-          return userFirstPayment !== null && Number.isFinite(userFirstPayment) && userFirstPayment > 0
-            ? userFirstPayment
-            : actual || '';
+
+          // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni qaytaramiz
+          if (userFirstPayment !== null && Number.isFinite(userFirstPayment) && userFirstPayment > 0) {
+            return userFirstPayment;
+          }
+
+          // Aks holda avtomatik hisoblaymiz
+          const actual = getActualFirstPayment(device);
+          return actual || '';
         })(),
+        condition: device?.condition ?? device?.raw?.U_PROD_CONDITION ?? device?.raw?.u_prod_condition ?? '',
         monthlyPayment: (() => {
           const totalPrice = extractNumericValue(device.price);
           const period =
@@ -207,8 +236,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit }) => {
 
           return formatCurrencyUZS(paymentDetails.grandTotal);
         })(),
-      })),
-    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment]
+      }));
+    },
+    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment, conditionFilter]
   );
 
   const totalSelectedPrice = useMemo(

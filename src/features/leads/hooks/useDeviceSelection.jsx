@@ -30,6 +30,7 @@ export const useDeviceSelection = ({
             id: deviceId,
             rentPeriod: DEFAULT_RENT_PERIOD,
             firstPayment: '',
+            isFirstPaymentManual: false, // Flag: foydalanuvchi qo'lda kiritgan yoki yo'q
             imeiOptions: [],
             imeiValue: '',
             imeiLoading: true,
