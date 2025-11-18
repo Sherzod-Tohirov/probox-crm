@@ -140,10 +140,21 @@ export const useSelectedDevicesColumns = ({
         key: 'monthlyPayment',
         title: 'Oylik tolov',
         horizontal: 'start',
-        width: '10%',
+        width: '12%',
         renderCell: (row) => (
           <span className={styles['selected-device-price']}>
             {row.monthlyPayment}
+          </span>
+        ),
+      },
+      {
+        key: 'totalPayment',
+        title: 'Jami to\'lov',
+        horizontal: 'start',
+        width: '12%',
+        renderCell: (row) => (
+          <span className={styles['selected-device-price']}>
+            {row.totalPayment || ''}
           </span>
         ),
       },
