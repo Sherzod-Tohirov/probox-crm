@@ -42,3 +42,14 @@ export const statusFilterOptions = [
   { value: 'Archived', label: 'Arxivlangan' },
   { value: 'Processing', label: 'Jarayonda' },
 ];
+
+export const callCountOptions = [
+  {
+    value: '',
+    label: '-',
+  },
+  ...Array.from({ length: 10 }).map((_, i) => ({
+    value: i + 1,
+    label: `${i + 1}`,
+  })),
+];

@@ -3,6 +3,7 @@ import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
 import {
   booleanOptionsAll,
+  callCountOptions,
   passportVisitOptions,
 } from '../../../utils/options';
 import styles from '../style.module.scss';
@@ -92,6 +93,23 @@ export default function RoleFilters({
               control={control}
             />
           </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <SelectField
+              name="callCount"
+              label="Qo'ng'iroq soni"
+              options={callCountOptions}
+              control={control}
+            />
+          </Col>
         </>
       )}
 
@@ -145,6 +163,23 @@ export default function RoleFilters({
               name="meetingHappened"
               label="Uchrashuv bo'ldimi"
               options={booleanOptionsAll}
+              control={control}
+            />
+          </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <SelectField
+              name="callCount2"
+              label="Qo'ng'iroq soni 2"
+              options={callCountOptions}
               control={control}
             />
           </Col>

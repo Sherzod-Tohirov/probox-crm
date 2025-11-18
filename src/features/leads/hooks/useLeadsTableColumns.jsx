@@ -399,6 +399,18 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'callCount',
+        title: "Qo'ng'iroq soni 1",
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.callCount ?? 0;
+          if (value == 0) return '-';
+          return <span>{value}</span>;
+        },
+      },
+      {
         key: 'operator2',
         title: 'Operator 2',
         icon: 'users',
@@ -452,6 +464,18 @@ export default function useLeadsTableColumns() {
         renderCell: (row) => {
           const value = row.answered2;
           return <ConfirmBadge confirm={value} />;
+        },
+      },
+      {
+        key: 'callCount2',
+        title: "Qo'ng'iroq soni 2",
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.callCount2 ?? 0;
+          if (value == 0) return '-';
+          return <span>{value}</span>;
         },
       },
       {
