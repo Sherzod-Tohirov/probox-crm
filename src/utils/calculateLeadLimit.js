@@ -84,7 +84,6 @@ export function calculateLeadLimit(lead, pult, options) {
     pult.katmScorePercents
   );
   const result = afterHistory * (1 - scorePercent);
-  console.log(result, 'result');
   if (!Number.isFinite(result) || result <= 0) return defaultValue;
 
   let monthly = result * 1; // for one month

@@ -6,7 +6,7 @@ import ModalCell from './helper/ModalCell';
 import ModalWrapper from './helper/ModalWrapper';
 import useMutateClientPageForm from '@hooks/data/clients/useMutateClientPageForm';
 
-import formatDate from '@utils/formatDate';
+import formatDate, { formatDateWithHour } from '@utils/formatDate';
 import styles from './style.module.scss';
 
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,8 +14,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleModal } from '@store/slices/toggleSlice';
 const Title = ({ date }) => {
   if (!date) return '-';
-  if (moment(date, 'DD.MM.YYYY', true).isValid()) return date;
-  return formatDate(date);
+  console.log(date, 'date title');
+  if (moment(date, 'DD.MM.YYYY HH:mm', true).isValid()) return date;
+  console.log(formatDateWithHour(date));
+  return formatDateWithHour(date);
 };
 const AgreementDateCell = ({ column }) => {
   const modalId = `${column?.['DocEntry']}-agreement-date-modal`;
@@ -44,8 +46,8 @@ const AgreementDateCell = ({ column }) => {
 
       const formattedAgreementDate = formatDate(
         data?.agreementDate,
-        'DD.MM.YYYY',
-        'YYYY.MM.DD'
+        'DD.MM.YYYY HH:mm',
+        'YYYY.MM.DD HH:mm'
       );
 
       const payload = {

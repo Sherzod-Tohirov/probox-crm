@@ -20,7 +20,7 @@ import selectOptionsCreator from '@utils/selectOptionsCreator';
 import formatterCurrency from '@utils/formatterCurrency';
 import YandexMap from '@components/ui/Map/YandexMap';
 import { API_CLIENT_IMAGES } from '@utils/apiUtils';
-import formatDate from '@utils/formatDate';
+import formatDate, { formatDateWithHour } from '@utils/formatDate';
 import hasRole from '@utils/hasRole';
 import { store } from '@store/store';
 import { v4 as uuidv4 } from 'uuid';
@@ -102,7 +102,7 @@ function ClientPageForm({
         currentClient?.['Dscription'] || 'iPhone 16 Pro max 256gb desert',
       deadline: formatDate(currentClient?.['DueDate']),
       agreementDate: currentClient?.['NewDueDate']
-        ? formatDate(currentClient['NewDueDate'])
+        ? formatDateWithHour(currentClient['NewDueDate'])
         : '',
       imei: currentClient?.['IntrSerial'] || '0000000000000000',
     },
@@ -274,7 +274,7 @@ function ClientPageForm({
         product:
           currentClient?.['Dscription'] || 'iPhone 16 Pro max 256gb desert',
         deadline: formatDate(currentClient?.['DueDate']),
-        agreementDate: formatDate(currentClient?.['NewDueDate']) || '',
+        agreementDate: formatDateWithHour(currentClient?.['NewDueDate']) || '',
         imei: currentClient?.['IntrSerial'] || '0000000000000000',
       };
 

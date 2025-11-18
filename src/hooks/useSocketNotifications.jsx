@@ -13,6 +13,16 @@ function readFromStorage() {
   } catch (_) {
     return [];
   }
+
+  function toArray(payload) {
+    if (!payload) return [];
+    return (Array.isArray(payload) ? payload : [payload]).filter(Boolean);
+  }
+
+  function dispatchRecordsEvent(eventName, records) {
+    if (!eventName || !records.length) return;
+    window.dispatchEvent(new CustomEvent(eventName, { detail: { records } }));
+  }
 }
 
 function writeToStorage(list) {
@@ -71,10 +81,16 @@ function normalizeLeadToNotification(lead) {
 function normalizeAgreementDateNotification(payload) {
   const id =
     payload?.DocEntry ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const title = "To'lov muddati keldi";
   return {
     id,
-    client: payload,
+    type: 'agreementDate',
+    title,
+    message: [payload?.CardCode, payload?.newDueDate].filter(Boolean).join(' '),
+    createdAt: Date.now(),
+    read: false,
     link: payload?.CardCode ? `/clients/${payload.CardCode}` : undefined,
+    data: payload,
   };
 }
 
@@ -82,7 +98,6 @@ export default function useSocketNotifications() {
   const { user, token } = useSelector((state) => state.auth);
   const socketRef = useRef(null);
   const [notifications, setNotifications] = useState(() => readFromStorage());
-
   const unreadCount = useMemo(
     () => notifications.filter((n) => !n.read).length,
     [notifications]
@@ -184,71 +199,69 @@ export default function useSocketNotifications() {
       console.log('🔴 Socketda xatolik');
     };
 
-    const onNewLeads = (payload) => {
-      console.log(payload, 'socket payload');
-      const records = Array.isArray(payload) ? payload : [payload];
-
-      records.forEach((lead) => {
-        if (!user || !lead) return;
-        if (belongsToCurrentUser(lead, user)) {
-          const notif = normalizeLeadToNotification(lead);
-          addNotification(notif);
-        }
-      });
-      if (records.length) {
-        window.dispatchEvent(
-          new CustomEvent('probox:new-lead', { detail: { records } })
-        );
-      }
-    };
-
-    const onScoringLead = (payload) => {
-      console.log(payload, 'socket payload scoring');
-      const records = Array.isArray(payload) ? payload : [payload];
-
-      records.forEach((lead) => {
-        if (!user || !lead) return;
-        if (user?.U_role === 'Scoring') {
-          const notif = normalizeLeadToNotification(lead);
-          addNotification(notif);
-        }
-      });
-      if (records.length) {
-        window.dispatchEvent(
-          new CustomEvent('probox:new-lead', { detail: { records } })
-        );
-      }
-    };
-
-    const onNewDueDateClientNotification = (payload) => {
-      console.log(payload, 'socket payload');
-      const records = Array.isArray(payload) ? payload : [payload];
-
-      records.forEach((client) => {
-        if (!user || !client) return;
-        if (belongsToCurrentUser(client, user)) {
-          const notif = normalizeAgreementDateNotification(client);
-          addNotification(notif);
-        }
-      });
-      if (records.length) {
-        window.dispatchEvent(
-          new CustomEvent('invoice:agreement-date', { detail: { records } })
-        );
-      }
-    };
-
     socket.on('connect', onConnect);
     socket.on('connect_error', onError);
-    socket.on('new_leads', onNewLeads);
-    socket.on('scoring_lead', onScoringLead);
-    socket.on('invoice:newDueDateNotification', onNewDueDateClientNotification);
+
+    const handlerConfigs = [
+      {
+        event: 'new_leads',
+        logLabel: 'socket payload',
+        browserEvent: 'probox:new-lead',
+        normalize: normalizeLeadToNotification,
+        shouldNotify: (record, currentUser) =>
+          belongsToCurrentUser(record, currentUser),
+      },
+      {
+        event: 'scoring_lead',
+        logLabel: 'socket payload scoring',
+        browserEvent: 'probox:new-lead',
+        normalize: normalizeLeadToNotification,
+        shouldNotify: (_, currentUser) => currentUser?.U_role === 'Scoring',
+      },
+      {
+        event: 'invoice:newDueDateNotification',
+        logLabel: 'socket payload new due date',
+        browserEvent: 'invoice:agreement-date',
+        normalize: normalizeAgreementDateNotification,
+        shouldNotify: (record, currentUser) => {
+          // console.log(record, 'record new due date', currentUser);
+          return belongsToCurrentUser(record, currentUser);
+        },
+      },
+    ];
+
+    const socketHandlers = handlerConfigs.map((config) => {
+      const handler = (payload) => {
+        if (config.logLabel) {
+          console.log(payload, config.logLabel);
+        }
+
+        const records = _.toArray(payload);
+        if (!records.length) return;
+
+        records.forEach((record) => {
+          if (!user || !record) return;
+          if (!config.shouldNotify?.(record, user)) return;
+
+          const notif = config.normalize?.(record);
+          if (notif) {
+            addNotification(notif);
+          }
+        });
+
+        dispatchRecordsEvent(config.browserEvent, records);
+      };
+
+      socket.on(config.event, handler);
+      return { event: config.event, handler };
+    });
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('connect_error', onError);
-      socket.off('new_leads', onNewLeads);
-      socket.off('scoring_lead', onScoringLead);
+      socketHandlers.forEach(({ event, handler }) => {
+        socket.off(event, handler);
+      });
       socket.disconnect();
     };
   }, [user, token, addNotification]);

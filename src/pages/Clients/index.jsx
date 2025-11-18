@@ -20,11 +20,9 @@ import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
 import useScrollRestoration from '@/features/clients/hooks/useScrollRestoration';
 import useModalAutoClose from '@features/clients/hooks/useModalAutoClose';
-
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
 import moment from 'moment';
-
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
