@@ -11,6 +11,101 @@
   @include m.media-max(v.$breakpoint-sm) {
     top: 3rem;
   }
+  .nav-tree-root {
+    width: 100%;
+    display: flex;
+    flex-direction: column !important;
+    gap: 0.5rem;
+  }
+
+  .nav-item-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-item {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    position: relative;
+
+    // depth-based fine-tuning
+    &[data-depth='0'] {
+      margin-bottom: 0.2rem;
+    }
+
+    &[data-depth='1'] .sidebar-link {
+      font-size: 3.1rem;
+      padding-top: 1.6rem;
+      padding-bottom: 1.6rem;
+    }
+
+    &[data-depth='2'] .sidebar-link,
+    &[data-depth='3'] .sidebar-link {
+      font-size: 2.9rem;
+      padding-top: 1.2rem;
+      padding-bottom: 1.2rem;
+    }
+
+    &.has-children {
+      .sidebar-link {
+        padding-right: 1rem;
+      }
+    }
+  }
+
+  .nav-link-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toggle-btn {
+    flex-shrink: 0;
+    padding: 0.6rem;
+    min-width: 28px;
+    min-height: 28px;
+    color: v.$secondary-color;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: v.$tertiary-color;
+      transform: scale(1.1);
+    }
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .children {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 1.8rem;
+    padding-left: 1.2rem;
+    border-left: 2px solid rgba(137, 121, 255, 0.15);
+
+    &.children-open {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    &.children-closed {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
 }
 
 .sidebar-text {
@@ -56,6 +151,17 @@
     color: v.$tertiary-color;
     &.minified {
       color: v.$fourth-color;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: v.$secondary-color;
+
+    &:hover {
+      color: v.$secondary-color;
     }
   }
 }

@@ -151,6 +151,7 @@ const useClientsTableColumns = (props) => {
       key: 'NewDueDate',
       title: 'Kelishildi',
       width: '15%',
+      minWidth: '130px',
       renderCell: (column) => <AgreementDateCell column={column} />,
       icon: 'calendar',
     },

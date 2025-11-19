@@ -19,24 +19,31 @@ const filterSidebarLinks = (links, user) => {
 
   const userRole = user.U_role;
 
-  return links.filter((link) => {
-    // Check if user role is excluded
+  const canSee = (link) => {
     if (link.excludedRoles && Array.isArray(link.excludedRoles)) {
-      if (link.excludedRoles.includes(userRole)) {
-        return false; // Hide link if user role is excluded
-      }
+      if (link.excludedRoles.includes(userRole)) return false;
     }
-
-    // Check if user role is allowed (if allowedRoles is specified)
     if (link.allowedRoles && Array.isArray(link.allowedRoles)) {
-      if (!link.allowedRoles.includes(userRole)) {
-        return false; // Hide link if user role is not in allowed list
-      }
+      if (!link.allowedRoles.includes(userRole)) return false;
     }
-
-    // Show link if it passes all checks
     return true;
-  });
+  };
+
+  const filterRecursive = (items) => {
+    return (items || []).reduce((acc, item) => {
+      const children = Array.isArray(item.children)
+        ? filterRecursive(item.children)
+        : undefined;
+      const visibleSelf = canSee(item);
+      // Keep item if itself is visible OR it has any visible children
+      if (visibleSelf || (children && children.length)) {
+        acc.push({ ...item, ...(children ? { children } : {}) });
+      }
+      return acc;
+    }, []);
+  };
+
+  return filterRecursive(links);
 };
 
 export default filterSidebarLinks;

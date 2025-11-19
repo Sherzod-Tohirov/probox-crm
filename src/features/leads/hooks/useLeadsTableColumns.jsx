@@ -20,11 +20,13 @@ const StatusBadge = ({ status }) => {
       Active: 'success',
       Archived: 'danger',
       Processing: 'warning',
+      Closed: 'black',
     };
     const translationMap = {
       Active: 'Active',
       Archived: 'Arxivlangan',
       Processing: 'Jarayonda',
+      Closed: 'Yopilgan',
     };
     return (
       <Badge color={colorMap[status]} variant="soft" size="md">

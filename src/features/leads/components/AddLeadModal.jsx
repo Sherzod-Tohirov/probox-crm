@@ -156,7 +156,6 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       },
     });
   };
-
   const footer = (
     <div
       style={{
@@ -172,9 +171,9 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       <Button
         variant="filled"
         onClick={handleSubmit(onSubmit)}
-        disabled={!canSubmit() || mutation.isLoading}
+        disabled={!canSubmit() || mutation.isPending}
       >
-        {mutation.isLoading ? 'Yaratilmoqda...' : 'Lead yaratish'}
+        {mutation.isPending ? 'Yaratilmoqda...' : 'Lead yaratish'}
       </Button>
     </div>
   );
