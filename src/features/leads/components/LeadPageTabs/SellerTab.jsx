@@ -170,6 +170,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             {selectedDevices.length > 0 && (
               <SelectedDevicesTable
                 selectedDeviceData={selectedDeviceData}
+                selectedDevices={selectedDevices}
                 rentPeriodOptions={rentPeriodOptions}
                 canEdit={canEdit}
                 onImeiSelect={handleImeiSelect}
@@ -177,6 +178,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 onFirstPaymentChange={handleFirstPaymentChange}
                 onDeleteDevice={handleDeleteDevice}
                 totalGrandTotal={totalGrandTotal}
+                leadId={leadId}
               />
             )}
 
