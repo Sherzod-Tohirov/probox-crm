@@ -14,9 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleModal } from '@store/slices/toggleSlice';
 const Title = ({ date }) => {
   if (!date) return '-';
-  console.log(date, 'date title');
   if (moment(date, 'DD.MM.YYYY HH:mm', true).isValid()) return date;
-  console.log(formatDateWithHour(date));
   return formatDateWithHour(date);
 };
 const AgreementDateCell = ({ column }) => {
@@ -24,12 +22,11 @@ const AgreementDateCell = ({ column }) => {
   const {
     reset,
     control,
-    register,
     handleSubmit,
     formState: { isDirty },
   } = useForm({
     defaultValues: {
-      agreementDate: column?.NewDueDate,
+      agreementDate: formatDateWithHour(column?.NewDueDate),
     },
   });
 

@@ -1,8 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useSelector } from 'react-redux';
+import _ from 'lodash';
+import formatDate, { formatDateWithHour } from '@/utils/formatDate';
 
 const LS_KEY = 'probox.notifications';
+
+function toArray(payload) {
+  if (!payload) return [];
+  return (Array.isArray(payload) ? payload : [payload]).filter(Boolean);
+}
+
+function dispatchRecordsEvent(eventName, records) {
+  if (!eventName || !records.length) return;
+  window.dispatchEvent(new CustomEvent(eventName, { detail: { records } }));
+}
 
 function readFromStorage() {
   try {
@@ -12,16 +24,6 @@ function readFromStorage() {
     return Array.isArray(parsed) ? parsed : [];
   } catch (_) {
     return [];
-  }
-
-  function toArray(payload) {
-    if (!payload) return [];
-    return (Array.isArray(payload) ? payload : [payload]).filter(Boolean);
-  }
-
-  function dispatchRecordsEvent(eventName, records) {
-    if (!eventName || !records.length) return;
-    window.dispatchEvent(new CustomEvent(eventName, { detail: { records } }));
   }
 }
 
@@ -82,14 +84,20 @@ function normalizeAgreementDateNotification(payload) {
   const id =
     payload?.DocEntry ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const title = "To'lov muddati keldi";
+  const newDueDate = formatDateWithHour(payload?.newDueDate);
   return {
     id,
     type: 'agreementDate',
     title,
-    message: [payload?.CardCode, payload?.newDueDate].filter(Boolean).join(' '),
+    message: [
+      `Hujjat kodi: ${payload?.DocEntry ?? "yo'q"}, `,
+      `Yangi muddat: ${newDueDate}`,
+    ]
+      .filter(Boolean)
+      .join(' '),
     createdAt: Date.now(),
     read: false,
-    link: payload?.CardCode ? `/clients/${payload.CardCode}` : undefined,
+    link: payload?.DocEntry ? `/clients/${payload.DocEntry}` : undefined,
     data: payload,
   };
 }
@@ -144,42 +152,6 @@ export default function useSocketNotifications() {
       return [];
     });
   }, []);
-
-  // const seedTest = useCallback(() => {
-  //   // Prevent duplicate autobatching when called from auto-seed repeatedly
-  //   if (!import.meta.env || !import.meta.env.DEV) return;
-  //   const code = user?.SlpCode ?? 0;
-  //   const stamp = Date.now();
-  //   const leads = [
-  //     {
-  //       id: `dev-${stamp}-a-${Math.random().toString(36).slice(2, 6)}`,
-  //       clientName: 'Doston',
-  //       clientPhone: '+998 90 123 45 67',
-  //       source: 'Meta',
-  //       operator: code,
-  //     },
-  //     {
-  //       id: `dev-${stamp}-b-${Math.random().toString(36).slice(2, 6)}`,
-  //       clientName: 'Malika',
-  //       clientPhone: '+998 91 765 43 21',
-  //       source: 'Manychat',
-  //       operator2: code,
-  //     },
-  //     {
-  //       id: `dev-${stamp}-c-${Math.random().toString(36).slice(2, 6)}`,
-  //       clientName: 'Javlon',
-  //       clientPhone: '+998 93 555 44 33',
-  //       source: 'Organika',
-  //       operator: code,
-  //     },
-  //   ];
-  //   leads.forEach((lead, i) => {
-  //     setTimeout(() => {
-  //       const notif = normalizeLeadToNotification(lead);
-  //       addNotification(notif);
-  //     }, i * 120);
-  //   });
-  // }, [user, addNotification]);
 
   useEffect(() => {
     const baseUrl = getSocketBaseUrl();
@@ -236,7 +208,7 @@ export default function useSocketNotifications() {
           console.log(payload, config.logLabel);
         }
 
-        const records = _.toArray(payload);
+        const records = toArray(payload);
         if (!records.length) return;
 
         records.forEach((record) => {
@@ -266,25 +238,6 @@ export default function useSocketNotifications() {
     };
   }, [user, token, addNotification]);
 
-  // useEffect(() => {
-  //   if (import.meta.env && import.meta.env.DEV) {
-  //     // expose test seed helper
-  //     window.seedNotifications = seedTest;
-
-  //     const seeded = sessionStorage.getItem('probox.notifications.devSeeded');
-  //     if (!seeded || notifications.length === 0) {
-  //       seedTest();
-  //       sessionStorage.setItem('probox.notifications.devSeeded', '1');
-  //     }
-  //   }
-
-  //   return () => {
-  //     if (import.meta.env && import.meta.env.DEV) {
-  //       delete window.seedNotifications;
-  //     }
-  //   };
-  // }, [seedTest]);
-
   return {
     notifications,
     unreadCount,
@@ -292,6 +245,60 @@ export default function useSocketNotifications() {
     markAllAsRead,
     removeNotification,
     clearAll,
-    // seedTest,
   };
 }
+
+// useEffect(() => {
+//   if (import.meta.env && import.meta.env.DEV) {
+//     // expose test seed helper
+//     window.seedNotifications = seedTest;
+
+//     const seeded = sessionStorage.getItem('probox.notifications.devSeeded');
+//     if (!seeded || notifications.length === 0) {
+//       seedTest();
+//       sessionStorage.setItem('probox.notifications.devSeeded', '1');
+//     }
+//   }
+
+//   return () => {
+//     if (import.meta.env && import.meta.env.DEV) {
+//       delete window.seedNotifications;
+//     }
+//   };
+// }, [seedTest]);
+
+// const seedTest = useCallback(() => {
+//   // Prevent duplicate autobatching when called from auto-seed repeatedly
+//   if (!import.meta.env || !import.meta.env.DEV) return;
+//   const code = user?.SlpCode ?? 0;
+//   const stamp = Date.now();
+//   const leads = [
+//     {
+//       id: `dev-${stamp}-a-${Math.random().toString(36).slice(2, 6)}`,
+//       clientName: 'Doston',
+//       clientPhone: '+998 90 123 45 67',
+//       source: 'Meta',
+//       operator: code,
+//     },
+//     {
+//       id: `dev-${stamp}-b-${Math.random().toString(36).slice(2, 6)}`,
+//       clientName: 'Malika',
+//       clientPhone: '+998 91 765 43 21',
+//       source: 'Manychat',
+//       operator2: code,
+//     },
+//     {
+//       id: `dev-${stamp}-c-${Math.random().toString(36).slice(2, 6)}`,
+//       clientName: 'Javlon',
+//       clientPhone: '+998 93 555 44 33',
+//       source: 'Organika',
+//       operator: code,
+//     },
+//   ];
+//   leads.forEach((lead, i) => {
+//     setTimeout(() => {
+//       const notif = normalizeLeadToNotification(lead);
+//       addNotification(notif);
+//     }, i * 120);
+//   });
+// }, [user, addNotification]);

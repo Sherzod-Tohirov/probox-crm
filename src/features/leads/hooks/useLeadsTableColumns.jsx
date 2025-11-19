@@ -20,7 +20,7 @@ const StatusBadge = ({ status }) => {
       Active: 'success',
       Archived: 'danger',
       Processing: 'warning',
-      Closed: 'danger',
+      Closed: 'black',
     };
     const translationMap = {
       Active: 'Active',
