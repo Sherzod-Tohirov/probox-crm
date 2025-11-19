@@ -1,11 +1,11 @@
 import Logo from '../Logo';
 import styles from './sidebar.module.scss';
-import { Row, Col, List, Typography, Button } from '@components/ui';
+import { Row, Col, Typography, Button } from '@components/ui';
 import useToggle from '@hooks/useToggle';
 import sidebarLinks from '@utils/sidebarLinks';
 import filterSidebarLinks from '@utils/filterSidebarLinks';
 import iconsMap from '@utils/iconsMap';
-import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import useIsMobile from '@hooks/useIsMobile';
@@ -24,38 +24,111 @@ export default function Sidebar() {
     [user]
   );
 
+  // Local open state per parent path (fallbacks to active route)
+  const [openMap, setOpenMap] = useState({});
+  const toggleSection = useCallback((path) => {
+    setOpenMap((prev) => ({ ...prev, [path]: !prev[path] }));
+  }, []);
+
   useLayoutEffect(() => {
     if (isMobile && isOpen) {
       toggle();
     }
   }, [location.pathname, isMobile]);
 
-  const renderLinks = useCallback(
-    (link) => {
+  const renderNavItem = useCallback(
+    (link, depth = 0) => {
+      const hasChildren =
+        Array.isArray(link.children) && link.children.length > 0;
+      const hasEnabledChildren =
+        hasChildren && link.children.some((child) => !child.disabled);
+      const isActive = pathname.startsWith(link.path);
+      const isSectionOpen = isOpen ? (openMap[link.path] ?? isActive) : false;
+
       return (
-        <Link
-          className={classNames(
-            styles[`sidebar-link`],
-            styles[pathname.startsWith(link.path) ? 'active' : ''],
-            link.color && styles[link.color],
-            !isOpen && styles['minified']
-          )}
-          to={link.path}
+        <div
+          key={`${link.path}-${depth}`}
+          className={styles['nav-item-wrapper']}
         >
-          {iconsMap[link.icon]}
-          <Typography
-            element="span"
-            className={classNames(styles['sidebar-link-title'], {
-              [styles['minified']]: !isOpen,
-              [styles['mobile']]: isMobile,
+          <div
+            className={classNames(styles['nav-item'], {
+              [styles['has-children']]: hasEnabledChildren,
+              [styles['disabled']]: link.disabled,
+            })}
+            data-depth={depth}
+          >
+            <div className={styles['nav-link-container']}>
+              {link.disabled ? (
+                <div
+                  className={classNames(
+                    styles[`sidebar-link`],
+                    styles['disabled'],
+                    !isOpen && styles['minified']
+                  )}
+                  title="Tez orada"
+                >
+                  {iconsMap[link.icon]}
+                  <Typography
+                    element="span"
+                    className={classNames(styles['sidebar-link-title'], {
+                      [styles['minified']]: !isOpen,
+                      [styles['mobile']]: isMobile,
+                    })}
+                  >
+                    {link.title}
+                  </Typography>
+                </div>
+              ) : (
+                <Link
+                  className={classNames(
+                    styles[`sidebar-link`],
+                    styles[isActive ? 'active' : ''],
+                    link.color && styles[link.color],
+                    !isOpen && styles['minified']
+                  )}
+                  to={link.path}
+                >
+                  {iconsMap[link.icon]}
+                  <Typography
+                    element="span"
+                    className={classNames(styles['sidebar-link-title'], {
+                      [styles['minified']]: !isOpen,
+                      [styles['mobile']]: isMobile,
+                    })}
+                  >
+                    {link.title}
+                  </Typography>
+                </Link>
+              )}
+            </div>
+            {hasEnabledChildren && isOpen ? (
+              <Button
+                variant={'text'}
+                icon={isSectionOpen ? 'arrowDown' : 'arrowRight'}
+                iconSize={16}
+                className={styles['toggle-btn']}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSection(link.path);
+                }}
+              />
+            ) : null}
+          </div>
+          <div
+            className={classNames(styles.children, {
+              [styles['children-open']]: hasEnabledChildren && isSectionOpen,
+              [styles['children-closed']]: hasEnabledChildren && !isSectionOpen,
             })}
           >
-            {link.title}
-          </Typography>
-        </Link>
+            {hasEnabledChildren && isSectionOpen
+              ? link.children.map((child) => renderNavItem(child, depth + 1))
+              : null}
+          </div>
+        </div>
       );
     },
-    [pathname, isOpen]
+    [pathname, isOpen, isMobile, openMap, toggleSection]
   );
   return (
     <Row className={styles.sidebar} wrap gutter={8}>
@@ -88,15 +161,8 @@ export default function Sidebar() {
               MAIN
             </Typography>
           </Col>
-          <Col>
-            <List
-              gutter={1}
-              items={filteredLinks}
-              itemProps={{
-                animated: true,
-              }}
-              renderItem={renderLinks}
-            />
+          <Col className={styles['nav-tree-root']}>
+            {filteredLinks.map((link) => renderNavItem(link))}
           </Col>
         </Row>
       </Col>

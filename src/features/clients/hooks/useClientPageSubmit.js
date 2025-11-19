@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import moment from 'moment';
 import * as _ from 'lodash';
-import formatDate from '@utils/formatDate';
 import useMutateClientPageForm from '@hooks/data/clients/useMutateClientPageForm';
 
 /**
@@ -15,23 +14,37 @@ export default function useClientPageSubmit(currentClient, onSuccess) {
 
   const handleSubmit = useCallback(
     async (data) => {
-      // Only format agreementDate if it exists and is not empty/dash
-      let formattedAgreementDate = null;
+      const currentNewDueRaw = currentClient?.['NewDueDate'] || null;
+      const currentNewDueNorm = currentNewDueRaw
+        ? moment(
+            currentNewDueRaw,
+            [
+              'YYYY.MM.DD HH:mm',
+              'YYYY-MM-DD HH:mm:ss.SSSSSSSSS',
+              moment.ISO_8601,
+            ],
+            true
+          ).format('YYYY.MM.DD HH:mm')
+        : null;
+
+      let submittedNewDueNorm = null;
       if (
         data?.agreementDate &&
         data.agreementDate !== '-' &&
         data.agreementDate !== ''
       ) {
-        formattedAgreementDate = formatDate(
+        const parsedAgreement = moment(
           data.agreementDate,
-          'DD.MM.YYYY hh:mm',
-          'YYYY.MM.DD hh:mm'
+          'DD.MM.YYYY HH:mm',
+          true
         );
-        // Check if formatting resulted in invalid date
-        if (formattedAgreementDate === 'Invalid date') {
-          formattedAgreementDate = null;
-        }
+        submittedNewDueNorm = parsedAgreement.isValid()
+          ? parsedAgreement.format('YYYY.MM.DD HH:mm')
+          : null;
       }
+
+      const shouldSendNewDue =
+        !!submittedNewDueNorm && submittedNewDueNorm !== currentNewDueNorm;
 
       const formattedDueDate = moment(currentClient['DueDate']).format(
         'YYYY.MM.DD'
@@ -51,9 +64,7 @@ export default function useClientPageSubmit(currentClient, onSuccess) {
           slpCode: data?.executor,
           DueDate: formattedDueDate,
           ...phonePayload,
-          ...(formattedAgreementDate
-            ? { newDueDate: formattedAgreementDate }
-            : {}),
+          ...(shouldSendNewDue ? { newDueDate: submittedNewDueNorm } : {}),
           ...(!_.isEmpty(phonePayload)
             ? { CardCode: currentClient?.['CardCode'] }
             : {}),
