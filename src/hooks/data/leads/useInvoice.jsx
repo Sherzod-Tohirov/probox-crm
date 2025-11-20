@@ -115,10 +115,14 @@ export default function useInvoice(options = {}) {
         clientPhone: leadData.clientPhone || '',
         clientName: leadData.clientName || leadData.clientFullName || '',
         DocumentLines: documentLines,
+        selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
 
       // 5. Invoice yuborish
-      return await createInvoice(invoiceData);
+      await createInvoice(invoiceData);
+
+      // 6. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      return invoiceData;
     },
     retry: false,
     ...options,
