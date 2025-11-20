@@ -15,6 +15,7 @@ import SellerFormFields from './SellerTab/SellerFormFields';
 import DeviceSearchField from './SellerTab/DeviceSearchField';
 import SelectedDevicesTable from './SellerTab/SelectedDevicesTable';
 import SignatureCanvas from './SellerTab/SignatureCanvas';
+import useAuth from '@/hooks/useAuth';
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -22,6 +23,12 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
+  const { user } = useAuth();
+  const isOperatorM = user.U_role === 'OperatorM';
+  const isOperator1 = user.U_role === 'Operator1';
+  const isOperator2 = user.U_role === 'Operator2';
+
+  let canOperatorEdit = isOperatorM || isOperator1 || isOperator2;
 
   const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
@@ -158,7 +165,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         <Col span={{ xs: 24, md: 24 }} flexGrow fullWidth>
           <Row>
             <DeviceSearchField
-              canEdit={canEdit}
+              canEdit={ canOperatorEdit || canEdit}
               selectedDevicesCount={selectedDevices.length}
               leadData={leadData}
               branchFilterOptions={branchFilterOptions}
@@ -170,17 +177,19 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             {selectedDevices.length > 0 && (
               <SelectedDevicesTable
                 selectedDeviceData={selectedDeviceData}
+                selectedDevices={selectedDevices}
                 rentPeriodOptions={rentPeriodOptions}
-                canEdit={canEdit}
+                canEdit={canOperatorEdit || canEdit}
                 onImeiSelect={handleImeiSelect}
                 onRentPeriodChange={handleRentPeriodChange}
                 onFirstPaymentChange={handleFirstPaymentChange}
                 onDeleteDevice={handleDeleteDevice}
                 totalGrandTotal={totalGrandTotal}
+                leadId={leadId}
               />
             )}
 
-            <SignatureCanvas canEdit={canEdit} />
+            <SignatureCanvas canEdit={canOperatorEdit || canEdit} />
           </Row>
         </Col>
       </FieldGroup>
