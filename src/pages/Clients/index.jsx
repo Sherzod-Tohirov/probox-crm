@@ -1,12 +1,20 @@
 import _ from 'lodash';
-import { useCallback, useLayoutEffect, useState, useRef } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { Col, Row, Table } from '@components/ui';
 import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
 import ClientsToolbar from '@features/clients/components/ClientsToolbar';
-import Filter from '@features/clients/components/Filter';
+import MinimalFilter from '@features/clients/components/Filter/MinimalFilter';
+import AdvancedFilterModal from '@features/clients/components/AdvancedFilterModal';
 
 import { setCurrentClient } from '@store/slices/clientsPageSlice';
 
@@ -44,9 +52,29 @@ export default function Clients() {
     total: 0,
     data: [],
   });
-  const [toggleFilter, setToggleFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
+
+  // Advanced modal + column visibility
+  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    try {
+      const raw = localStorage.getItem('clientsVisibleColumns');
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
+    }
+  });
+
+  // Persist column visibility
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'clientsVisibleColumns',
+        JSON.stringify(visibleColumns)
+      );
+    } catch (_) {}
+  }, [visibleColumns]);
 
   // Custom hooks
   const { data, isLoading } = useFetchClients({
@@ -54,6 +82,35 @@ export default function Clients() {
     params,
   });
   const { clientsTableColumns } = useClientsTableColumns();
+
+  // Filter columns based on visibility toggles
+  const columnsToUse = useMemo(() => {
+    const map = visibleColumns || {};
+    // Always show CardName; others are user-toggleable
+    return clientsTableColumns.filter((c) =>
+      c.key === 'CardName' ? true : map[c.key] !== false
+    );
+  }, [clientsTableColumns, visibleColumns]);
+
+  // Initialize default visible columns if none are saved
+  useEffect(() => {
+    try {
+      const initialized = localStorage.getItem('clientsVisibleColumnsInit');
+      if (initialized) return;
+      const important = new Set([
+        'CardName',
+        'Phone1',
+        'InsTotal',
+        'PaidToDate',
+      ]);
+      const map = {};
+      (clientsTableColumns || []).forEach((c) => {
+        if (!important.has(c.key)) map[c.key] = false;
+      });
+      setVisibleColumns(map);
+      localStorage.setItem('clientsVisibleColumnsInit', '1');
+    } catch (_) {}
+  }, [clientsTableColumns]);
 
   const {
     uiScale,
@@ -93,21 +150,29 @@ export default function Clients() {
     [navigate, dispatch, saveScrollPosition]
   );
 
-  const handleFilter = useCallback((filterData) => {
-    setTimeout(() => {
-      setToggleFilter(false);
-    }, 200);
+  const handleFilter = useCallback(
+    (filterData) => {
+      // Merge with existing redux filter to avoid clearing advanced selections
+      const merged = { ...filter, ...filterData };
+      const paymentStatus = Array.isArray(merged.paymentStatus)
+        ? _.map(merged.paymentStatus, 'value').join(',')
+        : merged.paymentStatus;
+      const slpCode = Array.isArray(merged.slpCode)
+        ? _.map(merged.slpCode, 'value').join(',')
+        : merged.slpCode;
 
-    setParams(() => ({
-      search: filterData.search,
-      paymentStatus: _.map(filterData.paymentStatus, 'value').join(','),
-      slpCode: _.map(filterData.slpCode, 'value').join(','),
-      phone: filterData.phone,
-      startDate: filterData.startDate,
-      endDate: filterData.endDate,
-      phoneConfiscated: filterData.phoneConfiscated,
-    }));
-  }, []);
+      setParams(() => ({
+        search: merged.search,
+        paymentStatus,
+        slpCode,
+        phone: merged.phone,
+        startDate: merged.startDate,
+        endDate: merged.endDate,
+        phoneConfiscated: merged.phoneConfiscated,
+      }));
+    },
+    [filter]
+  );
 
   // Sync data with local state
   useLayoutEffect(() => {
@@ -138,7 +203,7 @@ export default function Clients() {
                 onIncreaseDensity={increaseDensity}
                 onDecreaseDensity={decreaseDensity}
                 onResetDensity={resetDensity}
-                onToggleFilter={() => setToggleFilter((prev) => !prev)}
+                onToggleFilter={() => setAdvancedOpen(true)}
                 isMobile={isMobile}
                 canIncreaseUI={canIncrease}
                 canDecreaseUI={canDecrease}
@@ -149,7 +214,7 @@ export default function Clients() {
               />
             </Col>
             <Col fullWidth>
-              <Filter onFilter={handleFilter} isExpanded={toggleFilter} />
+              <MinimalFilter onFilter={handleFilter} />
             </Col>
           </Row>
         </Col>
@@ -160,7 +225,7 @@ export default function Clients() {
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}
             isLoading={isLoading}
-            columns={clientsTableColumns}
+            columns={columnsToUse}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
@@ -204,6 +269,15 @@ export default function Clients() {
         </Col>
         <Col style={{ width: '100%' }}></Col>
       </Row>
+      <AdvancedFilterModal
+        isOpen={isAdvancedOpen}
+        onClose={() => setAdvancedOpen(false)}
+        onApply={handleFilter}
+        initialValues={filter}
+        columns={clientsTableColumns}
+        visibleColumns={visibleColumns}
+        onChangeVisibleColumns={setVisibleColumns}
+      />
       <ClientsPageFooter
         clientsDetails={clientsDetails}
         selectedRows={selectedRows}

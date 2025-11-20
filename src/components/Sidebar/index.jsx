@@ -84,11 +84,17 @@ export default function Sidebar() {
                     styles[`sidebar-link`],
                     styles[isActive ? 'active' : ''],
                     link.color && styles[link.color],
-                    !isOpen && styles['minified']
+                    !isOpen && styles['minified'],
+                    hasEnabledChildren && styles['has-children-link']
                   )}
                   to={link.path}
                 >
-                  {iconsMap[link.icon]}
+                  <div className={styles['icon-wrapper']}>
+                    {iconsMap[link.icon]}
+                    {hasEnabledChildren && !isOpen && (
+                      <span className={styles['children-indicator']}></span>
+                    )}
+                  </div>
                   <Typography
                     element="span"
                     className={classNames(styles['sidebar-link-title'], {
@@ -98,15 +104,22 @@ export default function Sidebar() {
                   >
                     {link.title}
                   </Typography>
+                  {hasEnabledChildren && isOpen && (
+                    <span className={styles['children-badge']}>
+                      {link.children.filter((child) => !child.disabled).length}
+                    </span>
+                  )}
                 </Link>
               )}
             </div>
             {hasEnabledChildren && isOpen ? (
               <Button
                 variant={'text'}
-                icon={isSectionOpen ? 'arrowDown' : 'arrowRight'}
+                icon={'arrowDown'}
                 iconSize={16}
-                className={styles['toggle-btn']}
+                className={classNames(styles['toggle-btn'], {
+                  [styles['open']]: isSectionOpen,
+                })}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -161,7 +174,7 @@ export default function Sidebar() {
               MAIN
             </Typography>
           </Col>
-          <Col className={styles['nav-tree-root']}>
+          <Col className={styles['nav-tree-root']} gutter={2}>
             {filteredLinks.map((link) => renderNavItem(link))}
           </Col>
         </Row>

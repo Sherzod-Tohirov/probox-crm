@@ -7,25 +7,25 @@
   padding: 0; // Remove default padding
   overflow-y: auto; // Allow scrolling if modal exceeds viewport
   overflow-x: hidden; // Prevent horizontal overflow
-  
+
   // Improve mobile scrolling behavior
   -webkit-overflow-scrolling: touch;
-  
+
   // Mobile landscape adjustments
   @include m.media-max(767px) {
     align-items: flex-start; // Align to top on mobile for better UX
     padding-top: 20px;
   }
-  
+
   @include m.media-max(575px) {
     padding-top: 10px;
   }
-  
+
   @include m.media-max(400px) {
     padding: 0; // Full screen on very small devices
     align-items: stretch; // Stretch modal to full height
   }
-  
+
   // Handle landscape orientation on mobile
   @media screen and (max-height: 500px) and (orientation: landscape) {
     align-items: flex-start;
@@ -43,10 +43,14 @@
   display: flex;
   flex-direction: column;
   overflow: hidden; // Prevent content overflow
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-  
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
+
   [data-theme='dark'] & {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.6),
+      0 10px 10px -5px rgba(0, 0, 0, 0.4);
   }
 
   // Large desktop (1400px+)
@@ -88,6 +92,56 @@
     margin: 0;
     border-radius: 0;
     min-height: 100vh; // Full screen on very small devices
+  }
+
+  // Size variants
+  &-sm {
+    max-width: 450px;
+    max-height: 70vh;
+
+    @include m.media-min(1400px) {
+      max-width: 500px;
+    }
+
+    @include m.media-between(1200px, 1399px) {
+      max-width: 480px;
+    }
+
+    .modal-body {
+      min-height: 200px;
+
+      @include m.media-max(767px) {
+        min-height: 180px;
+      }
+
+      @include m.media-max(575px) {
+        min-height: 150px;
+      }
+    }
+  }
+
+  &-md {
+    max-width: 650px;
+
+    @include m.media-min(1400px) {
+      max-width: 800px;
+    }
+
+    @include m.media-between(1200px, 1399px) {
+      max-width: 700px;
+    }
+  }
+
+  &-lg {
+    max-width: 900px;
+
+    @include m.media-min(1400px) {
+      max-width: 1100px;
+    }
+
+    @include m.media-between(1200px, 1399px) {
+      max-width: 1000px;
+    }
   }
   &-close-btn {
     margin-left: auto;
@@ -157,7 +211,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     flex-shrink: 0; // Prevent header from shrinking
     min-height: 60px; // Ensure consistent header height
-    
+
     [data-theme='dark'] & {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
@@ -218,7 +272,7 @@
     &::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.1);
       border-radius: 3px;
-      
+
       [data-theme='dark'] & {
         background: rgba(255, 255, 255, 0.1);
       }
@@ -234,7 +288,7 @@
 
       &:hover {
         background: rgba(0, 0, 0, 0.5);
-        
+
         [data-theme='dark'] & {
           background: rgba(255, 255, 255, 0.5);
         }
@@ -249,7 +303,7 @@
     flex-shrink: 0; // Prevent footer from shrinking
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    
+
     [data-theme='dark'] & {
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2) inset;
     }

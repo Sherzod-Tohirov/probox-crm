@@ -59,6 +59,8 @@ export default function LeadPage() {
     setPassportFiles,
     uploadValue,
     handleUploadDocuments,
+    handleUploadSingle,
+    handleDeleteDocument,
     mutateFileUpload,
     customBreadcrumbs,
     defaultTab,
@@ -100,6 +102,8 @@ export default function LeadPage() {
         passportFiles={passportFiles}
         onFilesChange={setPassportFiles}
         onUpload={handleUploadDocuments}
+        onUploadSingle={handleUploadSingle}
+        onDelete={handleDeleteDocument}
         isUploading={mutateFileUpload.isLoading}
       />
     </div>
