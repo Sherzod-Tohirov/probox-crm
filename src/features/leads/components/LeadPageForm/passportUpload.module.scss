@@ -34,6 +34,68 @@
   }
 }
 
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 10px 10px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 3rem;
+  border-radius: 999px;
+  background: v.$tertiary-bg;
+  color: v.$secondary-color;
+  text-transform: lowercase;
+}
+
+.progressBar {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  & > span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background: v.$fourth-color;
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+}
+
 .fileInput {
   display: none;
 }

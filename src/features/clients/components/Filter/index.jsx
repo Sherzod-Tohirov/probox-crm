@@ -13,7 +13,7 @@ import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useWatchFilterFields from '@features/clients/hooks/useWatchFilterFields';
 import { store } from '@store/store';
-import FilterMenu from './FilterMenu';
+import { ContextMenu } from '@components/ui';
 import { offset, shift } from '@floating-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import selectOptionsCreator from '@utils/selectOptionsCreator';
@@ -441,7 +441,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
                 </Button>
                 <AnimatePresence initial={false}>
                   {showFilterMenu ? (
-                    <FilterMenu
+                    <ContextMenu
                       ref={refs.setFloating}
                       floatingStyles={{
                         ...floatingStyles,
@@ -450,8 +450,9 @@ export default function Filter({ onFilter, isExpanded = false }) {
                         left: x ?? 0,
                       }}
                       onClose={() => setShowFilterMenu(false)}
-                      menuList={[
+                      menuItems={[
                         {
+                          key: 'clear',
                           label: 'Tozalash',
                           icon: 'delete',
                           onClick: (e) => {
@@ -462,6 +463,7 @@ export default function Filter({ onFilter, isExpanded = false }) {
                           },
                         },
                         {
+                          key: 'rollback',
                           label: 'Eski holatiga qaytarish',
                           icon: 'refresh',
                           onClick: handleRollbackFilterLastAction,

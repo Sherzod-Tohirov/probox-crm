@@ -23,7 +23,13 @@ export default function ClientsToolbar({
   isDefaultDensity = true,
 }) {
   return (
-    <Row direction="row" justify="space-between" align="center" gutter={4} wrap={isMobile}>
+    <Row
+      direction="row"
+      justify="space-between"
+      align="center"
+      gutter={4}
+      wrap={isMobile}
+    >
       <Col>
         <Navigation fallbackBackPath="/clients" />
       </Col>
@@ -93,21 +99,18 @@ export default function ClientsToolbar({
             </Button>
           </div>
 
-          {/* Mobile Filter Toggle */}
-          {isMobile && (
-            <>
-              <span className={styles.divider} />
-              <Button
-                variant="text"
-                color="secondary"
-                onClick={onToggleFilter}
-                icon="filter"
-                iconSize={20}
-                aria-label="Toggle filter"
-                className={styles['filter-button']}
-              />
-            </>
-          )}
+          <span className={styles.divider} />
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={onToggleFilter}
+            icon="filter"
+            iconSize={20}
+            aria-label="Toggle filter"
+            className={styles['filter-button']}
+          />
+
+          <span className={styles.divider} />
         </div>
       </Col>
     </Row>

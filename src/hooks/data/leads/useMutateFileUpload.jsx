@@ -1,5 +1,5 @@
 import useAlert from '@/hooks/useAlert';
-import { postFileUpload } from '@/services/leadsService';
+import { postFileUpload, deleteFile } from '@/services/leadsService';
 import { useMutation } from '@tanstack/react-query';
 
 export function useMutateFileUpload() {
@@ -14,7 +14,39 @@ export function useMutateFileUpload() {
     },
   });
 
+  const mutateFileDelete = useMutation({
+    mutationFn: deleteFile,
+    onSuccess: () => {
+      alert("Hujjatlar muvaffaqiyatli o'chirildi", { type: 'success' });
+    },
+    onError: () => {
+      alert("Hujjat o'chirishda xatolik yuz berdi", { type: 'error' });
+    },
+  });
+
+  const mutateWithProgress = (
+    { formData, onProgress, cancelToken },
+    options = {}
+  ) => {
+    return mutateFileUpload.mutate(
+      {
+        formData,
+        onUploadProgress: (evt) => {
+          try {
+            if (!evt?.total) return;
+            const pct = Math.round((evt.loaded * 100) / evt.total);
+            onProgress?.(pct);
+          } catch (_) {}
+        },
+        cancelToken,
+      },
+      options
+    );
+  };
+
   return {
     mutateFileUpload,
+    mutateFileDelete,
+    mutateWithProgress,
   };
 }

@@ -60,7 +60,7 @@ const Modal = forwardRef(function (
         >
           <motion.div
             ref={ref}
-            className={classNames(styles['modal'], size)}
+            className={classNames(styles['modal'], styles[`modal-${size}`])}
             initial={{ opacity: 0, y: -50, scale: 0.95 }}
             animate={{
               opacity: 1,

@@ -8,21 +8,30 @@ export default function PassportSection({
   passportFiles,
   onFilesChange,
   onUpload,
+  onDelete,
+  onUploadSingle,
   isUploading,
 }) {
+  // Check if there are files ready to upload (status 'tayyor' or no status)
+  const hasFilesToUpload = passportFiles.some(
+    (f) => f.source === 'local' && (!f.status || f.status === 'tayyor')
+  );
+
   return (
     <FieldGroup title="Pasport rasmlari">
       <PassportUpload
         disabled={!canEdit || isUploading}
         value={uploadValue}
         onChange={onFilesChange}
+        onDelete={onDelete}
+        onUploadSingle={onUploadSingle}
       />
       <Row gutter={2} style={{ marginTop: '8px' }}>
         <Col>
           <Button
             variant="filled"
             onClick={onUpload}
-            disabled={!canEdit || passportFiles.length === 0 || isUploading}
+            disabled={!canEdit || !hasFilesToUpload || isUploading}
           >
             Hujjatlarni saqlash
           </Button>

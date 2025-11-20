@@ -4,6 +4,7 @@ import { formatCurrencyUZS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
 import useInvoice from '@/hooks/data/leads/useInvoice';
 import { alert } from '@/utils/globalAlert';
+import { generateInvoicePdf } from '@/utils/invoicePdf';
 
 export default function SelectedDevicesTable({
   selectedDeviceData,
@@ -27,8 +28,23 @@ export default function SelectedDevicesTable({
   });
 
   const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
-    onSuccess: () => {
+    onSuccess: async (invoiceData) => {
+      console.log('Invoice success, invoiceData:', invoiceData);
       alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
+      
+      // PDF fayl yaratish va yuklab olish
+      if (invoiceData) {
+        try {
+          console.log('PDF fayl yaratish boshlandi...');
+          await generateInvoicePdf(invoiceData);
+          console.log('PDF fayl muvaffaqiyatli yaratildi');
+        } catch (error) {
+          console.error('PDF fayl yaratishda xatolik:', error);
+          alert('PDF fayl yaratishda xatolik yuz berdi', { type: 'error' });
+        }
+      } else {
+        console.warn('invoiceData topilmadi');
+      }
     },
     onError: (error) => {
       const errorMessage = error?.message || error?.response?.data?.message || 'Invoice yuborishda xatolik yuz berdi';
@@ -58,7 +74,8 @@ export default function SelectedDevicesTable({
     }
 
     try {
-      await sendInvoice({ leadId, selectedDevices });
+      const result = await sendInvoice({ leadId, selectedDevices });
+      console.log('sendInvoice natijasi:', result);
     } catch (error) {
       // Error already handled in onError callback
       console.error('Invoice yuborishda xatolik:', error);

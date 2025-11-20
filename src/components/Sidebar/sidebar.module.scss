@@ -32,6 +32,8 @@
     justify-content: space-between;
     gap: 0.8rem;
     position: relative;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
 
     // depth-based fine-tuning
     &[data-depth='0'] {
@@ -51,9 +53,89 @@
       padding-bottom: 1.2rem;
     }
 
+    // Regular items (without children) - subtle effect
+    &:not(.has-children) {
+      background: linear-gradient(
+        90deg,
+        rgba(137, 121, 255, 0.015) 0%,
+        transparent 100%
+      );
+      border-left: 2px solid rgba(137, 121, 255, 0.1);
+      padding-left: 0.3rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .sidebar-link {
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 2px;
+          height: 0;
+          background: v.$tertiary-color;
+          border-radius: 0 2px 2px 0;
+          transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      }
+
+      &:hover {
+        background: linear-gradient(
+          90deg,
+          rgba(137, 121, 255, 0.04) 0%,
+          transparent 100%
+        );
+        border-left-color: rgba(137, 121, 255, 0.25);
+
+        .sidebar-link::before {
+          height: 40%;
+        }
+      }
+    }
+
+    // Parent items (with children) - more prominent effect
     &.has-children {
+      background: linear-gradient(
+        90deg,
+        rgba(137, 121, 255, 0.03) 0%,
+        transparent 100%
+      );
+      border-left: 3px solid rgba(137, 121, 255, 0.2);
+      padding-left: 0.4rem;
+
       .sidebar-link {
         padding-right: 1rem;
+        font-weight: 600;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 3px;
+          height: 0;
+          background: linear-gradient(
+            180deg,
+            v.$tertiary-color,
+            v.$fourth-color
+          );
+          border-radius: 0 2px 2px 0;
+          transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      }
+
+      &:hover {
+        background: linear-gradient(
+          90deg,
+          rgba(137, 121, 255, 0.06) 0%,
+          transparent 100%
+        );
+        border-left-color: rgba(137, 121, 255, 0.4);
+
+        .sidebar-link::before {
+          height: 60%;
+        }
       }
     }
   }
@@ -77,7 +159,11 @@
     }
 
     svg {
-      transition: transform 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &.open svg {
+      transform: rotate(180deg);
     }
   }
 
@@ -85,16 +171,32 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-left: 1.8rem;
     padding-left: 1.2rem;
     border-left: 2px solid rgba(137, 121, 255, 0.15);
+    transition:
+      max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      margin 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &.children-open {
       max-height: 500px;
       opacity: 1;
       margin-top: 0.4rem;
       margin-bottom: 0.4rem;
+
+      // Staggered animation for child items
+      .nav-item-wrapper {
+        animation: slideInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        opacity: 0;
+
+        @for $i from 1 through 10 {
+          &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.05}s;
+          }
+        }
+      }
     }
 
     &.children-closed {
@@ -104,6 +206,38 @@
       margin-bottom: 0;
       padding-top: 0;
       padding-bottom: 0;
+
+      .nav-item-wrapper {
+        animation: slideOutUp 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+        @for $i from 1 through 10 {
+          &:nth-child(#{$i}) {
+            animation-delay: #{($i - 1) * 0.03}s;
+          }
+        }
+      }
+    }
+  }
+
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideOutUp {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
     }
   }
 }
@@ -135,6 +269,37 @@
   & svg {
     width: 18px;
     height: 18px;
+  }
+
+  .icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .children-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 6px;
+    height: 6px;
+    background: v.$tertiary-color;
+    border-radius: 50%;
+    border: 1.5px solid v.$primary-bg;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.1);
+    }
   }
 
   &.active {
@@ -170,6 +335,32 @@
   transition: all v.$transition-time v.$transition-type;
   &.minified:not(&.mobile) {
     display: none;
+  }
+}
+
+.children-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 6px;
+  margin-left: auto;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: v.$tertiary-color;
+  background: rgba(137, 121, 255, 0.15);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  .sidebar-link:hover & {
+    background: rgba(137, 121, 255, 0.25);
+    transform: scale(1.05);
+  }
+
+  .sidebar-link.active & {
+    background: v.$tertiary-color;
+    color: white;
   }
 }
 
