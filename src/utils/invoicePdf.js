@@ -62,6 +62,8 @@ export const generateInvoicePdf = async (invoiceData) => {
     clientPhone, 
     cardCode = invoiceData.CardCode,
     leadId, 
+    jshshir = '',
+    userSignature = null,
     DocumentLines = [],
     selectedDevices = []
   } = invoiceData;
@@ -161,8 +163,9 @@ export const generateInvoicePdf = async (invoiceData) => {
     // IMEI ma'lumotlari
     const imei1 = DocumentLines[0]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
     const imei2 = DocumentLines[1]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
-    const itemCode1 = DocumentLines[0]?.ItemCode || '_______________________';
-    const itemCode2 = DocumentLines[1]?.ItemCode || '_______________________';
+    // Telefon nomini olish - avval selectedDevices'dan, keyin DocumentLines'dan
+    const itemName1 = selectedDevices[0]?.name || DocumentLines[0]?.ItemName || DocumentLines[0]?.ItemCode || '_______________________';
+    const itemName2 = selectedDevices[1]?.name || DocumentLines[1]?.ItemName || DocumentLines[1]?.ItemCode || '_______________________';
 
     // PDF document definition
     const docDefinition = {
@@ -189,7 +192,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: `(ФИШ) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'паспорт/id:ЖШШИР)______________\n', fontSize: 9 },
+                { text: `паспорт/id:ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
                 { text: 'паспорт берилган сана)да берилган,\n', fontSize: 9 },
                 { text: `(яшаш манзили) ${clientPhone || '_______________________'}\n`, fontSize: 9 },
                 {
@@ -210,7 +213,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: `(ФИО) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'серия и номер паспорта/id ______________\n', fontSize: 9 },
+                { text: `серия и номер паспорта/id ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
                 { text: 'выдан ____________(дата выдачи),\n', fontSize: 9 },
                 { text: `проживающий по адресу: ${clientPhone || '_______________________'}\n`, fontSize: 9 },
                 {
@@ -235,7 +238,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '1.2.Сотилган товар хақида маълумот:\n', fontSize: 9 },
-                { text: `${itemCode1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
+                { text: `${itemName1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
                 {
                   text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
@@ -251,7 +254,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '1.2. Информация о продаваемом Товаре:\n', fontSize: 9 },
-                { text: `${itemCode1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
+                { text: `${itemName1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
                 {
                   text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
@@ -1359,10 +1362,20 @@ export const generateInvoicePdf = async (invoiceData) => {
             },
             {
               width: '*',
-              text: [
+              stack: [
                 { text: 'ХАРИДОР/ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
                 { text: `Ф.И.Ш.: ${clientName || '_______________________'}\n\n`, fontSize: 9 },
-                { text: 'Имзо: _________________\n', fontSize: 9 },
+                { text: 'Имзо: ', fontSize: 9 },
+                ...(userSignature ? [
+                  {
+                    image: userSignature,
+                    width: 150,
+                    height: 60,
+                    margin: [0, 2, 0, 0],
+                  },
+                ] : [
+                  { text: '_________________\n', fontSize: 9 },
+                ]),
               ],
             },
           ],

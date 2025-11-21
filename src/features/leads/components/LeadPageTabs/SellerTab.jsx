@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { Row, Col } from '@components/ui';
 import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
@@ -107,6 +107,13 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     fetchDeviceSeries,
   });
 
+  // Imzo state'ini saqlash
+  const [userSignature, setUserSignature] = useState(null);
+
+  const handleSignatureChange = useCallback((signatureDataUrl) => {
+    setUserSignature(signatureDataUrl);
+  }, []);
+
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -186,10 +193,14 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 onDeleteDevice={handleDeleteDevice}
                 totalGrandTotal={totalGrandTotal}
                 leadId={leadId}
+                userSignature={userSignature}
               />
             )}
 
-            <SignatureCanvas canEdit={canOperatorEdit || canEdit} />
+            <SignatureCanvas 
+              canEdit={canOperatorEdit || canEdit} 
+              onSignatureChange={handleSignatureChange}
+            />
           </Row>
         </Col>
       </FieldGroup>
