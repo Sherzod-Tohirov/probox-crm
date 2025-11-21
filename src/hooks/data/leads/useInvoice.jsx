@@ -107,7 +107,16 @@ export default function useInvoice(options = {}) {
         })
       );
 
-      // 4. Invoice body ni tayyorlash
+      // 4. Manzil ma'lumotlarini formatlash
+      const clientAddressParts = [];
+      if (leadData.region) clientAddressParts.push(leadData.region);
+      if (leadData.district) clientAddressParts.push(leadData.district);
+      if (leadData.address) clientAddressParts.push(leadData.address);
+      const clientAddress = clientAddressParts.length > 0 
+        ? clientAddressParts.join(', ') 
+        : '';
+
+      // 5. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         leadId: leadId,
@@ -115,14 +124,16 @@ export default function useInvoice(options = {}) {
         clientPhone: leadData.clientPhone || '',
         clientName: leadData.clientName || leadData.clientFullName || '',
         jshshir: leadData.jshshir || leadData.jsshir || '',
+        passportId: leadData.passportId || '',
+        clientAddress: clientAddress,
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
 
-      // 5. Invoice yuborish
+      // 6. Invoice yuborish
       await createInvoice(invoiceData);
 
-      // 6. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      // 7. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;
     },
     retry: false,

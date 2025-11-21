@@ -63,6 +63,8 @@ export const generateInvoicePdf = async (invoiceData) => {
     cardCode = invoiceData.CardCode,
     leadId, 
     jshshir = '',
+    passportId = '',
+    clientAddress = '',
     userSignature = null,
     DocumentLines = [],
     selectedDevices = []
@@ -192,9 +194,9 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: `(ФИШ) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: `паспорт/id:ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
+                { text: `паспорт/id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
                 { text: 'паспорт берилган сана)да берилган,\n', fontSize: 9 },
-                { text: `(яшаш манзили) ${clientPhone || '_______________________'}\n`, fontSize: 9 },
+                { text: `(яшаш манзили) ${clientAddress || '_______________________'}\n`, fontSize: 9 },
                 {
                   text: 'манзилда истиқомад қилувчи, Ўзбекистон Республикаси фуқароси, кейинги ўринларда "Харидор" деб аталувчи бошқа томондан, ушбу шартномани қуйидагилар ҳақида туздилар:\n\n',
                   fontSize: 9,
@@ -213,9 +215,9 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: `(ФИО) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: `серия и номер паспорта/id ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
+                { text: `серия и номер паспорта/id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
                 { text: 'выдан ____________(дата выдачи),\n', fontSize: 9 },
-                { text: `проживающий по адресу: ${clientPhone || '_______________________'}\n`, fontSize: 9 },
+                { text: `проживающий по адресу: ${clientAddress || '_______________________'}\n`, fontSize: 9 },
                 {
                   text: 'далее именуемый "Покупатель", с другой стороны, заключили настоящий Договор о нижеследующем:\n\n',
                   fontSize: 9,
