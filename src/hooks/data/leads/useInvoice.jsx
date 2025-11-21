@@ -116,7 +116,12 @@ export default function useInvoice(options = {}) {
         ? clientAddressParts.join(', ') 
         : '';
 
-      // 5. Invoice body ni tayyorlash
+      // 5. Monthly limit ni hisoblash
+      const monthlyLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) 
+        ? (Number(leadData.finalLimit) || null)
+        : null;
+
+      // 6. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         leadId: leadId,
@@ -126,14 +131,15 @@ export default function useInvoice(options = {}) {
         jshshir: leadData.jshshir || leadData.jsshir || '',
         passportId: leadData.passportId || '',
         clientAddress: clientAddress,
+        monthlyLimit: monthlyLimit,
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
 
-      // 6. Invoice yuborish
+      // 7. Invoice yuborish
       await createInvoice(invoiceData);
 
-      // 7. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      // 8. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;
     },
     retry: false,
