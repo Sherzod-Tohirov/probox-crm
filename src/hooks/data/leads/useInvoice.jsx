@@ -114,6 +114,7 @@ export default function useInvoice(options = {}) {
         U_leadId: leadId,
         clientPhone: leadData.clientPhone || '',
         clientName: leadData.clientName || leadData.clientFullName || '',
+        jshshir: leadData.jshshir || leadData.jsshir || '',
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
