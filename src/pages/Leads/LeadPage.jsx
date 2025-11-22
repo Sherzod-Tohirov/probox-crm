@@ -32,7 +32,7 @@ import {
   BlockedWarningCard,
 } from '@/features/leads/components/LeadPageSections';
 
-import styles from './style.module.scss';
+import styles from './styles/style.module.scss';
 import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
 

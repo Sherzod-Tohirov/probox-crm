@@ -9,7 +9,7 @@ const ClientPage = lazy(() => import('./pages/Clients/ClientPage'));
 const Statistics = lazy(() => import('./pages/Statistics'));
 const Leads = lazy(() => import('./pages/Leads'));
 const LeadPage = lazy(() => import('./pages/Leads/LeadPage'));
-const LeadsStatistics = lazy(() => import('./pages/Leads/Statistics'));
+const LeadsStatistics = lazy(() => import('./features/leads/statistics'));
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
 const Error = lazy(() => import('./pages/helper/Error'));
@@ -154,17 +154,7 @@ const router = createBrowserRouter([
           {
             path: '/leads/statistics',
             element: (
-              <ProtectedRoute
-                allowedRoles={[
-                  'Operator1',
-                  'Operator2',
-                  'Scoring',
-                  'Seller',
-                  'OperatorM',
-                  'CEO',
-                  'Manager',
-                ]}
-              >
+              <ProtectedRoute allowedRoles={['OperatorM', 'CEO', 'Manager']}>
                 <Suspense fallback={<PageLoader />}>
                   <LeadsStatistics />
                 </Suspense>
