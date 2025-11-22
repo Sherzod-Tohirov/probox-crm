@@ -51,15 +51,7 @@ const routePermissions = {
     ], // Only specific roles can access leads
   },
   '/leads/statistics': {
-    allowedRoles: [
-      'Operator1',
-      'Operator2',
-      'Scoring',
-      'Seller',
-      'OperatorM',
-      'CEO',
-      'Manager',
-    ],
+    allowedRoles: ['OperatorM', 'CEO', 'Manager'],
   },
 };
 

@@ -1,39 +1,40 @@
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setStatisticsFilter } from "@store/slices/statisticsPageSlice";
-import _ from "lodash";
+import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setClientsStatisticsFilter } from '@store/slices/clientsPageSlice';
+import _ from 'lodash';
 const useWatchedFields = (watch) => {
   const dispatch = useDispatch();
-  const [lastSlpCodeValue, setLastSlpCodeValue] = useState("");
+  const [lastSlpCodeValue, setLastSlpCodeValue] = useState('');
   const [startDate, endDate, slpCode] = watch([
-    "startDate",
-    "endDate",
-    "slpCode",
+    'startDate',
+    'endDate',
+    'slpCode',
   ]);
 
-  const filterState = useSelector((state) => state.page.statistics.filter);
+  const filterState = useSelector(
+    (state) => state.page.clients.statisticsFilter || {}
+  );
 
   useEffect(() => {
-    
-    const startDateValid = moment(startDate, "DD.MM.YYYY").isValid()
+    const startDateValid = moment(startDate, 'DD.MM.YYYY').isValid()
       ? startDate
-      : moment().startOf("month").format("DD.MM.YYYY");
+      : moment().startOf('month').format('DD.MM.YYYY');
 
-    const endDateValid = moment(endDate, "DD.MM.YYYY").isValid()
+    const endDateValid = moment(endDate, 'DD.MM.YYYY').isValid()
       ? endDate
-      : moment().endOf("month").format("DD.MM.YYYY");
+      : moment().endOf('month').format('DD.MM.YYYY');
 
     dispatch(
-      setStatisticsFilter({
+      setClientsStatisticsFilter({
         startDate: startDateValid,
         endDate: endDateValid,
         slpCode:
           lastSlpCodeValue.length && !slpCode.length
-            ? ""
+            ? ''
             : slpCode.length
-            ? _.map(slpCode, "value").join(",")
-            : filterState.slpCode,
+              ? _.map(slpCode, 'value').join(',')
+              : filterState.slpCode,
       })
     );
 
