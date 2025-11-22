@@ -643,6 +643,7 @@ const Input = forwardRef(
               return (
                 <PhoneInput
                   {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+                  {...(props.onBlur ? { onBlur: props.onBlur } : {})}
                   {...field}
                   {...r.omit(['className', 'style'], commonProps)}
                   value={formatPhoneNumber(field.value || '')}
@@ -668,6 +669,7 @@ const Input = forwardRef(
         ) : (
           <PhoneInput
             {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+            {...(props.onBlur ? { onBlur: props.onBlur } : {})}
             {...r.omit(['className', 'style'], commonProps)}
             value={formatPhoneNumber(props.value || props.defaultValue || '')}
             inputClass={classNames(
@@ -695,6 +697,14 @@ const Input = forwardRef(
                     value={field.value || ''}
                     onChange={(e) => {
                       field.onChange(e.target.value);
+                    }}
+                    onFocus={(e) => {
+                      field.onFocus?.();
+                      props.onFocus?.(e);
+                    }}
+                    onBlur={(e) => {
+                      field.onBlur?.();
+                      props.onBlur?.(e);
                     }}
                     type={type}
                     {...commonProps}
