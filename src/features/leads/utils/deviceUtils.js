@@ -32,7 +32,7 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap) => {
         : '';
 
     const onHand = item?.OnHand ?? item?.onHand ?? 0;
-    const onHandText = onHand > 0 ? `${onHand}ta bor` : '';
+    const onHandText = onHand > 0 ? `${onHand} ta bor` : '';
 
     const whsCode = item?.WhsCode ?? item?.whsCode ?? '';
     const whsName = item?.WhsName ?? item?.whsName ?? branchCodeToNameMap.get(String(whsCode)) ?? '';

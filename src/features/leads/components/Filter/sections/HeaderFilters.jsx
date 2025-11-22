@@ -18,9 +18,10 @@ export default function HeaderFilters({
   onSearchSubmit,
 }) {
   return (
-    <Row direction="row" gutter={2} wrap>
+    <Row direction="row" gutter={2} wrap flexGrow>
       <Col
         fullWidth
+        flexGrow
         xs={12}
         sm={6}
         md={2}

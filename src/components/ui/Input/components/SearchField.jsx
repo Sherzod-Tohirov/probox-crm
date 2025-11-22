@@ -118,7 +118,7 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
           <List
             className={styles['search-field-list']}
             items={data}
-            renderItem={renderItem}
+            renderItem={(item) => renderItem(item, searchText)}
             itemClassName={styles['search-field-item']}
             onSelect={onSelect}
           />

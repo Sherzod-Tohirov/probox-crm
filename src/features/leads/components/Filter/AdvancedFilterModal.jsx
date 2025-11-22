@@ -29,6 +29,7 @@ export default function AdvancedFilterModal({
 }) {
   const isMobile = useIsMobile();
   const [columnsLocal, setColumnsLocal] = useState(visibleColumns || {});
+  const [dateInputKey, setDateInputKey] = useState(0);
 
   // Fetch options
   const { data: branches = [], isLoading: isBranchesLoading } =
@@ -116,6 +117,7 @@ export default function AdvancedFilterModal({
   useEffect(() => {
     if (isOpen) {
       reset(defaults);
+      setDateInputKey((prev) => prev + 1); // Force date inputs to re-render
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaults, isOpen]);
@@ -149,7 +151,7 @@ export default function AdvancedFilterModal({
       }}
     >
       <Button variant="outlined" color="danger" onClick={onClose} type="button">
-        Bekor qilish
+        Yopish
       </Button>
       <Button variant="filled" onClick={handleSubmit(onSubmit)}>
         Qo'llash
@@ -206,6 +208,7 @@ export default function AdvancedFilterModal({
                   watchedMeeting={meeting}
                   watchedMeetingDateStart={watchedMeetingDateStart}
                   watchedMeetingDateEnd={watchedMeetingDateEnd}
+                  dateInputKey={dateInputKey}
                 />
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
                   <SelectField
