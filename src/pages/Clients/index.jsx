@@ -13,8 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { Col, Row, Table } from '@components/ui';
 import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
 import ClientsToolbar from '@features/clients/components/ClientsToolbar';
-import MinimalFilter from '@features/clients/components/Filter/MinimalFilter';
-import AdvancedFilterModal from '@features/clients/components/AdvancedFilterModal';
+import ClientsFilter from '@features/clients/components/Filter/ClientsFilter';
+import ColumnsModal from '@features/clients/components/ColumnsModal';
 
 import { setCurrentClient } from '@store/slices/clientsPageSlice';
 
@@ -55,8 +55,8 @@ export default function Clients() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
 
-  // Advanced modal + column visibility
-  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
+  // Columns modal visibility
+  const [isColumnsOpen, setColumnsOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(() => {
     try {
       const raw = localStorage.getItem('clientsVisibleColumns');
@@ -144,6 +144,12 @@ export default function Clients() {
   const handleRowClick = useCallback(
     (row) => {
       saveScrollPosition();
+      try {
+        sessionStorage.setItem(
+          'scrollPositionClients__rowKey',
+          String(row?.DocEntry ?? '')
+        );
+      } catch (_) {}
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
     },
@@ -161,15 +167,41 @@ export default function Clients() {
         ? _.map(merged.slpCode, 'value').join(',')
         : merged.slpCode;
 
-      setParams(() => ({
-        search: merged.search,
-        paymentStatus,
-        slpCode,
-        phone: merged.phone,
-        startDate: merged.startDate,
-        endDate: merged.endDate,
-        phoneConfiscated: merged.phoneConfiscated,
-      }));
+      // Build params object, excluding empty/undefined values
+      const params = {};
+
+      if (
+        merged.search &&
+        typeof merged.search === 'string' &&
+        merged.search.trim()
+      ) {
+        params.search = merged.search.trim();
+      }
+      if (paymentStatus && paymentStatus !== '' && paymentStatus !== 'all') {
+        params.paymentStatus = paymentStatus;
+      }
+      if (slpCode && slpCode !== '') {
+        params.slpCode = slpCode;
+      }
+      if (
+        merged.phone &&
+        merged.phone !== '998' &&
+        typeof merged.phone === 'string' &&
+        merged.phone.trim() &&
+        merged.phone.trim() !== '998'
+      ) {
+        params.phone = merged.phone.trim();
+      }
+      if (merged.startDate && merged.startDate.trim()) {
+        params.startDate = merged.startDate;
+      }
+      if (merged.endDate && merged.endDate.trim()) {
+        params.endDate = merged.endDate;
+      }
+      if (merged.phoneConfiscated && merged.phoneConfiscated !== '') {
+        params.phoneConfiscated = merged.phoneConfiscated;
+      }
+      setParams(() => params);
     },
     [filter]
   );
@@ -203,7 +235,7 @@ export default function Clients() {
                 onIncreaseDensity={increaseDensity}
                 onDecreaseDensity={decreaseDensity}
                 onResetDensity={resetDensity}
-                onToggleFilter={() => setAdvancedOpen(true)}
+                onToggleFilter={() => setColumnsOpen(true)}
                 isMobile={isMobile}
                 canIncreaseUI={canIncrease}
                 canDecreaseUI={canDecrease}
@@ -214,7 +246,7 @@ export default function Clients() {
               />
             </Col>
             <Col fullWidth>
-              <MinimalFilter onFilter={handleFilter} />
+              <ClientsFilter onFilter={handleFilter} />
             </Col>
           </Row>
         </Col>
@@ -269,11 +301,9 @@ export default function Clients() {
         </Col>
         <Col style={{ width: '100%' }}></Col>
       </Row>
-      <AdvancedFilterModal
-        isOpen={isAdvancedOpen}
-        onClose={() => setAdvancedOpen(false)}
-        onApply={handleFilter}
-        initialValues={filter}
+      <ColumnsModal
+        isOpen={isColumnsOpen}
+        onClose={() => setColumnsOpen(false)}
         columns={clientsTableColumns}
         visibleColumns={visibleColumns}
         onChangeVisibleColumns={setVisibleColumns}

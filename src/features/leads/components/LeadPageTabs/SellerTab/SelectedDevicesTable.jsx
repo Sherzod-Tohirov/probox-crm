@@ -18,6 +18,7 @@ export default function SelectedDevicesTable({
   totalGrandTotal,
   leadId,
   userSignature,
+  currentUser,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
@@ -37,10 +38,11 @@ export default function SelectedDevicesTable({
       if (invoiceData) {
         try {
           console.log('PDF fayl yaratish boshlandi...');
-          // Imzoni invoiceData ga qo'shamiz (faqat PDF uchun, backendga yuborilmaydi)
+          // Imzoni va user ma'lumotlarini invoiceData ga qo'shamiz (faqat PDF uchun, backendga yuborilmaydi)
           await generateInvoicePdf({
             ...invoiceData,
             userSignature: userSignature || null,
+            currentUser: currentUser || null,
           });
           console.log('PDF fayl muvaffaqiyatli yaratildi');
         } catch (error) {

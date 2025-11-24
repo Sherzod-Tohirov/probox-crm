@@ -44,6 +44,27 @@ export default function SourcesCard({ data = [] }) {
     color: COLORS[index % COLORS.length],
   }));
 
+  // Combine all per_day data into unified chart data
+  const unifiedChartData = useMemo(() => {
+    // Collect all unique days
+    const daysSet = new Set();
+    sortedData.forEach((item) => {
+      item.per_day?.forEach((day) => daysSet.add(day.day));
+    });
+
+    const sortedDays = Array.from(daysSet).sort();
+
+    // Build chart data with all sources
+    return sortedDays.map((day) => {
+      const dataPoint = { day };
+      sortedData.forEach((item, index) => {
+        const dayData = item.per_day?.find((d) => d.day === day);
+        dataPoint[item.source] = dayData?.count || 0;
+      });
+      return dataPoint;
+    });
+  }, [sortedData]);
+
   return (
     <Card title="Manbalar bo'yicha leadlar" style={{ height: '100%' }}>
       <div className={styles.sourcesContainer}>
@@ -94,7 +115,8 @@ export default function SourcesCard({ data = [] }) {
                 cy="50%"
                 labelLine={false}
                 label={(entry) => `${entry.percent.toFixed(1)}%`}
-                outerRadius={100}
+                outerRadius="70%"
+                innerRadius="0%"
                 style={{ fontSize: '14px', fontWeight: 600 }}
                 fill="#8884d8"
                 dataKey="value"
@@ -111,7 +133,7 @@ export default function SourcesCard({ data = [] }) {
           </ResponsiveContainer>
         </div>
 
-        {/* Trend Lines for Each Source - Accordion */}
+        {/* Unified Trend Chart - Accordion */}
         <div className={styles.sourceTrends}>
           <div
             className={styles.trendsHeader}
@@ -123,51 +145,39 @@ export default function SourcesCard({ data = [] }) {
             </div>
           </div>
 
-          {showTrends && (
-            <Row gutter={4} className={styles.trendsContent}>
-              {sortedData.map((item, index) => (
-                <Col fullWidth key={item.source} className={styles.trendItem}>
-                  <Row>
-                    <Col>
-                      {' '}
-                      <div className={styles.trendHeader}>
-                        <span
-                          className={styles.colorDot}
-                          style={{
-                            backgroundColor: COLORS[index % COLORS.length],
-                          }}
-                        />
-                        <Typography variant="body2">{item.source}</Typography>
-                      </div>
-                    </Col>
-                    <Col fullWidth>
-                      <div className={styles.trendChart}>
-                        <ResponsiveContainer width="100%" height={70}>
-                          <LineChart data={item.per_day}>
-                            <XAxis dataKey="day" hide />
-                            <YAxis hide />
-                            <Tooltip
-                              formatter={(value, name, props) => [
-                                `${value} ta lead`,
-                                props.payload.day,
-                              ]}
-                              contentStyle={{ fontSize: '14px' }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="count"
-                              stroke={COLORS[index % COLORS.length]}
-                              strokeWidth={2.5}
-                              dot={false}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
+          {showTrends && unifiedChartData.length > 0 && (
+            <div className={styles.trendsContent}>
+              <div className={styles.unifiedChart}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={unifiedChartData}>
+                    <XAxis
+                      dataKey="day"
+                      tickFormatter={(value) => {
+                        const [year, month, day] = value.split('.');
+                        return `${day}.${month}`;
+                      }}
+                      tick={{ fontSize: 13 }}
+                    />
+                    <YAxis tick={{ fontSize: 13 }} />
+                    <Tooltip
+                      contentStyle={{ fontSize: '14px' }}
+                      formatter={(value, name) => [`${value} ta lead`, name]}
+                    />
+                    {sortedData.map((item, index) => (
+                      <Line
+                        key={item.source}
+                        type="monotone"
+                        dataKey={item.source}
+                        stroke={COLORS[index % COLORS.length]}
+                        strokeWidth={2.5}
+                        dot={{ r: 4 }}
+                        name={item.source}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           )}
         </div>
       </div>

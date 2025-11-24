@@ -66,7 +66,20 @@ export function useSelectOptions(tab) {
       { value: 'Processing', label: 'Jarayonda' },
     ];
 
-    return { passportVisitOptions };
+    const callCountOptions = [...Array(5).keys()].map((i) => ({
+      value: i + 1,
+      label: i + 1,
+    }));
+
+    return { passportVisitOptions, callCountOptions };
+  }
+
+  if (tab === 'operator2') {
+    const callCountOptions = [...Array(10).keys()].map((i) => ({
+      value: i + 1,
+      label: i + 1,
+    }));
+    return { callCountOptions };
   }
 
   if (tab === 'seller') {

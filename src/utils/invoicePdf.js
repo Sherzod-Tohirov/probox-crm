@@ -1,23 +1,3 @@
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { extractNumericValue } from '@/features/leads/utils/deviceUtils';
-import { calculatePaymentDetails } from '@/features/leads/utils/deviceUtils';
-
-// pdfmake fontlarni yuklash
-try {
-  if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  } else if (pdfFonts && pdfFonts.pdfMake) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  } else if (pdfFonts) {
-    pdfMake.vfs = pdfFonts;
-  } else if (typeof pdfFonts !== 'undefined') {
-    pdfMake.vfs = pdfFonts;
-  }
-} catch (error) {
-  console.warn('pdfmake fontlarni yuklashda xatolik:', error);
-}
-
 /**
  * Invoice ma'lumotlaridan PDF fayl yaratadi va yuklab olish
  * Shartnoma formatida - to'liq shablon asosida
@@ -29,30 +9,11 @@ try {
  * @param {string} invoiceData.leadId - Lead ID
  * @param {Array} invoiceData.DocumentLines - Qurilmalar ro'yxati
  */
-/**
- * Rasmni base64 formatiga o'tkazadi
- * @param {string} imagePath - Rasm fayl yo'li
- * @returns {Promise<string>} Base64 string
- */
-const imageToBase64 = async (imagePath) => {
-  try {
-    const response = await fetch(imagePath);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error('Rasmni yuklashda xatolik:', error);
-    return null;
-  }
-};
+
+import { imageToBase64,  pdfMake } from './pdfHelpers';
+import { calculatePaymentData, calculatePaymentSchedule, getDateInfo } from './invoicePdfCalculations';
 
 export const generateInvoicePdf = async (invoiceData) => {
-  console.log('generateInvoicePdf chaqirildi, invoiceData:', invoiceData);
-  
   if (!invoiceData) {
     throw new Error('invoiceData topilmadi');
   }
@@ -65,148 +26,40 @@ export const generateInvoicePdf = async (invoiceData) => {
     jshshir = '',
     passportId = '',
     clientAddress = '',
+    sellerName = '',
+    currentUser = null,
     userSignature = null,
     DocumentLines = [],
     selectedDevices = []
   } = invoiceData;
   
-  console.log('Invoice ma\'lumotlari:', { clientName, clientPhone, cardCode, leadId, DocumentLinesCount: DocumentLines.length, selectedDevicesCount: selectedDevices.length });
+  // Agar sellerName bo'sh bo'lsa, currentUser dan olamiz
+  const finalSellerName = sellerName || currentUser?.SlpName || '';
 
   try {
     // Imzo va muhur rasmini yuklab olish
     const signatureImage = await imageToBase64('/signature-stamp.jpg');
     
-    // Tovar tannarxini hisoblash (ustama siz)
-    const totalPrice = DocumentLines.reduce((sum, line) => sum + (line.Price || 0), 0);
-    const totalPriceFormatted = totalPrice.toLocaleString('uz-UZ');
-    
-    // To'lov ma'lumotlarini hisoblash (deviceUtils.js dan foydalangan holda)
-    let grandTotal = 0;
-    let totalFirstPayment = 0;
-    let totalRemainingAmount = 0;
-    let maxPeriod = 0;
-    let totalMonthlyPayment = 0;
-    
-    if (selectedDevices && selectedDevices.length > 0) {
-      selectedDevices.forEach((device) => {
-        const price = extractNumericValue(device.price);
-        const period = Number(device.rentPeriod) || 0;
-        const firstPayment = extractNumericValue(device.firstPayment) || 0;
-        const monthlyLimit = invoiceData.monthlyLimit || null;
-        
-        if (price && period > 0) {
-          const paymentDetails = calculatePaymentDetails({
-            price,
-            period,
-            monthlyLimit,
-            firstPayment,
-          });
-          
-          grandTotal += paymentDetails.grandTotal;
-          // actualFirstPayment yoki calculatedFirstPayment ishlatamiz
-          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
-          totalFirstPayment += actualFirstPayment || 0;
-          maxPeriod = Math.max(maxPeriod, period);
-          totalMonthlyPayment += paymentDetails.monthlyPayment || 0;
-        }
-      });
-      
-      totalRemainingAmount = grandTotal - totalFirstPayment;
-    } else {
-      // Agar selectedDevices bo'lmasa, eski usuldan foydalanamiz
-      grandTotal = totalPrice;
-      totalRemainingAmount = totalPrice;
-    }
-    
-    const grandTotalFormatted = Math.round(grandTotal).toLocaleString('uz-UZ');
-    const firstPaymentFormatted = Math.round(totalFirstPayment).toLocaleString('uz-UZ');
-    const remainingAmountFormatted = Math.round(totalRemainingAmount).toLocaleString('uz-UZ');
+    // To'lov ma'lumotlarini hisoblash
+    const paymentData = calculatePaymentData(selectedDevices, DocumentLines, invoiceData.monthlyLimit);
+    const {
+      maxPeriod,
+      grandTotalFormatted,
+      firstPaymentFormatted,
+      remainingAmountFormatted,
+      grandTotalWordsUZ,
+      grandTotalWordsRU,
+      firstPaymentWordsUZ,
+      firstPaymentWordsRU,
+      remainingAmountWordsUZ,
+      remainingAmountWordsRU,
+    } = paymentData;
 
-    // To'lov jadvali uchun ma'lumotlarni hisoblash (deviceUtils.js logikasi bilan)
-    const calculatePaymentSchedule = () => {
-      if (!selectedDevices || selectedDevices.length === 0) {
-        return [];
-      }
+    // To'lov jadvalini hisoblash
+    const paymentSchedule = calculatePaymentSchedule(selectedDevices, invoiceData.monthlyLimit);
 
-      const schedule = [];
-      let maxPeriod = 0;
-      const devicePayments = [];
-      const monthlyLimit = invoiceData.monthlyLimit || null;
-
-      // Har bir qurilma uchun to'lov ma'lumotlarini hisoblash
-      selectedDevices.forEach((device) => {
-        const price = extractNumericValue(device.price);
-        const period = Number(device.rentPeriod) || 0;
-        const firstPayment = extractNumericValue(device.firstPayment) || 0;
-        
-        if (price && period > 0) {
-          maxPeriod = Math.max(maxPeriod, period);
-          
-          const paymentDetails = calculatePaymentDetails({
-            price,
-            period,
-            monthlyLimit,
-            firstPayment,
-          });
-          
-          // actualFirstPayment ni hisoblash
-          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
-          
-          devicePayments.push({
-            period,
-            monthlyPayment: paymentDetails.monthlyPayment || 0,
-            firstPayment: actualFirstPayment || 0,
-          });
-        }
-      });
-
-      // Agar maxPeriod bo'lmasa, jadval bo'sh bo'lishi kerak
-      if (maxPeriod <= 0) {
-        return [];
-      }
-
-      // Har bir oy uchun faqat oylik to'lovlarni hisoblash (boshlang'ich to'lov emas)
-      // Faqat kerakli oylar sonini yaratamiz (dinamik)
-      for (let month = 1; month <= maxPeriod; month++) {
-        let monthlyTotal = 0;
-        
-        // Har bir qurilma uchun oylik to'lovni qo'shamiz (boshlang'ich to'lovni qo'shmasdan)
-        devicePayments.forEach((devicePayment) => {
-          if (month <= devicePayment.period) {
-            monthlyTotal += devicePayment.monthlyPayment;
-          }
-        });
-
-        // Sana hisoblash (keyingi oylar uchun)
-        const paymentDate = new Date();
-        paymentDate.setMonth(paymentDate.getMonth() + month - 1);
-        const dateStr = paymentDate.toLocaleDateString('uz-UZ', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        });
-
-        schedule.push({
-          number: month,
-          date: dateStr,
-          amount: Math.round(monthlyTotal),
-          remaining: 0, // Qolgan miqdor har doim 0
-        });
-      }
-
-      return schedule;
-    };
-
-    const paymentSchedule = calculatePaymentSchedule();
-
-    // Sana
-    const date = new Date();
-    const day = date.getDate();
-    const monthNames = ['январ', 'феврал', 'март', 'апрел', 'май', 'июн', 'июл', 'август', 'сентябр', 'октябр', 'ноябр', 'декабр'];
-    const monthNamesRu = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-    const month = monthNames[date.getMonth()];
-    const monthRu = monthNamesRu[date.getMonth()];
-    const year = date.getFullYear();
+    // Sana ma'lumotlari
+    const { day, month, monthRu, year } = getDateInfo();
 
     // IMEI ma'lumotlari
     const imei1 = DocumentLines[0]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
@@ -233,16 +86,26 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: 'Муддатли тўлов асосида\n', fontSize: 12, bold: true },
                 { text: 'сотиш-харид қилиш шартномаси\n', fontSize: 12, bold: true },
-                { text: `№ ${leadId || '___________________________'}\n\n`, fontSize: 10 },
-                { text: `Тошкент ш.   "${day}" ${month} ${year} й.\n\n`, fontSize: 10 },
+                { text: '№ ', fontSize: 10 },
+                { text: `${leadId || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                { text: 'Тошкент ш.   "', fontSize: 10 },
+                { text: `${day}`, fontSize: 10, bold: true },
+                { text: `" ${month} `, fontSize: 10 },
+                { text: `${year}`, fontSize: 10, bold: true },
+                { text: ' й.\n\n', fontSize: 10 },
                 {
                   text: '«PROBOX GROUP CO» МЧЖ кейинги ўринларда "Сотувчи" деб аталувчи, Устав асосида ҳаракат қилувчи директор Нигматов О.Х. номидан, бир томондан, ва\n\n',
                   fontSize: 9,
                 },
-                { text: `(ФИШ) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: `паспорт/id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
+                { text: '(ФИШ) ', fontSize: 9 },
+                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'паспорт/id: ', fontSize: 9 },
+                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                { text: ', ЖШШИР) ', fontSize: 9 },
+                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
                 { text: 'паспорт берилган сана)да берилган,\n', fontSize: 9 },
-                { text: `(яшаш манзили) ${clientAddress || '_______________________'}\n`, fontSize: 9 },
+                { text: '(яшаш манзили) ', fontSize: 9 },
+                { text: `${clientAddress || '_______________________'}\n`, fontSize: 9, bold: true },
                 {
                   text: 'манзилда истиқомад қилувчи, Ўзбекистон Республикаси фуқароси, кейинги ўринларда "Харидор" деб аталувчи бошқа томондан, ушбу шартномани қуйидагилар ҳақида туздилар:\n\n',
                   fontSize: 9,
@@ -254,16 +117,26 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: 'Договор купли-продажи\n', fontSize: 12, bold: true },
                 { text: 'на основе рассрочки\n', fontSize: 12, bold: true },
-                { text: `№ ${leadId || '___________________________'}\n\n`, fontSize: 10 },
-                { text: `г. Ташкент   "${day}" ${monthRu} ${year} г.\n\n`, fontSize: 10 },
+                { text: '№ ', fontSize: 10 },
+                { text: `${leadId || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                { text: 'г. Ташкент   "', fontSize: 10 },
+                { text: `${day}`, fontSize: 10, bold: true },
+                { text: `" ${monthRu} `, fontSize: 10 },
+                { text: `${year}`, fontSize: 10, bold: true },
+                { text: ' г.\n\n', fontSize: 10 },
                 {
                   text: 'ООО «PROBOX GROUP CO», далее именуемое «Продавец», в лице директора Нигматова О.Х., действующего на основании Устава, с одной стороны, и гражданин Республики Узбекистан:\n\n',
                   fontSize: 9,
                 },
-                { text: `(ФИО) ${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: `серия и номер паспорта/id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
+                { text: '(ФИО) ', fontSize: 9 },
+                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'серия и номер паспорта/id: ', fontSize: 9 },
+                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                { text: ', ЖШШИР) ', fontSize: 9 },
+                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
                 { text: 'выдан ____________(дата выдачи),\n', fontSize: 9 },
-                { text: `проживающий по адресу: ${clientAddress || '_______________________'}\n`, fontSize: 9 },
+                { text: 'проживающий по адресу: ', fontSize: 9 },
+                { text: `${clientAddress || '_______________________'}\n`, fontSize: 9, bold: true },
                 {
                   text: 'далее именуемый "Покупатель", с другой стороны, заключили настоящий Договор о нижеследующем:\n\n',
                   fontSize: 9,
@@ -286,7 +159,9 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '1.2.Сотилган товар хақида маълумот:\n', fontSize: 9 },
-                { text: `${itemName1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
+                { text: `${itemName1} `, fontSize: 9, bold: true },
+                { text: 'IMEI 1 код: ', fontSize: 9 },
+                { text: `${imei1}\n`, fontSize: 9, bold: true },
                 {
                   text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
@@ -302,7 +177,9 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '1.2. Информация о продаваемом Товаре:\n', fontSize: 9 },
-                { text: `${itemName1} IMEI 1 код: ${imei1}\n`, fontSize: 9 },
+                { text: `${itemName1} `, fontSize: 9, bold: true },
+                { text: 'IMEI 1 код: ', fontSize: 9 },
+                { text: `${imei1}\n`, fontSize: 9, bold: true },
                 {
                   text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
@@ -321,19 +198,61 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: '2. ШАРТНОМА ҚИЙМАТИ ВА ТЎЛОВ ТАРТИБИ\n', fontSize: 10, bold: true },
                 {
-                  text: `2.1.Шартнома имзоланган кунида Товарнинг умумий қиймати ${grandTotalFormatted} сўмни ташкил қилади.\n\n`,
+                  text: '2.1.Шартнома имзоланган кунида Товарнинг умумий қиймати ',
                   fontSize: 9,
                 },
                 {
-                  text: `2.2.Харидор Товар учун олдиндан ${firstPaymentFormatted} сўм тўловни амалга оширади.\n\n`,
+                  text: [
+                    { text: `${grandTotalFormatted} `, bold: true },
+                    { text: `(${grandTotalWordsUZ} сўм) `, fontSize: 8, italics: true },
+                    { text: 'сўмни ташкил қилади.\n\n', bold: true },
+                  ],
                   fontSize: 9,
                 },
                 {
-                  text: `2.3.Харидор Товарнинг қолган ${remainingAmountFormatted} сўм қийматини ${maxPeriod || '_____'} ой давомида Тўлов жадвали (1-Илова) буйича тўлов қилишга мажбур.\n\n`,
+                  text: '2.2.Харидор Товар учун олдиндан ',
                   fontSize: 9,
                 },
                 {
-                  text: `2.4.Тўлов муддати ҳар ойнинг ${day}-кунида амалга оширилади. Товар қиймати АҚШ долларида белгиланган бўлиб, Ўзбекистон Республикаси Марказий банки томонидан белгиланган расмий валюталар курси асосида сўмда тўланади. Тўлов амалга оширилаётган кунги расмий курс ҳисобга олинади.\n\n`,
+                  text: [
+                    { text: `${firstPaymentFormatted} `, bold: true },
+                    { text: `(${firstPaymentWordsUZ} сўм) `, fontSize: 8, italics: true },
+                    { text: 'сўм тўловни амалга оширади.\n\n', bold: true },
+                  ],
+                  fontSize: 9,
+                },
+                {
+                  text: '2.3.Харидор Товарнинг қолган ',
+                  fontSize: 9,
+                },
+                {
+                  text: [
+                    { text: `${remainingAmountFormatted} `, bold: true },
+                    { text: `(${remainingAmountWordsUZ} сўм) `, fontSize: 8, italics: true },
+                    { text: 'сўм қийматини ', bold: true },
+                  ],
+                  fontSize: 9,
+                },
+                {
+                  text: `${maxPeriod || '_____'} ой давомида `,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: 'Тўлов жадвали (1-Илова) буйича тўлов қилишга мажбур.\n\n',
+                  fontSize: 9,
+                },
+                {
+                  text: `2.4.Тўлов муддати ҳар ойнинг `,
+                  fontSize: 9,
+                },
+                {
+                  text: `${day}-кунида `,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: 'амалга оширилади. Товар қиймати АҚШ долларида белгиланган бўлиб, Ўзбекистон Республикаси Марказий банки томонидан белгиланган расмий валюталар курси асосида сўмда тўланади. Тўлов амалга оширилаётган кунги расмий курс ҳисобга олинади.\n\n',
                   fontSize: 9,
                 },
                 {
@@ -359,19 +278,65 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: '2.СТОИМОСТЬ ДОГОВОРА И ПОРЯДОК ОПЛАТЫ\n', fontSize: 10, bold: true },
                 {
-                  text: `2.1. На день подписания Договора общая стоимость Товара: составляет ${grandTotalFormatted} сум.\n\n`,
+                  text: '2.1. На день подписания Договора общая стоимость Товара: составляет ',
                   fontSize: 9,
                 },
                 {
-                  text: `2.2. Предоплата за Товар: ${firstPaymentFormatted} сум.\n\n`,
+                  text: [
+                    { text: `${grandTotalFormatted} `, bold: true },
+                    { text: `(${grandTotalWordsRU} сум) `, fontSize: 8, italics: true },
+                    { text: 'сум.\n\n', bold: true },
+                  ],
                   fontSize: 9,
                 },
                 {
-                  text: `2.3.Оставшуюся стоимость Товара: ${remainingAmountFormatted} сум Покупатель обязуется выплатить в течение ${maxPeriod || '_____'}месяцев согласно Графику платежей (Приложение 1).\n\n`,
+                  text: '2.2. Предоплата за Товар: ',
                   fontSize: 9,
                 },
                 {
-                  text: `2.4.Срок ежемесячной оплаты Товара устанавливается на ${day}-е число каждого месяца. "Стоимость товара установлена в долларах США и подлежит оплате в сумах на основе официального курса валют, установленного Центральным банком Республики Узбекистан. При этом учитывается официальный курс валют на день осуществления платежа."\n\n`,
+                  text: [
+                    { text: `${firstPaymentFormatted} `, bold: true },
+                    { text: `(${firstPaymentWordsRU} сум) `, fontSize: 8, italics: true },
+                    { text: 'сум.\n\n', bold: true },
+                  ],
+                  fontSize: 9,
+                },
+                {
+                  text: '2.3.Оставшуюся стоимость Товара: ',
+                  fontSize: 9,
+                },
+                {
+                  text: [
+                    { text: `${remainingAmountFormatted} `, bold: true },
+                    { text: `(${remainingAmountWordsRU} сум) `, fontSize: 8, italics: true },
+                    { text: 'сум ', bold: true },
+                  ],
+                  fontSize: 9,
+                },
+                {
+                  text: 'Покупатель обязуется выплатить в течение ',
+                  fontSize: 9,
+                },
+                {
+                  text: `${maxPeriod || '_____'}месяцев `,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: 'согласно Графику платежей (Приложение 1).\n\n',
+                  fontSize: 9,
+                },
+                {
+                  text: '2.4.Срок ежемесячной оплаты Товара устанавливается на ',
+                  fontSize: 9,
+                },
+                {
+                  text: `${day}-е число `,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: 'каждого месяца. "Стоимость товара установлена в долларах США и подлежит оплате в сумах на основе официального курса валют, установленного Центральным банком Республики Узбекистан. При этом учитывается официальный курс валют на день осуществления платежа."\n\n',
                   fontSize: 9,
                 },
                 {
@@ -1286,13 +1251,37 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'X/p/P/c: 20208000705125899001\n', fontSize: 9 },
                 { text: 'СТИР/ИНН: 306737779\n\n', fontSize: 9 },
                 { text: 'ХАРИДОР/ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
-                { text: `Ф.И.Ш./Ф.И.О: ${clientName || '_______________________'}\n`, fontSize: 9 },
-                { text: `Паспорт/id серияси ва рақами/Серия и номер паспорта/ id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
-                { text: `Манзил/Адрес: ${clientAddress || '______________'}\n`, fontSize: 9 },
-                { text: `Тел.рақами/Тел.номер: ${clientPhone || '_______________________'}\n\n`, fontSize: 9 },
+                { text: 'Ф.И.Ш./Ф.И.О: ', fontSize: 9 },
+                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'Паспорт/id серияси ва рақами/Серия и номер паспорта/ id: ', fontSize: 9 },
+                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                { text: ', ЖШШИР) ', fontSize: 9 },
+                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
+                { text: 'Манзил/Адрес: ', fontSize: 9 },
+                { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
+                { text: 'Тел.рақами/Тел.номер: ', fontSize: 9 },
+                { text: `${clientPhone || '_______________________'}\n\n`, fontSize: 9, bold: true },
                 { text: 'Шартнома 7 (етти) вароқдан иборат.\n', fontSize: 8 },
                 {
-                  text: `Муддатли тўлов асосида сотиш-харид қилиш шартномасига № ${leadId || '____'} ${year} йил "${day}" ${month} даги 1-сон Илова\n`,
+                  text: 'Муддатли тўлов асосида сотиш-харид қилиш шартномасига № ',
+                  fontSize: 8,
+                },
+                {
+                  text: `${leadId || '____'}`,
+                  fontSize: 8,
+                  bold: true,
+                },
+                {
+                  text: ` ${year} йил "`,
+                  fontSize: 8,
+                },
+                {
+                  text: `${day}`,
+                  fontSize: 8,
+                  bold: true,
+                },
+                {
+                  text: `" ${month} даги 1-сон Илова\n`,
                   fontSize: 8,
                 },
               ],
@@ -1310,13 +1299,27 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'X/p/P/c: 20208000705125899001\n', fontSize: 9 },
                 { text: 'СТИР/ИНН: 306737779\n\n', fontSize: 9 },
                 { text: 'ХАРИДОР/ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
-                { text: `Ф.И.Ш./Ф.И.О: ${clientName || '_______________________'}\n`, fontSize: 9 },
-                { text: `Паспорт/id серияси ва рақами/Серия и номер паспорта/ id: ${passportId || '______________'}, ЖШШИР) ${jshshir || '______________'}\n`, fontSize: 9 },
-                { text: `Манзил/Адрес: ${clientAddress || '______________'}\n`, fontSize: 9 },
-                { text: `Тел.рақами/Тел.номер: ${clientPhone || '_______________________'}\n\n`, fontSize: 9 },
+                { text: 'Ф.И.Ш./Ф.И.О: ', fontSize: 9 },
+                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'Паспорт/id серияси ва рақами/Серия и номер паспорта/ id: ', fontSize: 9 },
+                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                { text: ', ЖШШИР) ', fontSize: 9 },
+                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
+                { text: 'Манзил/Адрес: ', fontSize: 9 },
+                { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
+                { text: 'Тел.рақами/Тел.номер: ', fontSize: 9 },
+                { text: `${clientPhone || '_______________________'}\n\n`, fontSize: 9, bold: true },
                 { text: 'Договор состоит из 7 (семи) страниц.\n', fontSize: 8 },
                 {
-                  text: `Приложение №1 к Договору купли-продажи на основе рассрочки № ${leadId || '____'} от "${day}" ${monthRu} ${year} г.\n`,
+                  text: [
+                    'Приложение №1 к Договору купли-продажи на основе рассрочки № ',
+                    { text: `${leadId || '____'}`, bold: true },
+                    ` от "`,
+                    { text: `${day}`, bold: true },
+                    `" ${monthRu} `,
+                    { text: `${year}`, bold: true },
+                    ' г.\n',
+                  ],
                   fontSize: 8,
                 },
               ],
@@ -1350,7 +1353,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                 ? paymentSchedule.map((scheduleItem) => [
                     scheduleItem.number.toString(),
                     scheduleItem.date,
-                    scheduleItem.amount.toLocaleString('uz-UZ'), // Faqat oylik to'lov
+                    { text: scheduleItem.amount.toLocaleString('uz-UZ'), bold: true }, // Faqat oylik to'lov - bold
                     '0', // Qolgan miqdor har doim 0
                   ])
                 : [] // Agar jadval bo'sh bo'lsa, hech narsa ko'rsatilmaydi
@@ -1358,7 +1361,7 @@ export const generateInvoicePdf = async (invoiceData) => {
               [
                 { text: 'ЖАМИ/ИТОГО:', bold: true, colSpan: 2 },
                 '',
-                grandTotalFormatted, // Grand total (ustama bilan)
+                { text: grandTotalFormatted, bold: true }, // Grand total (ustama bilan) - bold
                 '0',
               ],
             ],
@@ -1385,7 +1388,8 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'Банк коди: 01095\n', fontSize: 9 },
                 { text: 'X/p: 20208000705125899001\n', fontSize: 9 },
                 { text: 'СТИР: 306737779\n\n', fontSize: 9 },
-                { text: 'С о т у в ч и консультант: _________________\n', fontSize: 9 },
+                { text: 'С о т у в ч и консультант: ', fontSize: 9 },
+                { text: `${finalSellerName || '_________________'}\n`, fontSize: 9, bold: true },
                 { text: 'Имзо: ', fontSize: 9 },
                 ...(signatureImage ? [
                   {
@@ -1425,10 +1429,8 @@ export const generateInvoicePdf = async (invoiceData) => {
 
     // PDF yaratish va yuklab olish
     const fileName = `shartnoma-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    console.log('PDF fayl nomi:', fileName);
     
     pdfMake.createPdf(docDefinition).download(fileName);
-    console.log('PDF fayl yuklab olindi');
 
     return true;
   } catch (error) {
