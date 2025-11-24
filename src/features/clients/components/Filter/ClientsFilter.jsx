@@ -228,6 +228,17 @@ export default function ClientsFilter({ onFilter }) {
         cleanedData[key] = value;
       });
 
+      // Normalize executor filter: convert array of option objects to comma-separated values
+      if (
+        Array.isArray(cleanedData.slpCode) &&
+        cleanedData.slpCode.length > 0
+      ) {
+        cleanedData.slpCode = cleanedData.slpCode
+          .map((opt) => opt?.value)
+          .filter((v) => v !== undefined && v !== null && v !== '')
+          .join(',');
+      }
+
       const updatedFilter = {
         ...filterState,
         ...cleanedData,
