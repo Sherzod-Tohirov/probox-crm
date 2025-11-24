@@ -194,6 +194,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 totalGrandTotal={totalGrandTotal}
                 leadId={leadId}
                 userSignature={userSignature}
+                currentUser={user}
               />
             )}
 

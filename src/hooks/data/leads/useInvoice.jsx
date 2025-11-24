@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createInvoice } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
+import { getExecutors } from '@/services/executorsService';
 import { extractNumericValue, resolveItemCode } from '@/features/leads/utils/deviceUtils';
 
 export default function useInvoice(options = {}) {
@@ -121,7 +122,92 @@ export default function useInvoice(options = {}) {
         ? (Number(leadData.finalLimit) || null)
         : null;
 
-      // 6. Invoice body ni tayyorlash
+      // 6. Sotuvchi nomini olish
+      // Avval consultant yoki sellerName ni tekshiramiz
+      let sellerName = leadData?.consultant || leadData?.sellerName || '';
+      
+      console.log('=== Seller Name Lookup ===');
+      console.log('Initial sellerName:', sellerName);
+      console.log('leadData.seller:', leadData?.seller, typeof leadData?.seller);
+      console.log('leadData.consultant:', leadData?.consultant);
+      console.log('leadData.sellerName:', leadData?.sellerName);
+      console.log('Full leadData keys:', Object.keys(leadData || {}));
+      
+      // Agar seller kodi bo'lsa, executors ro'yxatidan ismini topamiz
+      // sellerName bo'sh bo'lsa va seller kodi mavjud bo'lsa
+      const sellerCode = leadData?.seller;
+      const hasSellerCode = sellerCode != null && sellerCode !== '' && sellerCode !== undefined;
+      
+      console.log('hasSellerCode:', hasSellerCode, 'sellerCode:', sellerCode);
+      
+      if (!sellerName && hasSellerCode) {
+        try {
+          console.log('Fetching executors for seller code:', leadData.seller);
+          const executorsResponse = await getExecutors({ include_role: 'Seller' });
+          
+          console.log('Executors response:', executorsResponse);
+          console.log('Executors response type:', typeof executorsResponse);
+          console.log('Is array?', Array.isArray(executorsResponse));
+          
+          // Response strukturasini tekshirish
+          let executors = [];
+          
+          if (Array.isArray(executorsResponse)) {
+            // To'g'ridan-to'g'ri array
+            executors = executorsResponse;
+          } else if (executorsResponse?.data && Array.isArray(executorsResponse.data)) {
+            // { total: 12, data: [...] } yoki { data: [...] } format
+            executors = executorsResponse.data;
+          } else if (executorsResponse?.content && Array.isArray(executorsResponse.content)) {
+            // { content: [...] } format
+            executors = executorsResponse.content;
+          }
+          
+          console.log('Executors array length:', executors.length);
+          if (executors.length > 0) {
+            console.log('First executor:', executors[0]);
+            console.log('First executor SlpCode:', executors[0].SlpCode, typeof executors[0].SlpCode);
+          }
+          console.log('Looking for seller with SlpCode:', Number(leadData.seller));
+          
+          // Sotuvchi kodini topish (string va number solishtirish)
+          const seller = executors.find(
+            (executor) => {
+              const executorCode = Number(executor?.SlpCode);
+              const sellerCode = Number(leadData.seller);
+              const match = executorCode === sellerCode;
+              if (match) {
+                console.log('Match found!', { executorCode, sellerCode, executor });
+              }
+              return match;
+            }
+          );
+          
+          console.log('Found seller:', seller);
+          
+          if (seller?.SlpName) {
+            sellerName = seller.SlpName;
+            console.log('Seller name set to:', sellerName);
+          } else {
+            console.warn('Seller not found. Available SlpCodes:', executors.map(e => ({ SlpCode: e.SlpCode, SlpName: e.SlpName })));
+          }
+        } catch (error) {
+          console.error('Sotuvchi nomini olishda xatolik:', error);
+          // Xatolik bo'lsa ham davom etamiz
+        }
+      } else {
+        console.log('Seller name lookup skipped. Reasons:', {
+          hasSellerName: !!sellerName,
+          sellerValue: leadData?.seller,
+          sellerIsNull: leadData?.seller === null,
+          sellerIsUndefined: leadData?.seller === undefined,
+          sellerIsEmpty: leadData?.seller === '',
+        });
+      }
+      
+      console.log('Final sellerName:', sellerName);
+
+      // 7. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         leadId: leadId,
@@ -132,14 +218,15 @@ export default function useInvoice(options = {}) {
         passportId: leadData.passportId || '',
         clientAddress: clientAddress,
         monthlyLimit: monthlyLimit,
+        sellerName: sellerName,
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
 
-      // 7. Invoice yuborish
+      // 8. Invoice yuborish
       await createInvoice(invoiceData);
 
-      // 8. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      // 9. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;
     },
     retry: false,
