@@ -101,7 +101,7 @@ export default function AdvancedFilterModal({
       }}
     >
       <Button variant="outlined" color="danger" onClick={onClose} type="button">
-        Bekor qilish
+        Yopish
       </Button>
       <Button variant="filled" onClick={handleSubmit(onSubmit)}>
         Qo'llash

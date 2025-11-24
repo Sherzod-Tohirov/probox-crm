@@ -19,7 +19,6 @@ import Operator1Tab from '@/features/leads/components/LeadPageTabs/Operator1Tab'
 import Operator2Tab from '@/features/leads/components/LeadPageTabs/Operator2Tab';
 import SellerTab from '@/features/leads/components/LeadPageTabs/SellerTab';
 import ScoringTab from '@/features/leads/components/LeadPageTabs/ScoringTab';
-
 // Import section components
 import {
   StatusSection,
@@ -33,14 +32,13 @@ import {
   BlockedWarningCard,
 } from '@/features/leads/components/LeadPageSections';
 
-import styles from './style.module.scss';
+import styles from './styles/style.module.scss';
 import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
 
 export default function LeadPage() {
   const { id } = useParams();
   const isMobile = useIsMobile();
-
   // Use custom hook for all data and logic
   const {
     lead,

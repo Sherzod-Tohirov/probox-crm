@@ -12,6 +12,7 @@ import useStatisticsTableColumns from '@features/statistics/hooks/useStatisticsT
 import useAuth from '@hooks/useAuth';
 import useIsMobile from '@hooks/useIsMobile';
 import formatDate from '@utils/formatDate';
+import { initialStatisticsFilterState } from '@utils/store/initialStates';
 import styles from './style.module.scss';
 import Footer from '@/components/Footer';
 import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';
@@ -19,17 +20,30 @@ import hasRole from '@/utils/hasRole';
 import useStatisticsExcelExport from '@features/statistics/hooks/useStatisticsExcelExport';
 
 export default function Statistics() {
-  const filterState = useSelector((state) => state.page.statistics.filter);
+  const filterState = useSelector(
+    (state) => state.page.clients.statisticsFilter || {}
+  );
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [filterExpanded, setFilterExpanded] = useState(false);
   const { monthlyStatisticsColumns, salesPersonStatisticsColumns } =
     useStatisticsTableColumns();
-  const [params, setParams] = useState(() => ({
-    startDate: formatDate(filterState.startDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
-    endDate: formatDate(filterState.endDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
-    slpCode: filterState.slpCode === '' ? user?.slpCode : filterState.slpCode,
-  }));
+  const [params, setParams] = useState(() => {
+    // Use initialStatisticsFilterState if filterState is empty
+    const safeStartDate =
+      filterState.startDate || initialStatisticsFilterState.startDate;
+    const safeEndDate =
+      filterState.endDate || initialStatisticsFilterState.endDate;
+
+    return {
+      startDate: formatDate(safeStartDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
+      endDate: formatDate(safeEndDate, 'DD.MM.YYYY', 'YYYY.MM.DD'),
+      slpCode:
+        filterState.slpCode === ''
+          ? user?.slpCode
+          : filterState.slpCode || user?.slpCode,
+    };
+  });
   const [formattedMonthlyData, setFormattedMonthlyData] = useState([]);
   const { monthly, salesPerson, clients, utils } = useStatisticsData(params);
 

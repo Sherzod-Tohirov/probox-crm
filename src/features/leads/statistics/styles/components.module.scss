@@ -1,0 +1,482 @@
+// Common
+.empty {
+  padding: 5rem;
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: 1.8rem;
+
+  @media (max-width: 768px) {
+    padding: 3rem;
+    font-size: 1.6rem;
+  }
+}
+
+// Funnel Card
+.funnelContainer {
+  min-height: 38rem;
+  margin: -1rem -2rem;
+  padding: 1rem 0;
+
+  .funnelChart {
+    display: block;
+    width: 100%;
+    padding: 0 1.5rem;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  .funnelList {
+    display: none;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+}
+
+.funnelStep {
+  margin-bottom: 2.4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--primary-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .stepInfo {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin-bottom: 1.2rem;
+
+    .stepNumber {
+      width: 4.4rem;
+      height: 4.4rem;
+      border-radius: 50%;
+      background: var(--fourth-bg);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.8rem;
+    }
+
+    .stepDetails {
+      flex: 1;
+
+      .stepName {
+        margin-bottom: 0.8rem;
+        color: var(--primary-color);
+      }
+
+      .stepMetrics {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+
+        .count {
+          color: var(--primary-color);
+        }
+
+        .cr {
+          padding: 0.4rem 1.2rem;
+          border-radius: 1.4rem;
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  .stepBar {
+    width: 100%;
+    height: 1.2rem;
+    background: var(--tertiary-bg);
+    border-radius: 0.6rem;
+    overflow: hidden;
+
+    .stepBarFill {
+      height: 100%;
+      border-radius: 0.6rem;
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+// Sources Card
+.sourcesContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-rows: auto auto;
+  }
+}
+
+.sourcesList {
+  @media (min-width: 1024px) {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+}
+
+.sourcesTable {
+  .tableHeader,
+  .tableRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    padding: 1.6rem 0;
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+      padding: 1.2rem 0;
+    }
+  }
+
+  .tableHeader {
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-border-color);
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+  }
+
+  .tableRow {
+    border-bottom: 1px solid var(--secondary-border-color);
+    transition: background 0.2s;
+    color: var(--primary-color);
+
+    &:hover {
+      background: var(--primary-table-hover-bg);
+    }
+
+    .colSource {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+
+      .colorDot {
+        width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 50%;
+      }
+
+      .topBadge {
+        margin-left: 1rem;
+        padding: 0.4rem 1rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 1rem;
+        font-weight: 600;
+
+        [data-theme='dark'] & {
+          background: #78350f;
+          color: #fef3c7;
+        }
+      }
+    }
+
+    .colPercent {
+      .percentPill {
+        padding: 0.6rem 1.4rem;
+        background: #ddd6fe;
+        color: #5b21b6;
+        border-radius: 1.4rem;
+        font-weight: 600;
+
+        [data-theme='dark'] & {
+          background: #5b21b6;
+          color: #ddd6fe;
+        }
+      }
+    }
+  }
+}
+
+.pieChartWrapper {
+  @media (min-width: 1024px) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.sourceTrends {
+  @media (min-width: 1024px) {
+    grid-column: 1 / 3;
+    grid-row: 3;
+  }
+
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--primary-border-color);
+
+  .trendsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 1.2rem;
+    border-radius: 0.8rem;
+    transition: background 0.2s ease;
+    user-select: none;
+
+    &:hover {
+      background: var(--fourth-bg);
+    }
+
+    &:active {
+      background: var(--tertiary-bg);
+    }
+  }
+
+  .trendsToggle {
+    display: flex;
+    align-items: center;
+    color: var(--secondary-color);
+    transition: color 0.2s ease;
+
+    .trendsHeader:hover & {
+      color: var(--primary-color);
+    }
+  }
+
+  .trendsContent {
+    margin-top: 1.6rem;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .trendsTitle {
+    font-size: 4rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+
+    @media (max-width: 768px) {
+      font-size: 2.4rem;
+    }
+  }
+
+  .trendItem {
+    margin-bottom: 1.6rem;
+
+    .trendHeader {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+
+      .colorDot {
+        width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 50%;
+      }
+
+      .trendSource {
+        font-weight: 500;
+        font-size: 4rem;
+        color: var(--primary-color);
+
+        @media (max-width: 768px) {
+          font-size: 1.6rem;
+        }
+      }
+    }
+
+    .trendChart {
+      background: var(--fourth-bg);
+      border-radius: 1rem;
+      padding: 1.2rem;
+      width: 100%;
+      border: 1px solid var(--primary-border-color);
+    }
+  }
+}
+
+// Branches Card
+.branchesContainer {
+  .branchesTable {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+    }
+
+    .tableHeader {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 0.5fr;
+      gap: 2rem;
+      padding: 1.8rem 2rem;
+      font-weight: 600;
+      border-bottom: 2px solid var(--primary-border-color);
+      color: var(--secondary-color);
+      font-size: 1.6rem;
+      background-color: var(--primary-table-header-bg);
+    }
+  }
+
+  .branchRow {
+    .branchMainRow {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 0.5fr;
+      gap: 2rem;
+      padding: 2rem;
+      border-bottom: 1px solid var(--secondary-border-color);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1.6rem;
+      color: var(--primary-color);
+
+      &:hover {
+        background: var(--primary-table-hover-bg);
+      }
+
+      &.expanded {
+        background: var(--primary-table-hover-bg);
+      }
+
+      .colBranch {
+        font-weight: 500;
+        font-size: 1.6rem;
+      }
+
+      .colCount {
+        font-weight: 600;
+        font-size: 1.7rem;
+      }
+
+      .colPercent {
+        .percentBadge {
+          padding: 0.6rem 1.4rem;
+          border-radius: 1.4rem;
+          color: white;
+          font-weight: 600;
+          font-size: 1.4rem;
+        }
+      }
+
+      .colAction {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary-color);
+      }
+    }
+
+    .branchExpanded {
+      padding: 3rem;
+      background: var(--primary-table-bg);
+      border-bottom: 1px solid var(--primary-border-color);
+
+      @media (max-width: 768px) {
+        padding: 2rem;
+      }
+
+      .branchChart {
+        .chartTitle {
+          font-size: 1.7rem;
+          font-weight: 600;
+          margin-bottom: 1.6rem;
+          color: var(--primary-color);
+        }
+      }
+
+      .noActivity {
+        padding: 4rem;
+        text-align: center;
+        color: var(--secondary-color);
+        font-size: 1.7rem;
+
+        @media (max-width: 768px) {
+          padding: 2rem;
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+
+  .branchesMobile {
+    display: block;
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+
+    .branchCard {
+      border: 1px solid var(--primary-border-color);
+      border-radius: 1rem;
+      margin-bottom: 1.6rem;
+      overflow: hidden;
+      background-color: var(--primary-table-bg);
+
+      .branchCardHeader {
+        padding: 2rem;
+        cursor: pointer;
+        background: var(--primary-table-bg);
+        transition: background 0.2s;
+        color: var(--primary-color);
+
+        &:active {
+          background: var(--primary-table-hover-bg);
+        }
+
+        .branchCardTitle {
+          font-size: 1.7rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+        }
+
+        .branchCardMeta {
+          display: flex;
+          align-items: center;
+          gap: 1.2rem;
+          font-size: 1.5rem;
+
+          .count {
+            font-weight: 600;
+          }
+
+          .percentBadge {
+            padding: 0.5rem 1.2rem;
+            border-radius: 1.2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1.3rem;
+          }
+        }
+      }
+
+      .branchCardBody {
+        padding: 2rem;
+        background: var(--fourth-bg);
+        border-top: 1px solid var(--primary-border-color);
+
+        .noActivity {
+          padding: 3rem;
+          text-align: center;
+          color: var(--secondary-color);
+          font-size: 1.6rem;
+
+          @media (max-width: 480px) {
+            padding: 2rem;
+            font-size: 1.4rem;
+          }
+        }
+      }
+    }
+  }
+}

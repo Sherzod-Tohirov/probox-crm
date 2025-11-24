@@ -50,7 +50,6 @@ const sidebarLinks = [
         icon: 'presentationChart',
         path: '/leads/statistics',
         ...getRoutePermissions('/leads/statistics'),
-        disabled: true,
       },
     ],
   },

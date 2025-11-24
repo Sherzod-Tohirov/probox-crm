@@ -16,17 +16,19 @@ import { offset, shift } from '@floating-ui/react';
 import { autoUpdate, flip, useFloating } from '@floating-ui/react-dom';
 import { store } from '@store/store';
 
+const LAST_ACTION_TYPE = 'clients_filter_last_action';
+
 export default function MinimalFilter({ onFilter }) {
   const isMobile = useIsMobile();
   const dispatch = useDispatch();
   const { query, phone } = useFilter();
 
-  const [toggleSearchFields, setToggleSearchFields] = useState({
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState({
     search: false,
     phone: false,
   });
 
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const { refs, floatingStyles, strategy, x, y } = useFloating({
     open: showFilterMenu,
     onOpenChange: setShowFilterMenu,
@@ -48,84 +50,139 @@ export default function MinimalFilter({ onFilter }) {
   const watchedSearch = watch('search');
   const watchedPhone = watch('phone');
 
-  const handleSearchSelect = useCallback(
-    (clientData, filterKey) => {
-      setValue(filterKey, clientData);
-      dispatch(
-        setClientsFilter({
-          ...filterState,
-          [filterKey]: clientData,
-        })
-      );
-      setToggleSearchFields((prev) => ({
-        ...prev,
-        [filterKey]: false,
-      }));
-    },
-    [dispatch, filterState, setValue]
-  );
+  // Close menu on click outside
+  useEffect(() => {
+    if (!showFilterMenu) return;
 
-  const handleFilter = useCallback(
-    (data) => {
-      try {
-        dispatch(setClientsCurrentPage(0));
-        onFilter(data);
-      } catch (error) {
-        console.log(error);
+    const handleClickOutside = (event) => {
+      if (
+        refs.floating.current &&
+        !refs.floating.current.contains(event.target) &&
+        refs.reference.current &&
+        !refs.reference.current.contains(event.target)
+      ) {
+        setShowFilterMenu(false);
       }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilterMenu, refs]);
+
+  // Close menu on ESC key
+  useEffect(() => {
+    if (!showFilterMenu) return;
+
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        setShowFilterMenu(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => document.removeEventListener('keydown', handleEscKey);
+  }, [showFilterMenu]);
+
+  const pickSearchValue = useCallback((client, typed) => {
+    const digits = (typed || '').replace(/\D/g, '');
+    return digits.length >= 5 && client?.IntrSerial
+      ? client.IntrSerial
+      : client?.CardName || client?.IntrSerial || '';
+  }, []);
+
+  const applyFilter = useCallback(
+    (next) => {
+      try {
+        dispatch(setClientsFilter(next));
+        dispatch(setClientsCurrentPage(0));
+        onFilter(next);
+      } catch (_) {}
     },
     [dispatch, onFilter]
   );
 
-  const handleClear = useCallback(() => {
-    // store last action snapshot
+  const handleSearchSelect = useCallback(
+    (client, sourceKey) => {
+      const nextValues = {
+        search:
+          sourceKey === 'search'
+            ? pickSearchValue(client, watchedSearch)
+            : watchedSearch || '',
+        phone:
+          sourceKey === 'phone'
+            ? (client?.Phone1 ?? '998')
+            : watchedPhone || '998',
+      };
+      setValue('search', nextValues.search);
+      setValue('phone', nextValues.phone);
+
+      // Close the dropdown after selection
+      setShowSearchDropdown((prev) => ({ ...prev, [sourceKey]: false }));
+
+      const updatedFilter = { ...filterState, ...nextValues };
+      applyFilter(updatedFilter);
+    },
+    [
+      filterState,
+      watchedSearch,
+      watchedPhone,
+      setValue,
+      applyFilter,
+      pickSearchValue,
+    ]
+  );
+
+  const handleFilter = useCallback(
+    (data) => {
+      const updatedFilter = {
+        ...filterState,
+        search: data.search,
+        phone: data.phone,
+      };
+      applyFilter(updatedFilter);
+    },
+    [filterState, applyFilter]
+  );
+
+  const saveLastAction = useCallback(() => {
     try {
-      const clientsPageState = store.getState().page.clients;
-      const lastActions = Array.isArray(clientsPageState.lastAction)
-        ? clientsPageState.lastAction
-        : [];
-      const payloadLast = {
-        type: 'clients_filter_last_action',
-        oldValue: {
-          currentPage: clientsPageState.currentPage,
-          filter: { ...clientsPageState.filter, search: '', phone: '998' },
-        },
+      const state = store.getState().page.clients;
+      const actions = Array.isArray(state.lastAction) ? state.lastAction : [];
+      const payload = {
+        type: LAST_ACTION_TYPE,
+        oldValue: { currentPage: state.currentPage, filter: state.filter },
         newValue: {},
       };
-      const hasLastAction = lastActions.some(
-        (action) => action.type === payloadLast.type
-      );
-      const updatedLastActions = hasLastAction
-        ? lastActions.map((action) =>
-            action.type === payloadLast.type
-              ? { ...action, oldValue: payloadLast.oldValue }
-              : action
+      const updated = actions.some((a) => a.type === LAST_ACTION_TYPE)
+        ? actions.map((a) =>
+            a.type === LAST_ACTION_TYPE
+              ? { ...a, oldValue: payload.oldValue }
+              : a
           )
-        : [...lastActions, payloadLast];
-      dispatch(setLastAction(updatedLastActions));
+        : [...actions, payload];
+      dispatch(setLastAction(updated));
     } catch (_) {}
+  }, [dispatch]);
 
-    const payload = { ...initialClientsFilterState };
-    dispatch(setClientsFilter(payload));
-    dispatch(setClientsCurrentPage(0));
+  const handleClear = useCallback(() => {
+    saveLastAction();
     reset({ search: '', phone: '998' });
-    onFilter(payload);
-  }, [dispatch, reset, onFilter]);
+    applyFilter(initialClientsFilterState);
+    setShowFilterMenu(false);
+  }, [saveLastAction, reset, applyFilter]);
 
   const handleRollback = useCallback(() => {
     try {
-      const clientsPageState = store.getState().page.clients;
-      const storedLastAction = Array.isArray(clientsPageState.lastAction)
-        ? clientsPageState.lastAction.find(
-            (action) => action.type === 'clients_filter_last_action'
-          )
+      const state = store.getState().page.clients;
+      const action = Array.isArray(state.lastAction)
+        ? state.lastAction.find((a) => a.type === LAST_ACTION_TYPE)
         : null;
-      if (!storedLastAction) return;
-      const { oldValue } = storedLastAction;
-      dispatch(setClientsFilter(oldValue.filter));
-      dispatch(setClientsCurrentPage(oldValue.currentPage));
+      if (!action) return;
+      dispatch(setClientsFilter(action.oldValue.filter));
+      dispatch(setClientsCurrentPage(action.oldValue.currentPage));
       reset({ search: '', phone: '998' });
-      onFilter(oldValue.filter);
+      onFilter(action.oldValue.filter);
+      setShowFilterMenu(false);
     } catch (_) {}
   }, [dispatch, reset, onFilter]);
 
@@ -136,6 +193,27 @@ export default function MinimalFilter({ onFilter }) {
     });
   }, [filterState, reset]);
 
+  const searchInputProps = {
+    size: 'longer',
+    variant: 'outlined',
+    control,
+    searchable: true,
+    onSearch: query.onSearch,
+    renderSearchItem: query.renderItem,
+    onSearchSelect: (client) => handleSearchSelect(client, 'search'),
+  };
+
+  const phoneInputProps = {
+    type: 'tel',
+    size: 'longer',
+    variant: 'outlined',
+    control,
+    searchable: true,
+    onSearch: phone.onSearch,
+    renderSearchItem: phone.renderItem,
+    onSearchSelect: (client) => handleSearchSelect(client, 'phone'),
+  };
+
   return (
     <form
       className={styles['filter-form']}
@@ -143,57 +221,53 @@ export default function MinimalFilter({ onFilter }) {
       autoComplete="off"
     >
       <Row direction="row" gutter={6.25} wrap={isMobile}>
-        <Col flexGrow>
+        <Col>
           <Row direction="row" gutter={4} wrap={isMobile}>
             <Col flexGrow>
               <Input
-                size="small"
-                variant="outlined"
+                {...searchInputProps}
+                name="search"
                 label="IMEI | FIO"
                 type="search"
                 placeholder="4567890449494 | Ismi Sharif"
                 placeholderColor="secondary"
-                searchText={watchedSearch}
-                onFocus={() => {
-                  setToggleSearchFields((prev) => ({
-                    ...prev,
-                    search: true,
-                  }));
+                searchText={showSearchDropdown.search ? watchedSearch : ''}
+                onFocus={() =>
+                  setShowSearchDropdown((prev) => ({ ...prev, search: true }))
+                }
+                onBlur={() => {
+                  setTimeout(() => {
+                    setShowSearchDropdown((prev) => ({
+                      ...prev,
+                      search: false,
+                    }));
+                  }, 200);
                 }}
-                onSearch={query.onSearch}
-                onSearchSelect={(client) => {
-                  handleSearchSelect(client.CardName, 'search');
-                }}
-                renderSearchItem={query.renderItem}
-                searchable={toggleSearchFields.search}
-                control={control}
-                name="search"
               />
             </Col>
             <Col flexGrow>
               <Input
-                type="tel"
-                size="small"
-                variant="outlined"
-                label="Telefon raqami"
-                onSearch={phone.onSearch}
-                searchText={watchedPhone}
-                searchable={toggleSearchFields.phone}
-                onFocus={() => {
-                  setToggleSearchFields((prev) => ({ ...prev, phone: true }));
-                }}
-                onSearchSelect={(client) => {
-                  handleSearchSelect(client.Phone1, 'phone');
-                }}
-                renderSearchItem={phone.renderItem}
-                placeholder="90 123 45 67"
-                control={control}
+                {...phoneInputProps}
                 name="phone"
+                label="Telefon raqami"
+                placeholder="90 123 45 67"
+                searchText={showSearchDropdown.phone ? watchedPhone : ''}
+                onFocus={() =>
+                  setShowSearchDropdown((prev) => ({ ...prev, phone: true }))
+                }
+                onBlur={() => {
+                  setTimeout(() => {
+                    setShowSearchDropdown((prev) => ({
+                      ...prev,
+                      phone: false,
+                    }));
+                  }, 200);
+                }}
               />
             </Col>
           </Row>
         </Col>
-        <Col flexGrow={isMobile} style={{ marginTop: isMobile ? 0 : '25px' }}>
+        <Col style={{ marginTop: 'auto', marginLeft: 'auto' }}>
           <Row direction="row" gutter={2} wrap={false}>
             <Col>
               <Button

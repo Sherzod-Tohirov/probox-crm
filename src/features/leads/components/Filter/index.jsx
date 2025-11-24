@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useRef } from 'react';
+import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -31,6 +31,7 @@ export default function LeadsFilter({
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const role = user?.U_role;
+  const [dateInputKey, setDateInputKey] = useState(0);
 
   // Fetch branches
   const { data: branches = [], isLoading: isBranchesLoading } =
@@ -191,14 +192,38 @@ export default function LeadsFilter({
 
     // Reset form with normalized initial state
     const normalizedInitialState = { ...initialLeadsFilterState };
+
+    // Set multi-select fields to empty arrays
     ['source', 'branch', 'operator', 'operator2', 'seller', 'scoring'].forEach(
       (field) => {
         normalizedInitialState[field] = [];
       }
     );
-    normalizedInitialState.meeting = '';
+
+    // Set select fields to their default option objects
+    normalizedInitialState.meeting = { value: '', label: 'Hammasi' };
+    normalizedInitialState.meetingDateStart = '';
+    normalizedInitialState.meetingDateEnd = '';
+    normalizedInitialState.isBlocked = { value: '', label: 'Barchasi' };
+    normalizedInitialState.status = { value: 'unmarked', label: 'Barchasi' };
+    normalizedInitialState.purchase = { value: '', label: 'Barchasi' };
+    normalizedInitialState.called = { value: '', label: 'Barchasi' };
+    normalizedInitialState.answered = { value: '', label: 'Barchasi' };
+    normalizedInitialState.interested = { value: '', label: 'Barchasi' };
+    normalizedInitialState.passportVisit = { value: '', label: 'Hammasi' };
+    normalizedInitialState.callCount = { value: '', label: '-' };
+    normalizedInitialState.called2 = { value: '', label: 'Barchasi' };
+    normalizedInitialState.answered2 = { value: '', label: 'Barchasi' };
+    normalizedInitialState.meetingHappened = { value: '', label: 'Barchasi' };
+    normalizedInitialState.callCount2 = { value: '', label: '-' };
+
+    // Clear text input fields
+    normalizedInitialState.passportId = '';
+    normalizedInitialState.jshshir2 = '';
+    normalizedInitialState.finalLimit = '';
 
     reset(normalizedInitialState);
+    setDateInputKey((prev) => prev + 1); // Force date inputs to re-render
     const pruned = serializeFilter(normalizedInitialState);
     onFilter(pruned);
   }, [dispatch, reset, onFilter]);
@@ -311,6 +336,7 @@ export default function LeadsFilter({
                     watchedMeeting={meeting}
                     watchedMeetingDateStart={watchedMeetingDateStart}
                     watchedMeetingDateEnd={watchedMeetingDateEnd}
+                    dateInputKey={dateInputKey}
                     inline={true}
                   />
                   <Col

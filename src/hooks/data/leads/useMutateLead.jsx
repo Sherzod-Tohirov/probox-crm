@@ -13,7 +13,7 @@ export default function useMutateLead(leadId, options = {}) {
 
   return useMutation({
     ...restOptions,
-    mutationFn: (data) => updateLeadFields({ leadId, cardCode }, data),
+    mutationFn: (data) => updateLeadFields(leadId, data),
     onSuccess: async (updatedLead) => {
       // Invalidate queries first
       queryClient.invalidateQueries({ queryKey: ['lead', leadId] });

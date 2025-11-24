@@ -74,16 +74,16 @@ const InputWrapper = ({
             )}
           </Box>
           <AnimatePresence mode="popLayout">
-            {searchable && searchText?.length && searchText !== '998' ? (
+            {searchable &&
+            searchText?.length > 0 &&
+            !(type === 'tel' && searchText === '998') ? (
               <SearchField
                 renderItem={renderSearchItem}
                 onSearch={onSearch}
                 searchText={searchText}
                 onSelect={onSearchSelect}
               />
-            ) : (
-              ''
-            )}
+            ) : null}
           </AnimatePresence>
           <AnimatePresence mode="popLayout">
             {error ? (
