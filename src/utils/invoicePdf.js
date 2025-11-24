@@ -1,23 +1,3 @@
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { extractNumericValue } from '@/features/leads/utils/deviceUtils';
-import { calculatePaymentDetails } from '@/features/leads/utils/deviceUtils';
-
-// pdfmake fontlarni yuklash
-try {
-  if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  } else if (pdfFonts && pdfFonts.pdfMake) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  } else if (pdfFonts) {
-    pdfMake.vfs = pdfFonts;
-  } else if (typeof pdfFonts !== 'undefined') {
-    pdfMake.vfs = pdfFonts;
-  }
-} catch (error) {
-  console.warn('pdfmake fontlarni yuklashda xatolik:', error);
-}
-
 /**
  * Invoice ma'lumotlaridan PDF fayl yaratadi va yuklab olish
  * Shartnoma formatida - to'liq shablon asosida
@@ -29,143 +9,11 @@ try {
  * @param {string} invoiceData.leadId - Lead ID
  * @param {Array} invoiceData.DocumentLines - Qurilmalar ro'yxati
  */
-/**
- * Raqamni o'zbekcha so'zga aylantiradi
- * @param {number} num - Raqam
- * @returns {string} O'zbekcha so'z ko'rinishi
- */
-const numberToWordsUZ = (num) => {
-  if (num === 0) return 'нол';
-  
-  const ones = ['', 'бир', 'икки', 'уч', 'тўрт', 'беш', 'олти', 'етти', 'саккиз', 'тўққиз'];
-  const teens = ['ўн', 'ўн бир', 'ўн икки', 'ўн уч', 'ўн тўрт', 'ўн беш', 'ўн олти', 'ўн етти', 'ўн саккиз', 'ўн тўққиз'];
-  const tens = ['', '', 'йигирма', 'ўттиз', 'қирқ', 'эллик', 'олтмиш', 'етмиш', 'саксон', 'тўқсон'];
-  const hundreds = ['', 'бир юз', 'икки юз', 'уч юз', 'тўрт юз', 'беш юз', 'олти юз', 'етти юз', 'саккиз юз', 'тўққиз юз'];
-  
-  const convertLessThanThousand = (n) => {
-    if (n === 0) return '';
-    if (n < 10) return ones[n];
-    if (n < 20) return teens[n - 10];
-    if (n < 100) {
-      const ten = Math.floor(n / 10);
-      const one = n % 10;
-      return tens[ten] + (one > 0 ? ' ' + ones[one] : '');
-    }
-    if (n < 1000) {
-      const hundred = Math.floor(n / 100);
-      const remainder = n % 100;
-      return hundreds[hundred] + (remainder > 0 ? ' ' + convertLessThanThousand(remainder) : '');
-    }
-    return '';
-  };
-  
-  const convert = (n) => {
-    if (n === 0) return 'нол';
-    if (n < 1000) return convertLessThanThousand(n);
-    if (n < 1000000) {
-      const thousands = Math.floor(n / 1000);
-      const remainder = n % 1000;
-      return convertLessThanThousand(thousands) + ' минг' + (remainder > 0 ? ' ' + convertLessThanThousand(remainder) : '');
-    }
-    if (n < 1000000000) {
-      const millions = Math.floor(n / 1000000);
-      const remainder = n % 1000000;
-      return convertLessThanThousand(millions) + ' миллион' + (remainder > 0 ? ' ' + convert(remainder) : '');
-    }
-    return '';
-  };
-  
-  return convert(Math.round(num));
-};
 
-/**
- * Raqamni ruscha so'zga aylantiradi
- * @param {number} num - Raqam
- * @returns {string} Ruscha so'z ko'rinishi
- */
-const numberToWordsRU = (num) => {
-  if (num === 0) return 'ноль';
-  
-  const ones = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
-  const onesFem = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
-  const tens = ['', 'десять', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
-  const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
-  
-  const convertLessThanThousand = (n, isThousand = false) => {
-    if (n === 0) return '';
-    if (n < 10) return isThousand ? onesFem[n] : ones[n];
-    if (n < 20) {
-      if (n === 10) return 'десять';
-      if (n === 11) return 'одиннадцать';
-      if (n === 12) return 'двенадцать';
-      if (n === 13) return 'тринадцать';
-      if (n === 14) return 'четырнадцать';
-      if (n === 15) return 'пятнадцать';
-      if (n === 16) return 'шестнадцать';
-      if (n === 17) return 'семнадцать';
-      if (n === 18) return 'восемнадцать';
-      if (n === 19) return 'девятнадцать';
-    }
-    if (n < 100) {
-      const ten = Math.floor(n / 10);
-      const one = n % 10;
-      return tens[ten] + (one > 0 ? ' ' + (isThousand ? onesFem[one] : ones[one]) : '');
-    }
-    if (n < 1000) {
-      const hundred = Math.floor(n / 100);
-      const remainder = n % 100;
-      return hundreds[hundred] + (remainder > 0 ? ' ' + convertLessThanThousand(remainder, isThousand) : '');
-    }
-    return '';
-  };
-  
-  const convert = (n) => {
-    if (n === 0) return 'ноль';
-    if (n < 1000) return convertLessThanThousand(n);
-    if (n < 1000000) {
-      const thousands = Math.floor(n / 1000);
-      const remainder = n % 1000;
-      const thousandWord = thousands === 1 ? 'тысяча' : 
-                          (thousands >= 2 && thousands <= 4) ? 'тысячи' : 'тысяч';
-      return convertLessThanThousand(thousands, true) + ' ' + thousandWord + (remainder > 0 ? ' ' + convertLessThanThousand(remainder) : '');
-    }
-    if (n < 1000000000) {
-      const millions = Math.floor(n / 1000000);
-      const remainder = n % 1000000;
-      const millionWord = millions === 1 ? 'миллион' : 
-                         (millions >= 2 && millions <= 4) ? 'миллиона' : 'миллионов';
-      return convertLessThanThousand(millions) + ' ' + millionWord + (remainder > 0 ? ' ' + convert(remainder) : '');
-    }
-    return '';
-  };
-  
-  return convert(Math.round(num));
-};
-
-/**
- * Rasmni base64 formatiga o'tkazadi
- * @param {string} imagePath - Rasm fayl yo'li
- * @returns {Promise<string>} Base64 string
- */
-const imageToBase64 = async (imagePath) => {
-  try {
-    const response = await fetch(imagePath);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error('Rasmni yuklashda xatolik:', error);
-    return null;
-  }
-};
+import { imageToBase64,  pdfMake } from './pdfHelpers';
+import { calculatePaymentData, calculatePaymentSchedule, getDateInfo } from './invoicePdfCalculations';
 
 export const generateInvoicePdf = async (invoiceData) => {
-  console.log('generateInvoicePdf chaqirildi, invoiceData:', invoiceData);
-  
   if (!invoiceData) {
     throw new Error('invoiceData topilmadi');
   }
@@ -187,152 +35,31 @@ export const generateInvoicePdf = async (invoiceData) => {
   
   // Agar sellerName bo'sh bo'lsa, currentUser dan olamiz
   const finalSellerName = sellerName || currentUser?.SlpName || '';
-  
-  console.log('Invoice ma\'lumotlari:', { sellerName, clientName, clientPhone, cardCode, leadId, DocumentLinesCount: DocumentLines.length, selectedDevicesCount: selectedDevices.length });
 
   try {
     // Imzo va muhur rasmini yuklab olish
     const signatureImage = await imageToBase64('/signature-stamp.jpg');
     
-    // Tovar tannarxini hisoblash (ustama siz)
-    const totalPrice = DocumentLines.reduce((sum, line) => sum + (line.Price || 0), 0);
-    const totalPriceFormatted = totalPrice.toLocaleString('uz-UZ');
-    
-    // To'lov ma'lumotlarini hisoblash (deviceUtils.js dan foydalangan holda)
-    let grandTotal = 0;
-    let totalFirstPayment = 0;
-    let totalRemainingAmount = 0;
-    let maxPeriod = 0;
-    let totalMonthlyPayment = 0;
-    
-    if (selectedDevices && selectedDevices.length > 0) {
-      selectedDevices.forEach((device) => {
-        const price = extractNumericValue(device.price);
-        const period = Number(device.rentPeriod) || 0;
-        const firstPayment = extractNumericValue(device.firstPayment) || 0;
-        const monthlyLimit = invoiceData.monthlyLimit || null;
-        
-        if (price && period > 0) {
-          const paymentDetails = calculatePaymentDetails({
-            price,
-            period,
-            monthlyLimit,
-            firstPayment,
-          });
-          
-          grandTotal += paymentDetails.grandTotal;
-          // actualFirstPayment yoki calculatedFirstPayment ishlatamiz
-          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
-          totalFirstPayment += actualFirstPayment || 0;
-          maxPeriod = Math.max(maxPeriod, period);
-          totalMonthlyPayment += paymentDetails.monthlyPayment || 0;
-        }
-      });
-      
-      totalRemainingAmount = grandTotal - totalFirstPayment;
-    } else {
-      // Agar selectedDevices bo'lmasa, eski usuldan foydalanamiz
-      grandTotal = totalPrice;
-      totalRemainingAmount = totalPrice;
-    }
-    
-    const grandTotalFormatted = Math.round(grandTotal).toLocaleString('uz-UZ');
-    const firstPaymentFormatted = Math.round(totalFirstPayment).toLocaleString('uz-UZ');
-    const remainingAmountFormatted = Math.round(totalRemainingAmount).toLocaleString('uz-UZ');
-    
-    // So'z ko'rinishlari
-    const grandTotalWordsUZ = numberToWordsUZ(grandTotal);
-    const grandTotalWordsRU = numberToWordsRU(grandTotal);
-    const firstPaymentWordsUZ = numberToWordsUZ(totalFirstPayment);
-    const firstPaymentWordsRU = numberToWordsRU(totalFirstPayment);
-    const remainingAmountWordsUZ = numberToWordsUZ(totalRemainingAmount);
-    const remainingAmountWordsRU = numberToWordsRU(totalRemainingAmount);
+    // To'lov ma'lumotlarini hisoblash
+    const paymentData = calculatePaymentData(selectedDevices, DocumentLines, invoiceData.monthlyLimit);
+    const {
+      maxPeriod,
+      grandTotalFormatted,
+      firstPaymentFormatted,
+      remainingAmountFormatted,
+      grandTotalWordsUZ,
+      grandTotalWordsRU,
+      firstPaymentWordsUZ,
+      firstPaymentWordsRU,
+      remainingAmountWordsUZ,
+      remainingAmountWordsRU,
+    } = paymentData;
 
-    // To'lov jadvali uchun ma'lumotlarni hisoblash (deviceUtils.js logikasi bilan)
-    const calculatePaymentSchedule = () => {
-      if (!selectedDevices || selectedDevices.length === 0) {
-        return [];
-      }
+    // To'lov jadvalini hisoblash
+    const paymentSchedule = calculatePaymentSchedule(selectedDevices, invoiceData.monthlyLimit);
 
-      const schedule = [];
-      let maxPeriod = 0;
-      const devicePayments = [];
-      const monthlyLimit = invoiceData.monthlyLimit || null;
-
-      // Har bir qurilma uchun to'lov ma'lumotlarini hisoblash
-      selectedDevices.forEach((device) => {
-        const price = extractNumericValue(device.price);
-        const period = Number(device.rentPeriod) || 0;
-        const firstPayment = extractNumericValue(device.firstPayment) || 0;
-        
-        if (price && period > 0) {
-          maxPeriod = Math.max(maxPeriod, period);
-          
-          const paymentDetails = calculatePaymentDetails({
-            price,
-            period,
-            monthlyLimit,
-            firstPayment,
-          });
-          
-          // actualFirstPayment ni hisoblash
-          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
-          
-          devicePayments.push({
-            period,
-            monthlyPayment: paymentDetails.monthlyPayment || 0,
-            firstPayment: actualFirstPayment || 0,
-          });
-        }
-      });
-
-      // Agar maxPeriod bo'lmasa, jadval bo'sh bo'lishi kerak
-      if (maxPeriod <= 0) {
-        return [];
-      }
-
-      // Har bir oy uchun faqat oylik to'lovlarni hisoblash (boshlang'ich to'lov emas)
-      // Faqat kerakli oylar sonini yaratamiz (dinamik)
-      for (let month = 1; month <= maxPeriod; month++) {
-        let monthlyTotal = 0;
-        
-        // Har bir qurilma uchun oylik to'lovni qo'shamiz (boshlang'ich to'lovni qo'shmasdan)
-        devicePayments.forEach((devicePayment) => {
-          if (month <= devicePayment.period) {
-            monthlyTotal += devicePayment.monthlyPayment;
-          }
-        });
-
-        // Sana hisoblash (keyingi oylar uchun)
-        const paymentDate = new Date();
-        paymentDate.setMonth(paymentDate.getMonth() + month - 1);
-        const dateStr = paymentDate.toLocaleDateString('uz-UZ', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        });
-
-        schedule.push({
-          number: month,
-          date: dateStr,
-          amount: Math.round(monthlyTotal),
-          remaining: 0, // Qolgan miqdor har doim 0
-        });
-      }
-
-      return schedule;
-    };
-
-    const paymentSchedule = calculatePaymentSchedule();
-
-    // Sana
-    const date = new Date();
-    const day = date.getDate();
-    const monthNames = ['январ', 'феврал', 'март', 'апрел', 'май', 'июн', 'июл', 'август', 'сентябр', 'октябр', 'ноябр', 'декабр'];
-    const monthNamesRu = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-    const month = monthNames[date.getMonth()];
-    const monthRu = monthNamesRu[date.getMonth()];
-    const year = date.getFullYear();
+    // Sana ma'lumotlari
+    const { day, month, monthRu, year } = getDateInfo();
 
     // IMEI ma'lumotlari
     const imei1 = DocumentLines[0]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
@@ -1702,10 +1429,8 @@ export const generateInvoicePdf = async (invoiceData) => {
 
     // PDF yaratish va yuklab olish
     const fileName = `shartnoma-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    console.log('PDF fayl nomi:', fileName);
     
     pdfMake.createPdf(docDefinition).download(fileName);
-    console.log('PDF fayl yuklab olindi');
 
     return true;
   } catch (error) {
@@ -1713,6 +1438,3 @@ export const generateInvoicePdf = async (invoiceData) => {
     throw error;
   }
 };
-
-
-
