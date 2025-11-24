@@ -22,7 +22,7 @@ export const initialStatisticsFilterState = {
 export const initialLeadsFilterState = {
   search: '',
   isBlocked: '',
-  status: 'Active',
+  status: '',
   source: [],
   branch: [],
   operator: [],

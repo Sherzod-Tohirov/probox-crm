@@ -14,14 +14,14 @@ import styles from '../styles/components.module.scss';
 export default function FunnelCard({ data = [] }) {
   const colors = useMemo(() => {
     const themeColors = [
-      '#0a4d68', // Primary - dark teal
-      '#3b82f6', // Blue - bright
-      '#10b981', // Green - emerald
-      '#f59e0b', // Orange - amber
-      '#ef4444', // Red - rose
-      '#8b5cf6', // Purple - violet
-      '#06b6d4', // Cyan
-      '#ec4899', // Pink
+      '#0a4d68', // Primary - dark teal (start of funnel)
+      '#1e6b8a', // Medium teal
+      '#2d89ac', // Teal-blue
+      '#3b9ec9', // Sky blue
+      '#10b981', // Emerald green (success)
+      '#06b6d4', // Bright cyan
+      '#3b82f6', // Blue
+      '#8b5cf6', // Purple
     ];
     return data.map((_, index) => themeColors[index % themeColors.length]);
   }, [data]);

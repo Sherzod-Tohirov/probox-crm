@@ -134,6 +134,7 @@ const TableRow = memo(
 
     return (
       <tr
+        data-row-key={uniqueKeyValue}
         className={classNames({
           [styles['selected-row']]: !!getRowStyles(row, rowIndex),
         })}

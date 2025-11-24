@@ -19,6 +19,8 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { control, reset } = form || {};
   const { data: branches } = useFetchBranches();
   const { rejectReasonOptions } = useSelectOptions('common');
+  const { callCountOptions } = useSelectOptions('operator2');
+
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -89,7 +91,8 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             name="callCount2"
             label="Qo'ng'iroqlar soni"
             control={control}
-            type="number"
+            type="select"
+            options={callCountOptions}
             disabled={!canEdit}
           />
           <FormField

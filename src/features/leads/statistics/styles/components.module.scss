@@ -107,20 +107,19 @@
 
 // Sources Card
 .sourcesContainer {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: 1.2fr 0.8fr;
-    grid-template-rows: auto auto;
-  }
+  align-items: flex-start;
 }
 
 .sourcesList {
+  flex: 1 1 400px;
+  min-width: 0;
+
+  // Ensure table takes priority and fills space when on same line
   @media (min-width: 1024px) {
-    grid-column: 1;
-    grid-row: 1 / 3;
+    flex: 2 1 500px;
   }
 }
 
@@ -131,6 +130,11 @@
     grid-template-columns: 2fr 1fr 1fr;
     gap: 2rem;
     padding: 1.6rem 0;
+
+    @media (max-width: 1200px) {
+      gap: 1.2rem;
+      padding: 1.4rem 0;
+    }
 
     @media (max-width: 768px) {
       gap: 1rem;
@@ -198,18 +202,24 @@
 }
 
 .pieChartWrapper {
-  @media (min-width: 1024px) {
-    grid-column: 2;
-    grid-row: 1;
+  flex: 1 1 350px;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    min-height: 280px;
+    padding: 0.5rem;
+    flex: 1 1 100%;
   }
 }
 
 .sourceTrends {
-  @media (min-width: 1024px) {
-    grid-column: 1 / 3;
-    grid-row: 3;
-  }
-
+  flex: 1 1 100%;
+  width: 100%;
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 2px solid var(--primary-border-color);
@@ -260,55 +270,25 @@
     }
   }
 
-  .trendsTitle {
-    font-size: 4rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    color: var(--primary-color);
+  .unifiedChart {
+    background: var(--fourth-bg);
+    border-radius: 1rem;
+    padding: 1.6rem;
+    width: 100%;
+    border: 1px solid var(--primary-border-color);
 
     @media (max-width: 768px) {
-      font-size: 2.4rem;
-    }
-  }
-
-  .trendItem {
-    margin-bottom: 1.6rem;
-
-    .trendHeader {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      margin-bottom: 1.2rem;
-
-      .colorDot {
-        width: 1.4rem;
-        height: 1.4rem;
-        border-radius: 50%;
-      }
-
-      .trendSource {
-        font-weight: 500;
-        font-size: 4rem;
-        color: var(--primary-color);
-
-        @media (max-width: 768px) {
-          font-size: 1.6rem;
-        }
-      }
-    }
-
-    .trendChart {
-      background: var(--fourth-bg);
-      border-radius: 1rem;
-      padding: 1.2rem;
-      width: 100%;
-      border: 1px solid var(--primary-border-color);
+      padding: 1rem;
     }
   }
 }
 
 // Branches Card
 .branchesContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .branchesTable {
     display: none;
 
@@ -318,7 +298,7 @@
 
     .tableHeader {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 0.5fr;
+      grid-template-columns: 2fr 1fr 1fr;
       gap: 2rem;
       padding: 1.8rem 2rem;
       font-weight: 600;
@@ -326,26 +306,31 @@
       color: var(--secondary-color);
       font-size: 1.6rem;
       background-color: var(--primary-table-header-bg);
+
+      @media (max-width: 1200px) {
+        gap: 1.2rem;
+        padding: 1.4rem 1.6rem;
+      }
     }
   }
 
   .branchRow {
     .branchMainRow {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 0.5fr;
+      grid-template-columns: 2fr 1fr 1fr;
       gap: 2rem;
       padding: 2rem;
       border-bottom: 1px solid var(--secondary-border-color);
-      cursor: pointer;
       transition: all 0.2s;
       font-size: 1.6rem;
       color: var(--primary-color);
 
-      &:hover {
-        background: var(--primary-table-hover-bg);
+      @media (max-width: 1200px) {
+        gap: 1.2rem;
+        padding: 1.6rem;
       }
 
-      &.expanded {
+      &:hover {
         background: var(--primary-table-hover-bg);
       }
 
@@ -368,44 +353,6 @@
           font-size: 1.4rem;
         }
       }
-
-      .colAction {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--secondary-color);
-      }
-    }
-
-    .branchExpanded {
-      padding: 3rem;
-      background: var(--primary-table-bg);
-      border-bottom: 1px solid var(--primary-border-color);
-
-      @media (max-width: 768px) {
-        padding: 2rem;
-      }
-
-      .branchChart {
-        .chartTitle {
-          font-size: 1.7rem;
-          font-weight: 600;
-          margin-bottom: 1.6rem;
-          color: var(--primary-color);
-        }
-      }
-
-      .noActivity {
-        padding: 4rem;
-        text-align: center;
-        color: var(--secondary-color);
-        font-size: 1.7rem;
-
-        @media (max-width: 768px) {
-          padding: 2rem;
-          font-size: 1.5rem;
-        }
-      }
     }
   }
 
@@ -425,14 +372,8 @@
 
       .branchCardHeader {
         padding: 2rem;
-        cursor: pointer;
         background: var(--primary-table-bg);
-        transition: background 0.2s;
         color: var(--primary-color);
-
-        &:active {
-          background: var(--primary-table-hover-bg);
-        }
 
         .branchCardTitle {
           font-size: 1.7rem;
@@ -456,24 +397,6 @@
             color: white;
             font-weight: 600;
             font-size: 1.3rem;
-          }
-        }
-      }
-
-      .branchCardBody {
-        padding: 2rem;
-        background: var(--fourth-bg);
-        border-top: 1px solid var(--primary-border-color);
-
-        .noActivity {
-          padding: 3rem;
-          text-align: center;
-          color: var(--secondary-color);
-          font-size: 1.6rem;
-
-          @media (max-width: 480px) {
-            padding: 2rem;
-            font-size: 1.4rem;
           }
         }
       }
