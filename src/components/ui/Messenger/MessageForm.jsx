@@ -48,10 +48,13 @@ const messageInputRenderer = (type, form = {}, formData = {}) => {
   }
 };
 
-const MessageForm = ({ onSubmit, size = '' }) => {
+const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
   const [messageType, setMessageType] = useState('text');
   const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+
+  // For leads, always use text-only mode
+  const isTextOnly = entityType === 'lead';
 
   const {
     register,
@@ -126,39 +129,41 @@ const MessageForm = ({ onSubmit, size = '' }) => {
             align="center"
             justify="space-between"
           >
-            <Col>
-              <Row direction="row" gutter={2} align="end">
-                <Col>
-                  <Box>
-                    <label
-                      className={classNames(
-                        styles['file-input-label'],
-                        styles[size]
-                      )}
-                    >
-                      {iconsMap['addCircle']}
-                      <input
-                        {...register('msgPhoto')}
-                        className={styles['file-input']}
-                        type="file"
-                        accept="image/jpeg, image/png"
-                      />
-                    </label>
-                  </Box>
-                </Col>
-                <Col>
-                  <MessageVoiceRecorder
-                    onRecordingComplete={(blob) => {
-                      setValue('msgPhoto', [], { shouldValidate: true });
-                      setAudioBlob(blob);
-                      setIsRecording(false);
-                      setValue('msgAudio', blob, { shouldValidate: true });
-                    }}
-                  />
-                </Col>
-              </Row>
-            </Col>
-            <Col>
+            {!isTextOnly && (
+              <Col>
+                <Row direction="row" gutter={2} align="end">
+                  <Col>
+                    <Box>
+                      <label
+                        className={classNames(
+                          styles['file-input-label'],
+                          styles[size]
+                        )}
+                      >
+                        {iconsMap['addCircle']}
+                        <input
+                          {...register('msgPhoto')}
+                          className={styles['file-input']}
+                          type="file"
+                          accept="image/jpeg, image/png"
+                        />
+                      </label>
+                    </Box>
+                  </Col>
+                  <Col>
+                    <MessageVoiceRecorder
+                      onRecordingComplete={(blob) => {
+                        setValue('msgPhoto', [], { shouldValidate: true });
+                        setAudioBlob(blob);
+                        setIsRecording(false);
+                        setValue('msgAudio', blob, { shouldValidate: true });
+                      }}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            )}
+            <Col style={{ marginLeft: 'auto' }}>
               <Button
                 className={classNames(styles['send-btn'], {
                   [styles['invalid']]: !isValid,

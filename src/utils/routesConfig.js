@@ -7,6 +7,10 @@ export const messengerRoutes = [
     path: '/clients/:id',
     excluded_keys: ['statistics'],
   },
+  {
+    path: '/leads/:id',
+    excluded_keys: ['statistics'],
+  },
 ];
 
 export function isMessengerRoute(pathname) {

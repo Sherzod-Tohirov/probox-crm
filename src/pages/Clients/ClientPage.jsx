@@ -21,7 +21,6 @@ import useClientsTableColumns from '@features/clients/hooks/useClientsTableColum
 import useClientPageData from '@features/clients/hooks/useClientPageData';
 import useClientPageSubmit from '@features/clients/hooks/useClientPageSubmit';
 import useIsMobile from '@/hooks/useIsMobile';
-
 import styles from './style.module.scss';
 
 export default function ClientPage() {
@@ -44,6 +43,9 @@ export default function ClientPage() {
     isCurrencyLoading,
     messages,
     isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useClientPageData(id, isOpen);
 
   // Table columns
@@ -58,7 +60,11 @@ export default function ClientPage() {
   );
 
   // Messenger actions
-  const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
+  const { sendMessage, editMessage, deleteMessage } = useMessengerActions({
+    entityType: 'client',
+    docEntry: currentClient?.['DocEntry'],
+    installmentId: currentClient?.['InstlmntID'],
+  });
 
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
@@ -137,6 +143,11 @@ export default function ClientPage() {
         onSendMessage={sendMessage}
         onEditMessage={editMessage}
         onDeleteMessage={deleteMessage}
+        isOpen={isOpen}
+        entityType="client"
+        onLoadMore={fetchNextPage}
+        hasMore={hasNextPage}
+        isLoadingMore={isFetchingNextPage}
       />
     </>
   );
