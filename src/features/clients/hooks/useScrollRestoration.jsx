@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useCallback } from 'react';
+import { useLayoutEffect, useCallback } from 'react';
 
 /**
  * Custom hook for managing scroll position restoration
@@ -12,9 +12,9 @@ export default function useScrollRestoration({
   scrollContainerRef,
   storageKey = 'scrollPosition',
   hasData = false,
+  behavior = 'auto',
+  maxTries = 120,
 }) {
-  const hasRestoredScroll = useRef(false);
-
   /**
    * Get the scrollable wrapper element
    */
@@ -48,71 +48,37 @@ export default function useScrollRestoration({
    * Restore scroll position after data loads
    */
   useLayoutEffect(() => {
-    if (!hasData || hasRestoredScroll.current) return;
-
-    const saved = sessionStorage.getItem(storageKey);
-    const targetY =
-      saved && !isNaN(parseInt(saved, 10)) ? parseInt(saved, 10) : null;
-    const savedRowKey = sessionStorage.getItem(`${storageKey}__rowKey`);
-    if (targetY == null) return;
+    if (!hasData) return;
 
     let tries = 0;
-    const maxTries = 60; // ~1s at 60fps
 
-    const tryRestore = () => {
+    const restore = () => {
       const wrapper = getScrollableWrapper();
-      if (!wrapper) {
-        if (tries++ < maxTries) requestAnimationFrame(tryRestore);
-        return;
-      }
+      const saved = sessionStorage.getItem(storageKey);
 
-      let done = false;
-      if (savedRowKey) {
-        // Try to find row by data attribute without relying on CSS.escape
-        const rows = wrapper.querySelectorAll('[data-row-key]');
-        let rowEl = null;
-        for (const el of rows) {
-          if (el.getAttribute('data-row-key') === savedRowKey) {
-            rowEl = el;
-            break;
-          }
-        }
-        if (rowEl) {
-          const wrapperRect = wrapper.getBoundingClientRect();
-          const rowRect = rowEl.getBoundingClientRect();
-          const offset =
-            rowRect.top -
-            wrapperRect.top +
-            wrapper.scrollTop -
-            Math.round(wrapper.clientHeight / 3);
-          wrapper.scrollTop = Math.max(0, offset);
-          done = true;
-        }
-      }
-
-      if (!done) {
-        // Fallback to raw Y position
+      if (wrapper && saved) {
+        // Ensure wrapper has layout & can scroll
         const canScroll = wrapper.scrollHeight > wrapper.clientHeight;
-        const prevBehavior = wrapper.style.scrollBehavior;
-        wrapper.style.scrollBehavior = 'auto';
-        wrapper.scrollTop = targetY;
-        wrapper.style.scrollBehavior = prevBehavior || '';
-        done = canScroll && Math.abs(wrapper.scrollTop - targetY) <= 1;
+        if (!canScroll && tries++ < maxTries)
+          return requestAnimationFrame(restore);
+
+        const y = parseInt(saved, 10);
+        if (!Number.isNaN(y)) {
+          const prevBehavior = wrapper.style.scrollBehavior;
+          wrapper.style.scrollBehavior = behavior || 'auto';
+          wrapper.scrollTop = y;
+          wrapper.style.scrollBehavior = prevBehavior || '';
+          sessionStorage.removeItem(storageKey);
+          sessionStorage.removeItem(`${storageKey}__rowKey`);
+          return;
+        }
       }
 
-      if (done || tries >= maxTries) {
-        sessionStorage.removeItem(storageKey);
-        sessionStorage.removeItem(`${storageKey}__rowKey`);
-        hasRestoredScroll.current = true;
-        return;
-      }
-
-      tries += 1;
-      requestAnimationFrame(tryRestore);
+      if (tries++ < maxTries) requestAnimationFrame(restore);
     };
 
-    requestAnimationFrame(tryRestore);
-  }, [hasData, getScrollableWrapper, storageKey]);
+    requestAnimationFrame(restore);
+  }, [hasData, getScrollableWrapper, storageKey, behavior, maxTries]);
 
   return {
     saveScrollPosition,

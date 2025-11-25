@@ -1,0 +1,65 @@
+.clipboard {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  color: var(--secondary-color);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.clipboard:hover {
+  color: var(--primary-color);
+  background-color: var(--primary-table-bg);
+  border-color: var(--primary-border-color);
+}
+
+.clipboard:focus-visible {
+  outline: 2px solid var(--primary-border-color);
+  outline-offset: 2px;
+}
+
+.clipboard.copied {
+  color: var(--success-color);
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.iconOnly {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.right {
+  flex-direction: row;
+}
+
+.left {
+  flex-direction: row-reverse;
+}
+
+.top {
+  flex-direction: column-reverse;
+}
+
+.bottom {
+  flex-direction: column;
+}

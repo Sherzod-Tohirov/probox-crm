@@ -6,10 +6,10 @@
 export const numberToWordsUZ = (num) => {
   if (num === 0) return 'нол';
   
-  const ones = ['', 'бир', 'икки', 'уч', 'тўрт', 'беш', 'олти', 'етти', 'саккиз', 'тўққиз'];
-  const teens = ['ўн', 'ўн бир', 'ўн икки', 'ўн уч', 'ўн тўрт', 'ўн беш', 'ўн олти', 'ўн етти', 'ўн саккиз', 'ўн тўққиз'];
-  const tens = ['', '', 'йигирма', 'ўттиз', 'қирқ', 'эллик', 'олтмиш', 'етмиш', 'саксон', 'тўқсон'];
-  const hundreds = ['', 'бир юз', 'икки юз', 'уч юз', 'тўрт юз', 'беш юз', 'олти юз', 'етти юз', 'саккиз юз', 'тўққиз юз'];
+  const ones = ['', 'bir', 'ikki', 'uch', 'to\'rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to\'qqiz'];
+  const teens = ['o\'n', 'o\'n bir', 'o\'n ikki', 'o\'n uch', 'o\'n to\'rt', 'o\'n besh', 'o\'n olti', 'o\'n yetti', 'o\'n sakkiz', 'o\'n to\'qqiz'];
+  const tens = ['', '', 'yigirma', 'o\'ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to\'qson'];
+  const hundreds = ['', 'bir yuz', 'ikki yuz', 'uch yuz', 'tort yuz', 'besh yuz', 'olti yuz', 'yetti yuz', 'sakkiz yuz', 'to\'qqiz yuz'];
   
   const convertLessThanThousand = (n) => {
     if (n === 0) return '';
@@ -34,12 +34,12 @@ export const numberToWordsUZ = (num) => {
     if (n < 1000000) {
       const thousands = Math.floor(n / 1000);
       const remainder = n % 1000;
-      return convertLessThanThousand(thousands) + ' минг' + (remainder > 0 ? ' ' + convertLessThanThousand(remainder) : '');
+      return convertLessThanThousand(thousands) + ' ming' + (remainder > 0 ? ' ' + convertLessThanThousand(remainder) : '');
     }
     if (n < 1000000000) {
       const millions = Math.floor(n / 1000000);
       const remainder = n % 1000000;
-      return convertLessThanThousand(millions) + ' миллион' + (remainder > 0 ? ' ' + convert(remainder) : '');
+      return convertLessThanThousand(millions) + ' million' + (remainder > 0 ? ' ' + convert(remainder) : '');
     }
     return '';
   };

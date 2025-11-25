@@ -157,7 +157,7 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
 export const getDateInfo = () => {
   const date = new Date();
   const day = date.getDate();
-  const monthNames = ['январ', 'феврал', 'март', 'апрел', 'май', 'июн', 'июл', 'август', 'сентябр', 'октябр', 'ноябр', 'декабр'];
+  const monthNames = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
   const monthNamesRu = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   const month = monthNames[date.getMonth()];
   const monthRu = monthNamesRu[date.getMonth()];
