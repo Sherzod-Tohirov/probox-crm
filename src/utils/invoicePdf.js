@@ -1234,34 +1234,34 @@ export const generateInvoicePdf = async (invoiceData) => {
           columnGap: 10,
         },
 
-        // ========== SAHIFA 2: Tomonlarning manzillari ==========
+        // ========== SAHIFA 12: Tomonlarning manzillari ==========
         { text: '', pageBreak: 'before' },
         {
           columns: [
             {
               width: '*',
               text: [
-                { text: '10. TOMONLARNING MANZILLARI VA REVIZITLARI\n', fontSize: 10, bold: true },
-                { text: 'SOTUVCHI/PRODAVETS\n', fontSize: 9, bold: true },
-                { text: '«PROBOX GROUP CO» MChJ / ООО «PROBOX GROUP CO»\n', fontSize: 9 },
-                { text: 'Manzil/Адрес:\n', fontSize: 9 },
+                { text: '12. TOMONLARNING MANZILLARI VA REKVIZITLARI\n', fontSize: 10, bold: true },
+                { text: 'SOTUVCHI:', fontSize: 9, bold: true },
+                { text: ' «PROBOX GROUP CO» MChJ\n', fontSize: 9 },
+                { text: 'Manzil: ' , fontSize: 9 },
                 { text: 'Toshkent sh., Olmazor tumani, Nurafshon ko\'chasi, 1-uy. 12-xonadon.\n', fontSize: 9 },
                 { text: 'Bank: ATB «ASIA ALLIANCE BANK»\n', fontSize: 9 },
-                { text: 'Bank kodi/MFO: 01095\n', fontSize: 9 },
-                { text: 'X/p/P/c: 20208000705125899001\n', fontSize: 9 },
-                { text: 'STIR/INN: 306737779\n\n', fontSize: 9 },
-                { text: 'XARIDOR/POKUPATEL\n', fontSize: 9, bold: true },
-                { text: 'F.I.Sh./F.I.O: ', fontSize: 9 },
+                { text: 'Bank kodi: 01095\n', fontSize: 9 },
+                { text: 'X/p: 20208000705125899001\n', fontSize: 9 },
+                { text: 'STIR: 306737779\n', fontSize: 9 },
+                { text: 'XARIDOR\n', fontSize: 9, bold: true },
+                { text: 'F.I.Sh.: ', fontSize: 9 },
                 { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Pasport/id seriyasi va raqami/Серия и номер паспорта/ id: ', fontSize: 9 },
+                { text: 'Pasport/id seriyasi va raqami: ', fontSize: 9 },
                 { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
-                { text: ', JSHSHIR) ', fontSize: 9 },
+                { text: ', JSHSHIR: ', fontSize: 9 },
                 { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Manzil/Адрес: ', fontSize: 9 },
+                { text: 'Manzil: ', fontSize: 9 },
                 { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Tel.raqami/Tel.nomer: ', fontSize: 9 },
-                { text: `${clientPhone || '_______________________'}\n\n`, fontSize: 9, bold: true },
-                { text: 'Shartnoma 7 (etti) varoqdan iborat.\n', fontSize: 8 },
+                { text: 'Tel.raqami: ', fontSize: 9 },
+                { text: `${clientPhone || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'Shartnoma 11 (o\'n bir) varoqdan iborat.\n', fontSize: 8 },
                 {
                   text: 'Muddatli to\'lov asosida sotish-xarid qilish shartnomasiga № ',
                   fontSize: 8,
@@ -1286,30 +1286,31 @@ export const generateInvoicePdf = async (invoiceData) => {
                 },
               ],
             },
+            // in russian
             {
               width: '*',
               text: [
-                { text: '10. АДРЕСА И РЕКВИЗИТЫ СТОРОН\n', fontSize: 10, bold: true },
-                { text: 'СОТУВЧИ/ПРОДАВЕЦ\n', fontSize: 9, bold: true },
-                { text: '«PROBOX GROUP CO» МЧЖ / ООО «PROBOX GROUP CO»\n', fontSize: 9 },
-                { text: 'Манзил/Адрес:\n', fontSize: 9 },
-                { text: 'Тошкент ш., Олмазор тумани, Нурафшон кўчаси, 1-уй. 12-хонадон.\n', fontSize: 9 },
+                { text: '12. АДРЕСА И РЕКВИЗИТЫ СТОРОН\n', fontSize: 10, bold: true },
+                { text: 'ПРОДАВЕЦ:', fontSize: 9, bold: true },
+                { text: ' OOO «PROBOX GROUP CO»\n', fontSize: 9 },
+                { text: 'Адрес: ', fontSize: 9 },
+                { text: 'Т.Ташкент, Oламазарский р-н, ул. Нурафшон, 1-дом, 12-квартира.\n', fontSize: 9 },
                 { text: 'Банк: АТБ «ASIA ALLIANCE BANK»\n', fontSize: 9 },
-                { text: 'Банк коди/МФО: 01095\n', fontSize: 9 },
-                { text: 'X/p/P/c: 20208000705125899001\n', fontSize: 9 },
-                { text: 'СТИР/ИНН: 306737779\n\n', fontSize: 9 },
-                { text: 'ХАРИДОР/ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
-                { text: 'Ф.И.Ш./Ф.И.О: ', fontSize: 9 },
+                { text: 'МФО: 01095\n', fontSize: 9 },
+                { text: 'P/c: 20208000705125899001\n', fontSize: 9 },
+                { text: 'ИНН: 306737779\n', fontSize: 9 },
+                { text: 'ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
+                { text: 'Ф.И.О: ', fontSize: 9 },
                 { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Паспорт/id серияси ва рақами/Серия и номер паспорта/ id: ', fontSize: 9 },
+                { text: 'Серия и номер паспорта/ id: ', fontSize: 9 },
                 { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
-                { text: ', ЖШШИР) ', fontSize: 9 },
+                { text: ', ПИНФЛ: ', fontSize: 9 },
                 { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Манзил/Адрес: ', fontSize: 9 },
+                { text: 'Адрес: ', fontSize: 9 },
                 { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Тел.рақами/Тел.номер: ', fontSize: 9 },
-                { text: `${clientPhone || '_______________________'}\n\n`, fontSize: 9, bold: true },
-                { text: 'Договор состоит из 7 (семи) страниц.\n', fontSize: 8 },
+                { text: 'Тел.номер: ', fontSize: 9 },
+                { text: `${clientPhone || '_______________________'}\n`, fontSize: 9, bold: true },
+                { text: 'Договор состоит из 11 (одиннадцати) страниц.\n', fontSize: 8 },
                 {
                   text: [
                     'Приложение №1 к Договору купли-продажи на основе рассрочки № ',
@@ -1428,7 +1429,7 @@ export const generateInvoicePdf = async (invoiceData) => {
     };
 
     // PDF yaratish va yuklab olish
-    const fileName = `shartnoma-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    const fileName = `${clientName}-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
     
     pdfMake.createPdf(docDefinition).download(fileName);
 
