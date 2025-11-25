@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Col, Input, Row } from '@components/ui';
+import { Col, Input, Row, Clipboard } from '@components/ui';
 import { useForm } from 'react-hook-form';
 
 import FilePreviewModal from './FilePreviewModal';
@@ -255,13 +255,12 @@ function ClientPageForm({
   useEffect(() => {
     if (currentClient && executorsOptions.length > 0) {
       const foundExecutor = executorsOptions.find(
-        (executor) =>
-          Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
+        (executor) => Number(executor?.value) === Number(currentClient?.SlpCode)
       );
 
       const formData = {
         name: currentClient?.['CardName'] || 'Mavjud emas',
-        executor: foundExecutor?.SlpCode || executorsOptions?.[0]?.value,
+        executor: foundExecutor?.value || executorsOptions?.[0]?.value,
         photo: [],
         telephone: currentClient?.['Phone1'] || '+998 00 000 00 00',
         additional_telephone: currentClient?.['Phone2'] || '',
@@ -335,14 +334,26 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="avatarFilled">FIO</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      style={{ pointerEvents: 'all' }}
-                      {...register('name')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          style={{ pointerEvents: 'all' }}
+                          {...register('name')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['CardName'] || ''}
+                          size={18}
+                          aria-label="FIO nusxalash"
+                          title="FIO nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>

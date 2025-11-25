@@ -28,6 +28,7 @@ import YandexMap from './Map/YandexMap';
 import Notifications from './Notifications';
 import Avatar from './Avatar';
 import ContextMenu from './ContextMenu';
+import Clipboard from './Clipboard';
 export {
   Row,
   Col,
@@ -58,4 +59,5 @@ export {
   YandexMap,
   Avatar,
   ContextMenu,
+  Clipboard,
 };
