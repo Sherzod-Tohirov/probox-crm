@@ -1,30 +1,41 @@
 import { useMemo } from 'react';
 import { Card, Typography } from '@components/ui';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import styles from '../styles/components.module.scss';
 
 export default function FunnelCard({ data = [] }) {
-  const colors = useMemo(() => {
-    const themeColors = [
-      '#0a4d68', // Primary - dark teal (start of funnel)
-      '#1e6b8a', // Medium teal
-      '#2d89ac', // Teal-blue
-      '#3b9ec9', // Sky blue
-      '#10b981', // Emerald green (success)
-      '#06b6d4', // Bright cyan
-      '#3b82f6', // Blue
-      '#8b5cf6', // Purple
-    ];
-    return data.map((_, index) => themeColors[index % themeColors.length]);
+  // Sort like SourcesCard for consistent ordering (desc by count)
+  const sortedData = useMemo(() => {
+    return Array.isArray(data)
+      ? [...data].sort((a, b) => b.count - a.count)
+      : [];
   }, [data]);
+
+  // Use the same palette as SourcesCard for visual consistency
+  const colors = useMemo(() => {
+    const COLORS = [
+      '#0a4d68', // Primary - dark teal
+      '#3b82f6', // Blue
+      '#10b981', // Green
+      '#f59e0b', // Orange
+      '#ef4444', // Red
+      '#8b5cf6', // Purple
+      '#06b6d4', // Cyan
+      '#ec4899', // Pink
+    ];
+    return sortedData.map((_, index) => COLORS[index % COLORS.length]);
+  }, [sortedData]);
+
+  // Build pie data (value + cr for labels)
+  const pieData = useMemo(
+    () =>
+      sortedData.map((d) => ({
+        name: d?.name ?? '',
+        value: Number(d?.count ?? 0),
+        cr: Number(d?.cr ?? 0),
+      })),
+    [sortedData]
+  );
 
   if (!data || data.length === 0) {
     return (
@@ -34,77 +45,74 @@ export default function FunnelCard({ data = [] }) {
     );
   }
 
-  const maxCount = data[0]?.count || 1;
-
   return (
     <Card title="Konversiya voronkasi" style={{ height: '100%' }}>
-      <div className={styles.funnelContainer}>
-        {/* Desktop Bar Chart */}
-        <div className={styles.funnelChart}>
-          <ResponsiveContainer width="100%" height={380}>
-            <BarChart
-              data={data}
-              layout="vertical"
-              margin={{ top: 10, right: 20, left: -40, bottom: 10 }}
-            >
-              <XAxis type="number" tick={{ fontSize: 16 }} />
-              <YAxis
-                type="category"
-                dataKey="name"
-                width={180}
-                tick={{ fontSize: 15 }}
-              />
-              <Tooltip
-                formatter={(value, name, props) => [
-                  `${value} (${props.payload.cr}%)`,
-                  props.payload.name,
-                ]}
-                contentStyle={{ fontSize: '16px' }}
-              />
-              <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Mobile List View */}
-        <div className={styles.funnelList}>
-          {data.map((step, index) => (
-            <div key={step.no} className={styles.funnelStep}>
-              <div className={styles.stepInfo}>
-                <div className={styles.stepNumber}>{step.no}</div>
-                <div className={styles.stepDetails}>
-                  <Typography variant="body1" className={styles.stepName}>
-                    {step.name}
+      <div className={styles.sourcesContainer}>
+        {/* Summary List (same layout as SourcesCard) */}
+        <div className={styles.sourcesList}>
+          <div className={styles.sourcesTable}>
+            <div className={styles.tableHeader}>
+              <Typography variant="h5">Status</Typography>
+              <Typography variant="body1">Soni</Typography>
+              <Typography variant="body1">CR</Typography>
+            </div>
+            {sortedData.map((item, index) => (
+              <div key={item.no ?? item.name} className={styles.tableRow}>
+                <div className={styles.colSource}>
+                  <span
+                    className={styles.colorDot}
+                    style={{ backgroundColor: colors[index] }}
+                  />
+                  <Typography variant="body1">{item.name}</Typography>
+                  {index === 0 && (
+                    <Typography variant="body2" className={styles.topBadge}>
+                      Jami
+                    </Typography>
+                  )}
+                </div>
+                <div className={styles.colCount}>
+                  <Typography variant="h5">
+                    {Number(item.count).toLocaleString()}
                   </Typography>
-                  <div className={styles.stepMetrics}>
-                    <Typography variant="h5" className={styles.count}>
-                      {step.count.toLocaleString()}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className={styles.cr}
-                      style={{ backgroundColor: colors[index] }}
-                    >
-                      CR: {step.cr}%
-                    </Typography>
-                  </div>
+                </div>
+                <div className={styles.colPercent}>
+                  <Typography variant="body1" className={styles.percentPill}>
+                    {Number(item.cr ?? 0).toFixed(2)}%
+                  </Typography>
                 </div>
               </div>
-              <div className={styles.stepBar}>
-                <div
-                  className={styles.stepBarFill}
-                  style={{
-                    width: `${(step.count / maxCount) * 100}%`,
-                    backgroundColor: colors[index],
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Chart wrapper on the right (reuse pieChartWrapper layout) */}
+        <div className={styles.pieChartWrapper}>
+          <ResponsiveContainer width="100%" height={320}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={(entry) => `${Number(entry?.cr ?? 0).toFixed(2)}%`}
+                outerRadius="70%"
+                innerRadius="0%"
+                style={{ fontSize: '14px', fontWeight: 600 }}
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => Number(value ?? 0).toLocaleString()}
+                contentStyle={{ fontSize: '14px' }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </Card>
