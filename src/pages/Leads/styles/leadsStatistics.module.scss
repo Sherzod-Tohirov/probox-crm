@@ -63,34 +63,34 @@
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.6rem;
+  gap: 24px;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1.2rem;
+    gap: 16px;
   }
 }
 
 .chartsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: 2rem;
+  gap: 20px;
 
   // Medium desktop - 2 columns
   @media (max-width: 1440px) and (min-width: 1201px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.6rem;
+    gap: 16px;
   }
 
   // Small desktop/tablet - 1 column
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
-    gap: 1.6rem;
+    gap: 16px;
   }
 
   // Mobile
   @media (max-width: 768px) {
-    gap: 1.2rem;
+    gap: 16px;
   }
 }
 
