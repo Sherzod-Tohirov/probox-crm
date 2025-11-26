@@ -55,6 +55,7 @@ const Input = forwardRef(
       onIconClick,
       canClickIcon = true,
       disabled = false,
+      dimOnDisabled = true,
       hasIcon = true,
       error = null,
       renderSearchItem = () => {},
@@ -100,21 +101,20 @@ const Input = forwardRef(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
     );
-    const inputStyle = useMemo(
-      () => ({
+    const inputStyle = useMemo(() => {
+      const base = {
         ...(width ? { width } : {}),
         ...style,
-        // Automatically apply disabled styling
-        ...(disabled
-          ? {
-              opacity: 0.65,
-              pointerEvents: 'none',
-              cursor: 'not-allowed',
-            }
-          : {}),
-      }),
-      [width, style, disabled]
-    );
+      };
+      if (disabled) {
+        if (dimOnDisabled) {
+          base.opacity = 0.65;
+        }
+        base.pointerEvents = 'none';
+        base.cursor = 'not-allowed';
+      }
+      return base;
+    }, [width, style, disabled, dimOnDisabled]);
     const classes = useMemo(
       () =>
         classNames(
@@ -765,6 +765,7 @@ const Input = forwardRef(
       <InputWrapper
         label={label}
         disabled={disabled}
+        dimOnDisabled={dimOnDisabled}
         variant={variant}
         type={type}
         size={size}

@@ -19,18 +19,18 @@ export default function getRowStyles(row, currentClient, currentTheme) {
   }
 
   // Highlight rows with payment due today
-  const paymentDate = moment(row?.DueDate ?? row?.NewDueDate ?? null);
-  const today = moment();
-  const isTodayPayment = paymentDate.isSame(today, 'day');
+  // const paymentDate = moment(row?.DueDate ?? row?.NewDueDate ?? null);
+  // const today = moment();
+  // const isTodayPayment = paymentDate.isSame(today, 'day');
 
-  if (isTodayPayment) {
-    return {
-      backgroundColor:
-        currentTheme === 'dark'
-          ? 'rgba(115, 115, 87, 0.73)'
-          : 'rgba(244, 244, 173, 0.76)',
-    };
-  }
+  // if (isTodayPayment) {
+  //   return {
+  //     backgroundColor:
+  //       currentTheme === 'dark'
+  //         ? 'rgba(115, 115, 87, 0.73)'
+  //         : 'rgba(244, 244, 173, 0.76)',
+  //   };
+  // }
 
   return undefined;
 }

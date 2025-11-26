@@ -121,8 +121,12 @@ function waitForContainerReady(containerElement, maxWaitMs = 2000) {
   return new Promise((resolve) => {
     const start = Date.now();
     const check = () => {
-      const attached = document.body && document.body.contains(containerElement);
-      const sized = containerElement && containerElement.offsetWidth > 0 && containerElement.offsetHeight > 0;
+      const attached =
+        document.body && document.body.contains(containerElement);
+      const sized =
+        containerElement &&
+        containerElement.offsetWidth > 0 &&
+        containerElement.offsetHeight > 0;
       if (!containerElement || (attached && sized)) {
         resolve();
         return;
@@ -214,6 +218,11 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
     }, 50);
   }
 
+  // Apply initial theme (dark/light) immediately after map is created
+  try {
+    updateMapTheme(map, theme);
+  } catch (_) {}
+
   return map;
 }
 
@@ -224,21 +233,51 @@ export async function createThemedMap(container, mapOptions = {}, theme) {
  */
 export function updateMapTheme(map, theme = getCurrentTheme()) {
   if (!map) return;
-  let targetType = theme === 'dark' ? 'yandex#dark' : 'yandex#map';
   const ymaps = typeof window !== 'undefined' ? window.ymaps : null;
-  const isAvailable = ymaps?.mapType?.storage?.get?.(targetType);
-  if (!isAvailable) {
-    targetType = 'yandex#map';
-  }
-  try {
-    map.setType(targetType);
-  } catch (e) {
-    // If called too early, retry briefly after
-    setTimeout(() => {
-      try {
-        map.setType(targetType);
-      } catch (_) {}
-    }, 50);
+
+  // Helper: apply/remove CSS filter on ground pane as a fallback for dark theme
+  const applyCssDarkFallback = (enable) => {
+    const containerEl = map?.container?.getElement?.();
+    if (!containerEl) return;
+    const groundPane = containerEl.querySelector('.ymaps-2-1-79-ground-pane');
+    if (groundPane) {
+      groundPane.style.filter = enable
+        ? 'invert(88%) hue-rotate(180deg) saturate(80%) brightness(85%)'
+        : '';
+    }
+  };
+
+  // Prefer explicit dark type if available, otherwise use CSS fallback
+  const darkType = 'yandex#dark';
+  const lightType = 'yandex#map';
+  const darkAvailable = ymaps?.mapType?.storage?.get?.(darkType);
+
+  const setTypeSafe = (type) => {
+    try {
+      map.setType(type);
+    } catch (e) {
+      setTimeout(() => {
+        try {
+          map.setType(type);
+        } catch (_) {}
+      }, 50);
+    }
+  };
+
+  if (theme === 'dark') {
+    if (darkAvailable) {
+      // Use native dark tiles if present
+      applyCssDarkFallback(false);
+      setTypeSafe(darkType);
+    } else {
+      // Fallback: keep standard tiles but apply CSS darkening to ground pane
+      setTypeSafe(lightType);
+      applyCssDarkFallback(true);
+    }
+  } else {
+    // Light theme
+    applyCssDarkFallback(false);
+    setTypeSafe(lightType);
   }
 }
 

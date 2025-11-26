@@ -56,7 +56,29 @@ const MultipleSelect = ({
     setMenuOpen(false);
   }, []);
 
-  // Removed blocking pointerdown listener to allow normal interactions
+  useEffect(() => {
+    const onDocMouseDown = (e) => {
+      if (!menuOpen) return;
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const target = e.target;
+      const isInsideControl = wrapper.contains(target);
+      const isInsideAnyMenu = target.closest
+        ? target.closest('.react-select__menu')
+        : null;
+      if (!isInsideControl && !isInsideAnyMenu) {
+        // Close and remove focus when clicking anywhere outside
+        setMenuOpen(false);
+        const inst = selectRef.current;
+        if (inst && typeof inst.blur === 'function') {
+          inst.blur();
+        }
+      }
+    };
+    document.addEventListener('mousedown', onDocMouseDown, true);
+    return () =>
+      document.removeEventListener('mousedown', onDocMouseDown, true);
+  }, [menuOpen]);
 
   return (
     <div ref={wrapperRef} style={{ width: '100%' }}>
@@ -66,6 +88,7 @@ const MultipleSelect = ({
         {...props}
         openMenuOnClick={true}
         openMenuOnFocus={true}
+        menuIsOpen={menuOpen}
         isSearchable={props.isSearchable ?? false}
         menuPlacement={props.menuPlacement || 'auto'}
         menuShouldScrollIntoView={true}
@@ -95,9 +118,9 @@ const MultipleSelect = ({
             overflow: 'visible',
             border: `1px solid ${state.isFocused ? '#D6DFEB' : '#D6DFEB'}`,
             boxShadow: 'none',
-            outline: state.isFocused ? '2px solid #4A90E2' : 'none',
-            outlineOffset: state.isFocused ? '-3px' : '0',
-            backgroundColor: state.isFocused ? '#fff' : '#f8fafc',
+            outline: menuOpen ? '2px solid #4A90E2 !important' : 'none',
+            outlineOffset: menuOpen ? '-2px !important' : '0',
+            backgroundColor: state.isFocused || menuOpen ? '#fff' : '#f8fafc',
             transition:
               'outline 0.15s ease, outline-offset 0.15s ease, background-color 0.15s ease',
             '&:hover': {
