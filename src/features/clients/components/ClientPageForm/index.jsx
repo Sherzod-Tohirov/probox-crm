@@ -341,7 +341,7 @@ function ClientPageForm({
                           variant={'filled'}
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
-                          style={{ pointerEvents: 'all' }}
+                          dimOnDisabled={false}
                           {...register('name')}
                         />
                       </Col>
@@ -394,29 +394,56 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami</Label>
-                    <Input
-                      type="tel"
-                      control={control}
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      hasIcon={false}
-                      style={{ cursor: 'auto' }}
-                      {...register('telephone')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col>
+                        <Input
+                          type="tel"
+                          control={control}
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          hasIcon={false}
+                          style={{ cursor: 'auto' }}
+                          {...register('telephone')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['Phone1'] || ''}
+                          size={18}
+                          aria-label="Telefon raqami nusxalash"
+                          title="Telefon raqami nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami 2</Label>
-                    <Input
-                      type="text"
-                      control={control}
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      hasIcon={false}
-                      style={{ cursor: 'auto' }}
-                      {...register('additional_telephone')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col>
+                        {' '}
+                        <Input
+                          type="text"
+                          control={control}
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          hasIcon={false}
+                          style={{ cursor: 'auto' }}
+                          {...register('additional_telephone')}
+                        />
+                      </Col>
+                      {currentClient?.['Phone2'] && (
+                        <Col>
+                          <Clipboard
+                            text={currentClient?.['Phone2'] || ''}
+                            size={18}
+                            aria-label="Telefon raqami nusxalash"
+                            title="Telefon raqami nusxalash"
+                          />
+                        </Col>
+                      )}
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>

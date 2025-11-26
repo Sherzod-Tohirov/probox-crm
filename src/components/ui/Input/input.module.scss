@@ -360,8 +360,8 @@
 // Focus and menu-open states: use brand blue OUTLINE (not border), remove glow
 :global(.react-select__control--is-focused),
 :global(.react-select__control--menu-is-open) {
-  outline: v.$secondary-border-width solid v.$fourth-color !important; // 0.5rem ring
-  outline-offset: -0.2rem !important; // tuck closer to the control
+  outline: none !important;
+  outline-offset: 0 !important;
   box-shadow: none !important;
 }
 
