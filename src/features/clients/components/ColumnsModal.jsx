@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Modal, Row, Col, Button } from '@components/ui';
+import { Modal, Row, Col, Button, Checkbox } from '@components/ui';
 
 export default function ColumnsModal({
   isOpen,
@@ -94,75 +94,44 @@ export default function ColumnsModal({
                 gap: 10,
               }}
             >
-              <span>
-                Jadval ustunlari (
-                {
-                  columns.filter((col) => columnsLocal[col.key] !== false)
-                    .length
-                }
-                /{columns.length})
-              </span>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  cursor: 'pointer',
-                  fontSize: 13,
-                  fontWeight: 500,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  onChange={handleToggleAll}
-                  style={{ width: 16, height: 16, cursor: 'pointer' }}
-                />
-                <span>Hammasini tanlash</span>
-              </label>
+              <Row direction={'row'} gutter={2} align={'center'}>
+                <Col>
+                  <span>
+                    Jadval ustunlari (
+                    {
+                      columns.filter((col) => columnsLocal[col.key] !== false)
+                        .length
+                    }
+                    /{columns.length})
+                  </span>
+                </Col>
+                <Col>
+                  <Checkbox
+                    label={'Hammasini tanlash'}
+                    checked={allSelected}
+                    onChange={handleToggleAll}
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                </Col>
+              </Row>
             </div>
-            <Row direction="row" gutter={2} wrap>
+            <Row direction="row" gutter={4} wrap>
               {columns.map((col) => {
                 const disabled = col.key === 'CardName';
                 const checked = columnsLocal[col.key] !== false;
                 return (
                   <Col key={col.key} style={{ minWidth: 200 }}>
-                    <label
-                      style={{
-                        display: 'flex',
-                        gap: 10,
-                        alignItems: 'center',
-                        cursor: disabled ? 'not-allowed' : 'pointer',
-                        opacity: disabled ? 0.6 : 1,
-                        fontSize: 14,
-                        fontWeight: 500,
-                        padding: '6px 8px',
-                        borderRadius: 8,
-                        border: '1px solid rgba(0,0,0,0.08)',
-                        background: checked
-                          ? 'rgba(10, 77, 104, 0.1)'
-                          : 'transparent',
-                        transition: 'all 0.2s ease',
+                    <Checkbox
+                      checked={checked}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        setColumnsLocal({
+                          ...columnsLocal,
+                          [col.key]: e.target.checked,
+                        });
                       }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        disabled={disabled}
-                        onChange={(e) =>
-                          setColumnsLocal({
-                            ...columnsLocal,
-                            [col.key]: e.target.checked,
-                          })
-                        }
-                        style={{
-                          width: 18,
-                          height: 18,
-                          cursor: disabled ? 'not-allowed' : 'pointer',
-                        }}
-                      />
-                      <span>{col.title || col.key}</span>
-                    </label>
+                      label={col.title || col.key}
+                    />
                   </Col>
                 );
               })}

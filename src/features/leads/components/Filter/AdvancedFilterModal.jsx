@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Modal, Row, Col, Button } from '@components/ui';
+import { Modal, Row, Col, Button, Input, Checkbox } from '@components/ui';
 import SelectField from './fields/SelectField';
 import MultiSelectField from './fields/MultiSelectField';
 import MeetingAndDateSection from './sections/MeetingAndDateSection';
@@ -140,7 +140,8 @@ export default function AdvancedFilterModal({
     },
     [onApply, onClose, columnsLocal, onChangeVisibleColumns]
   );
-
+  console.log(columnsLocal, 'columnsLocal');
+  console.log(columns, 'columns');
   const footer = (
     <div
       style={{
@@ -258,46 +259,67 @@ export default function AdvancedFilterModal({
                 padding: 12,
               }}
             >
-              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>
-                Jadval ustunlari
-              </div>
-              <Row direction="row" gutter={2} wrap>
-                {columns.map((col) => {
-                  const disabled = col.key === 'clientName';
-                  const checked = columnsLocal[col.key] !== false;
-                  return (
-                    <Col key={col.key} style={{ minWidth: 200 }}>
-                      <label
-                        style={{
-                          display: 'flex',
-                          gap: 10,
-                          alignItems: 'center',
-                          cursor: disabled ? 'not-allowed' : 'pointer',
-                          opacity: disabled ? 0.6 : 1,
-                          fontSize: 14,
-                          fontWeight: 500,
-                          padding: '6px 8px',
-                          borderRadius: 8,
-                          border: '1px solid rgba(0,0,0,0.08)',
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={disabled}
-                          onChange={(e) =>
-                            setColumnsLocal({
-                              ...columnsLocal,
-                              [col.key]: e.target.checked,
-                            })
-                          }
-                          style={{ width: 18, height: 18 }}
-                        />
-                        <span>{col.title || col.key}</span>
-                      </label>
+              <Row gutter={2}>
+                <Col>
+                  <Row direction="row" gutter={4} align={'center'}>
+                    <Col>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>
+                        Jadval ustunlari
+                      </div>
                     </Col>
-                  );
-                })}
+                    <Col>
+                      <Checkbox
+                        checked={Object.values(columnsLocal).every((e) => e)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          if (isChecked) {
+                            setColumnsLocal(
+                              columns.reduce((acc, val) => {
+                                acc[val.key] = true;
+                                return acc;
+                              }, {})
+                            );
+                          } else {
+                            setColumnsLocal(
+                              columns.reduce((acc, val) => {
+                                if (val.key === 'clientName') {
+                                  acc[val.key] = true;
+                                  return acc;
+                                }
+                                acc[val.key] = false;
+                                return acc;
+                              }, {})
+                            );
+                          }
+                        }}
+                        label="Hammasini tanlash"
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+                <Col>
+                  <Row direction="row" gutter={4} wrap>
+                    {columns.map((col) => {
+                      const disabled = col.key === 'clientName';
+                      const checked = columnsLocal[col.key] !== false;
+                      return (
+                        <Col key={col.key} style={{ minWidth: 200 }}>
+                          <Checkbox
+                            checked={checked}
+                            disabled={disabled}
+                            onChange={(e) => {
+                              setColumnsLocal({
+                                ...columnsLocal,
+                                [col.key]: e.target.checked,
+                              });
+                            }}
+                            label={col.title || col.key}
+                          />
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </Col>
               </Row>
             </div>
           </Col>

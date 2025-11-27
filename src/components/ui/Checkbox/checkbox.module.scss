@@ -1,0 +1,130 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+.checkbox {
+  @include m.flex(center, start, 0.8rem);
+  cursor: pointer;
+  user-select: none;
+  color: v.$primary-color;
+  --checkbox-check: #fff; // default tick color
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.checkbox-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid v.$primary-border-color;
+  background: v.$primary-table-bg;
+  transition: all v.$transition-time v.$transition-type;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 10px;
+    border-right: 2px solid var(--checkbox-check, #fff);
+    border-bottom: 2px solid var(--checkbox-check, #fff);
+    transform: rotate(45deg) scale(0.6);
+    opacity: 0;
+    transition:
+      opacity v.$transition-time v.$transition-type,
+      transform v.$transition-time v.$transition-type;
+  }
+}
+
+.size-sm .checkbox-box {
+  width: 16px;
+  height: 16px;
+}
+
+.size-lg .checkbox-box {
+  width: 20px;
+  height: 20px;
+}
+
+.checkbox:hover .checkbox-box {
+  border-color: var(--checkbox-accent, v.$info-color);
+}
+
+.checkbox-input:focus-visible + .checkbox-box {
+  outline: 2px solid var(--checkbox-accent, v.$info-color);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.checkbox-input:checked + .checkbox-box {
+  background: var(--checkbox-accent, v.$info-color);
+  border-color: var(--checkbox-accent, v.$info-color);
+}
+
+.checkbox-input:checked + .checkbox-box::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+.checkbox-input:disabled + .checkbox-box {
+  opacity: 0.6;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.checkbox-box[data-indeterminate='true'] {
+  background: var(--checkbox-accent, v.$info-color);
+  border-color: var(--checkbox-accent, v.$info-color);
+}
+
+.checkbox-box[data-indeterminate='true']::after {
+  width: 10px;
+  height: 2px;
+  border: none;
+  background: var(--checkbox-check, #fff);
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Named color variants set the accent via a CSS custom property */
+.checkbox.color-info {
+  --checkbox-accent: v.$info-color;
+}
+
+.checkbox.color-danger {
+  --checkbox-accent: v.$danger-color;
+}
+
+.checkbox.color-success {
+  --checkbox-accent: v.$success-color;
+}
+
+.checkbox.color-primary {
+  --checkbox-accent: v.$primary-color;
+}
+
+.checkbox.color-secondary {
+  --checkbox-accent: v.$secondary-color;
+}
+
+.checkbox.color-dark {
+  --checkbox-accent: v.$primary-color;
+  --checkbox-check: v.$primary-bg;
+}

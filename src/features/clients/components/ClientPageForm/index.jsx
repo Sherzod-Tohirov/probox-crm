@@ -335,7 +335,7 @@ function ClientPageForm({
                   <InputGroup>
                     <Label icon="avatarFilled">FIO</Label>
                     <Row direction={'row'} gutter={2} align="center">
-                      <Col>
+                      <Col fullWidth>
                         <Input
                           type="text"
                           variant={'filled'}
@@ -395,7 +395,7 @@ function ClientPageForm({
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami</Label>
                     <Row direction={'row'} gutter={2} align="center">
-                      <Col>
+                      <Col flexGrow>
                         <Input
                           type="tel"
                           control={control}
@@ -421,7 +421,7 @@ function ClientPageForm({
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami 2</Label>
                     <Row direction={'row'} gutter={2} align="center">
-                      <Col>
+                      <Col flexGrow>
                         {' '}
                         <Input
                           type="text"
