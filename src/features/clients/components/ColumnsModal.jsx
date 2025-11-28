@@ -9,7 +9,7 @@ export default function ColumnsModal({
   onChangeVisibleColumns = () => {},
 }) {
   const [columnsLocal, setColumnsLocal] = useState(visibleColumns || {});
-
+  const cantBeDisabled = ['CardName'];
   // Sync local columns when modal opens or external state changes
   useEffect(() => {
     setColumnsLocal(visibleColumns || {});
@@ -23,20 +23,20 @@ export default function ColumnsModal({
   // Check if all columns are selected (except CardName which is always selected)
   const allSelected = useMemo(() => {
     return columns
-      .filter((col) => col.key !== 'CardName')
+      .filter((col) => !cantBeDisabled.includes(col.key))
       .every((col) => columnsLocal[col.key] !== false);
   }, [columns, columnsLocal]);
 
   const handleToggleAll = useCallback(() => {
     const currentlyAllSelected = columns
-      .filter((col) => col.key !== 'CardName')
+      .filter((col) => !cantBeDisabled.includes(col.key))
       .every((col) => columnsLocal[col.key] !== false);
 
     const newState = {};
     if (currentlyAllSelected) {
       // Deselect all except CardName
       columns.forEach((col) => {
-        newState[col.key] = col.key === 'CardName';
+        newState[col.key] = cantBeDisabled.includes(col.key);
       });
     } else {
       // Select all
@@ -117,7 +117,7 @@ export default function ColumnsModal({
             </div>
             <Row direction="row" gutter={4} wrap>
               {columns.map((col) => {
-                const disabled = col.key === 'CardName';
+                const disabled = cantBeDisabled.includes(col.key);
                 const checked = columnsLocal[col.key] !== false;
                 return (
                   <Col key={col.key} style={{ minWidth: 200 }}>

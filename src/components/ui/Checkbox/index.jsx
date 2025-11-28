@@ -13,7 +13,7 @@ const Checkbox = forwardRef(function Checkbox(
     disabled,
     indeterminate = false,
     size = 'md',
-    color = 'info',
+    color = 'success',
     onChange,
     name,
     value,

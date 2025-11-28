@@ -109,6 +109,7 @@ export default function AdvancedFilterModal({
     ]
   );
 
+  const cantBeDisabled = ['clientName'];
   const { control, handleSubmit, reset, watch, register } = useForm({
     defaultValues: defaults,
     mode: 'all',
@@ -140,8 +141,6 @@ export default function AdvancedFilterModal({
     },
     [onApply, onClose, columnsLocal, onChangeVisibleColumns]
   );
-  console.log(columnsLocal, 'columnsLocal');
-  console.log(columns, 'columns');
   const footer = (
     <div
       style={{
@@ -269,30 +268,22 @@ export default function AdvancedFilterModal({
                     </Col>
                     <Col>
                       <Checkbox
+                        label="Hammasini tanlash"
                         checked={Object.values(columnsLocal).every((e) => e)}
                         onChange={(e) => {
                           const isChecked = e.target.checked;
-                          if (isChecked) {
-                            setColumnsLocal(
-                              columns.reduce((acc, val) => {
+
+                          setColumnsLocal(
+                            columns.reduce((acc, val) => {
+                              if (cantBeDisabled.includes(val.key)) {
                                 acc[val.key] = true;
                                 return acc;
-                              }, {})
-                            );
-                          } else {
-                            setColumnsLocal(
-                              columns.reduce((acc, val) => {
-                                if (val.key === 'clientName') {
-                                  acc[val.key] = true;
-                                  return acc;
-                                }
-                                acc[val.key] = false;
-                                return acc;
-                              }, {})
-                            );
-                          }
+                              }
+                              acc[val.key] = isChecked;
+                              return acc;
+                            }, {})
+                          );
                         }}
-                        label="Hammasini tanlash"
                       />
                     </Col>
                   </Row>
@@ -300,7 +291,7 @@ export default function AdvancedFilterModal({
                 <Col>
                   <Row direction="row" gutter={4} wrap>
                     {columns.map((col) => {
-                      const disabled = col.key === 'clientName';
+                      const disabled = cantBeDisabled.includes(col.key);
                       const checked = columnsLocal[col.key] !== false;
                       return (
                         <Col key={col.key} style={{ minWidth: 200 }}>
