@@ -2,19 +2,32 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import ProtectedRoute from './hocs/ProtectedRoute';
 
+// Base app
 const App = lazy(() => import('./App'));
+
+// Auth pages
+const Login = lazy(() => import('./pages/auth/Login'));
+const Logout = lazy(() => import('./pages/auth/Logout'));
+
+// Dashboard page
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+
+// Client pages
 const Clients = lazy(() => import('./pages/Clients'));
 const ClientPage = lazy(() => import('./pages/Clients/ClientPage'));
-const Statistics = lazy(() => import('./pages/Statistics'));
+const ClientsStatistics = lazy(
+  () => import('./pages/Clients/ClientsStatistics')
+);
+
+// Lead pages
 const Leads = lazy(() => import('./pages/Leads'));
 const LeadPage = lazy(() => import('./pages/Leads/LeadPage'));
 const LeadsStatistics = lazy(() => import('./features/leads/statistics'));
+
+// Helper pages
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
 const Error = lazy(() => import('./pages/helper/Error'));
-const Login = lazy(() => import('./pages/auth/Login'));
-const Logout = lazy(() => import('./pages/auth/Logout'));
 
 const router = createBrowserRouter([
   {
@@ -91,7 +104,7 @@ const router = createBrowserRouter([
                 ]}
               >
                 <Suspense fallback={<PageLoader />}>
-                  <Statistics />
+                  <ClientsStatistics />
                 </Suspense>
               </ProtectedRoute>
             ),
@@ -103,25 +116,6 @@ const router = createBrowserRouter([
       {
         path: '/calendar',
         element: <h2 style={{ fontSize: '5rem' }}>Calendar</h2>,
-      },
-      {
-        path: '/statistics',
-        element: (
-          <ProtectedRoute
-            excludedRoles={[
-              'Operator1',
-              'Operator2',
-              'Scoring',
-              'Seller',
-              'OperatorM',
-            ]}
-          >
-            <Suspense fallback={<PageLoader />}>
-              <Statistics />
-            </Suspense>
-          </ProtectedRoute>
-        ),
-        errorElement: <Error />,
       },
       {
         path: '/products',

@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Col, Input, Row } from '@components/ui';
+import { Col, Input, Row, Clipboard } from '@components/ui';
 import { useForm } from 'react-hook-form';
 
 import FilePreviewModal from './FilePreviewModal';
@@ -56,14 +56,16 @@ function ClientPageForm({
   const isMobile = useIsMobile();
   const clientFilesWithAPI = useMemo(
     () =>
-      currentClient?.Images?.map(
-        (img) =>
-          ({
-            id: img._id,
-            image: API_CLIENT_IMAGES + img?.image,
-            type: 'server',
-          }) || []
-      ),
+      Array.isArray(currentClient?.Images)
+        ? currentClient.Images.map(
+            (img) =>
+              ({
+                id: img._id,
+                image: API_CLIENT_IMAGES + img?.image,
+                type: 'server',
+              }) || []
+          )
+        : [],
     [currentClient]
   );
   const [allFiles, setAllFiles] = useState([]);
@@ -225,14 +227,16 @@ function ClientPageForm({
   }, [isDirty]);
 
   useEffect(() => {
-    const filesWithApi = currentClient?.Images?.map(
-      (file) =>
-        ({
-          id: file._id,
-          image: API_CLIENT_IMAGES + file?.image,
-          type: 'server',
-        }) || []
-    );
+    const filesWithApi = Array.isArray(currentClient?.Images)
+      ? currentClient.Images.map(
+          (file) =>
+            ({
+              id: file._id,
+              image: API_CLIENT_IMAGES + file?.image,
+              type: 'server',
+            }) || []
+        )
+      : [];
     setAllFiles(() => filesWithApi);
   }, [currentClient]);
 
@@ -255,13 +259,12 @@ function ClientPageForm({
   useEffect(() => {
     if (currentClient && executorsOptions.length > 0) {
       const foundExecutor = executorsOptions.find(
-        (executor) =>
-          Number(executor?.SlpCode) === Number(currentClient?.SlpCode)
+        (executor) => Number(executor?.value) === Number(currentClient?.SlpCode)
       );
 
       const formData = {
         name: currentClient?.['CardName'] || 'Mavjud emas',
-        executor: foundExecutor?.SlpCode || executorsOptions?.[0]?.value,
+        executor: foundExecutor?.value || executorsOptions?.[0]?.value,
         photo: [],
         telephone: currentClient?.['Phone1'] || '+998 00 000 00 00',
         additional_telephone: currentClient?.['Phone2'] || '',
@@ -335,14 +338,26 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="avatarFilled">FIO</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      style={{ pointerEvents: 'all' }}
-                      {...register('name')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('name')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['CardName'] || ''}
+                          size={18}
+                          aria-label="FIO nusxalash"
+                          title="FIO nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
@@ -383,41 +398,81 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami</Label>
-                    <Input
-                      type="tel"
-                      control={control}
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      hasIcon={false}
-                      style={{ cursor: 'auto' }}
-                      {...register('telephone')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col flexGrow>
+                        <Input
+                          type="tel"
+                          control={control}
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          hasIcon={false}
+                          style={{ cursor: 'auto' }}
+                          {...register('telephone')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['Phone1'] || ''}
+                          size={18}
+                          aria-label="Telefon raqami nusxalash"
+                          title="Telefon raqami nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami 2</Label>
-                    <Input
-                      type="text"
-                      control={control}
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      hasIcon={false}
-                      style={{ cursor: 'auto' }}
-                      {...register('additional_telephone')}
-                    />
+                    <Row direction={'row'} gutter={2} align="center">
+                      <Col flexGrow>
+                        {' '}
+                        <Input
+                          type="text"
+                          control={control}
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          hasIcon={false}
+                          style={{ cursor: 'auto' }}
+                          {...register('additional_telephone')}
+                        />
+                      </Col>
+                      {currentClient?.['Phone2'] && (
+                        <Col>
+                          <Clipboard
+                            text={currentClient?.['Phone2'] || ''}
+                            size={18}
+                            aria-label="Telefon raqami nusxalash"
+                            title="Telefon raqami nusxalash"
+                          />
+                        </Col>
+                      )}
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Mijoz kodi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('code')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('code')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['CardCode']}
+                          size={18}
+                          aria-label="Mijoz kodi nusxalash"
+                          title="Mijoz kodi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
               </Row>
@@ -439,13 +494,26 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="products">Mahsulot nomi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('product')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('product')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['ProductName']}
+                          size={18}
+                          aria-label="Mahsulot nomi nusxalash"
+                          title="Mahsulot nomi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
@@ -483,25 +551,51 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">IMEI</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('imei')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('imei')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['IntrSerial'] || ''}
+                          size={18}
+                          aria-label="IMEI nusxalash"
+                          title="IMEI nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Passport seriyasi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('passportSeries')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('passportSeries')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['Cellular'] || ''}
+                          size={18}
+                          aria-label="Passport seriyasi nusxalash"
+                          title="Passport seriyasi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
               </Row>

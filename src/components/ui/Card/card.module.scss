@@ -32,6 +32,7 @@
 
 .card-body {
   padding: 24px;
+  height: 100%;
   @media (max-width: v.$breakpoint-md) {
     padding: 20px;
   }

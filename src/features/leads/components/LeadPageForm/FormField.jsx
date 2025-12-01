@@ -13,6 +13,7 @@ export default function FormField({
   placeholderOption,
   type = 'text',
   disabled = false,
+  dimOnDisabled = true,
   span = { xs: 24, md: 8 },
   prefix,
   rules = {},
@@ -24,6 +25,7 @@ export default function FormField({
     size: 'large',
     variant: 'filled',
     disabled,
+    dimOnDisabled,
     prefix,
     iconText,
   };

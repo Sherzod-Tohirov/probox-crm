@@ -24,7 +24,6 @@ export const Messenger = (
   },
   ref
 ) => {
-  console.log(messages, "messages")
   const { isOpen, toggle } = useToggle('messenger');
   useEffect(() => {
     if (isOpen) {

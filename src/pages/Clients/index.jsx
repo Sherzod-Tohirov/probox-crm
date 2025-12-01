@@ -1,12 +1,4 @@
-import _ from 'lodash';
-import {
-  useCallback,
-  useLayoutEffect,
-  useState,
-  useRef,
-  useEffect,
-  useMemo,
-} from 'react';
+import { useCallback, useLayoutEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,9 +20,11 @@ import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
 import useScrollRestoration from '@/features/clients/hooks/useScrollRestoration';
 import useModalAutoClose from '@features/clients/hooks/useModalAutoClose';
+import useColumnVisibility from '@features/clients/hooks/useColumnVisibility';
+import getRowStyles from '@features/clients/utils/getRowStyles';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
-import moment from 'moment';
+
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -57,24 +51,6 @@ export default function Clients() {
 
   // Columns modal visibility
   const [isColumnsOpen, setColumnsOpen] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState(() => {
-    try {
-      const raw = localStorage.getItem('clientsVisibleColumns');
-      return raw ? JSON.parse(raw) : {};
-    } catch (_) {
-      return {};
-    }
-  });
-
-  // Persist column visibility
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        'clientsVisibleColumns',
-        JSON.stringify(visibleColumns)
-      );
-    } catch (_) {}
-  }, [visibleColumns]);
 
   // Custom hooks
   const { data, isLoading } = useFetchClients({
@@ -82,35 +58,13 @@ export default function Clients() {
     params,
   });
   const { clientsTableColumns } = useClientsTableColumns();
-
-  // Filter columns based on visibility toggles
-  const columnsToUse = useMemo(() => {
-    const map = visibleColumns || {};
-    // Always show CardName; others are user-toggleable
-    return clientsTableColumns.filter((c) =>
-      c.key === 'CardName' ? true : map[c.key] !== false
+  // Column visibility management
+  const { visibleColumns, setVisibleColumns, columnsToUse } =
+    useColumnVisibility(
+      clientsTableColumns,
+      ['CardName', 'Phone1', 'InsTotal', 'PaidToDate'],
+      'clientsVisibleColumns'
     );
-  }, [clientsTableColumns, visibleColumns]);
-
-  // Initialize default visible columns if none are saved
-  useEffect(() => {
-    try {
-      const initialized = localStorage.getItem('clientsVisibleColumnsInit');
-      if (initialized) return;
-      const important = new Set([
-        'CardName',
-        'Phone1',
-        'InsTotal',
-        'PaidToDate',
-      ]);
-      const map = {};
-      (clientsTableColumns || []).forEach((c) => {
-        if (!important.has(c.key)) map[c.key] = false;
-      });
-      setVisibleColumns(map);
-      localStorage.setItem('clientsVisibleColumnsInit', '1');
-    } catch (_) {}
-  }, [clientsTableColumns]);
 
   const {
     uiScale,
@@ -132,10 +86,17 @@ export default function Clients() {
     isDefaultDensity,
   } = useTableDensity('clientsTableDensity');
 
+  const hasData = Array.isArray(clientsDetails.data)
+    ? clientsDetails.data?.length > 0
+    : false;
+
+  // Reusable scroll restoration (smooth)
   const { saveScrollPosition } = useScrollRestoration({
     scrollContainerRef: clientsTableRef,
     storageKey: 'scrollPositionClients',
-    hasData: data?.data?.length > 0,
+    hasData,
+    behavior: 'smooth',
+    maxTries: 120,
   });
 
   useModalAutoClose(clientsTableRef);
@@ -144,67 +105,53 @@ export default function Clients() {
   const handleRowClick = useCallback(
     (row) => {
       saveScrollPosition();
-      try {
-        sessionStorage.setItem(
-          'scrollPositionClients__rowKey',
-          String(row?.DocEntry ?? '')
-        );
-      } catch (_) {}
       navigate(`/clients/${row.DocEntry}`);
       dispatch(setCurrentClient(row));
     },
     [navigate, dispatch, saveScrollPosition]
   );
 
-  const handleFilter = useCallback(
-    (filterData) => {
-      // Merge with existing redux filter to avoid clearing advanced selections
-      const merged = { ...filter, ...filterData };
-      const paymentStatus = Array.isArray(merged.paymentStatus)
-        ? _.map(merged.paymentStatus, 'value').join(',')
-        : merged.paymentStatus;
-      const slpCode = Array.isArray(merged.slpCode)
-        ? _.map(merged.slpCode, 'value').join(',')
-        : merged.slpCode;
+  const handleFilter = useCallback((filterData) => {
+    // Build params object, excluding empty/undefined values
+    const params = {};
 
-      // Build params object, excluding empty/undefined values
-      const params = {};
-
-      if (
-        merged.search &&
-        typeof merged.search === 'string' &&
-        merged.search.trim()
-      ) {
-        params.search = merged.search.trim();
-      }
-      if (paymentStatus && paymentStatus !== '' && paymentStatus !== 'all') {
-        params.paymentStatus = paymentStatus;
-      }
-      if (slpCode && slpCode !== '') {
-        params.slpCode = slpCode;
-      }
-      if (
-        merged.phone &&
-        merged.phone !== '998' &&
-        typeof merged.phone === 'string' &&
-        merged.phone.trim() &&
-        merged.phone.trim() !== '998'
-      ) {
-        params.phone = merged.phone.trim();
-      }
-      if (merged.startDate && merged.startDate.trim()) {
-        params.startDate = merged.startDate;
-      }
-      if (merged.endDate && merged.endDate.trim()) {
-        params.endDate = merged.endDate;
-      }
-      if (merged.phoneConfiscated && merged.phoneConfiscated !== '') {
-        params.phoneConfiscated = merged.phoneConfiscated;
-      }
-      setParams(() => params);
-    },
-    [filter]
-  );
+    if (
+      filterData.search &&
+      typeof filterData.search === 'string' &&
+      filterData.search.trim()
+    ) {
+      params.search = filterData.search.trim();
+    }
+    if (
+      filterData.paymentStatus &&
+      filterData.paymentStatus !== '' &&
+      filterData.paymentStatus !== 'all'
+    ) {
+      params.paymentStatus = filterData.paymentStatus;
+    }
+    if (filterData.slpCode && filterData.slpCode !== '') {
+      params.slpCode = filterData.slpCode;
+    }
+    if (
+      filterData.phone &&
+      filterData.phone !== '998' &&
+      typeof filterData.phone === 'string' &&
+      filterData.phone.trim() &&
+      filterData.phone.trim() !== '998'
+    ) {
+      params.phone = filterData.phone.trim();
+    }
+    if (filterData.startDate && filterData.startDate.trim()) {
+      params.startDate = filterData.startDate;
+    }
+    if (filterData.endDate && filterData.endDate.trim()) {
+      params.endDate = filterData.endDate;
+    }
+    if (filterData.phoneConfiscated && filterData.phoneConfiscated !== '') {
+      params.phoneConfiscated = filterData.phoneConfiscated;
+    }
+    setParams(() => params);
+  }, []);
 
   // Sync data with local state
   useLayoutEffect(() => {
@@ -212,7 +159,7 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
 
-    if (data?.data.length >= 0) {
+    if (data?.data?.length >= 0) {
       setClientsDetails((p) => ({ ...p, data: data?.data }));
     }
 
@@ -272,31 +219,9 @@ export default function Clients() {
             selectedRows={selectedRows}
             onSelectionChange={setSelectedRows}
             showPivotColumn={true}
-            getRowStyles={(row) => {
-              if (row?.['DocEntry'] === currentClient?.['DocEntry']) {
-                return {
-                  backgroundColor:
-                    currentTheme === 'dark'
-                      ? 'rgba(96, 165, 250, 0.15)'
-                      : 'rgba(206, 236, 249, 0.94)',
-                };
-              }
-
-              const paymentDate = moment(
-                row?.DueDate ?? row?.NewDueDate ?? null
-              );
-              const today = moment();
-              const isTodayPayment = paymentDate.isSame(today, 'day');
-              if (isTodayPayment) {
-                return {
-                  backgroundColor:
-                    currentTheme === 'dark'
-                      ? 'rgba(115, 115, 87, 0.73)'
-                      : 'rgba(244, 244, 173, 0.76)',
-                };
-                ('rgba(244, 244, 173, 0.76)');
-              }
-            }}
+            getRowStyles={(row) =>
+              getRowStyles(row, currentClient, currentTheme)
+            }
           />
         </Col>
         <Col style={{ width: '100%' }}></Col>

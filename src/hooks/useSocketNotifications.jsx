@@ -6,6 +6,10 @@ import formatDate, { formatDateWithHour } from '@/utils/formatDate';
 
 const LS_KEY = 'probox.notifications';
 
+// Roles allowed to receive per-user "new lead" notifications
+// (other roles like Manager, Admin, etc. will not be notified)
+const NEW_LEAD_ALLOWED_ROLES = [];
+
 function toArray(payload) {
   if (!payload) return [];
   return (Array.isArray(payload) ? payload : [payload]).filter(Boolean);
@@ -180,8 +184,15 @@ export default function useSocketNotifications() {
         logLabel: 'socket payload',
         browserEvent: 'probox:new-lead',
         normalize: normalizeLeadToNotification,
-        shouldNotify: (record, currentUser) =>
-          belongsToCurrentUser(record, currentUser),
+        // Only notify users in the allowed roles and where lead belongs
+        // to the current user by SlpCode/operator mapping.
+        shouldNotify: (record, currentUser) => {
+          if (!currentUser) return false;
+          if (!NEW_LEAD_ALLOWED_ROLES.includes(currentUser.U_role)) {
+            return false;
+          }
+          return belongsToCurrentUser(record, currentUser);
+        },
       },
       {
         event: 'scoring_lead',

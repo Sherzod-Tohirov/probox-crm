@@ -154,6 +154,7 @@ const iconsMap = {
   globe: <Globe />,
   globeFilled: <GlobeFilled />,
   meta: <Meta />,
+  copy: <Download />,
 };
 
 export default iconsMap;

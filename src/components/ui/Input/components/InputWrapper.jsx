@@ -10,6 +10,7 @@ const InputWrapper = ({
   children,
   label,
   disabled,
+  dimOnDisabled,
   variant,
   type,
   size,
@@ -35,7 +36,7 @@ const InputWrapper = ({
           <Typography
             element="label"
             className={classNames(styles['label'], {
-              [styles['label-disabled']]: disabled,
+              [styles['label-disabled']]: disabled && dimOnDisabled,
             })}
           >
             {label}

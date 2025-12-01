@@ -108,7 +108,9 @@ export default function Leads() {
   const { saveScrollPosition } = useScrollRestoration({
     scrollContainerRef: leadsTableRef,
     storageKey: 'scrollPositionLeads',
-    hasData: leads?.length > 0,
+    hasData: Array.isArray(leads) ? leads.length > 0 : false,
+    behavior: 'smooth',
+    maxTries: 120,
   });
 
   const handleFilter = useCallback((filterData) => {
