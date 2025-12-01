@@ -13,7 +13,7 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
       : null;
 
   const fetchDeviceSeries = useCallback(
-    async ({ deviceId, itemCode, whsCode, whsName }) => {
+    async ({ deviceId, itemCode, whsCode, whsName, deviceCondition }) => {
       if (!deviceId) return;
 
       const deviceWhsName = whsName || branchCodeToNameMap.get(String(whsCode || '')) || '';
@@ -53,6 +53,9 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
             ? response
             : response?.data ?? [];
 
+        // Device itemning condition ni ishlatamiz (IMEI seriyadan emas)
+        const condition = deviceCondition ?? null;
+
         const options = seriesItems.map((series) => {
           const imei = series.IMEI ?? series.DistNumber ?? series.SysNumber;
 
@@ -72,20 +75,28 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
           const purchaseUSD = parsePrice(purchaseRaw);
           const saleUSD = parsePrice(saleRaw);
 
-          const condition =
-            series.U_PROD_CONDITION ??
-            series.u_prod_condition ??
-            series.U_Condition ??
-            series.u_condition ??
-            null;
-
           let baseUsd = null;
 
           if (condition === 'B/U') {
-            // B/U uchun faqat PurchasePrice
-            baseUsd = purchaseUSD;
+            // B/U uchun faqat PurchasePrice, lekin foizlar bilan
+            if (!purchaseUSD) {
+              baseUsd = null;
+            } else {
+              // B/U uchun PurchasePrice ga foizlar qo'shamiz
+              let multiplier = 1;
+              if (purchaseUSD < 500) {
+                multiplier = 1.15; // +15%
+              } else if (purchaseUSD >= 500 && purchaseUSD < 1000) {
+                multiplier = 1.1; // +10%
+              } else if (purchaseUSD >= 1000 && purchaseUSD < 2000) {
+                multiplier = 1.05; // +5%
+              } else if (purchaseUSD >= 2000) {
+                multiplier = 1.03; // +3%
+              }
+              baseUsd = purchaseUSD * multiplier;
+            }
           } else if (condition === 'Yangi' || !condition) {
-            // Yangi yoki condition yo'q bo'lsa faqat SalePrice
+            // Yangi yoki condition yo'q bo'lsa faqat SalePrice (foizsiz)
             baseUsd = saleUSD;
           }
 
