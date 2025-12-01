@@ -23,13 +23,90 @@ export const formatCurrencyUZS = (value) => {
   return formatted ? `${formatted} so'm` : '';
 };
 
-export const normalizeContractItems = (items = [], branchCodeToNameMap) => {
+/**
+ * Qurilma uchun bazaviy USD narxini hisoblash
+ * - U_PROD_CONDITION = "B/U" bo'lsa: PurchasePrice dan foydalanib, foiz qo'shamiz
+ * - Aks holda (Yangi yoki null): SalePrice dan foydalanamiz
+ *
+ * Foiz qo'shish qoidalari (faqat B/U uchun):
+ *  - < 500      => +15%
+ *  - 500-1000   => +10%
+ *  - 1000-2000  => +5%
+ *  - > 2000     => +3%
+ */
+export const getItemBasePriceUSD = (item) => {
+  if (!item) return null;
+
+  const condition = item?.U_PROD_CONDITION ?? item?.u_prod_condition ?? null;
+
+  const parsePrice = (value) => {
+    if (value === null || value === undefined) return null;
+    const num = typeof value === 'number' ? value : parseFloat(String(value).replace(',', '.'));
+    return Number.isFinite(num) && num > 0 ? num : null;
+  };
+
+  const salePriceUSD = parsePrice(item?.SalePrice ?? item?.salePrice);
+  const purchasePriceUSD = parsePrice(item?.PurchasePrice ?? item?.purchasePrice);
+
+  // faqat B/U uchun: Faqat PurchasePrice dan foydalanamiz, SalePrice NI UMUMAN ishlatmaymiz
+  if (condition === 'B/U') {
+    const base = purchasePriceUSD;
+    if (!base) {
+      // PurchasePrice yo'q bo'lsa, narxni hisoblamaymiz
+      return null;
+    }
+
+    let multiplier = 1;
+
+    if (base < 500) {
+      multiplier = 1.15; // +15%
+    } else if (base >= 500 && base < 1000) {
+      multiplier = 1.1; // +10%
+    } else if (base >= 1000 && base < 2000) {
+      multiplier = 1.05; // +5%
+    } else if (base >= 2000) {
+      multiplier = 1.03; // +3%
+    }
+
+    return base * multiplier;
+  }
+
+  // Yangi (yoki condition bo'sh) holatlarda faqat SalePrice dan foydalanamiz
+  if (condition === 'Yangi' || !condition) {
+    const base = salePriceUSD;
+    if (!base) return null;
+
+    return base;
+  }
+
+  // Boshqa kutilmagan holatlar uchun hech narsa qaytarmaymiz
+  return null;
+};
+
+export const normalizeContractItems = (items = [], branchCodeToNameMap, currencyRate) => {
   return items.map((item, index) => {
-    const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
-    const priceText =
-      priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
-        ? formatCurrencyUZS(priceValue)
-        : '';
+    // Avvalo USD dagi bazaviy narxni aniqlaymiz (U_PROD_CONDITION va Purchase/SalePrice bo'yicha)
+    const basePriceUSD = getItemBasePriceUSD(item);
+
+    let priceText = '';
+
+    // Agar kurs bo'lsa, USD -> UZS ga o'tkazib, formatlaymiz
+    const rateNum =
+      currencyRate !== null && currencyRate !== undefined
+        ? Number(currencyRate)
+        : null;
+
+    if (basePriceUSD && rateNum && Number.isFinite(rateNum) && rateNum > 0) {
+      const priceUZS = basePriceUSD * rateNum;
+      priceText = formatCurrencyUZS(priceUZS);
+    } else {
+      // Fallback: eski PhonePrice maydonlari bo'yicha
+      const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
+      priceText =
+        priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
+          ? formatCurrencyUZS(priceValue)
+          : '';
+    }
 
     const onHand = item?.OnHand ?? item?.onHand ?? 0;
     const onHandText = onHand > 0 ? `${onHand} ta bor` : '';

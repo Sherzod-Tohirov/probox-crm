@@ -12,9 +12,22 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
 
   const handleImeiSelect = useCallback((deviceId, value) => {
     setSelectedDevices((prev) =>
-      prev.map((device) =>
-        device.id === deviceId ? { ...device, imeiValue: value } : device
-      )
+      prev.map((device) => {
+        if (device.id !== deviceId) return device;
+
+        const matchedOption = Array.isArray(device.imeiOptions)
+          ? device.imeiOptions.find((opt) => opt.value === value)
+          : null;
+
+        const nextPrice =
+          matchedOption?.meta?.calculatedPriceText || device.price;
+
+        return {
+          ...device,
+          imeiValue: value,
+          price: nextPrice || device.price,
+        };
+      })
     );
   }, []);
 

@@ -1,8 +1,16 @@
 import { useCallback } from 'react';
 import useFetchItemSeries from '@/hooks/data/leads/useFetchItemSeries';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
+import { formatCurrencyUZS } from '../utils/deviceUtils';
 
 export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => {
   const { mutateAsync: fetchItemSeries } = useFetchItemSeries();
+  const { data: currency } = useFetchCurrency();
+
+  const currencyRate =
+    currency && currency.Rate !== null && currency.Rate !== undefined
+      ? Number(currency.Rate)
+      : null;
 
   const fetchDeviceSeries = useCallback(
     async ({ deviceId, itemCode, whsCode, whsName }) => {
@@ -46,29 +54,86 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
             : response?.data ?? [];
 
         const options = seriesItems.map((series) => {
+          const imei = series.IMEI ?? series.DistNumber ?? series.SysNumber;
+
+          let priceText = '';
+          const purchaseRaw = series.PurchasePrice ?? series.purchasePrice;
+          const saleRaw = series.SalePrice ?? series.salePrice;
+
+          const parsePrice = (value) => {
+            if (value === null || value === undefined) return null;
+            const num =
+              typeof value === 'number'
+                ? value
+                : parseFloat(String(value).replace(',', '.'));
+            return Number.isFinite(num) && num > 0 ? num : null;
+          };
+
+          const purchaseUSD = parsePrice(purchaseRaw);
+          const saleUSD = parsePrice(saleRaw);
+
+          const condition =
+            series.U_PROD_CONDITION ??
+            series.u_prod_condition ??
+            series.U_Condition ??
+            series.u_condition ??
+            null;
+
+          let baseUsd = null;
+
+          if (condition === 'B/U') {
+            // B/U uchun faqat PurchasePrice
+            baseUsd = purchaseUSD;
+          } else if (condition === 'Yangi' || !condition) {
+            // Yangi yoki condition yo'q bo'lsa faqat SalePrice
+            baseUsd = saleUSD;
+          }
+
+          let calculatedPriceUZS = null;
+
+          if (baseUsd && currencyRate && Number.isFinite(currencyRate) && currencyRate > 0) {
+            const uzs = baseUsd * currencyRate;
+            calculatedPriceUZS = uzs;
+            priceText = formatCurrencyUZS(uzs);
+          } else if (baseUsd) {
+            priceText = `${baseUsd} USD`;
+          }
+
           return {
-            value: series.DistNumber,
-            label: series.DistNumber,
-            meta: series,
+            value: imei,
+            label: priceText ? `${imei} - ${priceText}` : imei,
+            meta: {
+              ...series,
+              calculatedPriceUZS,
+              calculatedPriceText: priceText || '',
+            },
           };
         });
 
         setSelectedDevices((prev) =>
-          prev.map((device) =>
-            device.id === deviceId
-              ? {
-                  ...device,
-                  imeiOptions: options,
-                  imeiValue:
-                    options.length === 1
-                      ? options[0].value
-                      : device.imeiValue || '',
-                  imeiLoading: false,
-                  imeiError: null,
-                  rawSeries: seriesItems,
-                }
-              : device
-          )
+          prev.map((device) => {
+            if (device.id !== deviceId) return device;
+
+            const autoSelectedOption =
+              options.length === 1 ? options[0] : null;
+
+            // Agar avtomatik bitta IMEI tanlansa va narx hisoblangan bo'lsa, devicening price ni ham yangilaymiz
+            const nextPrice =
+              autoSelectedOption?.meta?.calculatedPriceText || device.price;
+
+            return {
+              ...device,
+              imeiOptions: options,
+              imeiValue:
+                options.length === 1
+                  ? autoSelectedOption.value
+                  : device.imeiValue || '',
+              imeiLoading: false,
+              imeiError: null,
+              rawSeries: seriesItems,
+              price: nextPrice || device.price,
+            };
+          })
         );
       } catch (err) {
         const errorMessage =
@@ -90,7 +155,7 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
         );
       }
     },
-    [fetchItemSeries, branchCodeToNameMap, setSelectedDevices]
+    [fetchItemSeries, branchCodeToNameMap, setSelectedDevices, currencyRate]
   );
 
   return { fetchDeviceSeries };
