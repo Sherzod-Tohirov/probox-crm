@@ -54,6 +54,7 @@ export const useDeviceSelection = ({
           itemCode,
           whsCode: itemWhsCode,
           whsName: itemWhsName,
+          deviceCondition: item?.condition ?? item?.raw?.U_PROD_CONDITION ?? item?.raw?.u_prod_condition ?? null,
         });
       } else if (wasAdded && itemWhsCode) {
         fetchDeviceSeries({
@@ -61,6 +62,7 @@ export const useDeviceSelection = ({
           itemCode,
           whsCode: itemWhsCode,
           whsName: itemWhsName,
+          deviceCondition: item?.condition ?? item?.raw?.U_PROD_CONDITION ?? item?.raw?.u_prod_condition ?? null,
         });
       }
     },

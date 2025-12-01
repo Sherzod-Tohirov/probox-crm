@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import useMutateContractTerms from '@/hooks/data/leads/useMutateContractTerms';
 import { normalizeContractItems } from '../utils/deviceUtils';
 
@@ -9,6 +10,9 @@ export const useDeviceSearch = ({
   conditionFilter,
 }) => {
   const { mutateAsync: mutateContractTerms } = useMutateContractTerms();
+  const { data: currency } = useFetchCurrency();
+
+  const currencyRate = currency?.Rate;
 
   const handleDeviceSearch = useCallback(
     async (text, page = 1) => {
@@ -49,7 +53,11 @@ export const useDeviceSearch = ({
             ? response
             : response?.data || [];
 
-        const normalizedItems = normalizeContractItems(items, branchCodeToNameMap);
+        const normalizedItems = normalizeContractItems(
+          items,
+          branchCodeToNameMap,
+          currencyRate
+        );
 
         return {
           data: normalizedItems,
@@ -60,7 +68,7 @@ export const useDeviceSearch = ({
         return { data: [], total: 0, totalPages: 0 };
       }
     },
-    [activeWhsCode, searchBranchFilter, conditionFilter, mutateContractTerms, branchCodeToNameMap]
+    [activeWhsCode, searchBranchFilter, conditionFilter, mutateContractTerms, branchCodeToNameMap, currencyRate]
   );
 
   return { handleDeviceSearch };
