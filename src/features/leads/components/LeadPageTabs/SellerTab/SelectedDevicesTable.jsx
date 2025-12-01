@@ -104,8 +104,8 @@ export default function SelectedDevicesTable({
           id="selected-device-table"
           data={selectedDeviceData}
           columns={selectedDeviceColumns}
-          containerHeight="auto"
-          scrollable={false}
+          scrollHeight="auto"
+          scrollable={true}
           uniqueKey="id"
           onRowClick={() => {}}
           getRowStyles={() => ({
