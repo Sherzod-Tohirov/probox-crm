@@ -56,14 +56,16 @@ function ClientPageForm({
   const isMobile = useIsMobile();
   const clientFilesWithAPI = useMemo(
     () =>
-      currentClient?.Images?.map(
-        (img) =>
-          ({
-            id: img._id,
-            image: API_CLIENT_IMAGES + img?.image,
-            type: 'server',
-          }) || []
-      ),
+      Array.isArray(currentClient?.Images)
+        ? currentClient.Images.map(
+            (img) =>
+              ({
+                id: img._id,
+                image: API_CLIENT_IMAGES + img?.image,
+                type: 'server',
+              }) || []
+          )
+        : [],
     [currentClient]
   );
   const [allFiles, setAllFiles] = useState([]);
@@ -225,14 +227,16 @@ function ClientPageForm({
   }, [isDirty]);
 
   useEffect(() => {
-    const filesWithApi = currentClient?.Images?.map(
-      (file) =>
-        ({
-          id: file._id,
-          image: API_CLIENT_IMAGES + file?.image,
-          type: 'server',
-        }) || []
-    );
+    const filesWithApi = Array.isArray(currentClient?.Images)
+      ? currentClient.Images.map(
+          (file) =>
+            ({
+              id: file._id,
+              image: API_CLIENT_IMAGES + file?.image,
+              type: 'server',
+            }) || []
+        )
+      : [];
     setAllFiles(() => filesWithApi);
   }, [currentClient]);
 
@@ -490,7 +494,7 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="products">Mahsulot nomi</Label>
-                    <Row direction={"row"} gutter={2} align={"center"}>
+                    <Row direction={'row'} gutter={2} align={'center'}>
                       <Col fullWidth>
                         <Input
                           type="text"
