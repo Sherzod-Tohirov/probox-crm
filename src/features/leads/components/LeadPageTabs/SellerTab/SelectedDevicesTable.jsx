@@ -1,4 +1,4 @@
-import { Col, Table, Button } from '@components/ui';
+import { Row, Col, Table, Button } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
 import { formatCurrencyUZS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
@@ -33,7 +33,7 @@ export default function SelectedDevicesTable({
     onSuccess: async (invoiceData) => {
       console.log('Invoice success, invoiceData:', invoiceData);
       alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
-      
+
       // PDF fayl yaratish va yuklab olish
       if (invoiceData) {
         try {
@@ -54,7 +54,10 @@ export default function SelectedDevicesTable({
       }
     },
     onError: (error) => {
-      const errorMessage = error?.message || error?.response?.data?.message || 'Invoice yuborishda xatolik yuz berdi';
+      const errorMessage =
+        error?.message ||
+        error?.response?.data?.message ||
+        'Invoice yuborishda xatolik yuz berdi';
       alert(errorMessage, { type: 'error' });
     },
   });
@@ -92,7 +95,7 @@ export default function SelectedDevicesTable({
   if (!selectedDeviceData.length) return null;
 
   return (
-    <>
+    <Row>
       <Col direction="column" fullWidth>
         <span className={styles['selected-device-table-label']}>
           Tanlangan qurilmalar
@@ -110,21 +113,29 @@ export default function SelectedDevicesTable({
           })}
         />
       </Col>
-      <Col direction="column" gap={2}>
-        <div className={styles['selected-device-table-total-price']}>
-          Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
-        </div>
-        {canEdit && (
-          <Button
-            variant="filled"
-            onClick={handleSendInvoice}
-            isLoading={isSendingInvoice}
-            disabled={isSendingInvoice || selectedDevices.length === 0}
-          >
-            Invoice yuborish
-          </Button>
-        )}
+      <Col justify={'end'} gap={2}>
+        <Row>
+          <Col>
+            {' '}
+            <div className={styles['selected-device-table-total-price']}>
+              Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
+            </div>
+          </Col>
+
+          {canEdit && (
+            <Col>
+              <Button
+                variant="filled"
+                onClick={handleSendInvoice}
+                isLoading={isSendingInvoice}
+                disabled={isSendingInvoice || selectedDevices.length === 0}
+              >
+                Invoice yuborish
+              </Button>
+            </Col>
+          )}
+        </Row>
       </Col>
-    </>
+    </Row>
   );
 }

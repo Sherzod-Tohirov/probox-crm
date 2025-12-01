@@ -157,7 +157,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
       <form onSubmit={handleSubmit}>
         <SellerFormFields
-            control={control}
+          control={control}
           canEdit={canEdit}
           leadData={leadData}
           fieldSellType={fieldSellType}
@@ -171,37 +171,42 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       <FieldGroup title="Shartnoma ma'lumotlari">
         <Col span={{ xs: 24, md: 24 }} flexGrow fullWidth>
           <Row>
-            <DeviceSearchField
-              canEdit={ canOperatorEdit || canEdit}
-              selectedDevicesCount={selectedDevices.length}
-              leadData={leadData}
-              branchFilterOptions={branchFilterOptions}
-                    control={control}
-                  onSearch={handleDeviceSearch}
-                  onSelect={handleSelectDevice}
-                />
-
-            {selectedDevices.length > 0 && (
-              <SelectedDevicesTable
-                selectedDeviceData={selectedDeviceData}
-                selectedDevices={selectedDevices}
-                rentPeriodOptions={rentPeriodOptions}
+            <Col fullWidth>
+              <DeviceSearchField
                 canEdit={canOperatorEdit || canEdit}
-                onImeiSelect={handleImeiSelect}
-                onRentPeriodChange={handleRentPeriodChange}
-                onFirstPaymentChange={handleFirstPaymentChange}
-                onDeleteDevice={handleDeleteDevice}
-                totalGrandTotal={totalGrandTotal}
-                leadId={leadId}
-                userSignature={userSignature}
-                currentUser={user}
+                selectedDevicesCount={selectedDevices.length}
+                leadData={leadData}
+                branchFilterOptions={branchFilterOptions}
+                control={control}
+                onSearch={handleDeviceSearch}
+                onSelect={handleSelectDevice}
               />
+            </Col>
+            {selectedDevices.length > 0 && (
+              <Col fullWidth>
+                <SelectedDevicesTable
+                  selectedDeviceData={selectedDeviceData}
+                  selectedDevices={selectedDevices}
+                  rentPeriodOptions={rentPeriodOptions}
+                  canEdit={canOperatorEdit || canEdit}
+                  onImeiSelect={handleImeiSelect}
+                  onRentPeriodChange={handleRentPeriodChange}
+                  onFirstPaymentChange={handleFirstPaymentChange}
+                  onDeleteDevice={handleDeleteDevice}
+                  totalGrandTotal={totalGrandTotal}
+                  leadId={leadId}
+                  userSignature={userSignature}
+                  currentUser={user}
+                />
+              </Col>
             )}
 
-            <SignatureCanvas 
-              canEdit={canOperatorEdit || canEdit} 
-              onSignatureChange={handleSignatureChange}
-            />
+            <Col fullWidth>
+              <SignatureCanvas
+                canEdit={canOperatorEdit || canEdit}
+                onSignatureChange={handleSignatureChange}
+              />
+            </Col>
           </Row>
         </Col>
       </FieldGroup>
