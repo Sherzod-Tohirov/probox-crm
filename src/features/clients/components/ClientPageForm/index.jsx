@@ -56,14 +56,16 @@ function ClientPageForm({
   const isMobile = useIsMobile();
   const clientFilesWithAPI = useMemo(
     () =>
-      currentClient?.Images?.map(
-        (img) =>
-          ({
-            id: img._id,
-            image: API_CLIENT_IMAGES + img?.image,
-            type: 'server',
-          }) || []
-      ),
+      Array.isArray(currentClient?.Images)
+        ? currentClient.Images.map(
+            (img) =>
+              ({
+                id: img._id,
+                image: API_CLIENT_IMAGES + img?.image,
+                type: 'server',
+              }) || []
+          )
+        : [],
     [currentClient]
   );
   const [allFiles, setAllFiles] = useState([]);
@@ -225,14 +227,16 @@ function ClientPageForm({
   }, [isDirty]);
 
   useEffect(() => {
-    const filesWithApi = currentClient?.Images?.map(
-      (file) =>
-        ({
-          id: file._id,
-          image: API_CLIENT_IMAGES + file?.image,
-          type: 'server',
-        }) || []
-    );
+    const filesWithApi = Array.isArray(currentClient?.Images)
+      ? currentClient.Images.map(
+          (file) =>
+            ({
+              id: file._id,
+              image: API_CLIENT_IMAGES + file?.image,
+              type: 'server',
+            }) || []
+        )
+      : [];
     setAllFiles(() => filesWithApi);
   }, [currentClient]);
 
@@ -449,13 +453,26 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Mijoz kodi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('code')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('code')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['CardCode']}
+                          size={18}
+                          aria-label="Mijoz kodi nusxalash"
+                          title="Mijoz kodi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
               </Row>
@@ -477,13 +494,26 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="products">Mahsulot nomi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('product')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('product')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['ProductName']}
+                          size={18}
+                          aria-label="Mahsulot nomi nusxalash"
+                          title="Mahsulot nomi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
@@ -521,25 +551,51 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">IMEI</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('imei')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('imei')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['IntrSerial'] || ''}
+                          size={18}
+                          aria-label="IMEI nusxalash"
+                          title="IMEI nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Passport seriyasi</Label>
-                    <Input
-                      type="text"
-                      variant={'filled'}
-                      size={isMobile ? 'full' : 'long'}
-                      disabled={true}
-                      {...register('passportSeries')}
-                    />
+                    <Row direction={'row'} gutter={2} align={'center'}>
+                      <Col fullWidth>
+                        <Input
+                          type="text"
+                          variant={'filled'}
+                          size={isMobile ? 'full' : 'long'}
+                          disabled={true}
+                          dimOnDisabled={false}
+                          {...register('passportSeries')}
+                        />
+                      </Col>
+                      <Col>
+                        <Clipboard
+                          text={currentClient?.['Cellular'] || ''}
+                          size={18}
+                          aria-label="Passport seriyasi nusxalash"
+                          title="Passport seriyasi nusxalash"
+                        />
+                      </Col>
+                    </Row>
                   </InputGroup>
                 </Col>
               </Row>

@@ -87,7 +87,7 @@ export default function Clients() {
   } = useTableDensity('clientsTableDensity');
 
   const hasData = Array.isArray(clientsDetails.data)
-    ? clientsDetails.data.length > 0
+    ? clientsDetails.data?.length > 0
     : false;
 
   // Reusable scroll restoration (smooth)
@@ -159,7 +159,7 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
 
-    if (data?.data.length >= 0) {
+    if (data?.data?.length >= 0) {
       setClientsDetails((p) => ({ ...p, data: data?.data }));
     }
 
