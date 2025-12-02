@@ -3,9 +3,13 @@ import { updateLeadFields } from '@/services/leadsService';
 
 export default function useMutateLead(leadId, options = {}) {
   const queryClient = useQueryClient();
-  
+
   // Extract callbacks before spreading options
-  const { onSuccess: customOnSuccess, onError: customOnError, ...restOptions } = options;
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    ...restOptions
+  } = options;
 
   return useMutation({
     ...restOptions,
@@ -14,11 +18,11 @@ export default function useMutateLead(leadId, options = {}) {
       // Invalidate queries first
       queryClient.invalidateQueries({ queryKey: ['lead', leadId] });
       queryClient.invalidateQueries({ queryKey: ['leads'] });
-      
+
       // Force refetch the lead data to ensure UI is updated
-      await queryClient.refetchQueries({ 
+      await queryClient.refetchQueries({
         queryKey: ['lead', leadId],
-        exact: true 
+        exact: true,
       });
 
       // Call custom onSuccess callback if provided

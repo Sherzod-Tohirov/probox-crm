@@ -1,10 +1,12 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { Button, Typography, Row, Col } from '@components/ui';
+import { Typography, Row, Col, Button } from '@components/ui';
+import ConfirmModal from '@/features/common/components/ConfirmModal';
 import iconsMap from '@utils/iconsMap';
 import styles from './passportUpload.module.scss';
 import { Upload } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const MAX_FILES = 6;
 const ACCEPTED_TYPES = [
@@ -25,6 +27,8 @@ const buildPayload = (file) => ({
 export default function PassportUpload({
   value = [],
   onChange,
+  onDelete,
+  onUploadSingle,
   disabled = false,
 }) {
   const [error, setError] = useState('');
@@ -32,6 +36,11 @@ export default function PassportUpload({
   const inputRef = useRef(null);
   const inputId = 'passport-files';
   const files = useMemo(() => value || [], [value]);
+  const [confirmDelete, setConfirmDelete] = useState({
+    open: false,
+    file: null,
+  });
+  const [deletingIds, setDeletingIds] = useState(new Set());
 
   const appendFiles = useCallback(
     (incomingFiles) => {
@@ -63,7 +72,9 @@ export default function PassportUpload({
       const deduped = validFiles.filter(
         (f) => !existingKey.has(`${f.name}|${f.size}|${f.lastModified}`)
       );
-      const nextPayload = deduped.slice(0, availableSlots).map(buildPayload);
+      const nextPayload = deduped
+        .slice(0, availableSlots)
+        .map((f) => ({ ...buildPayload(f), status: 'tayyor', progress: 0 }));
       const next = [...nextPayload, ...files];
       onChange?.(next);
       setError('');
@@ -103,12 +114,14 @@ export default function PassportUpload({
     },
     [appendFiles, disabled]
   );
-
   const removeFile = useCallback(
     (file) => {
       if (disabled) return;
       // Prevent removing server-side files here; deletion should be handled via API
-      if (file?.source !== 'local') return;
+      if (file?.source !== 'local') {
+        setConfirmDelete({ open: true, file });
+        return;
+      }
       if (file?.preview) {
         URL.revokeObjectURL(file.preview);
       }
@@ -118,14 +131,21 @@ export default function PassportUpload({
     [disabled, files, onChange]
   );
 
-  const clearAll = useCallback(() => {
-    if (disabled) return;
-    files.forEach((f) => {
-      if (f?.source === 'local' && f?.preview) URL.revokeObjectURL(f.preview);
-    });
-    onChange?.([]);
-  }, [disabled, files, onChange]);
-
+  const handleConfirmDelete = useCallback(async () => {
+    const file = confirmDelete.file;
+    if (!file) return setConfirmDelete({ open: false, file: null });
+    try {
+      setDeletingIds((prev) => new Set([...prev, file.id]));
+      await onDelete?.(file.id);
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(file.id);
+        return next;
+      });
+      setConfirmDelete({ open: false, file: null });
+    }
+  }, [confirmDelete, onDelete]);
   return (
     <div className={styles.wrapper}>
       <div
@@ -193,18 +213,6 @@ export default function PassportUpload({
         <span className={styles.countBadge}>
           Tanlangan: {files.length}/{MAX_FILES}
         </span>
-        {files.length > 0 ? (
-          <Button
-            size="small"
-            variant="outlined"
-            color="danger"
-            icon="delete"
-            onClick={clearAll}
-            disabled={disabled}
-          >
-            Hammasini tozalash
-          </Button>
-        ) : null}
       </div>
 
       {error ? (
@@ -215,25 +223,97 @@ export default function PassportUpload({
 
       {files.length > 0 ? (
         <div className={styles.previewRail}>
-          {files.map((file) => (
-            <div key={file.id} className={styles.previewCard}>
-              <button
-                type="button"
-                className={styles.removeBtn}
-                onClick={() => removeFile(file)}
-                disabled={disabled}
-                aria-label="Rasmni o'chirish"
+          <AnimatePresence mode="popLayout">
+            {files.map((file) => (
+              <motion.div
+                key={file.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+                className={styles.previewCard}
+                onClick={() => {
+                  // PDF fayllar uchun pdfUrl dan foydalanish
+                  const href = file.isPdf && file.pdfUrl 
+                    ? file.pdfUrl 
+                    : file.previewLarge || file.preview;
+                  if (href) window.open(href, '_blank');
+                }}
               >
-                {iconsMap.delete}
-              </button>
-              <img src={file.preview} alt="Passport preview" />
-              <div className={styles.fileName}>
-                {file.file?.name || file.fileName || 'Server fayli'}
-              </div>
-            </div>
-          ))}
+                <button
+                  type="button"
+                  className={styles.removeBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFile(file);
+                  }}
+                  disabled={disabled}
+                  aria-label="Rasmni o'chirish"
+                >
+                  {iconsMap.delete}
+                </button>
+
+                {/* Deleting overlay */}
+                {deletingIds.has(file.id) ? (
+                  <div className={styles.cardOverlay}>
+                    <div className={styles.spinner} />
+                  </div>
+                ) : null}
+
+                {file.isPdf ? (
+                  <div className={styles.pdfPreview}>
+                    <div className={styles.pdfIcon}>PDF</div>
+                  </div>
+                ) : (
+                  <img src={file.preview} alt="Passport preview" />
+                )}
+
+                {/* Status & progress for local items */}
+                {file.source === 'local' ? (
+                  <div className={styles.progressRow}>
+                    <div className={styles.statusBadge}>
+                      {file.status || 'tayyor'}
+                    </div>
+                    {file.status === 'yuklanmoqda' ? (
+                      <div className={styles.progressBar}>
+                        <span style={{ width: `${file.progress || 0}%` }} />
+                      </div>
+                    ) : null}
+                    {file.status === 'failed' ? (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onUploadSingle?.(file);
+                        }}
+                      >
+                        Qayta urinib ko'rish
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <div className={styles.fileName}>
+                  {file.file?.name || file.fileName || 'Server fayli'}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       ) : null}
+
+      <ConfirmModal
+        isOpen={confirmDelete.open}
+        subtitle={"Rasmni o'chirish"}
+        message={'Haqiqatan ham bu rasmni o‘chirmoqchimisiz?'}
+        confirmText={"O'chirish"}
+        cancelText={'Bekor qilish'}
+        confirmColor={'danger'}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete({ open: false, file: null })}
+      />
     </div>
   );
 }
@@ -241,5 +321,7 @@ export default function PassportUpload({
 PassportUpload.propTypes = {
   value: PropTypes.array,
   onChange: PropTypes.func,
+  onDelete: PropTypes.func,
+  onUploadSingle: PropTypes.func,
   disabled: PropTypes.bool,
 };

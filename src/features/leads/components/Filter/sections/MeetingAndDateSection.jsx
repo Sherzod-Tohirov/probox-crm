@@ -10,9 +10,9 @@ export default function MeetingAndDateSection({
   watchedMeeting,
   watchedMeetingDateStart,
   watchedMeetingDateEnd,
+  dateInputKey = 0,
   inline = false,
 }) {
-
   const content = (
     <>
       <Col
@@ -24,6 +24,7 @@ export default function MeetingAndDateSection({
         className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
       >
         <SelectField
+          key={`meeting-${dateInputKey}`}
           name="meeting"
           label="Uchrashuv"
           options={meetingOptions}
@@ -40,6 +41,7 @@ export default function MeetingAndDateSection({
         className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
       >
         <Input
+          key={`meetingDateStart-${dateInputKey}`}
           name="meetingDateStart"
           size="full-grow"
           variant="outlined"
@@ -66,6 +68,7 @@ export default function MeetingAndDateSection({
         className={isMobile ? styles['mobile-full-width'] : styles.compactCol}
       >
         <Input
+          key={`meetingDateEnd-${dateInputKey}`}
           name="meetingDateEnd"
           size="full-grow"
           variant="outlined"

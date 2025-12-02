@@ -1,0 +1,75 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { getMessages } from '@services/messengerService';
+
+/**
+ * Dynamic hook to fetch messages for both clients and leads with infinite scroll
+ * @param {Object} options - Configuration options
+ * @param {string} options.entityType - 'client' or 'lead'
+ * @param {string} options.entityId - Lead ID (for leads)
+ * @param {string} options.docEntry - Doc entry (for clients)
+ * @param {string} options.installmentId - Installment ID (for clients)
+ * @param {boolean} options.enabled - Enable/disable query
+ * @param {number} options.limit - Number of messages per page
+ */
+export default function useFetchMessages(options = {}) {
+  const {
+    entityType = 'client',
+    entityId,
+    docEntry,
+    installmentId,
+    enabled = false,
+    limit = 20,
+  } = options;
+
+  // Build query key based on entity type
+  const queryKey =
+    entityType === 'lead'
+      ? ['messages', 'lead', entityId]
+      : ['messages', 'client', docEntry, installmentId];
+
+  const {
+    data,
+    error,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey,
+    queryFn: ({ pageParam = 1 }) =>
+      getMessages({
+        ...options,
+        page: pageParam,
+        limit,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      // For leads: check if there's more data based on API response
+      if (entityType === 'lead') {
+        const currentPage = allPages.length;
+        // If lastPage is empty or less than limit, no more pages
+        if (!lastPage || lastPage.length < limit) return undefined;
+        return currentPage + 1;
+      }
+      // For clients: no pagination (returns all messages)
+      return undefined;
+    },
+    enabled,
+    initialPageParam: 1,
+  });
+
+  // Flatten pages for easy consumption
+  const messages = data?.pages?.flat() || [];
+
+  return {
+    data: messages,
+    error,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  };
+}

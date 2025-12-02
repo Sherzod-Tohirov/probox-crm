@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Modal, Row, Col, Button } from '@components/ui';
+import { Modal, Row, Col, Button, Input, Checkbox } from '@components/ui';
 import SelectField from './fields/SelectField';
 import MultiSelectField from './fields/MultiSelectField';
 import MeetingAndDateSection from './sections/MeetingAndDateSection';
@@ -29,6 +29,7 @@ export default function AdvancedFilterModal({
 }) {
   const isMobile = useIsMobile();
   const [columnsLocal, setColumnsLocal] = useState(visibleColumns || {});
+  const [dateInputKey, setDateInputKey] = useState(0);
 
   // Fetch options
   const { data: branches = [], isLoading: isBranchesLoading } =
@@ -108,6 +109,7 @@ export default function AdvancedFilterModal({
     ]
   );
 
+  const cantBeDisabled = ['clientName'];
   const { control, handleSubmit, reset, watch, register } = useForm({
     defaultValues: defaults,
     mode: 'all',
@@ -116,6 +118,7 @@ export default function AdvancedFilterModal({
   useEffect(() => {
     if (isOpen) {
       reset(defaults);
+      setDateInputKey((prev) => prev + 1); // Force date inputs to re-render
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaults, isOpen]);
@@ -138,7 +141,6 @@ export default function AdvancedFilterModal({
     },
     [onApply, onClose, columnsLocal, onChangeVisibleColumns]
   );
-
   const footer = (
     <div
       style={{
@@ -149,7 +151,7 @@ export default function AdvancedFilterModal({
       }}
     >
       <Button variant="outlined" color="danger" onClick={onClose} type="button">
-        Bekor qilish
+        Yopish
       </Button>
       <Button variant="filled" onClick={handleSubmit(onSubmit)}>
         Qo'llash
@@ -206,6 +208,7 @@ export default function AdvancedFilterModal({
                   watchedMeeting={meeting}
                   watchedMeetingDateStart={watchedMeetingDateStart}
                   watchedMeetingDateEnd={watchedMeetingDateEnd}
+                  dateInputKey={dateInputKey}
                 />
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
                   <SelectField
@@ -255,46 +258,59 @@ export default function AdvancedFilterModal({
                 padding: 12,
               }}
             >
-              <div style={{ fontWeight: 700, margin: '0 0 8px', fontSize: 14 }}>
-                Jadval ustunlari
-              </div>
-              <Row direction="row" gutter={2} wrap>
-                {columns.map((col) => {
-                  const disabled = col.key === 'clientName';
-                  const checked = columnsLocal[col.key] !== false;
-                  return (
-                    <Col key={col.key} style={{ minWidth: 200 }}>
-                      <label
-                        style={{
-                          display: 'flex',
-                          gap: 10,
-                          alignItems: 'center',
-                          cursor: disabled ? 'not-allowed' : 'pointer',
-                          opacity: disabled ? 0.6 : 1,
-                          fontSize: 14,
-                          fontWeight: 500,
-                          padding: '6px 8px',
-                          borderRadius: 8,
-                          border: '1px solid rgba(0,0,0,0.08)',
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={disabled}
-                          onChange={(e) =>
-                            setColumnsLocal({
-                              ...columnsLocal,
-                              [col.key]: e.target.checked,
-                            })
-                          }
-                          style={{ width: 18, height: 18 }}
-                        />
-                        <span>{col.title || col.key}</span>
-                      </label>
+              <Row gutter={2}>
+                <Col>
+                  <Row direction="row" gutter={4} align={'center'}>
+                    <Col>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>
+                        Jadval ustunlari
+                      </div>
                     </Col>
-                  );
-                })}
+                    <Col>
+                      <Checkbox
+                        label="Hammasini tanlash"
+                        checked={Object.values(columnsLocal).every((e) => e)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+
+                          setColumnsLocal(
+                            columns.reduce((acc, val) => {
+                              if (cantBeDisabled.includes(val.key)) {
+                                acc[val.key] = true;
+                                return acc;
+                              }
+                              acc[val.key] = isChecked;
+                              return acc;
+                            }, {})
+                          );
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+                <Col>
+                  <Row direction="row" gutter={4} wrap>
+                    {columns.map((col) => {
+                      const disabled = cantBeDisabled.includes(col.key);
+                      const checked = columnsLocal[col.key] !== false;
+                      return (
+                        <Col key={col.key} style={{ minWidth: 200 }}>
+                          <Checkbox
+                            checked={checked}
+                            disabled={disabled}
+                            onChange={(e) => {
+                              setColumnsLocal({
+                                ...columnsLocal,
+                                [col.key]: e.target.checked,
+                              });
+                            }}
+                            label={col.title || col.key}
+                          />
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </Col>
               </Row>
             </div>
           </Col>

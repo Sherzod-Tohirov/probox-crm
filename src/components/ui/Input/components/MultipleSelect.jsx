@@ -34,6 +34,7 @@ const MultipleSelect = ({
   const wrapperRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentTheme } = useTheme();
+
   const handleChange = useCallback((selected, actionMeta, field) => {
     // selected can be null when clearing
     const safeSelected = Array.isArray(selected) ? selected : [];
@@ -55,7 +56,29 @@ const MultipleSelect = ({
     setMenuOpen(false);
   }, []);
 
-  // Removed blocking pointerdown listener to allow normal interactions
+  useEffect(() => {
+    const onDocMouseDown = (e) => {
+      if (!menuOpen) return;
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const target = e.target;
+      const isInsideControl = wrapper.contains(target);
+      const isInsideAnyMenu = target.closest
+        ? target.closest('.react-select__menu')
+        : null;
+      if (!isInsideControl && !isInsideAnyMenu) {
+        // Close and remove focus when clicking anywhere outside
+        setMenuOpen(false);
+        const inst = selectRef.current;
+        if (inst && typeof inst.blur === 'function') {
+          inst.blur();
+        }
+      }
+    };
+    document.addEventListener('mousedown', onDocMouseDown, true);
+    return () =>
+      document.removeEventListener('mousedown', onDocMouseDown, true);
+  }, [menuOpen]);
 
   return (
     <div ref={wrapperRef} style={{ width: '100%' }}>
@@ -65,6 +88,7 @@ const MultipleSelect = ({
         {...props}
         openMenuOnClick={true}
         openMenuOnFocus={true}
+        menuIsOpen={menuOpen}
         isSearchable={props.isSearchable ?? false}
         menuPlacement={props.menuPlacement || 'auto'}
         menuShouldScrollIntoView={true}
@@ -89,14 +113,16 @@ const MultipleSelect = ({
             width: '100%',
             maxWidth: '100%',
             minWidth: 0,
+            minHeight: showAvatars ? avatarSize + 8 : baseStyles.minHeight,
             flex: '1 1 auto',
-            overflow: 'hidden',
+            overflow: 'visible',
             border: `1px solid ${state.isFocused ? '#D6DFEB' : '#D6DFEB'}`,
             boxShadow: 'none',
-            outline: state.isFocused ? '2px solid #4A90E2' : 'none',
-            outlineOffset: state.isFocused ? '-3px' : '0',
-            backgroundColor: state.isFocused ? '#fff' : '#f8fafc',
-            transition: 'outline 0.15s ease, outline-offset 0.15s ease, background-color 0.15s ease',
+            outline: menuOpen ? '2px solid #4A90E2 !important' : 'none',
+            outlineOffset: menuOpen ? '-2px !important' : '0',
+            backgroundColor: state.isFocused || menuOpen ? '#fff' : '#f8fafc',
+            transition:
+              'outline 0.15s ease, outline-offset 0.15s ease, background-color 0.15s ease',
             '&:hover': {
               borderColor: state.isFocused ? '#D6DFEB' : '#B6C2D4',
             },
@@ -112,9 +138,14 @@ const MultipleSelect = ({
           valueContainer: (base) => ({
             ...base,
             maxWidth: '100%',
+            minHeight: showAvatars ? avatarSize + 4 : base.minHeight,
             overflowX: 'auto',
-            overflowY: 'hidden',
-            paddingRight: '10px',
+            overflowY: 'visible',
+            padding: showAvatars ? '2px 4px' : base.padding,
+            paddingRight: showAvatars ? '4px' : '10px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
             whiteSpace: 'nowrap',
             '&::-webkit-scrollbar': {
               width: '5px',
@@ -133,18 +164,21 @@ const MultipleSelect = ({
             top: '0',
             display: 'inline-flex',
             alignItems: 'center',
-            height: '100%',
+            height: showAvatars ? avatarSize : '100%',
+            minHeight: showAvatars ? avatarSize : undefined,
             position: 'relative',
             backgroundColor: 'transparent',
             border: showAvatars ? 'none' : '1px solid #ccc',
             borderRadius: showAvatars ? '999px' : '6px',
-            padding: showAvatars ? '1px' : '2px 4px',
-            // Chip width includes avatar + spacing for remove button
-            minWidth: showAvatars ? avatarSize + 2 : undefined,
-            maxWidth: showAvatars ? avatarSize + 2 : 140,
+            padding: showAvatars ? '0' : '2px 4px',
+            margin: showAvatars ? '1px 0' : baseStyles.margin,
+            // Chip width is exactly avatar size when showing avatars
+            minWidth: showAvatars ? avatarSize : undefined,
+            maxWidth: showAvatars ? avatarSize : 140,
+            width: showAvatars ? avatarSize : 'auto',
             overflow: showAvatars ? 'visible' : 'hidden',
             flex: '0 0 auto',
-            marginRight: showAvatars ? 6 : 6,
+            marginRight: showAvatars ? 3 : 6, // Tighter spacing for avatars
             boxSizing: 'border-box',
           }),
           multiValueLabel: (base) => ({
@@ -152,23 +186,33 @@ const MultipleSelect = ({
             width: showAvatars ? avatarSize : base.width,
             height: showAvatars ? avatarSize : base.height,
             maxWidth: showAvatars ? avatarSize : 120,
-            padding: showAvatars ? 0 : base.padding,
+            minWidth: showAvatars ? avatarSize : undefined,
+            minHeight: showAvatars ? avatarSize : undefined,
+            maxHeight: showAvatars ? avatarSize : undefined,
+            padding: 0,
+            margin: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            display: 'inline-flex',
+            display: showAvatars ? 'flex' : 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxSizing: 'border-box',
+            flexShrink: 0,
           }),
           multiValueRemove: (base) => ({
             ...base,
-            display: 'inline-flex',
+            display: showAvatars ? 'none' : 'inline-flex', // Hide on hover for avatars
             alignItems: 'center',
             justifyContent: 'center',
             padding: '0 2px',
-            marginLeft: 2,
+            marginLeft: showAvatars ? 0 : 2,
             backgroundColor: 'transparent',
+            '&:hover': showAvatars
+              ? {
+                  display: 'inline-flex',
+                }
+              : {},
           }),
         }}
         classNamePrefix="react-select"
@@ -242,7 +286,7 @@ const MultipleSelect = ({
                     justifyContent: 'center',
                     background: '#e6f4ff',
                     color: '#1677ff',
-                    fontSize: 11,
+                    fontSize: Math.max(10, avatarSize * 0.42),
                     fontWeight: 700,
                   }}
                   title={option?.label}
@@ -264,12 +308,17 @@ const MultipleSelect = ({
                     style={{
                       width: avatarSize,
                       height: avatarSize,
+                      minWidth: avatarSize,
+                      minHeight: avatarSize,
+                      maxWidth: avatarSize,
+                      maxHeight: avatarSize,
                       borderRadius: '50%',
                       overflow: 'hidden',
                       flex: '0 0 auto',
+                      flexShrink: 0,
                       border: '1px solid rgba(0,0,0,0.15)',
                       boxSizing: 'border-box',
-                      display: 'inline-flex',
+                      display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: 'transparent',
@@ -291,10 +340,10 @@ const MultipleSelect = ({
                 ...rmProps.innerProps,
                 style: {
                   position: 'absolute',
-                  top: -3,
-                  right: -3,
-                  width: 14,
-                  height: 14,
+                  top: showAvatars ? -2 : -3,
+                  right: showAvatars ? -2 : -3,
+                  width: showAvatars ? 12 : 14,
+                  height: showAvatars ? 12 : 14,
                   borderRadius: '50%',
                   background: currentTheme === 'dark' ? 'red' : '#fff',
                   border: '1px solid rgba(0,0,0,0.2)',
@@ -305,10 +354,17 @@ const MultipleSelect = ({
                   padding: 0,
                   zIndex: 2,
                   cursor: 'pointer',
+                  boxShadow: showAvatars ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
                 },
               }}
             >
-              <span style={{ fontSize: 10, lineHeight: 1, fontWeight: 600 }}>
+              <span
+                style={{
+                  fontSize: showAvatars ? 9 : 10,
+                  lineHeight: 1,
+                  fontWeight: 600,
+                }}
+              >
                 ×
               </span>
             </components.MultiValueRemove>

@@ -19,9 +19,17 @@ import Breadcrumb from './Breadcrumb';
 import Tabs from './Tabs';
 import Card from './Card';
 import Spinner from './Spinner';
-import Skeleton, { SkeletonText, SkeletonCard, SkeletonNavigation } from './Skeleton';
+import Skeleton, {
+  SkeletonText,
+  SkeletonCard,
+  SkeletonNavigation,
+} from './Skeleton';
 import YandexMap from './Map/YandexMap';
 import Notifications from './Notifications';
+import Avatar from './Avatar';
+import ContextMenu from './ContextMenu';
+import Clipboard from './Clipboard';
+import Checkbox from './Checkbox';
 export {
   Row,
   Col,
@@ -50,4 +58,8 @@ export {
   SkeletonNavigation,
   Notifications,
   YandexMap,
+  Avatar,
+  ContextMenu,
+  Clipboard,
+  Checkbox,
 };

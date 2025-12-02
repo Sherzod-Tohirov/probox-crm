@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ import LeadsPageFooter from '@features/leads/components/LeadsPageFooter';
 import useLeadsTableColumns from '@features/leads/hooks/useLeadsTableColumns';
 import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
+import useScrollRestoration from '@/features/clients/hooks/useScrollRestoration';
 import useIsMobile from '@hooks/useIsMobile';
 import useAuth from '@hooks/useAuth';
 
@@ -30,6 +31,9 @@ export default function Leads() {
   const { user } = useAuth();
   const role = user?.U_role;
   const { leadsTableColumns } = useLeadsTableColumns();
+
+  // Refs
+  const leadsTableRef = useRef(null);
   const { currentPage, pageSize, filter, currentLead } = useSelector(
     (state) => state.page.leads
   );
@@ -101,6 +105,14 @@ export default function Leads() {
     isDefaultDensity,
   } = useTableDensity('leadsTableDensity');
 
+  const { saveScrollPosition } = useScrollRestoration({
+    scrollContainerRef: leadsTableRef,
+    storageKey: 'scrollPositionLeads',
+    hasData: Array.isArray(leads) ? leads.length > 0 : false,
+    behavior: 'smooth',
+    maxTries: 120,
+  });
+
   const handleFilter = useCallback((filterData) => {
     dispatch(setLeadsFilter(filterData));
     setToggleFilter(false);
@@ -108,10 +120,17 @@ export default function Leads() {
 
   const handleRowClick = useCallback(
     (row) => {
+      saveScrollPosition();
+      try {
+        sessionStorage.setItem(
+          'scrollPositionLeads__rowKey',
+          String(row?.id ?? '')
+        );
+      } catch (_) {}
       dispatch(setCurrentLead(row));
       navigate(`/leads/${row.id}`);
     },
-    [dispatch, navigate]
+    [navigate, dispatch, saveScrollPosition]
   );
 
   // Keep current page in bounds when filters change
@@ -225,6 +244,7 @@ export default function Leads() {
           <Table
             id={'leads-table'}
             scrollable={{ xs: true, sm: true, md: true, lg: true, xl: true }}
+            ref={leadsTableRef}
             uniqueKey={'id'}
             isLoading={isLoadingLeads}
             columns={columnsToUse}

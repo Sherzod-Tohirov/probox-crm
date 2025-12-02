@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
-import useFetchMessages from '@hooks/data/clients/useFetchMessages';
+import useFetchMessages from '@hooks/data/useFetchMessages';
 import useFetchClientEntriesById from '@hooks/data/clients/useFetchClientEntriesById';
 
 /**
@@ -19,7 +19,14 @@ export default function useClientPageData(clientId, isMessengerOpen) {
 
   const { data: currency, isLoading: isCurrencyLoading } = useFetchCurrency();
 
-  const { data: messages, isLoading: isMessagesLoading } = useFetchMessages({
+  const {
+    data: messages,
+    isLoading: isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFetchMessages({
+    entityType: 'client',
     docEntry: currentClient?.['DocEntry'],
     installmentId: currentClient?.['InstlmntID'],
     enabled: isMessengerOpen,
@@ -33,5 +40,8 @@ export default function useClientPageData(clientId, isMessengerOpen) {
     isCurrencyLoading,
     messages,
     isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   };
 }

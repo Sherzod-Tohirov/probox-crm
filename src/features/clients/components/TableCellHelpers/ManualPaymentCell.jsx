@@ -23,7 +23,6 @@ const Title = ({ column }) => {
   const paidToDate = parseFloat(column.PaidToDate) || 0;
   const paidToDateFC = parseFloat(column.PaidToDateFC) || 0;
   const rate = parseFloat(currency?.['Rate']) || 0;
-
   const value = column?.DocCur === 'USD' ? paidToDate * rate : paidToDateFC;
   return (
     (
@@ -99,7 +98,6 @@ const ManualPaymentCell = ({ column }) => {
   const dispatch = useDispatch();
   const mutation = useMutatePartialPayment();
   const partialField = watch('partial');
-
   const { paymentOptions, canUserModify, isStatusPaid } =
     useManualPaymentCell(column);
   const { currentClient } = useSelector((state) => state.page.clients);
@@ -133,11 +131,10 @@ const ManualPaymentCell = ({ column }) => {
         docEntry: currentClient?.['DocEntry'],
         installmentId: currentClient?.['InstlmntID'],
         data: {
-          partial: data.partial === 'true', // Ensure boolean
+          partial: data.partial, // Ensure boolean
           DueDate: formattedDueDate,
         },
       };
-
       try {
         await mutation.mutateAsync(payload);
         dispatch(toggleModal(modalId));

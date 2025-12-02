@@ -13,6 +13,9 @@ const MessageRenderer = ({
   onDeleteMessage,
   hasToggleControl = true,
   size = '',
+  onLoadMore,
+  hasMore = false,
+  isLoadingMore = false,
 }) => {
   const scrollRef = useRef(null);
   const [formattedMessages, setFormattedMessages] = useState([]);
@@ -51,6 +54,28 @@ const MessageRenderer = ({
   }, [messages, hasToggleControl, isToggleOpen]);
   return (
     <div className={styles['messenger-messages']} ref={scrollRef}>
+      {/* Load More Button for infinite scroll */}
+      {hasMore && onLoadMore && (
+        <Box
+          align={'center'}
+          justify={'center'}
+          style={{ marginBottom: '1rem' }}
+        >
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onLoadMore();
+            }}
+            className={styles['messenger-messages-toggle-btn']}
+            variant={'text'}
+            icon={'arrowDown'}
+            disabled={isLoadingMore}
+            isLoading={isLoadingMore}
+          >
+            {isLoadingMore ? 'Yuklanmoqda...' : 'Eski xabarlar'}
+          </Button>
+        </Box>
+      )}
       {hasToggleControl && lastMonthMessages.length > 0 ? (
         <Box align={'center'} justify={'center'}>
           <Button

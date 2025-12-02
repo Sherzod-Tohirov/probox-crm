@@ -3,11 +3,11 @@ import { useForm } from 'react-hook-form';
 import { memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Input, Button, Accordion } from '@components/ui';
-import useFilter from '@features/statistics/hooks/useFilter';
+import useFilter from '@/features/clients/statistics/hooks/useFilter';
 import getSelectOptionsFromKeys from '@utils/getSelectOptionsFromKeys';
-import useWatchedFields from '@features/statistics/hooks/useWatchedFields';
+import useWatchedFields from '@/features/clients/statistics/hooks/useWatchedFields';
 import { initialStatisticsFilterState } from '@utils/store/initialStates';
-import { setStatisticsFilter } from '@store/slices/statisticsPageSlice';
+import { setClientsStatisticsFilter } from '@store/slices/clientsPageSlice';
 import styles from './style.module.scss';
 import _ from 'lodash';
 import moment from 'moment';
@@ -17,7 +17,16 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
   const { executors } = useFilter();
   const isMobile = useIsMobile();
   const dispatch = useDispatch();
-  const filterState = useSelector((state) => state.page.statistics.filter);
+  const filterState = useSelector(
+    (state) => state.page.clients.statisticsFilter || {}
+  );
+
+  // Merge with initial state to ensure all required fields have values
+  const formDefaultValues = {
+    ...initialStatisticsFilterState,
+    ...filterState,
+  };
+
   const {
     setValue,
     register,
@@ -28,14 +37,17 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      ...filterState,
-      slpCode: getSelectOptionsFromKeys(executors.options, filterState.slpCode),
+      ...formDefaultValues,
+      slpCode: getSelectOptionsFromKeys(
+        executors.options,
+        formDefaultValues.slpCode
+      ),
     },
     mode: 'all',
   });
   const watchedFields = useWatchedFields(watch);
   const handleFilterClear = useCallback(() => {
-    dispatch(setStatisticsFilter(initialStatisticsFilterState));
+    dispatch(setClientsStatisticsFilter(initialStatisticsFilterState));
     reset({
       ...initialStatisticsFilterState,
       slpCode: getSelectOptionsFromKeys(
@@ -80,7 +92,7 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
   useEffect(() => {
     if (watchedFields.startDate !== filterState.startDate) {
       dispatch(
-        setStatisticsFilter({
+        setClientsStatisticsFilter({
           ...filterState,
           startDate: watchedFields.startDate,
         })
@@ -91,7 +103,7 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
   useEffect(() => {
     if (watchedFields.endDate !== filterState.endDate) {
       dispatch(
-        setStatisticsFilter({
+        setClientsStatisticsFilter({
           ...filterState,
           endDate: watchedFields.endDate,
         })

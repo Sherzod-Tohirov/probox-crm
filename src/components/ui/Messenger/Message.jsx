@@ -18,7 +18,9 @@ import AudioPlayer from './AudioPlayer';
 const toRgba = (color, alpha = 1) => {
   if (!color) return '';
   // rgba(a,b,c,d)
-  const rgbaMatch = color.match(/^rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/i);
+  const rgbaMatch = color.match(
+    /^rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/i
+  );
   if (rgbaMatch) {
     const [, r, g, b] = rgbaMatch;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
@@ -67,13 +69,16 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     setEditText(msg?.['Comments']);
   }, [msg?.['Comments']]);
 
-  const handleContextMenu = useCallback((e) => {
-    e.preventDefault();
-    if (msg?.['SlpCode'] === user?.SlpCode) {
-      setShowMenu(true);
-      update();
-    }
-  }, [msg?.['SlpCode'], user?.SlpCode, update]);
+  const handleContextMenu = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (msg?.['SlpCode'] === user?.SlpCode) {
+        setShowMenu(true);
+        update();
+      }
+    },
+    [msg?.['SlpCode'], user?.SlpCode, update]
+  );
 
   const handleEditSubmit = useCallback(async () => {
     try {
@@ -98,15 +103,18 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     }
   }, [editText, msg?._id, msg?.['Comments'], onEditMessage, onDeleteMessage]);
 
-  const handleClickOutside = useCallback((e) => {
-    if (
-      refs.floating.current &&
-      !refs.floating.current?.contains(e.target) &&
-      !refs.reference.current?.contains(e.target)
-    ) {
-      setShowMenu(false);
-    }
-  }, [refs.floating, refs.reference]);
+  const handleClickOutside = useCallback(
+    (e) => {
+      if (
+        refs.floating.current &&
+        !refs.floating.current?.contains(e.target) &&
+        !refs.reference.current?.contains(e.target)
+      ) {
+        setShowMenu(false);
+      }
+    },
+    [refs.floating, refs.reference]
+  );
 
   useEffect(() => {
     if (showMenu) {
@@ -122,20 +130,21 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
     () => executors?.find((e) => e?.['SlpCode'] === msg?.['SlpCode']),
     [executors, msg?.['SlpCode']]
   );
-  
+
   const timestamp = useMemo(
     () => moment(msg?.['DocDate']).local().format('HH:mm'),
     [msg?.['DocDate']]
   );
-  
+
   const msgColor = useMemo(
-    () => getMessageColorForUser(
-      msg?.['SlpCode'],
-      executors?.map((e) => e?.['SlpCode']) || []
-    ),
+    () =>
+      getMessageColorForUser(
+        msg?.['SlpCode'],
+        executors?.map((e) => e?.['SlpCode']) || []
+      ),
     [msg?.['SlpCode'], executors]
   );
-  
+
   const messageType = useMemo(() => {
     if (msg?.['Comments'] !== null) return 'text';
     if (msg?.['Image'] !== null) return 'image';
@@ -185,8 +194,14 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
               <div
                 style={{
                   backgroundColor: bubbleBg,
-                  border: currentTheme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)',
-                  boxShadow: currentTheme === 'dark' ? '0 1px 2px rgba(0,0,0,0.6)' : undefined,
+                  border:
+                    currentTheme === 'dark'
+                      ? '1px solid rgba(255,255,255,0.06)'
+                      : '1px solid rgba(0,0,0,0.04)',
+                  boxShadow:
+                    currentTheme === 'dark'
+                      ? '0 1px 2px rgba(0,0,0,0.6)'
+                      : undefined,
                 }}
                 className={styles['message-text-wrapper']}
               >
@@ -229,8 +244,18 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             const url = API_CLIENT_IMAGES + msg?.['Image'];
             return (
               <div className={styles['message-image-wrapper']}>
-                <a href={url} target="_blank" rel="noopener noreferrer" download>
-                  <img src={url} className={styles['message-image']} alt="message image" loading="lazy" />
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  <img
+                    src={url}
+                    className={styles['message-image']}
+                    alt="message image"
+                    loading="lazy"
+                  />
                 </a>
               </div>
             );
@@ -256,7 +281,13 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             className={styles['message-avatar-icon']}
           >
             {msg.avatar ? (
-              <img src={msg.avatar} width={50} height={50} alt="avatar" loading="lazy" />
+              <img
+                src={msg.avatar}
+                width={50}
+                height={50}
+                alt="avatar"
+                loading="lazy"
+              />
             ) : (
               iconsMap['avatarFilled']
             )}

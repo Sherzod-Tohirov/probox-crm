@@ -1,24 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { initialClientsFilterState } from "@utils/store/initialStates";
+import { createSlice } from '@reduxjs/toolkit';
+import {
+  initialClientsFilterState,
+  initialStatisticsFilterState,
+} from '@utils/store/initialStates';
 
 const loadState = () => {
   try {
-    const serializedState = localStorage.getItem("clientsPageState");
+    // Clear old statisticsPageState if it exists
+    if (localStorage.getItem('statisticsPageState')) {
+      localStorage.removeItem('statisticsPageState');
+    }
+
+    const serializedState = localStorage.getItem('clientsPageState');
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
     return {
       clients: [],
       currentClient: parsedState.currentClient || {},
       filter: parsedState.filter || initialClientsFilterState,
+      statisticsFilter:
+        parsedState.statisticsFilter || initialStatisticsFilterState,
       currentPage: parsedState.currentPage || 0,
       pageSize: parsedState.pageSize || 10,
       lastAction: parsedState.lastAction || [],
     };
   } catch (error) {
-    console.log("Error loading state", error);
+    console.log('Error loading state', error);
     return {
       clients: [],
       currentClient: {},
       filter: initialClientsFilterState,
+      statisticsFilter: initialStatisticsFilterState,
       currentPage: 0,
       pageSize: 10,
       lastAction: [],
@@ -28,18 +39,26 @@ const loadState = () => {
 
 const saveState = (state) => {
   try {
-    const { filter, currentPage, pageSize, currentClient, lastAction } = state;
+    const {
+      filter,
+      statisticsFilter,
+      currentPage,
+      pageSize,
+      currentClient,
+      lastAction,
+    } = state;
 
     const serializedState = JSON.stringify({
       filter,
+      statisticsFilter,
       currentPage,
       pageSize,
       currentClient,
       lastAction,
     });
-    localStorage.setItem("clientsPageState", serializedState);
+    localStorage.setItem('clientsPageState', serializedState);
   } catch (error) {
-    console.log("Error saving state", error);
+    console.log('Error saving state', error);
   }
 };
 
@@ -48,7 +67,7 @@ const initialState = loadState();
 saveState(initialState);
 
 const clientsPageSlice = createSlice({
-  name: "clientsPage",
+  name: 'clientsPage',
   initialState,
   reducers: {
     setClients(state, action) {
@@ -77,6 +96,10 @@ const clientsPageSlice = createSlice({
       state.pageSize = action.payload;
       saveState(state);
     },
+    setClientsStatisticsFilter(state, action) {
+      state.statisticsFilter = { ...action.payload };
+      saveState(state);
+    },
   },
 });
 
@@ -85,6 +108,7 @@ export const {
   setClientsFilter,
   setClientsCurrentPage,
   setClientsPageSize,
+  setClientsStatisticsFilter,
   setCurrentClient,
   setLastAction,
 } = clientsPageSlice.actions;

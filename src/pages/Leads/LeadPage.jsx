@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import {
   Row,
   Col,
@@ -13,13 +13,17 @@ import {
 
 import useIsMobile from '@/hooks/useIsMobile';
 import useLeadPageData from '@/features/leads/hooks/useLeadPageData';
+import useToggle from '@hooks/useToggle';
+import useClickOutside from '@hooks/helper/useClickOutside';
+import useMessengerActions from '@hooks/useMessengerActions';
+import useFetchMessages from '@hooks/data/useFetchMessages';
+import Messenger from '@components/ui/Messenger';
 
 // Import tab components
 import Operator1Tab from '@/features/leads/components/LeadPageTabs/Operator1Tab';
 import Operator2Tab from '@/features/leads/components/LeadPageTabs/Operator2Tab';
 import SellerTab from '@/features/leads/components/LeadPageTabs/SellerTab';
 import ScoringTab from '@/features/leads/components/LeadPageTabs/ScoringTab';
-
 // Import section components
 import {
   StatusSection,
@@ -33,14 +37,15 @@ import {
   BlockedWarningCard,
 } from '@/features/leads/components/LeadPageSections';
 
-import styles from './style.module.scss';
+import styles from './styles/style.module.scss';
 import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
 
 export default function LeadPage() {
   const { id } = useParams();
   const isMobile = useIsMobile();
-
+  const messengerRef = useRef(null);
+  const { isOpen, toggle } = useToggle('messenger');
   // Use custom hook for all data and logic
   const {
     lead,
@@ -59,11 +64,35 @@ export default function LeadPage() {
     setPassportFiles,
     uploadValue,
     handleUploadDocuments,
+    handleUploadSingle,
+    handleDeleteDocument,
     mutateFileUpload,
     customBreadcrumbs,
     defaultTab,
   } = useLeadPageData(id);
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  // Fetch messenger messages with infinite scroll
+  const {
+    data: messages,
+    isLoading: isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFetchMessages({
+    entityType: 'lead',
+    entityId: id,
+    enabled: isOpen,
+  });
+
+  // Messenger actions
+  const { sendMessage, editMessage, deleteMessage } = useMessengerActions({
+    entityType: 'lead',
+    entityId: id,
+  });
+
+  // Handle outside click to close messenger
+  useClickOutside(messengerRef, toggle, isOpen);
 
   // Save handlers
   const handleSave = (payload) => {
@@ -100,6 +129,8 @@ export default function LeadPage() {
         passportFiles={passportFiles}
         onFilesChange={setPassportFiles}
         onUpload={handleUploadDocuments}
+        onUploadSingle={handleUploadSingle}
+        onDelete={handleDeleteDocument}
         isUploading={mutateFileUpload.isLoading}
       />
     </div>
@@ -260,6 +291,20 @@ export default function LeadPage() {
           </Row>
         </Col>
       </Row>
+      <Messenger
+        ref={messengerRef}
+        messages={messages}
+        hasToggleControl={false}
+        isLoading={isMessagesLoading}
+        onSendMessage={sendMessage}
+        onEditMessage={editMessage}
+        onDeleteMessage={deleteMessage}
+        isOpen={isOpen}
+        entityType="lead"
+        onLoadMore={fetchNextPage}
+        hasMore={hasNextPage}
+        isLoadingMore={isFetchingNextPage}
+      />
     </>
   );
 }

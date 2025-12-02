@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createInvoice } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
+import { getExecutors } from '@/services/executorsService';
 import { extractNumericValue, resolveItemCode } from '@/features/leads/utils/deviceUtils';
 
 export default function useInvoice(options = {}) {
@@ -20,10 +21,17 @@ export default function useInvoice(options = {}) {
         selectedDevices.map(async (device) => {
           const itemCode = resolveItemCode(device);
           const whsCode = device?.whsCode || device?.raw?.WhsCode || '';
-          const price = extractNumericValue(device.price);
+          const price = extractNumericValue(device.price) || 0;
 
-          if (!itemCode || !whsCode || !price) {
-            throw new Error(`Qurilma ma'lumotlari to'liq emas: ${device.name || "Noma'lum"}`);
+          if (!itemCode || !whsCode) {
+            const missingFields = [];
+            if (!itemCode) missingFields.push('ItemCode');
+            if (!whsCode) missingFields.push('WhsCode');
+            
+            throw new Error(
+              `Qurilma ma'lumotlari to'liq emas: ${device.name || "Noma'lum"}. ` +
+              `Yetishmayotgan maydonlar: ${missingFields.join(', ')}`
+            );
           }
 
           // 3. Serial numbers ni olish
@@ -88,7 +96,6 @@ export default function useInvoice(options = {}) {
                   ];
                 }
               } catch (error) {
-                console.warn('Serial numbers olishda xatolik:', error);
                 // Serial number bo'lmasa ham davom etamiz
               }
             }
@@ -107,20 +114,90 @@ export default function useInvoice(options = {}) {
         })
       );
 
-      // 4. Invoice body ni tayyorlash
+      // 4. Manzil ma'lumotlarini formatlash
+      const clientAddressParts = [];
+      if (leadData.region) clientAddressParts.push(leadData.region);
+      if (leadData.district) clientAddressParts.push(leadData.district);
+      if (leadData.address) clientAddressParts.push(leadData.address);
+      const clientAddress = clientAddressParts.length > 0 
+        ? clientAddressParts.join(', ') 
+        : '';
+
+      // 5. Monthly limit ni hisoblash
+      const monthlyLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) 
+        ? (Number(leadData.finalLimit) || null)
+        : null;
+
+      // 6. Sotuvchi nomini olish
+      // Avval consultant yoki sellerName ni tekshiramiz
+      let sellerName = leadData?.consultant || leadData?.sellerName || '';
+      
+      // Agar seller kodi bo'lsa, executors ro'yxatidan ismini topamiz
+      // sellerName bo'sh bo'lsa va seller kodi mavjud bo'lsa
+      const sellerCode = leadData?.seller;
+      const hasSellerCode = sellerCode != null && sellerCode !== '' && sellerCode !== undefined;
+      
+      if (!sellerName && hasSellerCode) {
+        try {
+          const executorsResponse = await getExecutors({ include_role: 'Seller' });
+          
+          // Response strukturasini tekshirish
+          let executors = [];
+          
+          if (Array.isArray(executorsResponse)) {
+            // To'g'ridan-to'g'ri array
+            executors = executorsResponse;
+          } else if (executorsResponse?.data && Array.isArray(executorsResponse.data)) {
+            // { total: 12, data: [...] } yoki { data: [...] } format
+            executors = executorsResponse.data;
+          } else if (executorsResponse?.content && Array.isArray(executorsResponse.content)) {
+            // { content: [...] } format
+            executors = executorsResponse.content;
+          }
+          
+          // Sotuvchi kodini topish (string va number solishtirish)
+          const seller = executors.find(
+            (executor) => {
+              const executorCode = Number(executor?.SlpCode);
+              const sellerCode = Number(leadData.seller);
+              return executorCode === sellerCode;
+            }
+          );
+          
+          if (seller?.SlpName) {
+            sellerName = seller.SlpName;
+          }
+        } catch (error) {
+          // Xatolik bo'lsa ham davom etamiz
+        }
+      }
+
+      // 7. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         leadId: leadId,
         U_leadId: leadId,
         clientPhone: leadData.clientPhone || '',
         clientName: leadData.clientName || leadData.clientFullName || '',
+        jshshir: leadData.jshshir || leadData.jsshir || '',
+        passportId: leadData.passportId || '',
+        clientAddress: clientAddress,
+        monthlyLimit: monthlyLimit,
+        sellerName: sellerName,
         DocumentLines: documentLines,
+        selectedDevices: selectedDevices, // To'lov jadvali uchun
       };
 
-      // 5. Invoice yuborish
-      return await createInvoice(invoiceData);
+      // 8. Invoice yuborish
+      await createInvoice(invoiceData);
+
+      // 9. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      return invoiceData;
     },
     retry: false,
     ...options,
   });
 }
+
+
+// /lead-images/upload method: POST

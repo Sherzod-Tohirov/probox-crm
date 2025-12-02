@@ -1,9 +1,11 @@
-import { Col, Table, Button } from '@components/ui';
+import { Row, Col, Table, Button } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
 import { formatCurrencyUZS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
 import useInvoice from '@/hooks/data/leads/useInvoice';
+import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
+import { generateInvoicePdf } from '@/utils/invoicePdf';
 
 export default function SelectedDevicesTable({
   selectedDeviceData,
@@ -16,6 +18,8 @@ export default function SelectedDevicesTable({
   onDeleteDevice,
   totalGrandTotal,
   leadId,
+  userSignature,
+  currentUser,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
@@ -26,12 +30,39 @@ export default function SelectedDevicesTable({
     onDeleteDevice,
   });
 
+  const { mutateAsync: uploadInvoiceFile, isPending: isUploadingInvoice } = useUploadInvoiceFile();
+
   const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
-    onSuccess: () => {
-      alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
+    onSuccess: async (invoiceData) => {
+      // PDF fayl yaratish, yuklab olish va serverga yuborish
+      if (invoiceData && leadId) {
+        try {
+          // Imzoni va user ma'lumotlarini invoiceData ga qo'shamiz (faqat PDF uchun, backendga yuborilmaydi)
+          const pdfFile = await generateInvoicePdf({
+            ...invoiceData,
+            userSignature: userSignature || null,
+            currentUser: currentUser || null,
+          });
+          
+          // PDF faylni serverga yuborish
+          if (pdfFile) {
+            await uploadInvoiceFile({ file: pdfFile, leadId });
+          }
+          
+          // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
+          alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', { type: 'success' });
+        } catch (error) {
+          alert('PDF fayl yaratish yoki yuborishda xatolik yuz berdi', { type: 'error' });
+        }
+      } else {
+        alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
+      }
     },
     onError: (error) => {
-      const errorMessage = error?.message || error?.response?.data?.message || 'Invoice yuborishda xatolik yuz berdi';
+      const errorMessage =
+        error?.message ||
+        error?.response?.data?.message ||
+        'Invoice yuborishda xatolik yuz berdi';
       alert(errorMessage, { type: 'error' });
     },
   });
@@ -61,14 +92,13 @@ export default function SelectedDevicesTable({
       await sendInvoice({ leadId, selectedDevices });
     } catch (error) {
       // Error already handled in onError callback
-      console.error('Invoice yuborishda xatolik:', error);
     }
   };
 
   if (!selectedDeviceData.length) return null;
 
   return (
-    <>
+    <Row>
       <Col direction="column" fullWidth>
         <span className={styles['selected-device-table-label']}>
           Tanlangan qurilmalar
@@ -77,8 +107,8 @@ export default function SelectedDevicesTable({
           id="selected-device-table"
           data={selectedDeviceData}
           columns={selectedDeviceColumns}
-          containerHeight="auto"
-          scrollable={false}
+          scrollHeight="auto"
+          scrollable={true}
           uniqueKey="id"
           onRowClick={() => {}}
           getRowStyles={() => ({
@@ -86,21 +116,29 @@ export default function SelectedDevicesTable({
           })}
         />
       </Col>
-      <Col direction="column" gap={2}>
-        <div className={styles['selected-device-table-total-price']}>
-          Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
-        </div>
-        {canEdit && (
-          <Button
-            variant="filled"
-            onClick={handleSendInvoice}
-            isLoading={isSendingInvoice}
-            disabled={isSendingInvoice || selectedDevices.length === 0}
-          >
-            Invoice yuborish
-          </Button>
-        )}
+      <Col justify={'end'} gap={2}>
+        <Row>
+          <Col>
+            {' '}
+            <div className={styles['selected-device-table-total-price']}>
+              Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
+            </div>
+          </Col>
+
+          {canEdit && (
+            <Col>
+              <Button
+                variant="filled"
+                onClick={handleSendInvoice}
+                isLoading={isSendingInvoice}
+                disabled={isSendingInvoice || selectedDevices.length === 0}
+              >
+                Invoice yuborish
+              </Button>
+            </Col>
+          )}
+        </Row>
       </Col>
-    </>
+    </Row>
   );
 }

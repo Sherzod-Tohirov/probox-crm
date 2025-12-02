@@ -10,6 +10,7 @@ const InputWrapper = ({
   children,
   label,
   disabled,
+  dimOnDisabled,
   variant,
   type,
   size,
@@ -35,7 +36,7 @@ const InputWrapper = ({
           <Typography
             element="label"
             className={classNames(styles['label'], {
-              [styles['label-disabled']]: disabled,
+              [styles['label-disabled']]: disabled && dimOnDisabled,
             })}
           >
             {label}
@@ -74,16 +75,16 @@ const InputWrapper = ({
             )}
           </Box>
           <AnimatePresence mode="popLayout">
-            {searchable && searchText?.length && searchText !== '998' ? (
+            {searchable &&
+            searchText?.length > 0 &&
+            !(type === 'tel' && searchText === '998') ? (
               <SearchField
                 renderItem={renderSearchItem}
                 onSearch={onSearch}
                 searchText={searchText}
                 onSelect={onSearchSelect}
               />
-            ) : (
-              ''
-            )}
+            ) : null}
           </AnimatePresence>
           <AnimatePresence mode="popLayout">
             {error ? (

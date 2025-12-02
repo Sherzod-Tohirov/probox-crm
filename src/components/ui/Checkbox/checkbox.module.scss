@@ -1,0 +1,245 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+// Animation timing
+$anim-duration: 0.2s;
+$anim-easing: cubic-bezier(0.4, 0, 0.2, 1);
+$bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+.checkbox {
+  @include m.flex(center, start, 6px);
+  cursor: pointer;
+  user-select: none;
+  color: v.$primary-color;
+
+  // Theme-aware custom properties
+  --cb-check: #fff;
+  --cb-bg: v.$primary-table-bg;
+  --cb-border: #94a3b8;
+  --cb-hover-bg: rgba(148, 163, 184, 0.12);
+  --cb-hover-border: v.$button-bg;
+  --cb-disabled-bg: #f1f5f9;
+  --cb-disabled-border: #cbd5e1;
+  --cb-focus-shadow: 0 0 0 3px rgba(10, 77, 104, 0.2);
+  --cb-active-bg: v.$button-bg;
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none;
+}
+
+.checkbox-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--cb-border);
+  background: var(--cb-bg);
+  transition:
+    background $anim-duration $anim-easing,
+    border-color $anim-duration $anim-easing,
+    box-shadow $anim-duration $anim-easing,
+    transform 0.1s $anim-easing;
+
+  // Checkmark
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 10px;
+    border: solid var(--cb-check);
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg) scale(0);
+    transform-origin: center;
+    opacity: 0;
+    transition:
+      transform $anim-duration $bounce-easing,
+      opacity $anim-duration $anim-easing;
+  }
+}
+
+// Sizes
+.size-sm .checkbox-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border-width: 1.5px;
+
+  &::after {
+    width: 5px;
+    height: 8px;
+    border-width: 0 2px 2px 0;
+  }
+}
+
+.size-lg .checkbox-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+
+  &::after {
+    width: 7px;
+    height: 12px;
+    border-width: 0 3px 3px 0;
+  }
+}
+
+// Hover state (only for unchecked)
+.checkbox:hover:not(.disabled) .checkbox-input:not(:checked) + .checkbox-box {
+  border-color: var(--cb-hover-border);
+  background: var(--cb-hover-bg);
+}
+
+// Active (press) state
+.checkbox:active:not(.disabled) .checkbox-box {
+  transform: scale(0.92);
+}
+
+// Focus state
+.checkbox-input:focus-visible + .checkbox-box {
+  box-shadow: var(--cb-focus-shadow);
+  border-color: var(--cb-hover-border);
+}
+
+// Checked state
+.checkbox-input:checked + .checkbox-box {
+  background: var(--cb-active-bg);
+  border-color: var(--cb-active-bg);
+
+  &::after {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+// Checked + hover
+.checkbox:hover:not(.disabled) .checkbox-input:checked + .checkbox-box {
+  filter: brightness(1.1);
+}
+
+// Disabled state
+.checkbox-input:disabled + .checkbox-box {
+  background: var(--cb-disabled-bg);
+  border-color: var(--cb-disabled-border);
+  cursor: not-allowed;
+}
+
+.checkbox-input:disabled:checked + .checkbox-box {
+  background: var(--cb-disabled-border);
+  border-color: var(--cb-disabled-border);
+}
+
+// Label text
+.checkbox-text {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  transition: color $anim-duration $anim-easing;
+}
+
+// Indeterminate state
+.checkbox-box[data-indeterminate='true'] {
+  background: var(--cb-active-bg);
+  border-color: var(--cb-active-bg);
+
+  &::after {
+    width: 10px;
+    height: 2.5px;
+    border: none;
+    background: var(--cb-check);
+    border-radius: 1px;
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Color variants
+.checkbox.color-info {
+  --cb-active-bg: v.$info-color;
+  --cb-hover-border: v.$info-color;
+  --cb-check: #1a1a1a;
+}
+
+.checkbox.color-danger {
+  --cb-active-bg: v.$danger-color;
+  --cb-hover-border: v.$danger-color;
+}
+
+.checkbox.color-success {
+  --cb-active-bg: v.$success-color;
+  --cb-hover-border: v.$success-color;
+}
+
+.checkbox.color-primary {
+  --cb-active-bg: v.$button-bg;
+  --cb-hover-border: v.$button-bg;
+}
+
+.checkbox.color-secondary {
+  --cb-active-bg: v.$secondary-color;
+  --cb-hover-border: v.$secondary-color;
+}
+
+.checkbox.color-dark {
+  --cb-active-bg: v.$primary-color;
+  --cb-hover-border: v.$primary-color;
+  --cb-check: v.$primary-bg;
+}
+
+// Light theme
+:global([data-theme='light']) {
+  .checkbox {
+    --cb-check: #fff;
+    --cb-bg: #f8fafc;
+    --cb-border: #64748b;
+    --cb-hover-bg: #f1f5f9;
+    --cb-hover-border: #3b82f6;
+    --cb-disabled-bg: #e2e8f0;
+    --cb-disabled-border: #cbd5e1;
+    --cb-focus-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    --cb-active-bg: #3b82f6;
+  }
+}
+
+// Dark theme
+:global([data-theme='dark']) {
+  .checkbox {
+    --cb-check: #fff;
+    --cb-bg: #1e293b;
+    --cb-border: #475569;
+    --cb-hover-bg: rgba(255, 255, 255, 0.08);
+    --cb-hover-border: #60a5fa;
+    --cb-disabled-bg: #334155;
+    --cb-disabled-border: #475569;
+    --cb-focus-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+    --cb-active-bg: #3b82f6;
+  }
+
+  .checkbox.color-primary {
+    --cb-active-bg: #3b82f6;
+    --cb-hover-border: #3b82f6;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .checkbox-box,
+  .checkbox-box::after,
+  .checkbox-text {
+    transition: none !important;
+  }
+}

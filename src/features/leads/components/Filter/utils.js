@@ -48,10 +48,28 @@ export function normalizeFilterState(
 export function serializeFilter(values) {
   const payload = { ...values };
 
-  // Normalize meeting if it's an option object
-  if (payload.meeting && typeof payload.meeting === 'object') {
-    payload.meeting = payload.meeting.value;
-  }
+  // Normalize all select field option objects to their values
+  const selectFields = [
+    'meeting',
+    'isBlocked',
+    'status',
+    'purchase',
+    'called',
+    'answered',
+    'interested',
+    'passportVisit',
+    'callCount',
+    'called2',
+    'answered2',
+    'meetingHappened',
+    'callCount2',
+  ];
+
+  selectFields.forEach((field) => {
+    if (payload[field] && typeof payload[field] === 'object') {
+      payload[field] = payload[field].value;
+    }
+  });
 
   // Omit meeting and dates when meeting is not selected (Hammasi)
   if (

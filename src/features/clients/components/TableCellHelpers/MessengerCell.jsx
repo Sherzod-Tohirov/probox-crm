@@ -1,29 +1,35 @@
-import { useSelector } from "react-redux";
-import { Button } from "@components/ui";
-import MessengerModal from "@components/ui/Messenger/MessengerModal";
-import useFetchMessages from "@hooks/data/clients/useFetchMessages";
-import useMessengerActions from "@hooks/useMessengerActions";
+import { useSelector } from 'react-redux';
+import { Button } from '@components/ui';
+import MessengerModal from '@components/ui/Messenger/MessengerModal';
+import useFetchMessages from '@hooks/data/clients/useFetchMessages';
+import useMessengerActions from '@hooks/useMessengerActions';
 
-import ModalWrapper from "./helper/ModalWrapper";
+import ModalWrapper from './helper/ModalWrapper';
 
 const MessengerCell = ({ column }) => {
-  const modalId = `${column?.["DocEntry"]}-messenger-modal`;
+  const modalId = `${column?.['DocEntry']}-messenger-modal`;
   const isModalOpen = useSelector((state) => state.toggle.modals[modalId]);
-  const { currentClient } = useSelector((state) => state.page.clients);
+  const docEntry = column?.['DocEntry'];
+  const installmentId = column?.['InstlmntID'];
   const { data: messages, isLoading } = useFetchMessages({
     enabled: isModalOpen,
-    docEntry: currentClient?.["DocEntry"],
-    installmentId: currentClient?.["InstlmntID"],
+    docEntry,
+    installmentId,
   });
 
-  const { sendMessage, editMessage, deleteMessage } = useMessengerActions();
+  const { sendMessage, editMessage, deleteMessage } = useMessengerActions({
+    entityType: 'client',
+    docEntry,
+    installmentId,
+  });
 
   return (
     <ModalWrapper
       modalId={modalId}
-      style={{ justifyContent: "center" }}
+      style={{ justifyContent: 'center' }}
       column={column}
-      title={<Button icon="messenger" variant="text" />}>
+      title={<Button icon="messenger" variant="text" />}
+    >
       <MessengerModal
         hasToggleControl={true}
         messages={messages || []}

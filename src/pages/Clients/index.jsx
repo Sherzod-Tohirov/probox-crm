@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { useCallback, useLayoutEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { Col, Row, Table } from '@components/ui';
 import ClientsPageFooter from '@features/clients/components/ClientsPageFooter';
 import ClientsToolbar from '@features/clients/components/ClientsToolbar';
-import Filter from '@features/clients/components/Filter';
+import ClientsFilter from '@features/clients/components/Filter/ClientsFilter';
+import ColumnsModal from '@features/clients/components/ColumnsModal';
 
 import { setCurrentClient } from '@store/slices/clientsPageSlice';
 
@@ -20,9 +20,11 @@ import useUIScale from '@/features/clients/hooks/useUIScale';
 import useTableDensity from '@/features/clients/hooks/useTableDensity';
 import useScrollRestoration from '@/features/clients/hooks/useScrollRestoration';
 import useModalAutoClose from '@features/clients/hooks/useModalAutoClose';
+import useColumnVisibility from '@features/clients/hooks/useColumnVisibility';
+import getRowStyles from '@features/clients/utils/getRowStyles';
 import hasRole from '@utils/hasRole';
 import styles from './style.module.scss';
-import moment from 'moment';
+
 export default function Clients() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,9 +46,11 @@ export default function Clients() {
     total: 0,
     data: [],
   });
-  const [toggleFilter, setToggleFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [params, setParams] = useState({ ...filter });
+
+  // Columns modal visibility
+  const [isColumnsOpen, setColumnsOpen] = useState(false);
 
   // Custom hooks
   const { data, isLoading } = useFetchClients({
@@ -54,6 +58,13 @@ export default function Clients() {
     params,
   });
   const { clientsTableColumns } = useClientsTableColumns();
+  // Column visibility management
+  const { visibleColumns, setVisibleColumns, columnsToUse } =
+    useColumnVisibility(
+      clientsTableColumns,
+      ['CardName', 'Phone1', 'InsTotal', 'PaidToDate'],
+      'clientsVisibleColumns'
+    );
 
   const {
     uiScale,
@@ -75,10 +86,17 @@ export default function Clients() {
     isDefaultDensity,
   } = useTableDensity('clientsTableDensity');
 
+  const hasData = Array.isArray(clientsDetails.data)
+    ? clientsDetails.data?.length > 0
+    : false;
+
+  // Reusable scroll restoration (smooth)
   const { saveScrollPosition } = useScrollRestoration({
     scrollContainerRef: clientsTableRef,
     storageKey: 'scrollPositionClients',
-    hasData: data?.data?.length > 0,
+    hasData,
+    behavior: 'smooth',
+    maxTries: 120,
   });
 
   useModalAutoClose(clientsTableRef);
@@ -94,19 +112,45 @@ export default function Clients() {
   );
 
   const handleFilter = useCallback((filterData) => {
-    setTimeout(() => {
-      setToggleFilter(false);
-    }, 200);
+    // Build params object, excluding empty/undefined values
+    const params = {};
 
-    setParams(() => ({
-      search: filterData.search,
-      paymentStatus: _.map(filterData.paymentStatus, 'value').join(','),
-      slpCode: _.map(filterData.slpCode, 'value').join(','),
-      phone: filterData.phone,
-      startDate: filterData.startDate,
-      endDate: filterData.endDate,
-      phoneConfiscated: filterData.phoneConfiscated,
-    }));
+    if (
+      filterData.search &&
+      typeof filterData.search === 'string' &&
+      filterData.search.trim()
+    ) {
+      params.search = filterData.search.trim();
+    }
+    if (
+      filterData.paymentStatus &&
+      filterData.paymentStatus !== '' &&
+      filterData.paymentStatus !== 'all'
+    ) {
+      params.paymentStatus = filterData.paymentStatus;
+    }
+    if (filterData.slpCode && filterData.slpCode !== '') {
+      params.slpCode = filterData.slpCode;
+    }
+    if (
+      filterData.phone &&
+      filterData.phone !== '998' &&
+      typeof filterData.phone === 'string' &&
+      filterData.phone.trim() &&
+      filterData.phone.trim() !== '998'
+    ) {
+      params.phone = filterData.phone.trim();
+    }
+    if (filterData.startDate && filterData.startDate.trim()) {
+      params.startDate = filterData.startDate;
+    }
+    if (filterData.endDate && filterData.endDate.trim()) {
+      params.endDate = filterData.endDate;
+    }
+    if (filterData.phoneConfiscated && filterData.phoneConfiscated !== '') {
+      params.phoneConfiscated = filterData.phoneConfiscated;
+    }
+    setParams(() => params);
   }, []);
 
   // Sync data with local state
@@ -115,7 +159,7 @@ export default function Clients() {
       setClientsDetails((p) => ({ ...p, totalPages: data?.totalPages }));
     }
 
-    if (data?.data.length >= 0) {
+    if (data?.data?.length >= 0) {
       setClientsDetails((p) => ({ ...p, data: data?.data }));
     }
 
@@ -138,7 +182,7 @@ export default function Clients() {
                 onIncreaseDensity={increaseDensity}
                 onDecreaseDensity={decreaseDensity}
                 onResetDensity={resetDensity}
-                onToggleFilter={() => setToggleFilter((prev) => !prev)}
+                onToggleFilter={() => setColumnsOpen(true)}
                 isMobile={isMobile}
                 canIncreaseUI={canIncrease}
                 canDecreaseUI={canDecrease}
@@ -149,7 +193,7 @@ export default function Clients() {
               />
             </Col>
             <Col fullWidth>
-              <Filter onFilter={handleFilter} isExpanded={toggleFilter} />
+              <ClientsFilter onFilter={handleFilter} />
             </Col>
           </Row>
         </Col>
@@ -160,7 +204,7 @@ export default function Clients() {
             ref={clientsTableRef}
             uniqueKey={'DocEntry'}
             isLoading={isLoading}
-            columns={clientsTableColumns}
+            columns={columnsToUse}
             data={clientsDetails.data}
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
@@ -175,35 +219,20 @@ export default function Clients() {
             selectedRows={selectedRows}
             onSelectionChange={setSelectedRows}
             showPivotColumn={true}
-            getRowStyles={(row) => {
-              if (row?.['DocEntry'] === currentClient?.['DocEntry']) {
-                return {
-                  backgroundColor:
-                    currentTheme === 'dark'
-                      ? 'rgba(96, 165, 250, 0.15)'
-                      : 'rgba(206, 236, 249, 0.94)',
-                };
-              }
-
-              const paymentDate = moment(
-                row?.DueDate ?? row?.NewDueDate ?? null
-              );
-              const today = moment();
-              const isTodayPayment = paymentDate.isSame(today, 'day');
-              if (isTodayPayment) {
-                return {
-                  backgroundColor:
-                    currentTheme === 'dark'
-                      ? 'rgba(115, 115, 87, 0.73)'
-                      : 'rgba(244, 244, 173, 0.76)',
-                };
-                ('rgba(244, 244, 173, 0.76)');
-              }
-            }}
+            getRowStyles={(row) =>
+              getRowStyles(row, currentClient, currentTheme)
+            }
           />
         </Col>
         <Col style={{ width: '100%' }}></Col>
       </Row>
+      <ColumnsModal
+        isOpen={isColumnsOpen}
+        onClose={() => setColumnsOpen(false)}
+        columns={clientsTableColumns}
+        visibleColumns={visibleColumns}
+        onChangeVisibleColumns={setVisibleColumns}
+      />
       <ClientsPageFooter
         clientsDetails={clientsDetails}
         selectedRows={selectedRows}

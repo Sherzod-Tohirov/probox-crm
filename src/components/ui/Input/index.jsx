@@ -55,6 +55,7 @@ const Input = forwardRef(
       onIconClick,
       canClickIcon = true,
       disabled = false,
+      dimOnDisabled = true,
       hasIcon = true,
       error = null,
       renderSearchItem = () => {},
@@ -100,21 +101,20 @@ const Input = forwardRef(
       () => `input-${Math.random().toString(36).slice(2)}`,
       []
     );
-    const inputStyle = useMemo(
-      () => ({
+    const inputStyle = useMemo(() => {
+      const base = {
         ...(width ? { width } : {}),
         ...style,
-        // Automatically apply disabled styling
-        ...(disabled
-          ? {
-              opacity: 0.65,
-              pointerEvents: 'none',
-              cursor: 'not-allowed',
-            }
-          : {}),
-      }),
-      [width, style, disabled]
-    );
+      };
+      if (disabled) {
+        if (dimOnDisabled) {
+          base.opacity = 0.65;
+        }
+        base.pointerEvents = 'none';
+        base.cursor = 'not-allowed';
+      }
+      return base;
+    }, [width, style, disabled, dimOnDisabled]);
     const classes = useMemo(
       () =>
         classNames(
@@ -643,6 +643,7 @@ const Input = forwardRef(
               return (
                 <PhoneInput
                   {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+                  {...(props.onBlur ? { onBlur: props.onBlur } : {})}
                   {...field}
                   {...r.omit(['className', 'style'], commonProps)}
                   value={formatPhoneNumber(field.value || '')}
@@ -668,6 +669,7 @@ const Input = forwardRef(
         ) : (
           <PhoneInput
             {...(props.onFocus ? { onFocus: props.onFocus } : {})}
+            {...(props.onBlur ? { onBlur: props.onBlur } : {})}
             {...r.omit(['className', 'style'], commonProps)}
             value={formatPhoneNumber(props.value || props.defaultValue || '')}
             inputClass={classNames(
@@ -695,6 +697,14 @@ const Input = forwardRef(
                     value={field.value || ''}
                     onChange={(e) => {
                       field.onChange(e.target.value);
+                    }}
+                    onFocus={(e) => {
+                      field.onFocus?.();
+                      props.onFocus?.(e);
+                    }}
+                    onBlur={(e) => {
+                      field.onBlur?.();
+                      props.onBlur?.(e);
                     }}
                     type={type}
                     {...commonProps}
@@ -755,6 +765,7 @@ const Input = forwardRef(
       <InputWrapper
         label={label}
         disabled={disabled}
+        dimOnDisabled={dimOnDisabled}
         variant={variant}
         type={type}
         size={size}

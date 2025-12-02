@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { Row, Col } from '@components/ui';
 import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
@@ -107,6 +107,13 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     fetchDeviceSeries,
   });
 
+  // Imzo state'ini saqlash
+  const [userSignature, setUserSignature] = useState(null);
+
+  const handleSignatureChange = useCallback((signatureDataUrl) => {
+    setUserSignature(signatureDataUrl);
+  }, []);
+
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -150,7 +157,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
       <form onSubmit={handleSubmit}>
         <SellerFormFields
-            control={control}
+          control={control}
           canEdit={canEdit}
           leadData={leadData}
           fieldSellType={fieldSellType}
@@ -164,32 +171,42 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       <FieldGroup title="Shartnoma ma'lumotlari">
         <Col span={{ xs: 24, md: 24 }} flexGrow fullWidth>
           <Row>
-            <DeviceSearchField
-              canEdit={ canOperatorEdit || canEdit}
-              selectedDevicesCount={selectedDevices.length}
-              leadData={leadData}
-              branchFilterOptions={branchFilterOptions}
-                    control={control}
-                  onSearch={handleDeviceSearch}
-                  onSelect={handleSelectDevice}
-                />
-
-            {selectedDevices.length > 0 && (
-              <SelectedDevicesTable
-                selectedDeviceData={selectedDeviceData}
-                selectedDevices={selectedDevices}
-                rentPeriodOptions={rentPeriodOptions}
+            <Col fullWidth>
+              <DeviceSearchField
                 canEdit={canOperatorEdit || canEdit}
-                onImeiSelect={handleImeiSelect}
-                onRentPeriodChange={handleRentPeriodChange}
-                onFirstPaymentChange={handleFirstPaymentChange}
-                onDeleteDevice={handleDeleteDevice}
-                totalGrandTotal={totalGrandTotal}
-                leadId={leadId}
+                selectedDevicesCount={selectedDevices.length}
+                leadData={leadData}
+                branchFilterOptions={branchFilterOptions}
+                control={control}
+                onSearch={handleDeviceSearch}
+                onSelect={handleSelectDevice}
               />
+            </Col>
+            {selectedDevices.length > 0 && (
+              <Col fullWidth>
+                <SelectedDevicesTable
+                  selectedDeviceData={selectedDeviceData}
+                  selectedDevices={selectedDevices}
+                  rentPeriodOptions={rentPeriodOptions}
+                  canEdit={canOperatorEdit || canEdit}
+                  onImeiSelect={handleImeiSelect}
+                  onRentPeriodChange={handleRentPeriodChange}
+                  onFirstPaymentChange={handleFirstPaymentChange}
+                  onDeleteDevice={handleDeleteDevice}
+                  totalGrandTotal={totalGrandTotal}
+                  leadId={leadId}
+                  userSignature={userSignature}
+                  currentUser={user}
+                />
+              </Col>
             )}
 
-            <SignatureCanvas canEdit={canOperatorEdit || canEdit} />
+            <Col fullWidth>
+              <SignatureCanvas
+                canEdit={canOperatorEdit || canEdit}
+                onSignatureChange={handleSignatureChange}
+              />
+            </Col>
           </Row>
         </Col>
       </FieldGroup>

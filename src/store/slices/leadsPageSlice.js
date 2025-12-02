@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import moment from 'moment';
 import { initialLeadsFilterState } from '@utils/store/initialStates';
 
 const loadState = () => {
@@ -24,20 +25,32 @@ const loadState = () => {
       ? 10
       : Math.max(storedPageSize, 1);
 
+    const defaultStatisticsFilter = {
+      startDate: moment().subtract(6, 'days').format('DD.MM.YYYY'),
+      endDate: moment().format('DD.MM.YYYY'),
+    };
+
     return {
       leads: [],
       currentLead: parsedState.currentLead ?? {},
       filter: sanitizedFilter,
+      statisticsFilter: parsedState.statisticsFilter ?? defaultStatisticsFilter,
       currentPage: normalizedPage,
       pageSize: normalizedPageSize,
       lastAction: parsedState.lastAction ?? [],
     };
   } catch (error) {
     console.log('Error loading leads page state', error);
+    const defaultStatisticsFilter = {
+      startDate: moment().subtract(6, 'days').format('DD.MM.YYYY'),
+      endDate: moment().format('DD.MM.YYYY'),
+    };
+
     return {
       leads: [],
       currentLead: {},
       filter: initialLeadsFilterState,
+      statisticsFilter: defaultStatisticsFilter,
       currentPage: 0,
       pageSize: 10,
       lastAction: [],
@@ -47,9 +60,17 @@ const loadState = () => {
 
 const saveState = (state) => {
   try {
-    const { filter, currentPage, pageSize, currentLead, lastAction } = state;
+    const {
+      filter,
+      statisticsFilter,
+      currentPage,
+      pageSize,
+      currentLead,
+      lastAction,
+    } = state;
     const serializedState = JSON.stringify({
       filter,
+      statisticsFilter,
       currentPage,
       pageSize,
       currentLead,
@@ -100,6 +121,10 @@ const leadsPageSlice = createSlice({
       state.lastAction = action.payload;
       saveState(state);
     },
+    setLeadsStatisticsFilter(state, action) {
+      state.statisticsFilter = { ...action.payload };
+      saveState(state);
+    },
     resetLeadsPage(state) {
       state.leads = [];
       state.currentLead = {};
@@ -126,6 +151,7 @@ export const {
   setLeadsCurrentPage,
   setLeadsPageSize,
   setLeadsLastAction,
+  setLeadsStatisticsFilter,
   setCurrentLead,
   resetLeadsPage,
 } = leadsPageSlice.actions;

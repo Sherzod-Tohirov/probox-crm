@@ -17,6 +17,10 @@ export const Messenger = (
     onEditMessage,
     onDeleteMessage,
     hasToggleControl = false,
+    entityType = 'client',
+    onLoadMore,
+    hasMore = false,
+    isLoadingMore = false,
   },
   ref
 ) => {
@@ -32,49 +36,52 @@ export const Messenger = (
     };
   }, [isOpen]);
   return createPortal(
-      <motion.div
-        ref={ref}
-        id={'messenger'}
-        initial={{ x: '100%', display: 'none' }}
-        animate={{
-          x: isOpen ? '0' : '100%',
-          display: isOpen ? 'flex' : 'none',
-        }}
-        exit={{ x: '100%', display: 'none' }}
-        transition={{ type: 'spring', stiffness: 100, damping: 16 }}
-        className={classNames(styles.messenger)}
-      >
-        <div className={styles['messenger-header']}>
-          <Button
-            className={styles['toggle-button']}
-            variant={'text'}
-            iconSize={24}
-            icon={'toggleOpen'}
-            onClick={toggle}
-          ></Button>
-          <Typography element="h2" className={styles.title}>
-            Xabarnoma
-          </Typography>
-        </div>
-        <div className={styles['messenger-body']}>
-          {isLoading ? (
-            <div className={styles['messenger-body-loader-wrapper']}>
-              <ClipLoader color={'black'} size={28} />
-            </div>
-          ) : (
-            <MessageRenderer
-              hasToggleControl={hasToggleControl}
-              onEditMessage={onEditMessage}
-              onDeleteMessage={onDeleteMessage}
-              messages={messages}
-            />
-          )}
-        </div>
-        <div className={styles['messenger-footer']}>
-          <MessageForm onSubmit={onSendMessage} />
-        </div>
-      </motion.div>,
-      document.body
+    <motion.div
+      ref={ref}
+      id={'messenger'}
+      initial={{ x: '100%', display: 'none' }}
+      animate={{
+        x: isOpen ? '0' : '100%',
+        display: isOpen ? 'flex' : 'none',
+      }}
+      exit={{ x: '100%', display: 'none' }}
+      transition={{ type: 'spring', stiffness: 100, damping: 16 }}
+      className={classNames(styles.messenger)}
+    >
+      <div className={styles['messenger-header']}>
+        <Button
+          className={styles['toggle-button']}
+          variant={'text'}
+          iconSize={24}
+          icon={'toggleOpen'}
+          onClick={toggle}
+        ></Button>
+        <Typography element="h2" className={styles.title}>
+          Xabarnoma
+        </Typography>
+      </div>
+      <div className={styles['messenger-body']}>
+        {isLoading ? (
+          <div className={styles['messenger-body-loader-wrapper']}>
+            <ClipLoader color={'black'} size={28} />
+          </div>
+        ) : (
+          <MessageRenderer
+            hasToggleControl={hasToggleControl}
+            onEditMessage={onEditMessage}
+            onDeleteMessage={onDeleteMessage}
+            messages={messages}
+            onLoadMore={onLoadMore}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+          />
+        )}
+      </div>
+      <div className={styles['messenger-footer']}>
+        <MessageForm onSubmit={onSendMessage} entityType={entityType} />
+      </div>
+    </motion.div>,
+    document.body
   );
 };
 

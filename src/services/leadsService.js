@@ -62,9 +62,9 @@ export const deleteLead = async (id) => {
   }
 };
 
-export const getLeadFiles = async ({ cardCode }) => {
+export const getLeadFiles = async ({ leadId }) => {
   try {
-    const response = await api.get(`/lead-images/${cardCode}`);
+    const response = await api.get(`/lead-images/${leadId}`);
     return response.data;
   } catch (error) {
     console.log(error, 'Error file get files');
@@ -72,11 +72,33 @@ export const getLeadFiles = async ({ cardCode }) => {
   }
 };
 
-export const postFileUpload = async ({ cardCode, formData }) => {
+export const postFileUpload = async ({
+  formData,
+  onUploadProgress,
+  cancelToken,
+} = {}) => {
   try {
     // formData must contain one or multiple 'images' entries
     // Do NOT set Content-Type here; axios will set multipart with boundary.
-    const response = await api.post(`/lead-images/${cardCode}`, formData);
+    const config = {
+      timeout: 60000,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    };
+    if (onUploadProgress) config.onUploadProgress = onUploadProgress;
+    if (cancelToken) config.cancelToken = cancelToken;
+    const response = await api.post(`/lead-images/upload`, formData, config);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteFile = async ({ fileId }) => {
+  try {
+    const response = await api.delete(`/lead-images/${fileId}`, {
+      timeout: 15000,
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -86,7 +108,11 @@ export const postFileUpload = async ({ cardCode, formData }) => {
 // seeller tab leads's contract terms api
 // api/items?whsCode=01&search=iphone 16&condition=Yangi
 
-export const fetchContractTermsItems = async ({ whsCode, search, condition }) => {
+export const fetchContractTermsItems = async ({
+  whsCode,
+  search,
+  condition,
+}) => {
   try {
     const params = {
       search,
@@ -120,4 +146,3 @@ export const fetchItemSeries = async ({ whsCode, itemCode }) => {
     throw error.response?.data || error;
   }
 };
-

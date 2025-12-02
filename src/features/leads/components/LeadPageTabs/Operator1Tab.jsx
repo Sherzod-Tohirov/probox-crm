@@ -18,7 +18,8 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { control, reset, watch } = form || {};
   const isMobile = useIsMobile();
   const { rejectReasonOptions } = useSelectOptions('common');
-  const { passportVisitOptions } = useSelectOptions('operator1');
+  const { passportVisitOptions, callCountOptions } =
+    useSelectOptions('operator1');
   const fieldAnswered = watch('answered');
   // Reset form when leadData changes
   useEffect(() => {
@@ -86,9 +87,10 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                 <Col>
                   <FormField
                     name="callCount"
+                    type="select"
                     label="Qo'ng'iroqlar soni"
                     control={control}
-                    type="number"
+                    options={callCountOptions}
                     disabled={!canEdit}
                   />
                 </Col>

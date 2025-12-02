@@ -57,10 +57,11 @@ export const useSelectedDevicesColumns = ({
           }
 
           if (row.imeiOptions.length === 1) {
+            const singleOption = row.imeiOptions[0];
             return (
               <div className={styles['selected-device-imei-wrapper']}>
                 <span className={styles['selected-device-imei']}>
-                  {row.imeiOptions[0].value}
+                  {singleOption.label ?? singleOption.value}
                 </span>
               </div>
             );
