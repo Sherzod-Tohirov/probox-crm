@@ -3,6 +3,7 @@ import styles from '../leadPageTabs.module.scss';
 import { formatCurrencyUZS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
 import useInvoice from '@/hooks/data/leads/useInvoice';
+import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
 import { generateInvoicePdf } from '@/utils/invoicePdf';
 
@@ -29,28 +30,32 @@ export default function SelectedDevicesTable({
     onDeleteDevice,
   });
 
+  const { mutateAsync: uploadInvoiceFile, isPending: isUploadingInvoice } = useUploadInvoiceFile();
+
   const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
     onSuccess: async (invoiceData) => {
-      console.log('Invoice success, invoiceData:', invoiceData);
-      alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
-      
-      // PDF fayl yaratish va yuklab olish
-      if (invoiceData) {
+      // PDF fayl yaratish, yuklab olish va serverga yuborish
+      if (invoiceData && leadId) {
         try {
-          console.log('PDF fayl yaratish boshlandi...');
           // Imzoni va user ma'lumotlarini invoiceData ga qo'shamiz (faqat PDF uchun, backendga yuborilmaydi)
-          await generateInvoicePdf({
+          const pdfFile = await generateInvoicePdf({
             ...invoiceData,
             userSignature: userSignature || null,
             currentUser: currentUser || null,
           });
-          console.log('PDF fayl muvaffaqiyatli yaratildi');
+          
+          // PDF faylni serverga yuborish
+          if (pdfFile) {
+            await uploadInvoiceFile({ file: pdfFile, leadId });
+          }
+          
+          // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
+          alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', { type: 'success' });
         } catch (error) {
-          console.error('PDF fayl yaratishda xatolik:', error);
-          alert('PDF fayl yaratishda xatolik yuz berdi', { type: 'error' });
+          alert('PDF fayl yaratish yoki yuborishda xatolik yuz berdi', { type: 'error' });
         }
       } else {
-        console.warn('invoiceData topilmadi');
+        alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
       }
     },
     onError: (error) => {
@@ -81,11 +86,9 @@ export default function SelectedDevicesTable({
     }
 
     try {
-      const result = await sendInvoice({ leadId, selectedDevices });
-      console.log('sendInvoice natijasi:', result);
+      await sendInvoice({ leadId, selectedDevices });
     } catch (error) {
       // Error already handled in onError callback
-      console.error('Invoice yuborishda xatolik:', error);
     }
   };
 
@@ -118,8 +121,8 @@ export default function SelectedDevicesTable({
           <Button
             variant="filled"
             onClick={handleSendInvoice}
-            isLoading={isSendingInvoice}
-            disabled={isSendingInvoice || selectedDevices.length === 0}
+            isLoading={isSendingInvoice || isUploadingInvoice}
+            disabled={isSendingInvoice || isUploadingInvoice || selectedDevices.length === 0}
           >
             Invoice yuborish
           </Button>

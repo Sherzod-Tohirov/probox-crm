@@ -1431,9 +1431,18 @@ export const generateInvoicePdf = async (invoiceData) => {
     // PDF yaratish va yuklab olish
     const fileName = `${clientName}-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
     
-    pdfMake.createPdf(docDefinition).download(fileName);
-
-    return true;
+    const pdfDoc = pdfMake.createPdf(docDefinition);
+    
+    // PDF faylni yuklab olish
+    pdfDoc.download(fileName);
+    
+    // PDF faylni blob sifatida qaytarish (serverga yuborish uchun)
+    return new Promise((resolve, reject) => {
+      pdfDoc.getBlob((blob) => {
+        const file = new File([blob], fileName, { type: 'application/pdf' });
+        resolve(file);
+      });
+    });
   } catch (error) {
     console.error('PDF fayl yaratishda xatolik:', error);
     throw error;

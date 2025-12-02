@@ -62,13 +62,9 @@ export const deleteLead = async (id) => {
   }
 };
 
-export const getLeadFiles = async ({ leadId, cardCode }) => {
+export const getLeadFiles = async ({ leadId }) => {
   try {
-    const response = await api.get(`/lead-images/${leadId}`, {
-      params: {
-        cardCode,
-      },
-    });
+    const response = await api.get(`/lead-images/${leadId}`);
     return response.data;
   } catch (error) {
     console.log(error, 'Error file get files');

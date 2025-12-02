@@ -44,9 +44,8 @@ export default function useLeadPageData(leadId) {
     include_role: ['Operator1', 'Operator2', 'Seller', 'Scoring', 'OperatorM'],
   });
 
-  const cardCode = lead?.cardCode;
   const { data: filesData } = useFetchLeadFiles(
-    { leadId, cardCode },
+    { leadId },
     {
       retry: 2,
       enabled: !!leadId && !isError,
@@ -123,16 +122,28 @@ export default function useLeadPageData(leadId) {
       seen.add(key);
       return true;
     });
-    return list.map((f) => ({
-      id: String(f._id || f.id || f.key),
-      preview: f?.url ?? f?.urls?.small,
-      previewLarge: f?.urls?.large,
-      file: null,
-      source: 'server',
-      fileName: f.fileName,
-      mimeType: f.mimeType,
-      size: f.size,
-    }));
+    return list.map((f) => {
+      // Generate pdfUrl from pdfKey if pdfUrl is not available
+      let pdfUrl = f.pdfUrl || null;
+      if (!pdfUrl && f.isPdf && f.pdfKey) {
+        // Generate pdfUrl from pdfKey (minio URL format)
+        // Format: https://minio.probox.uz/probox-bucket/{pdfKey}
+        pdfUrl = `https://minio.probox.uz/probox-bucket/${f.pdfKey}`;
+      }
+      
+      return {
+        id: String(f._id || f.id || f.key),
+        preview: f?.url ?? f?.urls?.small,
+        previewLarge: f?.urls?.large,
+        file: null,
+        source: 'server',
+        fileName: f.fileName,
+        mimeType: f.mimeType,
+        size: f.size,
+        isPdf: f.isPdf || false,
+        pdfUrl: pdfUrl,
+      };
+    });
   }, [filesData]);
 
   const uploadValue = useMemo(() => {
@@ -177,7 +188,6 @@ export default function useLeadPageData(leadId) {
 
       const formData = new FormData();
       formData.append('image', item.file, item.file.name);
-      formData.append('cardCode', cardCode);
       formData.append('leadId', leadId);
 
       await new Promise((resolve) => {
@@ -258,7 +268,7 @@ export default function useLeadPageData(leadId) {
     // Final reconciliation
     queryClient.invalidateQueries(['lead', leadId]);
     queryClient.invalidateQueries(['lead-files', leadId]);
-  }, [passportFiles, cardCode, leadId, mutateWithProgress, queryClient]);
+  }, [passportFiles, leadId, mutateWithProgress, queryClient]);
 
   const handleUploadSingle = useCallback(
     async (file) => {
@@ -275,7 +285,6 @@ export default function useLeadPageData(leadId) {
       updateLocal(file.id, { status: 'yuklanmoqda', progress: 0 });
       const formData = new FormData();
       formData.append('image', file.file, file.file.name);
-      formData.append('cardCode', cardCode);
       formData.append('leadId', leadId);
 
       return new Promise((resolve) => {
@@ -350,42 +359,63 @@ export default function useLeadPageData(leadId) {
         );
       });
     },
-    [cardCode, leadId, mutateWithProgress, queryClient]
+    [leadId, mutateWithProgress, queryClient]
   );
 
   const handleDeleteDocument = useCallback(
-    (fileId) => {
+    async (fileId) => {
       const key = ['lead-files', leadId];
-      const prev = queryClient.getQueryData(key);
-      // optimistic remove
-      queryClient.setQueryData(key, (current) => {
-        const extract = (payload) => {
-          if (!payload) return [];
-          if (Array.isArray(payload)) return payload;
-          if (Array.isArray(payload.images)) return payload.images;
-          return [];
-        };
-        const list = extract(current).filter(
-          (f) => (f._id || f.id || f.key) !== fileId
-        );
-        return Array.isArray(current)
-          ? list
-          : { ...(current || {}), images: list };
-      });
+      
+      // Normalize fileId to string for comparison
+      const normalizedFileId = String(fileId);
+      
+      // Helper function to extract images array from response
+      const extractImages = (data) => {
+        if (!data) return [];
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data?.images)) return data.images;
+        return [];
+      };
+      
+      // Get current data for optimistic update and rollback
+      const currentData = queryClient.getQueryData(key);
+      const previousData = currentData ? JSON.parse(JSON.stringify(currentData)) : null;
+      
+      // Optimistic update - remove file from cache immediately
+      if (currentData) {
+        const currentImages = extractImages(currentData);
+        const filteredImages = currentImages.filter((f) => {
+          const fId = String(f._id || f.id || f.key || '');
+          return fId !== normalizedFileId;
+        });
+        
+        // Update cache with filtered list
+        queryClient.setQueryData(key, (old) => {
+          if (!old) return old;
+          if (Array.isArray(old)) {
+            return filteredImages;
+          }
+          // Handle object structure
+          if (old.status !== undefined) {
+            return { ...old, images: filteredImages };
+          }
+          return { ...old, images: filteredImages };
+        });
+      }
 
-      mutateFileDelete.mutate(
-        { fileId },
-        {
-          onError: () => {
-            // rollback
-            queryClient.setQueryData(key, prev);
-          },
-          onSettled: async () => {
-            await queryClient.invalidateQueries(key);
-            await queryClient.refetchQueries(key);
-          },
+      try {
+        // Delete file from server
+        await mutateFileDelete.mutateAsync({ fileId });
+        
+        // On success, refetch to ensure consistency
+        await queryClient.refetchQueries({ queryKey: key });
+      } catch (error) {
+        // On error, rollback to previous state
+        if (previousData) {
+          queryClient.setQueryData(key, previousData);
         }
-      );
+        throw error;
+      }
     },
     [mutateFileDelete, queryClient, leadId]
   );

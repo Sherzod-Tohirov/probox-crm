@@ -234,7 +234,10 @@ export default function PassportUpload({
                 transition={{ duration: 0.15 }}
                 className={styles.previewCard}
                 onClick={() => {
-                  const href = file.previewLarge || file.preview;
+                  // PDF fayllar uchun pdfUrl dan foydalanish
+                  const href = file.isPdf && file.pdfUrl 
+                    ? file.pdfUrl 
+                    : file.previewLarge || file.preview;
                   if (href) window.open(href, '_blank');
                 }}
               >
@@ -258,7 +261,13 @@ export default function PassportUpload({
                   </div>
                 ) : null}
 
-                <img src={file.preview} alt="Passport preview" />
+                {file.isPdf ? (
+                  <div className={styles.pdfPreview}>
+                    <div className={styles.pdfIcon}>PDF</div>
+                  </div>
+                ) : (
+                  <img src={file.preview} alt="Passport preview" />
+                )}
 
                 {/* Status & progress for local items */}
                 {file.source === 'local' ? (

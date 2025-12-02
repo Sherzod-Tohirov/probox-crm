@@ -5,7 +5,7 @@ export default function useFetchLeadFiles(data, options = {}) {
   const query = useQuery({
     queryKey: ['lead-files', data?.leadId],
     queryFn: () =>
-      getLeadFiles({ leadId: data?.leadId, cardCode: data?.cardCode }),
+      getLeadFiles({ leadId: data?.leadId }),
     enabled:
       !!data?.leadId &&
       (options.enabled !== undefined ? !!options.enabled : true),
