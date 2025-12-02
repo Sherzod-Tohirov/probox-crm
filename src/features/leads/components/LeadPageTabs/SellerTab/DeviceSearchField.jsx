@@ -1,9 +1,13 @@
 import { useState, useCallback } from 'react';
-import { Col, Input } from '@components/ui';
+import { Col, Input, Row } from '@components/ui';
 import FormField from '../../LeadPageForm/FormField';
 import SearchField from '@components/ui/Input/components/SearchField';
 import styles from '../leadPageTabs.module.scss';
-import { formatCurrencyUZS, CONTRACT_CONDITION_OPTIONS } from '../../../utils/deviceUtils';
+import {
+  formatCurrencyUZS,
+  CONTRACT_CONDITION_OPTIONS,
+} from '../../../utils/deviceUtils';
+import useIsMobile from '@/hooks/useIsMobile';
 
 export default function DeviceSearchField({
   canEdit,
@@ -16,7 +20,7 @@ export default function DeviceSearchField({
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-
+  const isMobile = useIsMobile();
   const handleSearchInput = useCallback((event) => {
     const value = event?.target?.value ?? '';
     setSearchTerm(value);
@@ -63,55 +67,79 @@ export default function DeviceSearchField({
   );
 
   return (
-    <Col className={styles['search-field-wrapper']} fullWidth gutter={4}>
-      <Input
-        size="longer"
-        variant="outlined"
-        label="Qidirish"
-        type="search"
-        disabled={!canEdit}
-        placeholder={
-          selectedDevicesCount
-            ? `${selectedDevicesCount} ta qurilma tanlangan`
-            : 'iPhone modelini qidirish'
-        }
-        icon="search"
-        value={searchTerm}
-        onChange={handleSearchInput}
-        onFocus={() => {
-          if (searchTerm.trim()) {
-            setIsSuggestionsOpen(true);
-          }
-        }}
-      />
-      <span className={styles['search-field-wrapper-inner-text']}>
-        Maximum limit:{' '}
-        {leadData?.finalLimit
-          ? formatCurrencyUZS(leadData.finalLimit)
-          : "Ma'lumot yo'q"}
-      </span>
-      {branchFilterOptions.length > 0 && (
-        <div className={styles['search-field-branch-filter']}>
-          <FormField
-            label="Filial bo'yicha qidirish"
-            type="select"
-            options={branchFilterOptions}
-            name="searchBranchFilter"
-            disabled={!canEdit}
-            control={control}
-          />
-        </div>
-      )}
-      <div className={styles['search-field-branch-filter']}>
-        <FormField
-          label="Holat bo'yicha qidirish"
-          type="select"
-          options={CONTRACT_CONDITION_OPTIONS}
-          name="conditionFilter"
+    <Row
+      direction={'row'}
+      className={styles['search-field-wrapper']}
+      fullWidth
+      justify={'space-between'}
+      wrap
+      gutter={4}
+    >
+      <Col align={'end'} flexGrow>
+        <Input
+          size={isMobile ? 'full-grow' : 'longer'}
+          variant="outlined"
+          label="Qidirish"
+          type="search"
           disabled={!canEdit}
-          control={control}
+          style={{ minWidth: '240px' }}
+          placeholder={
+            selectedDevicesCount
+              ? `${selectedDevicesCount} ta qurilma tanlangan`
+              : 'iPhone modelini qidirish'
+          }
+          icon="search"
+          value={searchTerm}
+          onChange={handleSearchInput}
+          onFocus={() => {
+            if (searchTerm.trim()) {
+              setIsSuggestionsOpen(true);
+            }
+          }}
         />
-      </div>
+      </Col>
+      <Col flexGrow>
+        <Row gutter={2}>
+          <Col align={isMobile ? 'start' : 'end'}>
+            <span className={styles['search-field-wrapper-inner-text']}>
+              Maximum limit:{' '}
+              {leadData?.finalLimit
+                ? formatCurrencyUZS(leadData.finalLimit)
+                : "Ma'lumot yo'q"}
+            </span>
+          </Col>
+          <Col justify={'end'} align={'end'}>
+            <Row direction={'row'} gutter={6} wrap>
+              <Col>
+                {branchFilterOptions.length > 0 && (
+                  <div className={styles['search-field-branch-filter']}>
+                    <FormField
+                      label="Filial bo'yicha qidirish"
+                      type="select"
+                      options={branchFilterOptions}
+                      name="searchBranchFilter"
+                      disabled={!canEdit}
+                      control={control}
+                    />
+                  </div>
+                )}
+              </Col>
+              <Col>
+                <div className={styles['search-field-branch-filter']}>
+                  <FormField
+                    label="Holat bo'yicha qidirish"
+                    type="select"
+                    options={CONTRACT_CONDITION_OPTIONS}
+                    name="conditionFilter"
+                    disabled={!canEdit}
+                    control={control}
+                  />
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Col>
       {isSuggestionsOpen && searchTerm.trim() && canEdit && (
         <SearchField
           renderItem={renderIphoneItem}
@@ -120,7 +148,6 @@ export default function DeviceSearchField({
           onSelect={handleSelectDevice}
         />
       )}
-    </Col>
+    </Row>
   );
 }
-
