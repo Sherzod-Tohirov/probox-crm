@@ -80,19 +80,11 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           Number(device.rentPeriod) ||
           DEFAULT_RENT_PERIOD;
 
-        // Agar firstPayment bo'sh bo'lsa, avtomatik hisoblaymiz
+        // Ijara oyi o'zgarganda, birinchi to'lovni yangi period uchun avtomatik hisoblangan summasiga qaytaramiz
         const totalPrice = extractNumericValue(device.price);
-        const currentFirstPayment =
-          device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
-            ? null
-            : Number(device.firstPayment);
-
-        let newFirstPayment = currentFirstPayment;
-        const isManual = device.isFirstPaymentManual === true;
+        let newFirstPayment = '';
 
         // Agar firstPayment bo'sh bo'lsa yoki null bo'lsa, avtomatik hisoblaymiz
-        // Agar foydalanuvchi qo'lda kiritgan bo'lsa, uni saqlaymiz
-        // Aks holda (avtomatik hisoblangan bo'lsa), period o'zgarganda yangi calculatedFirstPayment ni ishlatamiz
         if (totalPrice && monthlyLimit) {
           const paymentDetails = calculatePaymentDetails({
             price: totalPrice,
@@ -101,21 +93,16 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             firstPayment: 0,
           });
           
-          // Agar foydalanuvchi qo'lda kiritgan bo'lsa, uni saqlaymiz
-          if (isManual && currentFirstPayment !== null && currentFirstPayment !== undefined && currentFirstPayment > 0) {
-            newFirstPayment = currentFirstPayment;
-          } else {
-            // Avtomatik hisoblangan yoki bo'sh bo'lsa, yangi calculatedFirstPayment ni ishlatamiz
-            newFirstPayment = paymentDetails.calculatedFirstPayment;
-          }
+          // Ijara oyi o'zgarganda, har doim yangi calculatedFirstPayment ni ishlatamiz
+          newFirstPayment = paymentDetails.calculatedFirstPayment || '';
         }
 
         return {
           ...device,
           rentPeriod: newPeriod,
           firstPayment: newFirstPayment !== null && newFirstPayment !== undefined ? newFirstPayment : '',
-          // Agar avtomatik hisoblangan bo'lsa, flag ni false qilib qo'yamiz
-          isFirstPaymentManual: isManual && newFirstPayment === currentFirstPayment,
+          // Ijara oyi o'zgarganda, birinchi to'lov avtomatik hisoblangan bo'ladi
+          isFirstPaymentManual: false,
         };
       });
       
@@ -141,7 +128,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           return {
             ...device,
             firstPayment: '',
-            isFirstPaymentManual: false,
+            // Foydalanuvchi maydonni bo'shatdi – bu ham qo'lda tahrir hisoblanadi
+            // shuning uchun avtomatik qiymat bilan to'ldirmaymiz
+            isFirstPaymentManual: true,
           };
         }
         
@@ -151,7 +140,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           return {
             ...device,
             firstPayment: '',
-            isFirstPaymentManual: false,
+            isFirstPaymentManual: true,
           };
         }
 
@@ -257,6 +246,20 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           rentPeriodOptions[0]?.value ||
           DEFAULT_RENT_PERIOD,
         firstPayment: (() => {
+          // Agar foydalanuvchi birinchi to'lovni qo'lda tahrir qilgan bo'lsa,
+          // hech qanday avtomatik hisob-kitob qilmaymiz – aynan o'sha qiymatni (yoki bo'sh) ko'rsatamiz
+          if (device.isFirstPaymentManual) {
+            if (
+              device.firstPayment === '' ||
+              device.firstPayment === null ||
+              device.firstPayment === undefined
+            ) {
+              return '';
+            }
+            const manual = Number(device.firstPayment);
+            return Number.isFinite(manual) && manual > 0 ? manual : '';
+          }
+
           const totalPrice = extractNumericValue(device.price);
           if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0) {
             return '';
