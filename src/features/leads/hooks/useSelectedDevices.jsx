@@ -6,6 +6,7 @@ import {
   formatNumberWithSeparators,
   calculatePaymentDetails,
 } from '../utils/deviceUtils';
+import { alert } from '@/utils/globalAlert';
 
 export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionFilter }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
@@ -34,6 +35,40 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
   const handleDeleteDevice = useCallback((deviceId) => {
     setSelectedDevices((prev) => prev.filter((device) => device.id !== deviceId));
   }, []);
+
+  // Helper funksiya: actualFirstPayment ni hisoblash
+  const getActualFirstPayment = useCallback((device) => {
+    const totalPrice = extractNumericValue(device.price);
+    const period =
+      Number(device.rentPeriod) ||
+      rentPeriodOptions[0]?.value ||
+      DEFAULT_RENT_PERIOD;
+    const userFirstPayment =
+      device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+        ? null
+        : Number(device.firstPayment);
+
+    // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz
+    if (userFirstPayment !== null && Number.isFinite(userFirstPayment) && userFirstPayment > 0) {
+      return userFirstPayment;
+    }
+
+    // Aks holda avtomatik hisoblaymiz
+    // Agar price yoki period yo'q bo'lsa, 0 qaytaramiz
+    if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
+      return 0;
+    }
+
+    // Agar monthlyLimit null bo'lsa, calculatedFirstPayment 0 bo'ladi
+    const paymentDetails = calculatePaymentDetails({
+      price: totalPrice,
+      period,
+      monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
+      firstPayment: 0,
+    });
+
+    return paymentDetails.calculatedFirstPayment || 0;
+  }, [rentPeriodOptions, monthlyLimit]);
 
   const handleRentPeriodChange = useCallback((deviceId, value) => {
     setSelectedDevices((prev) => {
@@ -90,63 +125,102 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
 
   const handleFirstPaymentChange = useCallback((deviceId, rawValue) => {
     setSelectedDevices((prev) =>
-      prev.map((device) =>
-        device.id === deviceId
-          ? {
-              ...device,
-              firstPayment: (() => {
-                const stringValue =
-                  typeof rawValue === 'string'
-                    ? rawValue
-                    : rawValue === null || rawValue === undefined
-                      ? ''
-                      : String(rawValue);
-                const sanitized = stringValue.replace(/[^\d]/g, '');
-                if (!sanitized) {
-                  return '';
-                }
-                const parsed = Number(sanitized);
-                return Number.isNaN(parsed) ? '' : parsed;
-              })(),
-              isFirstPaymentManual: true, // Foydalanuvchi qo'lda kiritdi
-            }
-          : device
-      )
+      prev.map((device) => {
+        if (device.id !== deviceId) return device;
+
+        const stringValue =
+          typeof rawValue === 'string'
+            ? rawValue
+            : rawValue === null || rawValue === undefined
+              ? ''
+              : String(rawValue);
+        
+        const sanitized = stringValue.replace(/[^\d]/g, '');
+        
+        if (!sanitized) {
+          return {
+            ...device,
+            firstPayment: '',
+            isFirstPaymentManual: false,
+          };
+        }
+        
+        const parsed = Number(sanitized);
+        
+        if (Number.isNaN(parsed)) {
+          return {
+            ...device,
+            firstPayment: '',
+            isFirstPaymentManual: false,
+          };
+        }
+
+        // onChange da faqat qiymatni saqlaymiz, validatsiyani onBlur da qilamiz
+        return {
+          ...device,
+          firstPayment: parsed,
+          isFirstPaymentManual: true, // Foydalanuvchi qo'lda kiritdi
+        };
+      })
     );
   }, []);
 
-  // Helper funksiya: actualFirstPayment ni hisoblash
-  const getActualFirstPayment = useCallback((device) => {
-    const totalPrice = extractNumericValue(device.price);
-    const period =
-      Number(device.rentPeriod) ||
-      rentPeriodOptions[0]?.value ||
-      DEFAULT_RENT_PERIOD;
-    const userFirstPayment =
-      device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
-        ? null
-        : Number(device.firstPayment);
+  const handleFirstPaymentBlur = useCallback((deviceId) => {
+    setSelectedDevices((prev) =>
+      prev.map((device) => {
+        if (device.id !== deviceId) return device;
 
-    // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz
-    if (userFirstPayment !== null && Number.isFinite(userFirstPayment) && userFirstPayment > 0) {
-      return userFirstPayment;
-    }
+        const currentFirstPayment = 
+          device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+            ? null
+            : Number(device.firstPayment);
 
-    // Aks holda avtomatik hisoblaymiz
-    // Agar price yoki period yo'q bo'lsa, 0 qaytaramiz
-    if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
-      return 0;
-    }
+        if (currentFirstPayment === null || !Number.isFinite(currentFirstPayment) || currentFirstPayment <= 0) {
+          return device;
+        }
 
-    // Agar monthlyLimit null bo'lsa, calculatedFirstPayment 0 bo'ladi
-    const paymentDetails = calculatePaymentDetails({
-      price: totalPrice,
-      period,
-      monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
-      firstPayment: 0,
-    });
+        // Avtomatik hisoblangan birinchi to'lovni topish
+        const totalPrice = extractNumericValue(device.price);
+        const period =
+          Number(device.rentPeriod) ||
+          rentPeriodOptions[0]?.value ||
+          DEFAULT_RENT_PERIOD;
+        
+        let autoCalculatedFirstPayment = 0;
+        if (totalPrice !== null && Number.isFinite(totalPrice) && totalPrice > 0 && Number.isFinite(period) && period > 0) {
+          const paymentDetails = calculatePaymentDetails({
+            price: totalPrice,
+            period,
+            monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
+            firstPayment: 0,
+          });
+          autoCalculatedFirstPayment = paymentDetails.calculatedFirstPayment || 0;
+        }
+        
+        // Agar avtomatik hisoblangan qiymat mavjud bo'lsa, 10% cheklovni tekshiramiz
+        if (autoCalculatedFirstPayment > 0 && currentFirstPayment < autoCalculatedFirstPayment * 0.9) {
+          // 10%dan ko'p kamaytirishga urinilmoqda
+          const minAllowedFirstPayment = Math.round(autoCalculatedFirstPayment * 0.9);
+          
+          // Warning ko'rsatish (setTimeout orqali render paytida emas)
+          setTimeout(() => {
+            alert(
+              `Birinchi to'lovni avtomatik hisoblangan summaning 10%dan ko'p kamaytirish mumkin emas. Minimum ruxsat etilgan summa: ${formatCurrencyUZS(minAllowedFirstPayment)}`,
+              { type: 'info' }
+            );
+          }, 0);
+          
+          // 90%ni yozish
+          return {
+            ...device,
+            firstPayment: minAllowedFirstPayment,
+            isFirstPaymentManual: true,
+          };
+        }
 
-    return paymentDetails.calculatedFirstPayment || 0;
+        return device;
+      })
+    );
   }, [rentPeriodOptions, monthlyLimit]);
 
   const selectedDeviceData = useMemo(
@@ -304,6 +378,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
     handleDeleteDevice,
     handleRentPeriodChange,
     handleFirstPaymentChange,
+    handleFirstPaymentBlur,
   };
 };
 

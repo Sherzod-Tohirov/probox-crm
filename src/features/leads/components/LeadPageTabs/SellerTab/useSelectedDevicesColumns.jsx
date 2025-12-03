@@ -9,6 +9,7 @@ export const useSelectedDevicesColumns = ({
   onImeiSelect,
   onRentPeriodChange,
   onFirstPaymentChange,
+  onFirstPaymentBlur,
   onDeleteDevice,
 }) => {
   return useMemo(
@@ -129,9 +130,15 @@ export const useSelectedDevicesColumns = ({
             width="100%"
             variant="outlined"
             inputMode="numeric"
-            onChange={(event) =>
-              onFirstPaymentChange(row.id, event?.target?.value ?? '')
-            }
+            onChange={(event) => {
+              const newValue = event?.target?.value ?? '';
+              onFirstPaymentChange(row.id, newValue);
+            }}
+            onBlur={() => {
+              if (onFirstPaymentBlur) {
+                onFirstPaymentBlur(row.id);
+              }
+            }}
             hasIcon={false}
             disabled={!canEdit}
           />
@@ -180,6 +187,7 @@ export const useSelectedDevicesColumns = ({
       canEdit,
       onDeleteDevice,
       onFirstPaymentChange,
+      onFirstPaymentBlur,
       onImeiSelect,
       onRentPeriodChange,
       rentPeriodOptions,

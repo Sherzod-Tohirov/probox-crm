@@ -15,6 +15,7 @@ export default function SelectedDevicesTable({
   onImeiSelect,
   onRentPeriodChange,
   onFirstPaymentChange,
+  onFirstPaymentBlur,
   onDeleteDevice,
   totalGrandTotal,
   leadId,
@@ -27,6 +28,7 @@ export default function SelectedDevicesTable({
     onImeiSelect,
     onRentPeriodChange,
     onFirstPaymentChange,
+    onFirstPaymentBlur,
     onDeleteDevice,
   });
 
