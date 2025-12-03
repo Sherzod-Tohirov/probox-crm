@@ -129,7 +129,7 @@
 
   td {
     position: relative;
-    padding: 2rem; // Default for desktop
+    padding: 2rem 2rem 6rem 2rem; // Default for desktop
     border-bottom: v.$secondary-border-width v.$primary-border-type
       v.$primary-border-color;
     white-space: nowrap;
@@ -137,7 +137,7 @@
     text-overflow: ellipsis;
 
     @media (max-width: (v.$breakpoint-md - 1)) {
-      padding: 2rem; // Smaller padding for mobile
+      padding: 2rem 2rem 6rem 2rem; // Smaller padding for mobile
     }
 
     &.empty-table {

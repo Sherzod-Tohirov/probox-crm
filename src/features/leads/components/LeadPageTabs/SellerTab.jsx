@@ -85,6 +85,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     handleDeleteDevice,
     handleRentPeriodChange,
     handleFirstPaymentChange,
+    handleFirstPaymentBlur,
   } = useSelectedDevices({ rentPeriodOptions, monthlyLimit, conditionFilter });
 
   const { fetchDeviceSeries } = useDeviceSeries({
@@ -192,6 +193,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   onImeiSelect={handleImeiSelect}
                   onRentPeriodChange={handleRentPeriodChange}
                   onFirstPaymentChange={handleFirstPaymentChange}
+                  onFirstPaymentBlur={handleFirstPaymentBlur}
                   onDeleteDevice={handleDeleteDevice}
                   totalGrandTotal={totalGrandTotal}
                   leadId={leadId}
