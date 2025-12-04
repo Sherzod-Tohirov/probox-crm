@@ -4,10 +4,12 @@ import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
 import { getExecutors } from '@/services/executorsService';
 import { extractNumericValue, resolveItemCode } from '@/features/leads/utils/deviceUtils';
+import { getCurrency } from '@/services/currencyService';
+import moment from 'moment';
 
 export default function useInvoice(options = {}) {
   return useMutation({
-    mutationFn: async ({ leadId, selectedDevices }) => {
+    mutationFn: async ({ leadId, selectedDevices, paymentType }) => {
       // 1. Lead ma'lumotlarini olish
       const leadResponse = await getLeadById(leadId);
       const leadData = leadResponse?.data || leadResponse;
@@ -172,7 +174,34 @@ export default function useInvoice(options = {}) {
         }
       }
 
-      // 7. Invoice body ni tayyorlash
+      // 7. CashSum (birinchi to'lov summasi) ni hisoblash
+      const cashSum = selectedDevices.reduce((total, device) => {
+        const firstPayment = 
+          device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+            ? 0
+            : Number(device.firstPayment);
+        return total + (Number.isFinite(firstPayment) && firstPayment > 0 ? firstPayment : 0);
+      }, 0);
+
+      // 8. DocRate (dollar kursi) ni olish
+      let docRate = null;
+      try {
+        const currencyDate = moment().format('YYYY.MM.DD');
+        const currencyResponse = await getCurrency({ date: currencyDate });
+        // Currency response strukturasini tekshirish
+        if (currencyResponse?.Rate) {
+          docRate = Number(currencyResponse.Rate);
+        } else if (currencyResponse?.data?.Rate) {
+          docRate = Number(currencyResponse.data.Rate);
+        } else if (Array.isArray(currencyResponse) && currencyResponse.length > 0) {
+          docRate = Number(currencyResponse[0]?.Rate || currencyResponse[0]?.rate || 0);
+        }
+      } catch (error) {
+        // Currency rate olishda xatolik bo'lsa ham davom etamiz
+        console.warn('Currency rate olishda xatolik:', error);
+      }
+
+      // 9. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         leadId: leadId,
@@ -186,12 +215,15 @@ export default function useInvoice(options = {}) {
         sellerName: sellerName,
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
+        CashSum: cashSum, // Birinchi to'lov summasi
+        DocRate: docRate, // Dollar kursi
+        paymentType: paymentType || '', // To'lov turi
       };
 
-      // 8. Invoice yuborish
+      // 10. Invoice yuborish
       await createInvoice(invoiceData);
 
-      // 9. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
+      // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;
     },
     retry: false,

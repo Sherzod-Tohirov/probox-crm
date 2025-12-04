@@ -199,6 +199,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   leadId={leadId}
                   userSignature={userSignature}
                   currentUser={user}
+                  control={control}
                 />
               </Col>
             )}

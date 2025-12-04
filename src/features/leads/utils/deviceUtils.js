@@ -153,11 +153,16 @@ export const DEFAULT_CONTRACT_CONDITION = 'Yangi';
 export const DEFAULT_RENT_PERIOD = 1;
 
 export const CONTRACT_CONDITION_OPTIONS = [
-  { value: 'all', label: 'Barchasi' },
+  { value: '', label: 'Barchasi' },
   { value: 'Yangi', label: 'Yangi' },
   { value: 'B/U', label: 'B/U' },
 ];
 
+export const PAYMENT_INTEREST_OPTIONS = [
+  { value: '', label: 'Barchasi' },
+  { value: 'Cash', label: 'Naqd pul' },
+  { value: 'Card', label: 'Karta' },
+];
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {
   1: 0.05,   // 5%

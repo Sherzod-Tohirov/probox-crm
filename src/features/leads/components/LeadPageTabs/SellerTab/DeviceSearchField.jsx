@@ -6,6 +6,7 @@ import styles from '../leadPageTabs.module.scss';
 import {
   formatCurrencyUZS,
   CONTRACT_CONDITION_OPTIONS,
+  PAYMENT_INTEREST_OPTIONS,
 } from '../../../utils/deviceUtils';
 import useIsMobile from '@/hooks/useIsMobile';
 
@@ -110,6 +111,19 @@ export default function DeviceSearchField({
           </Col>
           <Col justify={'end'} align={'end'}>
             <Row direction={'row'} gutter={6} wrap>
+              {/* to'lov turi bo'yicha form field */}
+              <Col>
+                <div className={styles['search-field-branch-filter']}>
+                  <FormField
+                    label="To'lov turi bo'yicha qidirish"
+                    type="select"
+                    options={PAYMENT_INTEREST_OPTIONS}
+                    name="paymentInterestFilter"
+                    disabled={!canEdit}
+                    control={control}
+                  />
+                </div>
+              </Col>
               <Col>
                 {branchFilterOptions.length > 0 && (
                   <div className={styles['search-field-branch-filter']}>

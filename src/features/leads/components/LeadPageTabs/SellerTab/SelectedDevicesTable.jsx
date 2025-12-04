@@ -1,11 +1,13 @@
 import { Row, Col, Table, Button } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
-import { formatCurrencyUZS } from '../../../utils/deviceUtils';
+import { formatCurrencyUZS, PAYMENT_INTEREST_OPTIONS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
 import useInvoice from '@/hooks/data/leads/useInvoice';
 import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
 import { generateInvoicePdf } from '@/utils/invoicePdf';
+import FormField from '../../LeadPageForm/FormField';
+import { useWatch } from 'react-hook-form';
 
 export default function SelectedDevicesTable({
   selectedDeviceData,
@@ -21,6 +23,7 @@ export default function SelectedDevicesTable({
   leadId,
   userSignature,
   currentUser,
+  control,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
@@ -33,6 +36,9 @@ export default function SelectedDevicesTable({
   });
 
   const { mutateAsync: uploadInvoiceFile, isPending: isUploadingInvoice } = useUploadInvoiceFile();
+
+  // To'lov turini kuzatish
+  const paymentType = useWatch({ control, name: 'invoicePaymentType' });
 
   const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
     onSuccess: async (invoiceData) => {
@@ -70,6 +76,12 @@ export default function SelectedDevicesTable({
   });
 
   const handleSendInvoice = async () => {
+    // To'lov turi tanlanganligini birinchi navbatda tekshirish
+    if (!paymentType || paymentType === '' || paymentType === 'all') {
+      alert('To\'lov turini tanlang', { type: 'error' });
+      return;
+    }
+
     if (!leadId) {
       alert('Lead ID topilmadi', { type: 'error' });
       return;
@@ -91,7 +103,7 @@ export default function SelectedDevicesTable({
     }
 
     try {
-      await sendInvoice({ leadId, selectedDevices });
+      await sendInvoice({ leadId, selectedDevices, paymentType });
     } catch (error) {
       // Error already handled in onError callback
     }
@@ -128,16 +140,28 @@ export default function SelectedDevicesTable({
           </Col>
 
           {canEdit && (
-            <Col>
-              <Button
-                variant="filled"
-                onClick={handleSendInvoice}
-                isLoading={isSendingInvoice}
-                disabled={isSendingInvoice || selectedDevices.length === 0}
-              >
-                Invoice yuborish
-              </Button>
-            </Col>
+            <>
+              <Col>
+                <FormField
+                  label="To'lov turi"
+                  type="select"
+                  options={PAYMENT_INTEREST_OPTIONS.filter(opt => opt.value !== '')}
+                  name="invoicePaymentType"
+                  disabled={!canEdit}
+                  control={control}
+                />
+              </Col>
+              <Col>
+                <Button
+                  variant="filled"
+                  onClick={handleSendInvoice}
+                  isLoading={isSendingInvoice}
+                  disabled={isSendingInvoice || selectedDevices.length === 0}
+                >
+                  Invoice yuborish
+                </Button>
+              </Col>
+            </>
           )}
         </Row>
       </Col>
