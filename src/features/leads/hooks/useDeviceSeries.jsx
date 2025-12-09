@@ -102,7 +102,14 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
 
           let calculatedPriceUZS = null;
 
-          if (baseUsd && currencyRate && Number.isFinite(currencyRate) && currencyRate > 0) {
+          // Agar U_PROD_CONDITION "Yangi" bo'lsa, SalePrice allaqachon UZS formatida,
+          // shuning uchun uni dollar kursiga ko'paytirmaslik kerak
+          if (condition === 'Yangi' && baseUsd) {
+            // Yangi mahsulotlar uchun SalePrice to'g'ridan-to'g'ri UZS formatida
+            calculatedPriceUZS = baseUsd;
+            priceText = formatCurrencyUZS(baseUsd);
+          } else if (baseUsd && currencyRate && Number.isFinite(currencyRate) && currencyRate > 0) {
+            // B/U yoki boshqa holatlar uchun: USD -> UZS ga o'tkazamiz
             const uzs = baseUsd * currencyRate;
             calculatedPriceUZS = uzs;
             priceText = formatCurrencyUZS(uzs);

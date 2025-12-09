@@ -85,27 +85,37 @@ export const getItemBasePriceUSD = (item) => {
 
 export const normalizeContractItems = (items = [], branchCodeToNameMap, currencyRate) => {
   return items.map((item, index) => {
+    // Condition ma'lumotini U_PROD_CONDITION maydonidan olamiz (narx hisoblashdan oldin)
+    const condition = item?.U_PROD_CONDITION ?? item?.u_prod_condition ?? '';
+
     // Avvalo USD dagi bazaviy narxni aniqlaymiz (U_PROD_CONDITION va Purchase/SalePrice bo'yicha)
     const basePriceUSD = getItemBasePriceUSD(item);
 
     let priceText = '';
 
-    // Agar kurs bo'lsa, USD -> UZS ga o'tkazib, formatlaymiz
-    const rateNum =
-      currencyRate !== null && currencyRate !== undefined
-        ? Number(currencyRate)
-        : null;
-
-    if (basePriceUSD && rateNum && Number.isFinite(rateNum) && rateNum > 0) {
-      const priceUZS = basePriceUSD * rateNum;
-      priceText = formatCurrencyUZS(priceUZS);
+    // Agar U_PROD_CONDITION "Yangi" bo'lsa, SalePrice allaqachon UZS formatida,
+    // shuning uchun uni dollar kursiga ko'paytirmaslik kerak
+    if (condition === 'Yangi' && basePriceUSD) {
+      // Yangi mahsulotlar uchun SalePrice to'g'ridan-to'g'ri UZS formatida
+      priceText = formatCurrencyUZS(basePriceUSD);
     } else {
-      // Fallback: eski PhonePrice maydonlari bo'yicha
-      const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
-      priceText =
-        priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
-          ? formatCurrencyUZS(priceValue)
-          : '';
+      // B/U yoki boshqa holatlar uchun: Agar kurs bo'lsa, USD -> UZS ga o'tkazib, formatlaymiz
+      const rateNum =
+        currencyRate !== null && currencyRate !== undefined
+          ? Number(currencyRate)
+          : null;
+
+      if (basePriceUSD && rateNum && Number.isFinite(rateNum) && rateNum > 0) {
+        const priceUZS = basePriceUSD * rateNum;
+        priceText = formatCurrencyUZS(priceUZS);
+      } else {
+        // Fallback: eski PhonePrice maydonlari bo'yicha
+        const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
+        priceText =
+          priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
+            ? formatCurrencyUZS(priceValue)
+            : '';
+      }
     }
 
     const onHand = item?.OnHand ?? item?.onHand ?? 0;
@@ -113,9 +123,6 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap, currency
 
     const whsCode = item?.WhsCode ?? item?.whsCode ?? '';
     const whsName = item?.WhsName ?? item?.whsName ?? branchCodeToNameMap.get(String(whsCode)) ?? '';
-
-    // Condition ma'lumotini U_PROD_CONDITION maydonidan olamiz
-    const condition = item?.U_PROD_CONDITION ?? item?.u_prod_condition ?? '';
 
     return {
       id:
