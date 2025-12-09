@@ -3,7 +3,7 @@ import { createInvoice } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
 import { getExecutors } from '@/services/executorsService';
-import { extractNumericValue, resolveItemCode } from '@/features/leads/utils/deviceUtils';
+import { extractNumericValue, resolveItemCode, calculatePaymentDetails } from '@/features/leads/utils/deviceUtils';
 import { getCurrency } from '@/services/currencyService';
 import moment from 'moment';
 
@@ -18,12 +18,35 @@ export default function useInvoice(options = {}) {
         throw new Error('Lead ma\'lumotlari topilmadi');
       }
 
-      // 2. DocumentLines ni tayyorlash
+      // 2. Monthly limit ni hisoblash (DocumentLines dan oldin kerak)
+      const monthlyLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) 
+        ? (Number(leadData.finalLimit) || null)
+        : null;
+
+      // 3. DocumentLines ni tayyorlash
       const documentLines = await Promise.all(
         selectedDevices.map(async (device) => {
           const itemCode = resolveItemCode(device);
           const whsCode = device?.whsCode || device?.raw?.WhsCode || '';
           const price = extractNumericValue(device.price) || 0;
+          
+          // Jami narxni hisoblash (ustama bilan)
+          const period = Number(device.rentPeriod) || 1;
+          const firstPayment = extractNumericValue(device.firstPayment) || 0;
+          const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
+          
+          let totalPrice = price; // Default: faqat narx
+          
+          // Agar price va period to'g'ri bo'lsa, grandTotal ni hisoblaymiz
+          if (price && price > 0 && period > 0) {
+            const paymentDetails = calculatePaymentDetails({
+              price,
+              period,
+              monthlyLimit: monthlyLimitNum,
+              firstPayment,
+            });
+            totalPrice = paymentDetails.grandTotal || price;
+          }
 
           if (!itemCode || !whsCode) {
             const missingFields = [];
@@ -107,10 +130,10 @@ export default function useInvoice(options = {}) {
             ItemCode: itemCode,
             WarehouseCode: whsCode,
             Quantity: 1,
-            Price: price,
+            Price: totalPrice, // Jami narx (ustama bilan)
             Currency: 'UZS',
             DiscountPercent: 0,
-            UnitPrice: price,
+            UnitPrice: totalPrice, // Jami narx (ustama bilan)
             SerialNumbers: serialNumbers,
           };
         })
@@ -125,12 +148,7 @@ export default function useInvoice(options = {}) {
         ? clientAddressParts.join(', ') 
         : '';
 
-      // 5. Monthly limit ni hisoblash
-      const monthlyLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) 
-        ? (Number(leadData.finalLimit) || null)
-        : null;
-
-      // 6. Sotuvchi nomini olish
+      // 5. Sotuvchi nomini olish
       // Avval consultant yoki sellerName ni tekshiramiz
       let sellerName = leadData?.consultant || leadData?.sellerName || '';
       
@@ -174,7 +192,7 @@ export default function useInvoice(options = {}) {
         }
       }
 
-      // 7. CashSum (birinchi to'lov summasi) ni hisoblash
+      // 6. CashSum (birinchi to'lov summasi) ni hisoblash
       const cashSum = selectedDevices.reduce((total, device) => {
         const firstPayment = 
           device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
@@ -183,7 +201,7 @@ export default function useInvoice(options = {}) {
         return total + (Number.isFinite(firstPayment) && firstPayment > 0 ? firstPayment : 0);
       }, 0);
 
-      // 8. DocRate (dollar kursi) ni olish
+      // 7. DocRate (dollar kursi) ni olish
       let docRate = null;
       try {
         const currencyDate = moment().format('YYYY.MM.DD');
@@ -201,9 +219,120 @@ export default function useInvoice(options = {}) {
         console.warn('Currency rate olishda xatolik:', error);
       }
 
-      // 9. Invoice body ni tayyorlash
+      // 8. DocDate (joriy sana) ni formatlash
+      const docDate = moment().format('YYYY-MM-DD');
+
+      // 9. NumberOfInstallments va DocumentInstallments ni hisoblash
+      const maxRentPeriod = selectedDevices.length > 0
+        ? Math.max(...selectedDevices.map(device => Number(device.rentPeriod) || 1))
+        : 1;
+      
+      // 1. numberOfInstallments = rentPeriod + 1 (har doim)
+      const numberOfInstallments = maxRentPeriod + 1;
+
+      // 10. DocumentInstallments (to'lov jadvali) ni hisoblash
+      const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
+      let grandTotal = 0;
+      let totalFirstPayment = 0;
+      const devicePayments = [];
+
+      // Har bir qurilma uchun to'lov ma'lumotlarini hisoblash
+      selectedDevices.forEach((device) => {
+        const price = extractNumericValue(device.price);
+        const period = Number(device.rentPeriod) || 1;
+        const firstPayment = extractNumericValue(device.firstPayment) || 0;
+
+        if (price && price > 0 && period > 0) {
+          const paymentDetails = calculatePaymentDetails({
+            price,
+            period,
+            monthlyLimit: monthlyLimitNum,
+            firstPayment,
+          });
+
+          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
+          grandTotal += paymentDetails.grandTotal || 0;
+          totalFirstPayment += actualFirstPayment || 0;
+
+          devicePayments.push({
+            period,
+            monthlyPayment: paymentDetails.monthlyPayment || 0,
+          });
+        }
+      });
+
+      // DocumentInstallments ni yaratish (uzunligi rentPeriod ga teng)
+      const documentInstallments = [];
+      let installmentId = 1;
+
+      // Har bir oy uchun oylik to'lovlar (1 dan rentPeriod gacha)
+      for (let month = 1; month <= maxRentPeriod; month++) {
+        let monthlyTotal = 0;
+
+        devicePayments.forEach((devicePayment) => {
+          if (month <= devicePayment.period) {
+            monthlyTotal += devicePayment.monthlyPayment;
+          }
+        });
+
+        if (monthlyTotal > 0 && grandTotal > 0) {
+          const dueDate = moment().add(month, 'months').format('YYYY-MM-DD');
+          
+          // Birinchi object: faqat birinchi to'lov (firstPayment) - CashSum bilan bir xil
+          if (month === 1 && totalFirstPayment > 0) {
+            const percentage = (totalFirstPayment / grandTotal) * 100;
+
+            documentInstallments.push({
+              DueDate: dueDate,
+              Percentage: percentage,
+              TotalFC: Math.round(totalFirstPayment),
+              InstallmentId: installmentId++,
+              U_date: dueDate,
+              U_Employee: null,
+              U_Comment: null,
+              U_PromisedDate: null,
+            });
+          } else {
+            // Qolgan objectlar: faqat oylik to'lovlar
+            const percentage = (monthlyTotal / grandTotal) * 100;
+
+            documentInstallments.push({
+              DueDate: dueDate,
+              Percentage: percentage,
+              TotalFC: Math.round(monthlyTotal),
+              InstallmentId: installmentId++,
+              U_date: dueDate,
+              U_Employee: null,
+              U_Comment: null,
+              U_PromisedDate: null,
+            });
+          }
+        }
+      }
+
+      // 5. Barcha Percentage larni qo'shganda 100 bo'lishini ta'minlash
+      if (documentInstallments.length > 0 && grandTotal > 0) {
+        const totalPercentage = documentInstallments.reduce((sum, item) => sum + item.Percentage, 0);
+        const difference = 100 - totalPercentage;
+        
+        // Birinchi installment ga farqni qo'shamiz (chunki u eng katta)
+        if (difference !== 0 && documentInstallments.length > 0) {
+          documentInstallments[0].Percentage = documentInstallments[0].Percentage + difference;
+        }
+      }
+
+      // DocDueDate - oxirgi to'lov sanasi
+      const docDueDate = documentInstallments.length > 0
+        ? documentInstallments[documentInstallments.length - 1].DueDate
+        : docDate;
+
+      // 11. Invoice body ni tayyorlash
       const invoiceData = {
         CardCode: leadData.cardCode || '',
+        DocDate: docDate, // Joriy sana
+        DocDueDate: docDueDate, // Oxirgi to'lov sanasi
+        NumberOfInstallments: numberOfInstallments, // Ijara oyi
+        DocumentInstallments: documentInstallments, // To'lov jadvali
         leadId: leadId,
         U_leadId: leadId,
         clientPhone: leadData.clientPhone || '',
@@ -232,4 +361,5 @@ export default function useInvoice(options = {}) {
 }
 
 
+// /lead-images/upload method: POST
 // /lead-images/upload method: POST
