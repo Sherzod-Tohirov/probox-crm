@@ -166,7 +166,7 @@ export const CONTRACT_CONDITION_OPTIONS = [
 ];
 
 export const PAYMENT_INTEREST_OPTIONS = [
-  { value: '', label: 'Barchasi' },
+  { value: '', label: 'Tanlash' },
   { value: 'Cash', label: 'Naqd pul' },
   { value: 'Card', label: 'Karta' },
 ];

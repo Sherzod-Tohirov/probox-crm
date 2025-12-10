@@ -192,14 +192,7 @@ export default function useInvoice(options = {}) {
         }
       }
 
-      // 6. CashSum (birinchi to'lov summasi) ni hisoblash
-      const cashSum = selectedDevices.reduce((total, device) => {
-        const firstPayment = 
-          device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
-            ? 0
-            : Number(device.firstPayment);
-        return total + (Number.isFinite(firstPayment) && firstPayment > 0 ? firstPayment : 0);
-      }, 0);
+      // 6. CashSum ni keyinroq hisoblaymiz (totalFirstPayment dan keyin)
 
       // 7. DocRate (dollar kursi) ni olish
       let docRate = null;
@@ -261,11 +254,29 @@ export default function useInvoice(options = {}) {
         }
       });
 
-      // DocumentInstallments ni yaratish (uzunligi rentPeriod ga teng)
+      // 6. CashSum (birinchi to'lov summasi) ni hisoblash - totalFirstPayment dan foydalanamiz
+      const cashSum = totalFirstPayment;
+
+      // DocumentInstallments ni yaratish (uzunligi numberOfInstallments ga teng = rentPeriod + 1)
       const documentInstallments = [];
       let installmentId = 1;
 
-      // Har bir oy uchun oylik to'lovlar (1 dan rentPeriod gacha)
+      // 1. Birinchi object: birinchi to'lov (firstPayment) - CashSum bilan bir xil
+      if (totalFirstPayment > 0) {
+        const firstPaymentDate = moment().format('YYYY-MM-DD');
+
+        documentInstallments.push({
+          DueDate: firstPaymentDate,
+          TotalFC: Math.round(totalFirstPayment),
+          InstallmentId: installmentId++,
+          U_date: firstPaymentDate,
+          U_Employee: null,
+          U_Comment: null,
+          U_PromisedDate: null,
+        });
+      }
+
+      // 2. Har bir oy uchun oylik to'lovlar (1 dan rentPeriod gacha)
       for (let month = 1; month <= maxRentPeriod; month++) {
         let monthlyTotal = 0;
 
@@ -275,49 +286,18 @@ export default function useInvoice(options = {}) {
           }
         });
 
-        if (monthlyTotal > 0 && grandTotal > 0) {
+        if (monthlyTotal > 0) {
           const dueDate = moment().add(month, 'months').format('YYYY-MM-DD');
-          
-          // Birinchi object: faqat birinchi to'lov (firstPayment) - CashSum bilan bir xil
-          if (month === 1 && totalFirstPayment > 0) {
-            const percentage = (totalFirstPayment / grandTotal) * 100;
 
-            documentInstallments.push({
-              DueDate: dueDate,
-              Percentage: percentage,
-              TotalFC: Math.round(totalFirstPayment),
-              InstallmentId: installmentId++,
-              U_date: dueDate,
-              U_Employee: null,
-              U_Comment: null,
-              U_PromisedDate: null,
-            });
-          } else {
-            // Qolgan objectlar: faqat oylik to'lovlar
-            const percentage = (monthlyTotal / grandTotal) * 100;
-
-            documentInstallments.push({
-              DueDate: dueDate,
-              Percentage: percentage,
-              TotalFC: Math.round(monthlyTotal),
-              InstallmentId: installmentId++,
-              U_date: dueDate,
-              U_Employee: null,
-              U_Comment: null,
-              U_PromisedDate: null,
-            });
-          }
-        }
-      }
-
-      // 5. Barcha Percentage larni qo'shganda 100 bo'lishini ta'minlash
-      if (documentInstallments.length > 0 && grandTotal > 0) {
-        const totalPercentage = documentInstallments.reduce((sum, item) => sum + item.Percentage, 0);
-        const difference = 100 - totalPercentage;
-        
-        // Birinchi installment ga farqni qo'shamiz (chunki u eng katta)
-        if (difference !== 0 && documentInstallments.length > 0) {
-          documentInstallments[0].Percentage = documentInstallments[0].Percentage + difference;
+          documentInstallments.push({
+            DueDate: dueDate,
+            TotalFC: Math.round(monthlyTotal),
+            InstallmentId: installmentId++,
+            U_date: dueDate,
+            U_Employee: null,
+            U_Comment: null,
+            U_PromisedDate: null,
+          });
         }
       }
 
@@ -344,7 +324,8 @@ export default function useInvoice(options = {}) {
         sellerName: sellerName,
         DocumentLines: documentLines,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
-        CashSum: cashSum, // Birinchi to'lov summasi
+        CashSum: cashSum, // Birinchi to'lov summasi,
+        U_FirstPayment: cashSum, 
         DocRate: docRate, // Dollar kursi
         paymentType: paymentType || '', // To'lov turi
       };

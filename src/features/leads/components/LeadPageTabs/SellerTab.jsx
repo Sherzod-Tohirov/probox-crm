@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback, useState } from 'react';
-import { Row, Col } from '@components/ui';
+import { Row, Col, Button } from '@components/ui';
 import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
 import useSellerForm from '../../hooks/useSellerForm.jsx';
@@ -16,6 +16,11 @@ import DeviceSearchField from './SellerTab/DeviceSearchField';
 import SelectedDevicesTable from './SellerTab/SelectedDevicesTable';
 import SignatureCanvas from './SellerTab/SignatureCanvas';
 import useAuth from '@/hooks/useAuth';
+import useInvoice from '@/hooks/data/leads/useInvoice';
+import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
+import { alert } from '@/utils/globalAlert';
+import { generateInvoicePdf } from '@/utils/invoicePdf';
+import { useWatch } from 'react-hook-form';
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -115,6 +120,85 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     setUserSignature(signatureDataUrl);
   }, []);
 
+  // Invoice yuborish logikasi
+  const { mutateAsync: uploadInvoiceFile } = useUploadInvoiceFile();
+  const paymentType = useWatch({ control, name: 'invoicePaymentType' });
+
+  const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
+    onSuccess: async (invoiceData) => {
+      // PDF fayl yaratish, yuklab olish va serverga yuborish
+      if (invoiceData && leadId) {
+        try {
+          // Imzoni va user ma'lumotlarini invoiceData ga qo'shamiz (faqat PDF uchun, backendga yuborilmaydi)
+          const pdfFile = await generateInvoicePdf({
+            ...invoiceData,
+            userSignature: userSignature || null,
+            currentUser: user || null,
+          });
+          
+          // PDF faylni serverga yuborish
+          if (pdfFile) {
+            await uploadInvoiceFile({ file: pdfFile, leadId });
+          }
+          
+          // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
+          alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', { type: 'success' });
+        } catch (error) {
+          alert('PDF fayl yaratish yoki yuborishda xatolik yuz berdi', { type: 'error' });
+        }
+      } else {
+        alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });
+      }
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message ||
+        error?.response?.data?.message ||
+        'Invoice yuborishda xatolik yuz berdi';
+      alert(errorMessage, { type: 'error' });
+    },
+  });
+
+  const handleSendInvoice = useCallback(async () => {
+    // Imzo qo'yilganligini birinchi navbatda tekshirish
+    if (!userSignature) {
+      alert('Invoice yuborishdan oldin imzo qo\'yishingiz kerak', { type: 'error' });
+      return;
+    }
+
+    // To'lov turi tanlanganligini tekshirish
+    if (!paymentType || paymentType === '' || paymentType === 'all') {
+      alert('To\'lov turini tanlang', { type: 'error' });
+      return;
+    }
+
+    if (!leadId) {
+      alert('Lead ID topilmadi', { type: 'error' });
+      return;
+    }
+
+    if (!selectedDevices || selectedDevices.length === 0) {
+      alert('Qurilma tanlanmagan', { type: 'error' });
+      return;
+    }
+
+    // IMEI tanlanganligini tekshirish
+    const devicesWithoutImei = selectedDevices.filter(
+      (device) => !device.imeiValue || device.imeiValue === ''
+    );
+
+    if (devicesWithoutImei.length > 0) {
+      alert('Barcha qurilmalar uchun IMEI tanlanishi kerak', { type: 'error' });
+      return;
+    }
+
+    try {
+      await sendInvoice({ leadId, selectedDevices, paymentType });
+    } catch (error) {
+      // Error already handled in onError callback
+    }
+  }, [userSignature, paymentType, leadId, selectedDevices, sendInvoice]);
+
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -196,9 +280,6 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   onFirstPaymentBlur={handleFirstPaymentBlur}
                   onDeleteDevice={handleDeleteDevice}
                   totalGrandTotal={totalGrandTotal}
-                  leadId={leadId}
-                  userSignature={userSignature}
-                  currentUser={user}
                   control={control}
                 />
               </Col>
@@ -210,6 +291,18 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 onSignatureChange={handleSignatureChange}
               />
             </Col>
+            {canOperatorEdit || canEdit ? (
+              <Col fullWidth className={styles.mt}>
+                <Button
+                  variant="filled"
+                  onClick={handleSendInvoice}
+                  isLoading={isSendingInvoice}
+                  disabled={isSendingInvoice || selectedDevices.length === 0 || !userSignature}
+                >
+                  Invoice yuborish
+                </Button>
+              </Col>
+            ) : null}
           </Row>
         </Col>
       </FieldGroup>
