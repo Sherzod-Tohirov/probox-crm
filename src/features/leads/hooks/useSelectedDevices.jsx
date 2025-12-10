@@ -48,14 +48,25 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
         ? null
         : Number(device.firstPayment);
 
+    console.log('[getActualFirstPayment] Input:', {
+      deviceId: device.id,
+      deviceFirstPayment: device.firstPayment,
+      userFirstPayment,
+      isFirstPaymentManual: device.isFirstPaymentManual,
+      totalPrice,
+      period,
+    });
+
     // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz
     if (userFirstPayment !== null && Number.isFinite(userFirstPayment) && userFirstPayment > 0) {
+      console.log('[getActualFirstPayment] Using user first payment:', userFirstPayment);
       return userFirstPayment;
     }
 
     // Aks holda avtomatik hisoblaymiz
     // Agar price yoki period yo'q bo'lsa, 0 qaytaramiz
     if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
+      console.log('[getActualFirstPayment] Invalid price or period, returning 0');
       return 0;
     }
 
@@ -67,7 +78,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
       firstPayment: 0,
     });
 
-    return paymentDetails.calculatedFirstPayment || 0;
+    const calculated = paymentDetails.calculatedFirstPayment || 0;
+    console.log('[getActualFirstPayment] Calculated first payment:', calculated);
+    return calculated;
   }, [rentPeriodOptions, monthlyLimit]);
 
   const handleRentPeriodChange = useCallback((deviceId, value) => {
@@ -292,13 +305,49 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             return '';
           }
 
-          const actualFirstPayment = getActualFirstPayment(device);
+          // Foydalanuvchi qo'lda kiritgan birinchi to'lovni olish
+          let actualFirstPayment = 0;
+          
+          // Agar foydalanuvchi qo'lda kiritgan bo'lsa, to'g'ridan-to'g'ri device.firstPayment dan olamiz
+          if (device.isFirstPaymentManual) {
+            const manualFirstPayment = 
+              device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+                ? null
+                : Number(device.firstPayment);
+            
+            if (manualFirstPayment !== null && Number.isFinite(manualFirstPayment) && manualFirstPayment > 0) {
+              actualFirstPayment = manualFirstPayment;
+            } else {
+              // Agar qo'lda kiritilgan bo'lsa lekin bo'sh yoki 0 bo'lsa, avtomatik hisoblaymiz
+              actualFirstPayment = getActualFirstPayment(device);
+            }
+          } else {
+            // Agar avtomatik bo'lsa, getActualFirstPayment dan olamiz
+            actualFirstPayment = getActualFirstPayment(device);
+          }
+
+          console.log('[monthlyPayment] Device:', {
+            id: device.id,
+            price: totalPrice,
+            period,
+            deviceFirstPayment: device.firstPayment,
+            isFirstPaymentManual: device.isFirstPaymentManual,
+            actualFirstPayment,
+            monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
+          });
 
           const paymentDetails = calculatePaymentDetails({
             price: totalPrice,
             period,
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: actualFirstPayment,
+            isFirstPaymentManual: device.isFirstPaymentManual || false,
+          });
+
+          console.log('[monthlyPayment] Payment Details:', {
+            monthlyPayment: paymentDetails.monthlyPayment,
+            calculatedFirstPayment: paymentDetails.calculatedFirstPayment,
+            grandTotal: paymentDetails.grandTotal,
           });
 
           return formatCurrencyUZS(paymentDetails.monthlyPayment);
@@ -315,13 +364,33 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             return '';
           }
 
-          const actualFirstPayment = getActualFirstPayment(device);
+          // Foydalanuvchi qo'lda kiritgan birinchi to'lovni olish
+          let actualFirstPayment = 0;
+          
+          // Agar foydalanuvchi qo'lda kiritgan bo'lsa, to'g'ridan-to'g'ri device.firstPayment dan olamiz
+          if (device.isFirstPaymentManual) {
+            const manualFirstPayment = 
+              device.firstPayment === '' || device.firstPayment === null || device.firstPayment === undefined
+                ? null
+                : Number(device.firstPayment);
+            
+            if (manualFirstPayment !== null && Number.isFinite(manualFirstPayment) && manualFirstPayment > 0) {
+              actualFirstPayment = manualFirstPayment;
+            } else {
+              // Agar qo'lda kiritilgan bo'lsa lekin bo'sh yoki 0 bo'lsa, avtomatik hisoblaymiz
+              actualFirstPayment = getActualFirstPayment(device);
+            }
+          } else {
+            // Agar avtomatik bo'lsa, getActualFirstPayment dan olamiz
+            actualFirstPayment = getActualFirstPayment(device);
+          }
 
           const paymentDetails = calculatePaymentDetails({
             price: totalPrice,
             period,
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: actualFirstPayment,
+            isFirstPaymentManual: device.isFirstPaymentManual || false,
           });
 
           return formatCurrencyUZS(paymentDetails.grandTotal);
@@ -354,6 +423,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           return acc;
         }
 
+        // selectedDeviceData dan device obyektini topish
+        const originalDevice = selectedDevices.find(d => d.id === device.id || d.name === device.name);
+        
         const actualFirstPayment = getActualFirstPayment({
           ...device,
           rentPeriod: device.rentPeriod || period,
@@ -364,11 +436,12 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           period,
           monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
           firstPayment: actualFirstPayment,
+          isFirstPaymentManual: originalDevice?.isFirstPaymentManual || false,
         });
 
         return acc + (paymentDetails.grandTotal || 0);
       }, 0),
-    [selectedDeviceData, rentPeriodOptions, monthlyLimit, getActualFirstPayment]
+    [selectedDeviceData, selectedDevices, rentPeriodOptions, monthlyLimit, getActualFirstPayment]
   );
 
   return {

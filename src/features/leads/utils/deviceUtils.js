@@ -202,6 +202,7 @@ export const calculatePaymentDetails = ({
   period,
   monthlyLimit,
   firstPayment = 0,
+  isFirstPaymentManual = false,
 }) => {
   // Null va undefined holatlarini tekshirish
   if (price === null || price === undefined) {
@@ -246,10 +247,22 @@ export const calculatePaymentDetails = ({
   const actualFirstPayment = firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
 
   // Oylik to'lov: MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period)
+  // Agar foydalanuvchi birinchi to'lovni o'zi kiritgan bo'lsa, monthlyLimit cheklovi qo'llanmaydi
   const monthlyPaymentWithoutLimit = ((priceNum - actualFirstPayment) * (1 + markup)) / periodNum;
-  const monthlyPayment = monthlyLimitNum > 0
-    ? Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit)
-    : monthlyPaymentWithoutLimit;
+  const monthlyPayment = (isFirstPaymentManual || monthlyLimitNum === 0)
+    ? monthlyPaymentWithoutLimit
+    : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
+
+  console.log('[calculatePaymentDetails] Monthly payment calculation:', {
+    priceNum,
+    actualFirstPayment,
+    markup,
+    periodNum,
+    monthlyLimitNum,
+    monthlyPaymentWithoutLimit,
+    monthlyPayment,
+    formula: `((${priceNum} - ${actualFirstPayment}) * (1 + ${markup})) / ${periodNum} = ${monthlyPaymentWithoutLimit}`,
+  });
 
   // Jami to'lov (ustama bilan): FLOOR((price - firstPayment)*(1 + markup); 1000)
   const totalPayment = Math.floor((priceNum - actualFirstPayment) * (1 + markup) / 1000) * 1000;
