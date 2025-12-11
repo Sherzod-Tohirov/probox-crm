@@ -22,12 +22,32 @@
     v.$primary-table-bg 0%,
     rgba(v.$primary-color, 0.02) 100%
   );
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .card-title {
   margin: 0;
   font-weight: 600;
   color: v.$primary-color;
+}
+
+.card-right-title {
+  flex-shrink: 0;
+  margin-left: auto;
+  
+  // Allow external styles to be applied to children
+  :global(*) {
+    margin: 0;
+  }
+}
+
+.card-right-title-text {
+  margin: 0;
+  color: v.$primary-color;
+  opacity: 0.7;
 }
 
 .card-body {

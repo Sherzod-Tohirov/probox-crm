@@ -231,3 +231,66 @@
   font-size: 1.4rem;
   font-weight: 500;
 }
+
+:global(.score-text) {
+  font-size: 3.8rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.score-bad {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  
+  [data-theme='dark'] & {
+    background-color: #0f0f0f;
+    color: #ffffff;
+  }
+}
+
+.score-poor {
+  background-color: v.$danger-bg;
+  color: v.$danger-color;
+  
+  [data-theme='dark'] & {
+    background-color: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+  }
+}
+
+.score-fair {
+  background-color: v.$info-bg;
+  color: v.$info-color;
+  
+  [data-theme='dark'] & {
+    background-color: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+  }
+}
+
+.score-good {
+  background-color: v.$success-bg;
+  color: v.$success-color;
+  
+  [data-theme='dark'] & {
+    background-color: rgba(48, 145, 109, 0.2);
+    color: #30916d;
+  }
+}
+
+.score-excellent {
+  background-color: v.$extrasuccess-bg;
+  color: v.$extrasuccess-color;
+  
+  [data-theme='dark'] & {
+    background-color: rgba(40, 163, 106, 0.2);
+    color: #28a36a;
+  }
+}
+
+.score-default {
+  background-color: transparent;
+  color: v.$primary-color;
+}

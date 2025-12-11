@@ -46,6 +46,25 @@ export default function LeadPage() {
   const isMobile = useIsMobile();
   const messengerRef = useRef(null);
   const { isOpen, toggle } = useToggle('messenger');
+  
+  // Get payment score style and label
+  const getPaymentScoreInfo = (score) => {
+    if (score == null) return null;
+    
+    if (score >= 0 && score <= 4) {
+      return { className: 'score-bad', label: 'Yomon' };
+    } else if (score >= 5 && score <= 6) {
+      return { className: 'score-poor', label: 'Qoniqarsiz' };
+    } else if (score === 7) {
+      return { className: 'score-fair', label: 'Qoniqarli' };
+    } else if (score >= 8 && score <= 9) {
+      return { className: 'score-good', label: 'Yaxshi' };
+    } else if (score === 10) {
+      return { className: 'score-excellent', label: 'Zo\'r' };
+    }
+    return { className: 'score-default', label: '' };
+  };
+  
   // Use custom hook for all data and logic
   const {
     lead,
@@ -268,7 +287,20 @@ export default function LeadPage() {
 
             {/* Common Fields Card */}
             <Col fullWidth>
-              <Card title="Umumiy ma'lumotlar">{commonFields}</Card>
+              <Card 
+                title="Umumiy ma'lumotlar" 
+                rightTitle={(() => {
+                  const scoreInfo = getPaymentScoreInfo(lead?.paymentScore);
+                  if (!scoreInfo) return null;
+                  return (
+                    <p className={`score-text ${styles[scoreInfo.className] || scoreInfo.className}`}>
+                      {lead.paymentScore} {scoreInfo.label && `(${scoreInfo.label})`}
+                    </p>
+                  );
+                })()}
+              >
+                {commonFields}
+              </Card>
             </Col>
 
             {/* Tabs Card */}

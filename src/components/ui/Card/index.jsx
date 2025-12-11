@@ -2,9 +2,9 @@ import React from 'react';
 import { Typography } from '@components/ui';
 import styles from './card.module.scss';
 
-export default function Card({ title, children, className = '', ...props }) {
+export default function Card({ title, rightTitle, children, className = '', ...props }) {
   const renderTitle = () => {
-    if (!title) return null;
+    if (!title && !rightTitle) return null;
     
     // If title is a string, wrap it in Typography
     if (typeof title === 'string') {
@@ -13,6 +13,17 @@ export default function Card({ title, children, className = '', ...props }) {
           <Typography variant="h5" element="h2" className={styles['card-title']}>
             {title}
           </Typography>
+          {rightTitle && (
+            <div className={styles['card-right-title']}>
+              {typeof rightTitle === 'string' ? (
+                <Typography variant="body1" className={styles['card-right-title-text']}>
+                  {rightTitle}
+                </Typography>
+              ) : (
+                rightTitle
+              )}
+            </div>
+          )}
         </div>
       );
     }
@@ -21,6 +32,17 @@ export default function Card({ title, children, className = '', ...props }) {
     return (
       <div className={styles['card-header']}>
         {title}
+        {rightTitle && (
+          <div className={styles['card-right-title']}>
+            {typeof rightTitle === 'string' ? (
+              <Typography variant="body1" className={styles['card-right-title-text']}>
+                {rightTitle}
+              </Typography>
+            ) : (
+              rightTitle
+            )}
+          </div>
+        )}
       </div>
     );
   };
