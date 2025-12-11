@@ -19,6 +19,9 @@ export default function useClientPageData(clientId, isMessengerOpen) {
 
   const { data: currency, isLoading: isCurrencyLoading } = useFetchCurrency();
 
+  const docEntry = currentClient?.['DocEntry'];
+  const installmentId = currentClient?.['InstlmntID'];
+
   const {
     data: messages,
     isLoading: isMessagesLoading,
@@ -27,8 +30,8 @@ export default function useClientPageData(clientId, isMessengerOpen) {
     isFetchingNextPage,
   } = useFetchMessages({
     entityType: 'client',
-    docEntry: currentClient?.['DocEntry'],
-    installmentId: currentClient?.['InstlmntID'],
+    docEntry,
+    installmentId,
     enabled: isMessengerOpen,
   });
 
