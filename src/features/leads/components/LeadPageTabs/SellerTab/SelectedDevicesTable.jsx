@@ -17,6 +17,8 @@ export default function SelectedDevicesTable({
   onDeleteDevice,
   totalGrandTotal,
   control,
+  isRentPeriodDisabled = false,
+  isFirstPaymentDisabled = false,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
@@ -26,6 +28,8 @@ export default function SelectedDevicesTable({
     onFirstPaymentChange,
     onFirstPaymentBlur,
     onDeleteDevice,
+    isRentPeriodDisabled,
+    isFirstPaymentDisabled,
   });
 
   if (!selectedDeviceData.length) return null;

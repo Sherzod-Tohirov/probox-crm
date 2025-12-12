@@ -8,7 +8,14 @@ import {
 } from '../utils/deviceUtils';
 import { alert } from '@/utils/globalAlert';
 
-export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionFilter }) => {
+export const useSelectedDevices = ({ 
+  rentPeriodOptions, 
+  monthlyLimit, 
+  conditionFilter,
+  calculationTypeFilter = '',
+  finalPercentage = null,
+  maximumLimit = null,
+}) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
 
   const handleImeiSelect = useCallback((deviceId, value) => {
@@ -76,12 +83,15 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
       period,
       monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
       firstPayment: 0,
+      calculationType: calculationTypeFilter || 'markup',
+      finalPercentage: finalPercentage,
+      maximumLimit: maximumLimit,
     });
 
     const calculated = paymentDetails.calculatedFirstPayment || 0;
     console.log('[getActualFirstPayment] Calculated first payment:', calculated);
     return calculated;
-  }, [rentPeriodOptions, monthlyLimit]);
+  }, [rentPeriodOptions, monthlyLimit, calculationTypeFilter, finalPercentage, maximumLimit]);
 
   const handleRentPeriodChange = useCallback((deviceId, value) => {
     setSelectedDevices((prev) => {
@@ -104,6 +114,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             period: newPeriod,
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: 0,
+            calculationType: calculationTypeFilter || 'markup',
+            finalPercentage: finalPercentage,
+            maximumLimit: maximumLimit,
           });
           
           // Ijara oyi o'zgarganda, har doim yangi calculatedFirstPayment ni ishlatamiz
@@ -121,7 +134,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
       
       return updated;
     });
-  }, [monthlyLimit]);
+  }, [monthlyLimit, calculationTypeFilter, finalPercentage, maximumLimit, rentPeriodOptions]);
 
   const handleFirstPaymentChange = useCallback((deviceId, rawValue) => {
     setSelectedDevices((prev) =>
@@ -195,6 +208,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             period,
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: 0,
+            calculationType: calculationTypeFilter || 'markup',
+            finalPercentage: finalPercentage,
+            maximumLimit: maximumLimit,
           });
           autoCalculatedFirstPayment = paymentDetails.calculatedFirstPayment || 0;
         }
@@ -202,7 +218,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
         // Agar avtomatik hisoblangan qiymat mavjud bo'lsa, 10% cheklovni tekshiramiz
         if (autoCalculatedFirstPayment > 0 && currentFirstPayment < autoCalculatedFirstPayment * 0.9) {
           // 10%dan ko'p kamaytirishga urinilmoqda
-          const minAllowedFirstPayment = Math.round(autoCalculatedFirstPayment * 0.9);
+          const minAllowedFirstPaymentRaw = Math.round(autoCalculatedFirstPayment * 0.9);
+          // 1000 ga yaxlitlash
+          const minAllowedFirstPayment = Math.floor(minAllowedFirstPaymentRaw / 1000) * 1000;
           
           // Warning ko'rsatish (setTimeout orqali render paytida emas)
           setTimeout(() => {
@@ -212,7 +230,7 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             );
           }, 0);
           
-          // 90%ni yozish
+          // 90%ni yozish (yaxlitlangan)
           return {
             ...device,
             firstPayment: minAllowedFirstPayment,
@@ -220,10 +238,20 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           };
         }
 
+        // Foydalanuvchi kiritgan qiymatni ham 1000 ga yaxlitlash
+        const roundedFirstPayment = Math.floor(currentFirstPayment / 1000) * 1000;
+        if (roundedFirstPayment !== currentFirstPayment) {
+          return {
+            ...device,
+            firstPayment: roundedFirstPayment,
+            isFirstPaymentManual: true,
+          };
+        }
+
         return device;
       })
     );
-  }, [rentPeriodOptions, monthlyLimit]);
+  }, [rentPeriodOptions, monthlyLimit, calculationTypeFilter, finalPercentage, maximumLimit]);
 
   const selectedDeviceData = useMemo(
     () => {
@@ -235,6 +263,15 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           return deviceCondition === conditionFilter;
         });
       }
+
+      // Disabled holatni aniqlash
+      const isRentPeriodDisabled = 
+        (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) ||
+        (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined));
+      
+      const isFirstPaymentDisabled = 
+        (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) ||
+        (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined));
 
       return filteredDevices.map((device) => ({
         id: device.id ?? device.name,
@@ -254,11 +291,17 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           device.imeiError === undefined || device.imeiError === null
             ? ''
             : device.imeiError,
-        rentPeriod:
-          Number(device.rentPeriod) ||
-          rentPeriodOptions[0]?.value ||
-          DEFAULT_RENT_PERIOD,
+        rentPeriod: isRentPeriodDisabled 
+          ? 0 
+          : (Number(device.rentPeriod) ||
+            rentPeriodOptions[0]?.value ||
+            DEFAULT_RENT_PERIOD),
         firstPayment: (() => {
+          // Agar disabled bo'lsa, 0 qaytaramiz
+          if (isFirstPaymentDisabled) {
+            return 0;
+          }
+
           // Agar foydalanuvchi birinchi to'lovni qo'lda tahrir qilgan bo'lsa,
           // hech qanday avtomatik hisob-kitob qilmaymiz – aynan o'sha qiymatni (yoki bo'sh) ko'rsatamiz
           if (device.isFirstPaymentManual) {
@@ -294,11 +337,17 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
         })(),
         condition: device?.condition ?? device?.raw?.U_PROD_CONDITION ?? device?.raw?.u_prod_condition ?? '',
         monthlyPayment: (() => {
+          // Agar disabled bo'lsa, 0 qaytaramiz
+          if (isRentPeriodDisabled || isFirstPaymentDisabled) {
+            return formatCurrencyUZS(0);
+          }
+
           const totalPrice = extractNumericValue(device.price);
-          const period =
-            Number(device.rentPeriod) ||
-            rentPeriodOptions[0]?.value ||
-            DEFAULT_RENT_PERIOD;
+          const period = isRentPeriodDisabled 
+            ? 0 
+            : (Number(device.rentPeriod) ||
+              rentPeriodOptions[0]?.value ||
+              DEFAULT_RENT_PERIOD);
           
           // Price yoki period noto'g'ri bo'lsa
           if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
@@ -342,6 +391,9 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: actualFirstPayment,
             isFirstPaymentManual: device.isFirstPaymentManual || false,
+            calculationType: calculationTypeFilter || 'markup',
+            finalPercentage: finalPercentage,
+            maximumLimit: maximumLimit,
           });
 
           console.log('[monthlyPayment] Payment Details:', {
@@ -354,10 +406,25 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
         })(),
         totalPayment: (() => {
           const totalPrice = extractNumericValue(device.price);
-          const period =
-            Number(device.rentPeriod) ||
-            rentPeriodOptions[0]?.value ||
-            DEFAULT_RENT_PERIOD;
+          
+          // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
+          if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+            if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0) {
+              return '';
+            }
+            return formatCurrencyUZS(totalPrice);
+          }
+
+          // Agar disabled bo'lsa va "percent" tanlangan bo'lsa, 0 qaytaramiz
+          if ((isRentPeriodDisabled || isFirstPaymentDisabled) && calculationTypeFilter === 'firstPayment') {
+            return formatCurrencyUZS(0);
+          }
+
+          const period = isRentPeriodDisabled 
+            ? 0 
+            : (Number(device.rentPeriod) ||
+              rentPeriodOptions[0]?.value ||
+              DEFAULT_RENT_PERIOD);
           
           // Price yoki period noto'g'ri bo'lsa
           if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
@@ -391,13 +458,16 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
             monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
             firstPayment: actualFirstPayment,
             isFirstPaymentManual: device.isFirstPaymentManual || false,
+            calculationType: calculationTypeFilter || 'markup',
+            finalPercentage: finalPercentage,
+            maximumLimit: maximumLimit,
           });
 
           return formatCurrencyUZS(paymentDetails.grandTotal);
         })(),
       }));
     },
-    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment, conditionFilter]
+    [rentPeriodOptions, selectedDevices, monthlyLimit, getActualFirstPayment, conditionFilter, calculationTypeFilter, finalPercentage, maximumLimit]
   );
 
   const totalSelectedPrice = useMemo(
@@ -413,13 +483,24 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
     () =>
       selectedDeviceData.reduce((acc, device) => {
         const totalPrice = extractNumericValue(device.price);
+        
+        // Price noto'g'ri bo'lsa, skip qilamiz
+        if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0) {
+          return acc;
+        }
+
+        // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
+        if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+          return acc + totalPrice;
+        }
+
         const period =
           Number(device.rentPeriod) ||
           rentPeriodOptions[0]?.value ||
           DEFAULT_RENT_PERIOD;
         
-        // Price yoki period noto'g'ri bo'lsa, skip qilamiz
-        if (totalPrice === null || !Number.isFinite(totalPrice) || totalPrice <= 0 || !Number.isFinite(period) || period <= 0) {
+        // Period noto'g'ri bo'lsa, skip qilamiz
+        if (!Number.isFinite(period) || period <= 0) {
           return acc;
         }
 
@@ -437,11 +518,14 @@ export const useSelectedDevices = ({ rentPeriodOptions, monthlyLimit, conditionF
           monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
           firstPayment: actualFirstPayment,
           isFirstPaymentManual: originalDevice?.isFirstPaymentManual || false,
+          calculationType: calculationTypeFilter || 'markup',
+          finalPercentage: finalPercentage,
+          maximumLimit: maximumLimit,
         });
 
         return acc + (paymentDetails.grandTotal || 0);
       }, 0),
-    [selectedDeviceData, selectedDevices, rentPeriodOptions, monthlyLimit, getActualFirstPayment]
+    [selectedDeviceData, selectedDevices, rentPeriodOptions, monthlyLimit, getActualFirstPayment, calculationTypeFilter, finalPercentage, maximumLimit]
   );
 
   return {

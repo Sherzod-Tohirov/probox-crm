@@ -170,6 +170,11 @@ export const PAYMENT_INTEREST_OPTIONS = [
   { value: 'Cash', label: 'Naqd pul' },
   { value: 'Card', label: 'Karta' },
 ];
+export const CALCULATION_TYPE_OPTIONS = [
+  { value: '', label: 'Tanlash' },
+  { value: 'markup', label: 'Limit' },
+  { value: 'firstPayment', label: 'Foiz' },
+];
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {
   1: 0.05,   // 5%
@@ -203,6 +208,9 @@ export const calculatePaymentDetails = ({
   monthlyLimit,
   firstPayment = 0,
   isFirstPaymentManual = false,
+  calculationType = 'markup', // 'markup' (Limit) yoki 'firstPayment' (Foiz)
+  finalPercentage = null, // Inspection Officer tabidagi final percentage
+  maximumLimit = null, // Maximum limit (finalLimit)
 }) => {
   // Null va undefined holatlarini tekshirish
   if (price === null || price === undefined) {
@@ -223,6 +231,12 @@ export const calculatePaymentDetails = ({
   const firstPaymentNum = firstPayment !== null && firstPayment !== undefined
     ? Number(firstPayment) || 0
     : 0;
+  const finalPercentageNum = finalPercentage !== null && finalPercentage !== undefined
+    ? Number(finalPercentage) || null
+    : null;
+  const maximumLimitNum = maximumLimit !== null && maximumLimit !== undefined
+    ? Number(maximumLimit) || null
+    : null;
 
   // Price yoki period noto'g'ri bo'lsa
   if (!Number.isFinite(priceNum) || priceNum <= 0 || !Number.isFinite(periodNum) || periodNum <= 0) {
@@ -235,6 +249,77 @@ export const calculatePaymentDetails = ({
     };
   }
 
+  // Calculation type bo'yicha logika
+  // 1. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lmasa
+  if (calculationType === 'markup' && (maximumLimitNum === null || maximumLimitNum === undefined || maximumLimitNum === 0)) {
+    // Bu holatda jami to'lov narx bilan bir xil bo'lishi kerak, lekin 1000 ga yaxlitlangan
+    const roundedPrice = Math.floor(priceNum / 1000) * 1000;
+    return {
+      markup: 0,
+      calculatedFirstPayment: 0,
+      monthlyPayment: 0,
+      totalPayment: roundedPrice,
+      grandTotal: roundedPrice,
+    };
+  }
+
+  // 2. Agar "percent" (firstPayment) tanlangan va final percentage mavjud bo'lmasa
+  if (calculationType === 'firstPayment' && (finalPercentageNum === null || finalPercentageNum === undefined)) {
+    return {
+      markup: 0,
+      calculatedFirstPayment: 0,
+      monthlyPayment: 0,
+      totalPayment: 0,
+      grandTotal: 0,
+    };
+  }
+
+  // 3. Agar "percent" (firstPayment) tanlangan va final percentage mavjud bo'lsa
+  if (calculationType === 'firstPayment' && finalPercentageNum !== null && finalPercentageNum !== undefined) {
+    // First payment = price * finalPercentage / 100, 1000 ga yaxlitlangan
+    const calculatedFirstPaymentFromPercentage = Math.floor((priceNum * finalPercentageNum) / 100 / 1000) * 1000;
+    
+    // Monthly payment = price - firstPayment
+    const monthlyPaymentFromPercentage = priceNum - calculatedFirstPaymentFromPercentage;
+    
+    // Qolgan summa uchun eski logika (monthlyPaymentFromPercentage uchun)
+    const remainingPrice = monthlyPaymentFromPercentage;
+    
+    // Ustama foizini olish
+    const markup = getMarkupPercentage(periodNum);
+    
+    // Qolgan summa uchun oylik to'lov: ((remainingPrice) * (1 + markup)) / period, 1000 ga yaxlitlangan
+    const monthlyPayment = Math.floor(((remainingPrice * (1 + markup)) / periodNum) / 1000) * 1000;
+    
+    // Jami to'lov (ustama bilan): FLOOR(remainingPrice * (1 + markup); 1000)
+    const totalPayment = Math.floor(remainingPrice * (1 + markup) / 1000) * 1000;
+    
+    // Jami to'lov (boshlang'ich + jami): totalPayment + calculatedFirstPaymentFromPercentage
+    const grandTotal = totalPayment + calculatedFirstPaymentFromPercentage;
+
+    console.log('[calculatePaymentDetails] Percentage calculation:', {
+      priceNum,
+      finalPercentageNum,
+      calculatedFirstPaymentFromPercentage,
+      monthlyPaymentFromPercentage,
+      remainingPrice,
+      markup,
+      periodNum,
+      monthlyPayment,
+      totalPayment,
+      grandTotal,
+    });
+
+    return {
+      markup,
+      calculatedFirstPayment: calculatedFirstPaymentFromPercentage,
+      monthlyPayment,
+      totalPayment,
+      grandTotal,
+    };
+  }
+
+  // 4. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lsa - hozirgi logika
   // Ustama foizini olish
   const markup = getMarkupPercentage(periodNum);
 
@@ -243,15 +328,17 @@ export const calculatePaymentDetails = ({
     ? Math.floor(Math.max(0, priceNum - (monthlyLimitNum * periodNum) / (1 + markup)) / 1000) * 1000
     : 0;
 
-  // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz
-  const actualFirstPayment = firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
+  // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz va 1000 ga yaxlitlaymiz
+  const actualFirstPaymentRaw = firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
+  const actualFirstPayment = Math.floor(actualFirstPaymentRaw / 1000) * 1000;
 
-  // Oylik to'lov: MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period)
+  // Oylik to'lov: MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period), 1000 ga yaxlitlangan
   // Agar foydalanuvchi birinchi to'lovni o'zi kiritgan bo'lsa, monthlyLimit cheklovi qo'llanmaydi
   const monthlyPaymentWithoutLimit = ((priceNum - actualFirstPayment) * (1 + markup)) / periodNum;
-  const monthlyPayment = (isFirstPaymentManual || monthlyLimitNum === 0)
+  const monthlyPaymentRaw = (isFirstPaymentManual || monthlyLimitNum === 0)
     ? monthlyPaymentWithoutLimit
     : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
+  const monthlyPayment = Math.floor(monthlyPaymentRaw / 1000) * 1000;
 
   console.log('[calculatePaymentDetails] Monthly payment calculation:', {
     priceNum,
@@ -267,8 +354,9 @@ export const calculatePaymentDetails = ({
   // Jami to'lov (ustama bilan): FLOOR((price - firstPayment)*(1 + markup); 1000)
   const totalPayment = Math.floor((priceNum - actualFirstPayment) * (1 + markup) / 1000) * 1000;
 
-  // Jami to'lov (boshlang'ich + jami): totalPayment + firstPayment
-  const grandTotal = totalPayment + actualFirstPayment;
+  // Jami to'lov (boshlang'ich + jami): totalPayment + firstPayment, 1000 ga yaxlitlangan
+  const grandTotalRaw = totalPayment + actualFirstPayment;
+  const grandTotal = Math.floor(grandTotalRaw / 1000) * 1000;
 
   return {
     markup,

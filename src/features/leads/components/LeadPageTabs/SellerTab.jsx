@@ -42,6 +42,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const fieldBranch = watch?.('branch2');
   const searchBranchFilter = watch?.('searchBranchFilter');
   const conditionFilter = watch?.('conditionFilter');
+  const calculationTypeFilter = watch?.('calculationTypeFilter');
   const fieldPurchase = watch('purchase');
   const fieldSellType = watch('saleType');
 
@@ -80,6 +81,47 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     return Number.isFinite(limit) && limit > 0 ? limit : null;
   }, [leadData?.finalLimit]);
 
+  const finalPercentage = useMemo(() => {
+    if (leadData?.finalPercentage === null || leadData?.finalPercentage === undefined) {
+      return null;
+    }
+    const percentage = Number(leadData.finalPercentage);
+    return Number.isFinite(percentage) && percentage > 0 ? percentage : null;
+  }, [leadData?.finalPercentage]);
+
+  const maximumLimit = useMemo(() => {
+    if (leadData?.finalLimit === null || leadData?.finalLimit === undefined) {
+      return null;
+    }
+    const limit = Number(leadData.finalLimit);
+    return Number.isFinite(limit) && limit > 0 ? limit : null;
+  }, [leadData?.finalLimit]);
+
+  // Disabled holatini aniqlash
+  const isRentPeriodDisabled = useMemo(() => {
+    // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
+    if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+      return true;
+    }
+    // Agar "percent" tanlangan va final percentage mavjud bo'lmasa
+    if (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined)) {
+      return true;
+    }
+    return false;
+  }, [calculationTypeFilter, maximumLimit, finalPercentage]);
+
+  const isFirstPaymentDisabled = useMemo(() => {
+    // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
+    if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+      return true;
+    }
+    // Agar "percent" tanlangan va final percentage mavjud bo'lmasa
+    if (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined)) {
+      return true;
+    }
+    return false;
+  }, [calculationTypeFilter, maximumLimit, finalPercentage]);
+
   const {
     selectedDevices,
     setSelectedDevices,
@@ -91,7 +133,14 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     handleRentPeriodChange,
     handleFirstPaymentChange,
     handleFirstPaymentBlur,
-  } = useSelectedDevices({ rentPeriodOptions, monthlyLimit, conditionFilter });
+  } = useSelectedDevices({ 
+    rentPeriodOptions, 
+    monthlyLimit, 
+    conditionFilter,
+    calculationTypeFilter: calculationTypeFilter || '',
+    finalPercentage: finalPercentage,
+    maximumLimit: maximumLimit,
+  });
 
   const { fetchDeviceSeries } = useDeviceSeries({
     branchCodeToNameMap,
@@ -281,6 +330,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   onDeleteDevice={handleDeleteDevice}
                   totalGrandTotal={totalGrandTotal}
                   control={control}
+                  isRentPeriodDisabled={isRentPeriodDisabled}
+                  isFirstPaymentDisabled={isFirstPaymentDisabled}
                 />
               </Col>
             )}

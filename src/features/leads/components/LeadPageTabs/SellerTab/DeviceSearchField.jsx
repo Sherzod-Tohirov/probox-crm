@@ -6,7 +6,7 @@ import styles from '../leadPageTabs.module.scss';
 import {
   formatCurrencyUZS,
   CONTRACT_CONDITION_OPTIONS,
-  PAYMENT_INTEREST_OPTIONS,
+  CALCULATION_TYPE_OPTIONS,
 } from '../../../utils/deviceUtils';
 import useIsMobile from '@/hooks/useIsMobile';
 
@@ -115,10 +115,10 @@ export default function DeviceSearchField({
               <Col>
                 <div className={styles['search-field-branch-filter']}>
                   <FormField
-                    label="To'lov turi bo'yicha qidirish"
+                    label="Xisoblash turi bo'yicha qidirish"
                     type="select"
-                    options={PAYMENT_INTEREST_OPTIONS}
-                    name="paymentInterestFilter"
+                    options={CALCULATION_TYPE_OPTIONS}
+                    name="calculationTypeFilter"
                     disabled={!canEdit}
                     control={control}
                   />

@@ -11,6 +11,8 @@ export const useSelectedDevicesColumns = ({
   onFirstPaymentChange,
   onFirstPaymentBlur,
   onDeleteDevice,
+  isRentPeriodDisabled = false,
+  isFirstPaymentDisabled = false,
 }) => {
   return useMemo(
     () => [
@@ -102,15 +104,24 @@ export const useSelectedDevicesColumns = ({
         horizontal: 'start',
         width: '12%',
         renderCell: (row) => {
-          const value =
-            row.rentPeriod ?? rentPeriodOptions[0]?.value ?? undefined;
+          // Agar disabled bo'lsa va rentPeriod 0 bo'lsa, 0 ni ko'rsatamiz
+          const isDisabled = !canEdit || isRentPeriodDisabled;
+          const value = isRentPeriodDisabled && row.rentPeriod === 0
+            ? 0
+            : (row.rentPeriod ?? rentPeriodOptions[0]?.value ?? undefined);
+          
+          // Agar disabled bo'lsa va value 0 bo'lsa, maxsus options yaratamiz
+          const options = isRentPeriodDisabled && value === 0
+            ? [{ value: 0, label: '0' }, ...rentPeriodOptions]
+            : rentPeriodOptions;
+          
           return (
             <Input
               type="select"
-              options={rentPeriodOptions}
+              options={options}
               value={value}
               onChange={(nextValue) => onRentPeriodChange(row.id, nextValue)}
-              disabled={!canEdit}
+              disabled={isDisabled}
               width="100%"
               variant="outlined"
               hasIcon={true}
@@ -140,7 +151,7 @@ export const useSelectedDevicesColumns = ({
               }
             }}
             hasIcon={false}
-            disabled={!canEdit}
+            disabled={!canEdit || isFirstPaymentDisabled}
           />
         ),
       },
@@ -191,6 +202,8 @@ export const useSelectedDevicesColumns = ({
       onImeiSelect,
       onRentPeriodChange,
       rentPeriodOptions,
+      isRentPeriodDisabled,
+      isFirstPaymentDisabled,
     ]
   );
 };
