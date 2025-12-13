@@ -23,6 +23,23 @@ export default function useInvoice(options = {}) {
         ? (Number(leadData.finalLimit) || null)
         : null;
 
+      // Calculation type va boshqa parametrlarni olish
+      const calculationType = leadData?.calculationTypeFilter || leadData?.calculationType || 'markup';
+      const finalPercentage = (leadData?.finalPercentage !== null && leadData?.finalPercentage !== undefined)
+        ? (Number(leadData.finalPercentage) || null)
+        : null;
+      // maximumLimit - agar monthlyLimit bo'lsa, uni ishlatamiz, aks holda finalLimit
+      let maximumLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined)
+        ? (Number(leadData.finalLimit) || null)
+        : null;
+      
+      // Agar monthlyLimit bo'lsa va maximumLimit 0 yoki null bo'lsa, maximumLimit ni monthlyLimit ga tenglashtiramiz
+      if (monthlyLimit !== null && monthlyLimit !== undefined && monthlyLimit > 0) {
+        if (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0) {
+          maximumLimit = monthlyLimit;
+        }
+      }
+
       // 3. DocumentLines ni tayyorlash
       const documentLines = await Promise.all(
         selectedDevices.map(async (device) => {
@@ -39,11 +56,17 @@ export default function useInvoice(options = {}) {
           
           // Agar price va period to'g'ri bo'lsa, grandTotal ni hisoblaymiz
           if (price && price > 0 && period > 0) {
+            const deviceFirstPaymentManual = device?.isFirstPaymentManual || false;
+            
             const paymentDetails = calculatePaymentDetails({
               price,
               period,
               monthlyLimit: monthlyLimitNum,
               firstPayment,
+              isFirstPaymentManual: deviceFirstPaymentManual,
+              calculationType: calculationType,
+              finalPercentage: finalPercentage,
+              maximumLimit: maximumLimit,
             });
             totalPrice = paymentDetails.grandTotal || price;
           }
@@ -236,11 +259,17 @@ export default function useInvoice(options = {}) {
         const firstPayment = extractNumericValue(device.firstPayment) || 0;
 
         if (price && price > 0 && period > 0) {
+          const deviceFirstPaymentManual = device?.isFirstPaymentManual || false;
+          
           const paymentDetails = calculatePaymentDetails({
             price,
             period,
             monthlyLimit: monthlyLimitNum,
             firstPayment,
+            isFirstPaymentManual: deviceFirstPaymentManual,
+            calculationType: calculationType,
+            finalPercentage: finalPercentage,
+            maximumLimit: maximumLimit,
           });
 
           const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
@@ -286,19 +315,18 @@ export default function useInvoice(options = {}) {
           }
         });
 
-        if (monthlyTotal > 0) {
-          const dueDate = moment().add(month, 'months').format('YYYY-MM-DD');
+        // Har bir oy uchun installments yaratish (monthlyTotal 0 bo'lsa ham)
+        const dueDate = moment().add(month, 'months').format('YYYY-MM-DD');
 
-          documentInstallments.push({
-            DueDate: dueDate,
-            TotalFC: Math.round(monthlyTotal),
-            InstallmentId: installmentId++,
-            U_date: dueDate,
-            U_Employee: null,
-            U_Comment: null,
-            U_PromisedDate: null,
-          });
-        }
+        documentInstallments.push({
+          DueDate: dueDate,
+          TotalFC: Math.round(monthlyTotal),
+          InstallmentId: installmentId++,
+          U_date: dueDate,
+          U_Employee: null,
+          U_Comment: null,
+          U_PromisedDate: null,
+        });
       }
 
       // DocDueDate - oxirgi to'lov sanasi
