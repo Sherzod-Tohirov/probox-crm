@@ -243,7 +243,7 @@
 .score-bad {
   background-color: #1a1a1a;
   color: #ffffff;
-  
+
   [data-theme='dark'] & {
     background-color: #0f0f0f;
     color: #ffffff;
@@ -253,7 +253,7 @@
 .score-poor {
   background-color: v.$danger-bg;
   color: v.$danger-color;
-  
+
   [data-theme='dark'] & {
     background-color: rgba(248, 113, 113, 0.2);
     color: #f87171;
@@ -263,7 +263,7 @@
 .score-fair {
   background-color: v.$info-bg;
   color: v.$info-color;
-  
+
   [data-theme='dark'] & {
     background-color: rgba(251, 191, 36, 0.2);
     color: #fbbf24;
@@ -273,7 +273,7 @@
 .score-good {
   background-color: v.$success-bg;
   color: v.$success-color;
-  
+
   [data-theme='dark'] & {
     background-color: rgba(48, 145, 109, 0.2);
     color: #30916d;
@@ -283,7 +283,7 @@
 .score-excellent {
   background-color: v.$extrasuccess-bg;
   color: v.$extrasuccess-color;
-  
+
   [data-theme='dark'] & {
     background-color: rgba(40, 163, 106, 0.2);
     color: #28a36a;
@@ -293,4 +293,94 @@
 .score-default {
   background-color: transparent;
   color: v.$primary-color;
+}
+
+.common-fields {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.common-fields-left {
+  flex: 1;
+}
+
+.common-fields-right {
+  border: 1px solid v.$primary-border-color;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.score-gauge {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.gauge-title {
+  font-size: 3.6rem;
+  font-weight: 600;
+  color: v.$primary-color;
+  text-align: center;
+}
+
+.gauge-container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: auto;
+  max-height: 160px;
+}
+
+.gauge-value {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gauge-number {
+  font-size: 10.4rem;
+  font-weight: 700;
+  color: v.$primary-color;
+  line-height: 1;
+}
+
+.gauge-label {
+  font-size: 4.2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.gauge-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 20px;
+  margin-top: -10px;
+  font-size: 5.6rem;
+  color: v.$secondary-color;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
 }

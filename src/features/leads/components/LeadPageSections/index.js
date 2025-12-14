@@ -7,3 +7,4 @@ export { default as CommentSection } from './CommentSection';
 export { default as PassportSection } from './PassportSection';
 export { default as BlockedStatusSection } from './BlockedStatusSection';
 export { default as BlockedWarningCard } from './BlockedWarningCard';
+export { default as PaymentScoreGauge } from './PaymentScoreGauge';
