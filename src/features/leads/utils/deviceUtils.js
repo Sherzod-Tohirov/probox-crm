@@ -1,7 +1,9 @@
 export const extractNumericValue = (priceText) => {
   if (!priceText && priceText !== 0) return null;
   if (typeof priceText === 'number') {
-    return Number.isNaN(priceText) || !Number.isFinite(priceText) ? null : priceText;
+    return Number.isNaN(priceText) || !Number.isFinite(priceText)
+      ? null
+      : priceText;
   }
   const digits = priceText.toString().replace(/[^\d]/g, '');
   if (!digits) return null;
@@ -41,12 +43,17 @@ export const getItemBasePriceUSD = (item) => {
 
   const parsePrice = (value) => {
     if (value === null || value === undefined) return null;
-    const num = typeof value === 'number' ? value : parseFloat(String(value).replace(',', '.'));
+    const num =
+      typeof value === 'number'
+        ? value
+        : parseFloat(String(value).replace(',', '.'));
     return Number.isFinite(num) && num > 0 ? num : null;
   };
 
   const salePriceUSD = parsePrice(item?.SalePrice ?? item?.salePrice);
-  const purchasePriceUSD = parsePrice(item?.PurchasePrice ?? item?.purchasePrice);
+  const purchasePriceUSD = parsePrice(
+    item?.PurchasePrice ?? item?.purchasePrice
+  );
 
   // faqat B/U uchun: Faqat PurchasePrice dan foydalanamiz, SalePrice NI UMUMAN ishlatmaymiz
   if (condition === 'B/U') {
@@ -83,7 +90,11 @@ export const getItemBasePriceUSD = (item) => {
   return null;
 };
 
-export const normalizeContractItems = (items = [], branchCodeToNameMap, currencyRate) => {
+export const normalizeContractItems = (
+  items = [],
+  branchCodeToNameMap,
+  currencyRate
+) => {
   return items.map((item, index) => {
     // Condition ma'lumotini U_PROD_CONDITION maydonidan olamiz (narx hisoblashdan oldin)
     const condition = item?.U_PROD_CONDITION ?? item?.u_prod_condition ?? '';
@@ -112,7 +123,9 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap, currency
         // Fallback: eski PhonePrice maydonlari bo'yicha
         const priceValue = item?.PhonePrice ?? item?.phonePrice ?? null;
         priceText =
-          priceValue !== null && priceValue !== undefined && (priceValue || priceValue === 0)
+          priceValue !== null &&
+          priceValue !== undefined &&
+          (priceValue || priceValue === 0)
             ? formatCurrencyUZS(priceValue)
             : '';
       }
@@ -122,7 +135,11 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap, currency
     const onHandText = onHand > 0 ? `${onHand} ta bor` : '';
 
     const whsCode = item?.WhsCode ?? item?.whsCode ?? '';
-    const whsName = item?.WhsName ?? item?.whsName ?? branchCodeToNameMap.get(String(whsCode)) ?? '';
+    const whsName =
+      item?.WhsName ??
+      item?.whsName ??
+      branchCodeToNameMap.get(String(whsCode)) ??
+      '';
 
     return {
       id:
@@ -131,7 +148,8 @@ export const normalizeContractItems = (items = [], branchCodeToNameMap, currency
         item?.ItemCode ??
         `${item?.name ?? item?.ItemName ?? 'contract-item'}-${index}`,
       name: item?.ItemName ?? item?.name ?? "Noma'lum qurilma",
-      storage: item?.U_Memory ?? item?.storage ?? item?.memory ?? item?.Storage ?? '',
+      storage:
+        item?.U_Memory ?? item?.storage ?? item?.memory ?? item?.Storage ?? '',
       color: item?.U_Color ?? item?.color ?? item?.Color ?? '',
       price: priceText,
       imei: item?.IMEI ?? item?.imei ?? '',
@@ -177,27 +195,27 @@ export const CALCULATION_TYPE_OPTIONS = [
 ];
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {
-  1: 0.05,   // 5%
-  2: 0.10,   // 10%
-  3: 0.17,   // 17%
-  4: 0.25,   // 25%
-  5: 0.35,   // 35%
-  6: 0.38,   // 38%
-  7: 0.43,   // 43%
-  8: 0.47,   // 47%
-  9: 0.50,   // 50%
-  10: 0.55,  // 55%
-  11: 0.58,  // 58%
-  12: 0.63,  // 63%
-  13: 0.65,  // 65%
-  14: 0.68,  // 68%
-  15: 0.70,  // 70%
+  1: 0.05, // 5%
+  2: 0.1, // 10%
+  3: 0.17, // 17%
+  4: 0.25, // 25%
+  5: 0.35, // 35%
+  6: 0.38, // 38%
+  7: 0.43, // 43%
+  8: 0.47, // 47%
+  9: 0.5, // 50%
+  10: 0.55, // 55%
+  11: 0.58, // 58%
+  12: 0.63, // 63%
+  13: 0.65, // 65%
+  14: 0.68, // 68%
+  15: 0.7, // 70%
 };
 
 export const getMarkupPercentage = (period) => {
   const periodNum = Number(period);
   if (!periodNum || periodNum < 1) return 0.05;
-  if (periodNum > 15) return 0.70;
+  if (periodNum > 15) return 0.7;
   return MARKUP_PERCENTAGES[periodNum] || 0.05;
 };
 
@@ -225,21 +243,30 @@ export const calculatePaymentDetails = ({
 
   const priceNum = Number(price);
   const periodNum = Number(period) || 1;
-  const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined 
-    ? Number(monthlyLimit) || 0 
-    : 0;
-  const firstPaymentNum = firstPayment !== null && firstPayment !== undefined
-    ? Number(firstPayment) || 0
-    : 0;
-  const finalPercentageNum = finalPercentage !== null && finalPercentage !== undefined
-    ? Number(finalPercentage) || null
-    : null;
-  const maximumLimitNum = maximumLimit !== null && maximumLimit !== undefined
-    ? Number(maximumLimit) || null
-    : null;
+  const monthlyLimitNum =
+    monthlyLimit !== null && monthlyLimit !== undefined
+      ? Number(monthlyLimit) || 0
+      : 0;
+  const firstPaymentNum =
+    firstPayment !== null && firstPayment !== undefined
+      ? Number(firstPayment) || 0
+      : 0;
+  const finalPercentageNum =
+    finalPercentage !== null && finalPercentage !== undefined
+      ? Number(finalPercentage) || null
+      : null;
+  const maximumLimitNum =
+    maximumLimit !== null && maximumLimit !== undefined
+      ? Number(maximumLimit) || null
+      : null;
 
   // Price yoki period noto'g'ri bo'lsa
-  if (!Number.isFinite(priceNum) || priceNum <= 0 || !Number.isFinite(periodNum) || periodNum <= 0) {
+  if (
+    !Number.isFinite(priceNum) ||
+    priceNum <= 0 ||
+    !Number.isFinite(periodNum) ||
+    periodNum <= 0
+  ) {
     return {
       markup: 0,
       calculatedFirstPayment: 0,
@@ -251,7 +278,12 @@ export const calculatePaymentDetails = ({
 
   // Calculation type bo'yicha logika
   // 1. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lmasa
-  if (calculationType === 'markup' && (maximumLimitNum === null || maximumLimitNum === undefined || maximumLimitNum === 0)) {
+  if (
+    calculationType === 'markup' &&
+    (maximumLimitNum === null ||
+      maximumLimitNum === undefined ||
+      maximumLimitNum === 0)
+  ) {
     // Bu holatda jami to'lov narx bilan bir xil bo'lishi kerak, lekin 1000 ga yaxlitlangan
     const roundedPrice = Math.floor(priceNum / 1000) * 1000;
     return {
@@ -264,7 +296,10 @@ export const calculatePaymentDetails = ({
   }
 
   // 2. Agar "percent" (firstPayment) tanlangan va final percentage mavjud bo'lmasa
-  if (calculationType === 'firstPayment' && (finalPercentageNum === null || finalPercentageNum === undefined)) {
+  if (
+    calculationType === 'firstPayment' &&
+    (finalPercentageNum === null || finalPercentageNum === undefined)
+  ) {
     return {
       markup: 0,
       calculatedFirstPayment: 0,
@@ -275,40 +310,35 @@ export const calculatePaymentDetails = ({
   }
 
   // 3. Agar "percent" (firstPayment) tanlangan va final percentage mavjud bo'lsa
-  if (calculationType === 'firstPayment' && finalPercentageNum !== null && finalPercentageNum !== undefined) {
+  if (
+    calculationType === 'firstPayment' &&
+    finalPercentageNum !== null &&
+    finalPercentageNum !== undefined
+  ) {
     // First payment = price * finalPercentage / 100, 1000 ga yaxlitlangan
-    const calculatedFirstPaymentFromPercentage = Math.floor((priceNum * finalPercentageNum) / 100 / 1000) * 1000;
-    
+    const calculatedFirstPaymentFromPercentage =
+      Math.floor((priceNum * finalPercentageNum) / 100 / 1000) * 1000;
+
     // Monthly payment = price - firstPayment
-    const monthlyPaymentFromPercentage = priceNum - calculatedFirstPaymentFromPercentage;
-    
+    const monthlyPaymentFromPercentage =
+      priceNum - calculatedFirstPaymentFromPercentage;
+
     // Qolgan summa uchun eski logika (monthlyPaymentFromPercentage uchun)
     const remainingPrice = monthlyPaymentFromPercentage;
-    
+
     // Ustama foizini olish
     const markup = getMarkupPercentage(periodNum);
-    
+
     // Qolgan summa uchun oylik to'lov: ((remainingPrice) * (1 + markup)) / period, 1000 ga yaxlitlangan
-    const monthlyPayment = Math.floor(((remainingPrice * (1 + markup)) / periodNum) / 1000) * 1000;
-    
+    const monthlyPayment =
+      Math.floor((remainingPrice * (1 + markup)) / periodNum / 1000) * 1000;
+
     // Jami to'lov (ustama bilan): FLOOR(remainingPrice * (1 + markup); 1000)
-    const totalPayment = Math.floor(remainingPrice * (1 + markup) / 1000) * 1000;
-    
+    const totalPayment =
+      Math.floor((remainingPrice * (1 + markup)) / 1000) * 1000;
+
     // Jami to'lov (boshlang'ich + jami): totalPayment + calculatedFirstPaymentFromPercentage
     const grandTotal = totalPayment + calculatedFirstPaymentFromPercentage;
-
-    console.log('[calculatePaymentDetails] Percentage calculation:', {
-      priceNum,
-      finalPercentageNum,
-      calculatedFirstPaymentFromPercentage,
-      monthlyPaymentFromPercentage,
-      remainingPrice,
-      markup,
-      periodNum,
-      monthlyPayment,
-      totalPayment,
-      grandTotal,
-    });
 
     return {
       markup,
@@ -324,35 +354,32 @@ export const calculatePaymentDetails = ({
   const markup = getMarkupPercentage(periodNum);
 
   // Boshlang'ich to'lovni hisoblash: FLOOR(MAX(0; price - (monthlyLimit * period)/(1 + markup)); 1000)
-  const calculatedFirstPayment = monthlyLimitNum > 0
-    ? Math.floor(Math.max(0, priceNum - (monthlyLimitNum * periodNum) / (1 + markup)) / 1000) * 1000
-    : 0;
+  const calculatedFirstPayment =
+    monthlyLimitNum > 0
+      ? Math.floor(
+          Math.max(0, priceNum - (monthlyLimitNum * periodNum) / (1 + markup)) /
+            1000
+        ) * 1000
+      : 0;
 
   // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz va 1000 ga yaxlitlaymiz
-  const actualFirstPaymentRaw = firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
+  const actualFirstPaymentRaw =
+    firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
   const actualFirstPayment = Math.floor(actualFirstPaymentRaw / 1000) * 1000;
 
   // Oylik to'lov: MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period), 1000 ga yaxlitlangan
   // Agar foydalanuvchi birinchi to'lovni o'zi kiritgan bo'lsa, monthlyLimit cheklovi qo'llanmaydi
-  const monthlyPaymentWithoutLimit = ((priceNum - actualFirstPayment) * (1 + markup)) / periodNum;
-  const monthlyPaymentRaw = (isFirstPaymentManual || monthlyLimitNum === 0)
-    ? monthlyPaymentWithoutLimit
-    : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
+  const monthlyPaymentWithoutLimit =
+    ((priceNum - actualFirstPayment) * (1 + markup)) / periodNum;
+  const monthlyPaymentRaw =
+    isFirstPaymentManual || monthlyLimitNum === 0
+      ? monthlyPaymentWithoutLimit
+      : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
   const monthlyPayment = Math.floor(monthlyPaymentRaw / 1000) * 1000;
 
-  console.log('[calculatePaymentDetails] Monthly payment calculation:', {
-    priceNum,
-    actualFirstPayment,
-    markup,
-    periodNum,
-    monthlyLimitNum,
-    monthlyPaymentWithoutLimit,
-    monthlyPayment,
-    formula: `((${priceNum} - ${actualFirstPayment}) * (1 + ${markup})) / ${periodNum} = ${monthlyPaymentWithoutLimit}`,
-  });
-
   // Jami to'lov (ustama bilan): FLOOR((price - firstPayment)*(1 + markup); 1000)
-  const totalPayment = Math.floor((priceNum - actualFirstPayment) * (1 + markup) / 1000) * 1000;
+  const totalPayment =
+    Math.floor(((priceNum - actualFirstPayment) * (1 + markup)) / 1000) * 1000;
 
   // Jami to'lov (boshlang'ich + jami): totalPayment + firstPayment, 1000 ga yaxlitlangan
   const grandTotalRaw = totalPayment + actualFirstPayment;
@@ -366,4 +393,3 @@ export const calculatePaymentDetails = ({
     grandTotal,
   };
 };
-

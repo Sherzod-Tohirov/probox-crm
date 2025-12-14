@@ -25,7 +25,6 @@ const useMutateClientAddress = () => {
           })
         );
       }
-      console.log(response, 'address update response');
     },
   });
 };

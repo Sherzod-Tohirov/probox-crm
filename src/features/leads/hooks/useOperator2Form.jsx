@@ -46,12 +46,13 @@ export default function useOperator2Form(leadId, leadData, onSuccess) {
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
-      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", {
+        type: 'error',
+      });
     },
   });
 
   const handleSubmit = form.handleSubmit((data) => {
-    console.log(data, 'form data');
     // Filter only Operator2 fields
     const filteredData = {};
     OPERATOR2_FIELDS.forEach((field) => {

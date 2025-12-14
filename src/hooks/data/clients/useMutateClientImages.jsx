@@ -24,7 +24,6 @@ const useMutateClientImages = (action) => {
         alert('Hujjatlarni yuklashda xatolik yuz berdi !', { type: 'error' });
       },
       onSuccess: (response) => {
-        console.log(response, 'response');
         if (response && response?.images?.length > 0) {
           dispatch(
             setCurrentClient({

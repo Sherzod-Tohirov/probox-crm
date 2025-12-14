@@ -44,8 +44,6 @@ export const imageToBase64 = async (imagePath) => {
  */
 export const createAndDownloadPdf = (docDefinition, fileName) => {
   pdfMake.createPdf(docDefinition).download(fileName);
-  console.log('PDF fayl yuklab olindi');
 };
 
 export { pdfMake };
-

@@ -82,8 +82,6 @@ export function serializeFilter(values) {
     delete payload.meetingDateEnd;
   }
 
-  console.log(payload, 'payload');
-
   const serializeMulti = (arr) =>
     Array.isArray(arr)
       ? arr

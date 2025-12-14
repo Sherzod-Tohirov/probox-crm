@@ -23,7 +23,7 @@ const useMutateMessages = (action, options = {}) => {
     entityType === 'lead'
       ? ['messages', 'lead', entityId]
       : ['messages', 'client', docEntry, installmentId];
-      
+
   const invalidateMessages = () => {
     queryClient.invalidateQueries({ queryKey });
   };
@@ -31,7 +31,6 @@ const useMutateMessages = (action, options = {}) => {
   if (action === 'post') {
     return useMutation({
       mutationFn: (data) => {
-        console.log(data, 'data inside mutation');
         return postMessage(data, {
           entityType,
           entityId,
