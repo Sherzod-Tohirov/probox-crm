@@ -5,6 +5,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .dropzone {
@@ -19,6 +21,8 @@
   background: v.$secondary-bg;
   outline: none;
   cursor: pointer;
+  width: 100%;
+  max-width: 100%;
   &.active {
     border-color: v.$primary-color;
     background: color-mix(in srgb, v.$fourth-color 8%, v.$secondary-bg);
@@ -167,12 +171,11 @@
 
 .previewRail {
   width: 100%;
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
+  display: grid;
+  gap: 12px;
   padding: 4px 2px;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  overflow-x: hidden;
 }
 
 .previewCard {
@@ -187,8 +190,8 @@
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
-  min-width: clamp(120px, 42vw, 200px);
-  scroll-snap-align: start;
+  width: 100%;
+  min-width: 0;
 
   &:hover {
     transform: translateY(-2px);
@@ -264,6 +267,10 @@
   .subtitle {
     font-size: 3.5rem;
   }
+  .previewRail {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
   .previewCard img,
   .previewCard .pdfPreview {
     height: 140px;
@@ -293,6 +300,10 @@
   .limit,
   .error {
     font-size: 3rem;
+  }
+  .previewRail {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
   .previewCard img,
   .previewCard .pdfPreview {
