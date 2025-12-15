@@ -9,6 +9,18 @@ export const createInvoice = async (data) => {
   }
 };
 
+export const getInvoiceScore = async ({ CardCode }) => {
+  try {
+    const response = await api.get('/invoice/score', {
+      params: { CardCode },
+    });
+    // API turlicha qaytarishi mumkin: {data: ...} yoki to'g'ridan-to'g'ri qiymat
+    return response?.data?.data ?? response?.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 // Invoice PDF / fayllarini yuklash servisi
 // Backend: /lead-images/upload method: POST
 // payload: { image: file.pdf, leadId: 123 }

@@ -13,6 +13,7 @@ import useIsMobile from '@hooks/useIsMobile';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import useMutateClientImages from '@hooks/data/clients/useMutateClientImages';
 import useMutateClientAddress from '@hooks/data/clients/useMutateClientAddress';
+import useFetchInvoiceScore from '@hooks/data/clients/useFetchInvoiceScore';
 
 import styles from './style.module.scss';
 
@@ -27,6 +28,7 @@ import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import { formatterPayment } from '@/utils/formatterPayment';
+import { PaymentScoreGauge } from '@/features/leads/components/LeadPageSections';
 
 function ClientPageForm({
   formId,
@@ -36,6 +38,8 @@ function ClientPageForm({
   ...props
 }) {
   const currentClient = store.getState().page.clients.currentClient;
+  const cardCode = currentClient?.['CardCode'] || currentClient?.['cardCode'];
+  const { data: invoiceScoreData } = useFetchInvoiceScore({ CardCode: cardCode });
   const [userAddressCoords, setUserAddressCoords] = useState({});
   const [filePreviewModal, setFilePreviewModal] = useState(false);
   const [softDeletedFileIds, setSoftDeletedFileIds] = useState([]);
@@ -601,6 +605,17 @@ function ClientPageForm({
               </Row>
             </Col>
           </Row>
+        </Col>
+        {/* Payment Score Gauge */}
+        <Col fullWidth>
+          <PaymentScoreGauge
+            paymentScore={
+              invoiceScoreData?.paymentScore ??
+              invoiceScoreData?.score ??
+              invoiceScoreData ??
+              currentClient?.['paymentScore']
+            }
+          />
         </Col>
         {hasRole(user, ['Manager', 'Agent', 'CEO']) && (
           <Col fullWidth>
