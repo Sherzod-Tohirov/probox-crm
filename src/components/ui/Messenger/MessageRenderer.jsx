@@ -6,7 +6,7 @@ import MessageDate from './MessageDate';
 import { Box, Button } from '@components/ui';
 import { AnimatePresence } from 'framer-motion';
 import styles from './styles/messenger.module.scss';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 const MessageRenderer = ({
   messages = [],
   onEditMessage,
@@ -22,36 +22,42 @@ const MessageRenderer = ({
   const [lastMonthMessages, setLastMonthMessages] = useState([]);
   const [isToggleOpen, setIsToggleOpen] = useState(false);
 
+  // Normalize messages to array to avoid runtime errors
+  // Memoize to prevent infinite loops in useLayoutEffect dependencies
+  const safeMessages = useMemo(() => {
+    return Array.isArray(messages) ? messages : [];
+  }, [messages]);
+
   // Scroll to bottom when new message is added
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages]);
+  }, [safeMessages]);
 
   useLayoutEffect(() => {
     const now = moment();
-    const filteredMessages = messages.filter((msg) => {
+    const filteredMessages = safeMessages.filter((msg) => {
       const msgDate = moment(msg.created_at);
       return !now.isSame(msgDate, 'month');
     });
     setLastMonthMessages(filteredMessages);
-  }, [messages]);
+  }, [safeMessages]);
 
   useLayoutEffect(() => {
     if (hasToggleControl) {
       if (isToggleOpen) {
-        setFormattedMessages(messages);
+        setFormattedMessages(safeMessages);
         return;
       }
       const now = moment();
-      const filteredMessages = messages.filter((msg) => {
+      const filteredMessages = safeMessages.filter((msg) => {
         const msgDate = moment(msg.created_at);
         return now.isSame(msgDate, 'month');
       });
       setFormattedMessages(filteredMessages);
     } else {
-      setFormattedMessages(messages);
+      setFormattedMessages(safeMessages);
     }
-  }, [messages, hasToggleControl, isToggleOpen]);
+  }, [safeMessages, hasToggleControl, isToggleOpen]);
   return (
     <div className={styles['messenger-messages']} ref={scrollRef}>
       {/* Load More Button for infinite scroll */}

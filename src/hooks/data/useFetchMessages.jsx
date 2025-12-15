@@ -78,6 +78,10 @@ export default function useFetchMessages(options = {}) {
               if (!Array.isArray(lastPage)) {
                 return undefined;
               }
+              // Additional safety check for allPages length
+              if (!Array.isArray(allPages) || allPages.length === 0) {
+                return undefined;
+              }
               const currentPage = allPages.length;
               // If lastPage is empty or less than limit, no more pages
               if (lastPage.length < limit) {
@@ -101,7 +105,11 @@ export default function useFetchMessages(options = {}) {
   });
 
   // Flatten pages for easy consumption
-  const messages = data?.pages?.flat() || [];
+  // Safety check: ensure data.pages is an array before calling flat()
+  const messages = 
+    data?.pages && Array.isArray(data.pages) 
+      ? data.pages.flat().filter(Boolean) 
+      : [];
 
   return {
     data: messages,

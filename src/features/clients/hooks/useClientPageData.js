@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
-import useFetchMessages from '@hooks/data/useFetchMessages';
+import useFetchMessages from '@hooks/data/clients/useFetchMessages';
 import useFetchClientEntriesById from '@hooks/data/clients/useFetchClientEntriesById';
 
 /**
@@ -25,15 +25,16 @@ export default function useClientPageData(clientId, isMessengerOpen) {
   const {
     data: messages,
     isLoading: isMessagesLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
   } = useFetchMessages({
-    entityType: 'client',
     docEntry,
     installmentId,
     enabled: isMessengerOpen,
   });
+
+  // Client messenger: API returns all messages (no infinite pagination)
+  const fetchNextPage = () => {};
+  const hasNextPage = false;
+  const isFetchingNextPage = false;
 
   return {
     currentClient,

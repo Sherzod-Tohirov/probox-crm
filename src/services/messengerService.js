@@ -19,7 +19,9 @@ export const getMessages = async (options = {}) => {
         `leads/${entityId}/chat?page=${page}&limit=${limit}`,
         'leadMessages'
       );
-      return response?.data || [];
+      // Ensure response.data is an array
+      const data = response?.data;
+      return Array.isArray(data) ? data : [];
     }
 
     // For clients: use existing endpoint
@@ -30,7 +32,8 @@ export const getMessages = async (options = {}) => {
       `invoice/comments/${docEntry}/${installmentId}`,
       'messages'
     );
-    return response || [];
+    // Ensure response is an array
+    return Array.isArray(response) ? response : [];
   } catch (error) {
     console.error(error);
     throw error;
