@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
 import { Input, Button } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
-import { formatNumberWithSeparators } from '../../../utils/deviceUtils';
+import {
+  formatNumberWithSeparators,
+  getMarkupPercentage,
+} from '../../../utils/deviceUtils';
 
 export const useSelectedDevicesColumns = ({
   rentPeriodOptions,
@@ -14,6 +17,24 @@ export const useSelectedDevicesColumns = ({
   isRentPeriodDisabled = false,
   isFirstPaymentDisabled = false,
 }) => {
+  const rentPeriodOptionsWithPct = useMemo(() => {
+    if (!Array.isArray(rentPeriodOptions)) return [];
+
+    return rentPeriodOptions.map((opt) => {
+      const valueNum = Number(opt?.value);
+
+      // 0 yoki noto‘g‘ri value bo‘lsa, label’ni o‘zgartirmaymiz
+      if (!Number.isFinite(valueNum) || valueNum <= 0) return opt;
+
+      const pct = Math.round(getMarkupPercentage(valueNum) * 100);
+
+      return {
+        ...opt,
+        label: `${valueNum} (${pct}%)`,
+      };
+    });
+  }, [rentPeriodOptions]);
+
   return useMemo(
     () => [
       {
@@ -108,12 +129,15 @@ export const useSelectedDevicesColumns = ({
           const isDisabled = !canEdit || isRentPeriodDisabled;
           const value = isRentPeriodDisabled && row.rentPeriod === 0
             ? 0
-            : (row.rentPeriod ?? rentPeriodOptions[0]?.value ?? undefined);
+            : (row.rentPeriod ?? rentPeriodOptionsWithPct[0]?.value ?? undefined);
           
           // Agar disabled bo'lsa va value 0 bo'lsa, maxsus options yaratamiz
-          const options = isRentPeriodDisabled && value === 0
-            ? [{ value: 0, label: '0' }, ...rentPeriodOptions]
-            : rentPeriodOptions;
+          const options =
+            isRentPeriodDisabled && value === 0
+              ? (rentPeriodOptionsWithPct.some((o) => Number(o?.value) === 0)
+                  ? rentPeriodOptionsWithPct
+                  : [{ value: 0, label: '0' }, ...rentPeriodOptionsWithPct])
+              : rentPeriodOptionsWithPct;
           
           return (
             <Input
