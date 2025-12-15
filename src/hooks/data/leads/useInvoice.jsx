@@ -329,6 +329,32 @@ export default function useInvoice(options = {}) {
         });
       }
 
+      // Muhim: DocumentInstallments yig'indisi DocumentLines.Price yig'indisiga teng bo'lishi shart.
+      // Biz jadvalni o'zgartirmaymiz; farq bo'lsa DocumentLines.Price ni jadvalga moslaymiz.
+      const expectedTotal = documentLines.reduce(
+        (acc, line) => acc + (Number(line?.Price) || 0),
+        0
+      );
+      const installmentsTotal = documentInstallments.reduce(
+        (acc, inst) => acc + (Number(inst?.TotalFC) || 0),
+        0
+      );
+      const delta = installmentsTotal - expectedTotal;
+
+      if (delta !== 0 && documentLines.length > 0) {
+        const lastIdx = documentLines.length - 1;
+        const lastLine = documentLines[lastIdx];
+        const nextPrice = (Number(lastLine?.Price) || 0) + delta;
+
+        if (nextPrice >= 0) {
+          documentLines[lastIdx] = {
+            ...lastLine,
+            Price: nextPrice,
+            UnitPrice: nextPrice,
+          };
+        }
+      }
+
       // DocDueDate - oxirgi to'lov sanasi
       const docDueDate = documentInstallments.length > 0
         ? documentInstallments[documentInstallments.length - 1].DueDate

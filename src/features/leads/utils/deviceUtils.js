@@ -25,6 +25,14 @@ export const formatCurrencyUZS = (value) => {
   return formatted ? `${formatted} so'm` : '';
 };
 
+// Narxni minglikka pastga tushirish: 13 684 230 -> 13 684 000
+export const floorToThousands = (value) => {
+  if (value === null || value === undefined || value === '') return null;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return null;
+  return Math.floor(num / 1000) * 1000;
+};
+
 /**
  * Qurilma uchun bazaviy USD narxini hisoblash
  * - U_PROD_CONDITION = "B/U" bo'lsa: PurchasePrice dan foydalanib, foiz qo'shamiz
@@ -117,7 +125,9 @@ export const normalizeContractItems = (
           : null;
 
       if (basePriceUSD && rateNum && Number.isFinite(rateNum) && rateNum > 0) {
-        const priceUZS = basePriceUSD * rateNum;
+        const priceUZSRaw = basePriceUSD * rateNum;
+        const priceUZS =
+          condition === 'B/U' ? floorToThousands(priceUZSRaw) : priceUZSRaw;
         priceText = formatCurrencyUZS(priceUZS);
       } else {
         // Fallback: eski PhonePrice maydonlari bo'yicha
@@ -377,13 +387,10 @@ export const calculatePaymentDetails = ({
       : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
   const monthlyPayment = Math.floor(monthlyPaymentRaw / 1000) * 1000;
 
-  // Jami to'lov (ustama bilan): FLOOR((price - firstPayment)*(1 + markup); 1000)
-  const totalPayment =
-    Math.floor(((priceNum - actualFirstPayment) * (1 + markup)) / 1000) * 1000;
-
-  // Jami to'lov (boshlang'ich + jami): totalPayment + firstPayment, 1000 ga yaxlitlangan
-  const grandTotalRaw = totalPayment + actualFirstPayment;
-  const grandTotal = Math.floor(grandTotalRaw / 1000) * 1000;
+  // Muhim: UI va Invoice uchun to'lov jadvali monthlyPayment asosida ketadi.
+  // Shuning uchun total/grandTotal ham monthlyPayment * period + firstPayment bilan sinxron bo'lishi kerak.
+  const totalPayment = monthlyPayment * periodNum;
+  const grandTotal = totalPayment + actualFirstPayment;
 
   return {
     markup,

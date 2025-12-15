@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import useFetchItemSeries from '@/hooks/data/leads/useFetchItemSeries';
 import useFetchCurrency from '@/hooks/data/useFetchCurrency';
-import { formatCurrencyUZS } from '../utils/deviceUtils';
+import { floorToThousands, formatCurrencyUZS } from '../utils/deviceUtils';
 
 export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => {
   const { mutateAsync: fetchItemSeries } = useFetchItemSeries();
@@ -108,9 +108,15 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
             // Yangi mahsulotlar uchun SalePrice to'g'ridan-to'g'ri UZS formatida
             calculatedPriceUZS = baseUsd;
             priceText = formatCurrencyUZS(baseUsd);
-          } else if (baseUsd && currencyRate && Number.isFinite(currencyRate) && currencyRate > 0) {
+          } else if (
+            baseUsd &&
+            currencyRate &&
+            Number.isFinite(currencyRate) &&
+            currencyRate > 0
+          ) {
             // B/U yoki boshqa holatlar uchun: USD -> UZS ga o'tkazamiz
-            const uzs = baseUsd * currencyRate;
+            const uzsRaw = baseUsd * currencyRate;
+            const uzs = condition === 'B/U' ? floorToThousands(uzsRaw) : uzsRaw;
             calculatedPriceUZS = uzs;
             priceText = formatCurrencyUZS(uzs);
           } else if (baseUsd) {
