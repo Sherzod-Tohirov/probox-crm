@@ -84,13 +84,13 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
             } else {
               // B/U uchun PurchasePrice ga foizlar qo'shamiz
               let multiplier = 1;
-              if (purchaseUSD < 500) {
-                multiplier = 1.15; // +15%
-              } else if (purchaseUSD >= 500 && purchaseUSD < 1000) {
+              // deviceUtils.js dagi logika bilan bir xil:
+              // <= 500 => +10%, 500-1000 => +6%, > 1000 => +3%
+              if (purchaseUSD <= 500) {
                 multiplier = 1.1; // +10%
-              } else if (purchaseUSD >= 1000 && purchaseUSD < 2000) {
-                multiplier = 1.05; // +5%
-              } else if (purchaseUSD >= 2000) {
+              } else if (purchaseUSD > 500 && purchaseUSD <= 1000) {
+                multiplier = 1.06; // +6%
+              } else if (purchaseUSD > 1000) {
                 multiplier = 1.03; // +3%
               }
               baseUsd = purchaseUSD * multiplier;

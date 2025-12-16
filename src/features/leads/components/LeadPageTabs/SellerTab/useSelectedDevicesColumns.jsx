@@ -26,11 +26,11 @@ export const useSelectedDevicesColumns = ({
       // 0 yoki noto‘g‘ri value bo‘lsa, label’ni o‘zgartirmaymiz
       if (!Number.isFinite(valueNum) || valueNum <= 0) return opt;
 
-      const pct = Math.round(getMarkupPercentage(valueNum) * 100);
+      // const pct = Math.round(getMarkupPercentage(valueNum) * 100);
 
       return {
         ...opt,
-        label: `${valueNum} (${pct}%)`,
+        label: `${valueNum}`,
       };
     });
   }, [rentPeriodOptions]);

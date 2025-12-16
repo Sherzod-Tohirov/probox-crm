@@ -39,10 +39,9 @@ export const floorToThousands = (value) => {
  * - Aks holda (Yangi yoki null): SalePrice dan foydalanamiz
  *
  * Foiz qo'shish qoidalari (faqat B/U uchun):
- *  - < 500      => +15%
- *  - 500-1000   => +10%
- *  - 1000-2000  => +5%
- *  - > 2000     => +3%
+ *  - <= 500      => +10%
+ *  - 500-1000   => +6%
+ *  - > 1000 => +3%
  */
 export const getItemBasePriceUSD = (item) => {
   if (!item) return null;
@@ -73,13 +72,14 @@ export const getItemBasePriceUSD = (item) => {
 
     let multiplier = 1;
 
-    if (base < 500) {
-      multiplier = 1.15; // +15%
-    } else if (base >= 500 && base < 1000) {
+    if (base <= 500) {
+      // 10 foiz
       multiplier = 1.1; // +10%
-    } else if (base >= 1000 && base < 2000) {
-      multiplier = 1.05; // +5%
-    } else if (base >= 2000) {
+    } else if (base > 500 && base <= 1000) {
+      // 6foiz
+      multiplier = 1.06; // +6%
+    
+    } else if (base > 1000) {
       multiplier = 1.03; // +3%
     }
 
