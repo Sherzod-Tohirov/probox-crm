@@ -1404,7 +1404,7 @@ export const generateInvoicePdf = async (invoiceData) => {
               width: '*',
               stack: [
                 { text: 'SOTUVCHI/PRODAVETS\n', fontSize: 9, bold: true },
-                { text: 'ООО «PROBOX sxs CO»\n', fontSize: 9 },
+                { text: 'ООО «PROBOX GROUP CO»\n', fontSize: 9 },
                 { text: 'Manzil: Toshkent sh., Olmazor tumani, Nurafshon ko\'chasi, 1-uy. 12-xonadon.\n', fontSize: 9 },
                 { text: 'Bank: ATB «ASIA ALLIANCE BANK»\n', fontSize: 9 },
                 { text: 'Bank kodi: 01095\n', fontSize: 9 },
