@@ -13,6 +13,22 @@
 import { imageToBase64,  pdfMake } from './pdfHelpers';
 import { calculatePaymentData, calculatePaymentSchedule, getDateInfo } from './invoicePdfCalculations';
 
+// pdfmake uzun "bitta so'z"larni (bo'sh joysiz) satrga bo'la olmaydi va matn kesilib qoladi.
+// \u200B ba'zi holatlarda wrap bo'lmasligi mumkin, shuning uchun bu yerda majburiy newline (\n) qo'yamiz.
+const softWrapLongTokens = (text, chunkSize = 16) => {
+  if (!text) return text;
+  const str = String(text);
+  // Agar allaqachon bo'shliqlar bo'lsa ham, juda uzun token bo'lsa bo'lamiz
+  return str
+    .split(' ')
+    .map((token) => {
+      if (token.length <= chunkSize) return token;
+      // Har chunk'dan keyin qator tashlaymiz (PDF'da 100% wrap bo'ladi)
+      return token.replace(new RegExp(`(.{${chunkSize}})`, 'g'), '$1\n');
+    })
+    .join(' ');
+};
+
 export const generateInvoicePdf = async (invoiceData) => {
   if (!invoiceData) {
     throw new Error('invoiceData topilmadi');
@@ -1388,7 +1404,7 @@ export const generateInvoicePdf = async (invoiceData) => {
               width: '*',
               stack: [
                 { text: 'SOTUVCHI/PRODAVETS\n', fontSize: 9, bold: true },
-                { text: 'ООО «PROBOX GROUP CO»\n', fontSize: 9 },
+                { text: 'ООО «PROBOX sxs CO»\n', fontSize: 9 },
                 { text: 'Manzil: Toshkent sh., Olmazor tumani, Nurafshon ko\'chasi, 1-uy. 12-xonadon.\n', fontSize: 9 },
                 { text: 'Bank: ATB «ASIA ALLIANCE BANK»\n', fontSize: 9 },
                 { text: 'Bank kodi: 01095\n', fontSize: 9 },
@@ -1413,7 +1429,19 @@ export const generateInvoicePdf = async (invoiceData) => {
               width: '*',
               stack: [
                 { text: 'XARIDOR/POKUPATEL\n', fontSize: 9, bold: true },
-                { text: `F.I.Sh.: ${clientName || '_______________________'}\n\n`, fontSize: 9 },
+                {
+                  text: [
+                    { text: 'F.I.Sh.: ', fontSize: 9 },
+                    {
+                      text: softWrapLongTokens(
+                        clientName || '_______________________'
+                      ),
+                      fontSize: 9,
+                      bold: true,
+                    },
+                    { text: '\n\n', fontSize: 9 },
+                  ],
+                },
                 { text: 'Imzo: ', fontSize: 9 },
                 ...(userSignature ? [
                   {
