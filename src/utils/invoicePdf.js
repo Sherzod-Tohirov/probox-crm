@@ -57,6 +57,11 @@ export const generateInvoicePdf = async (invoiceData) => {
 
     // To'lov jadvalini hisoblash
     const paymentSchedule = calculatePaymentSchedule(selectedDevices, invoiceData.monthlyLimit);
+    const paymentScheduleTotal = paymentSchedule.reduce(
+      (acc, item) => acc + (Number(item?.amount) || 0),
+      0
+    );
+    const paymentScheduleTotalFormatted = Math.round(paymentScheduleTotal).toLocaleString('uz-UZ');
 
     // Sana ma'lumotlari
     const { day, month, monthRu, year } = getDateInfo();
@@ -1362,7 +1367,7 @@ export const generateInvoicePdf = async (invoiceData) => {
               [
                 { text: 'JAMI/ITOGO:', bold: true, colSpan: 2 },
                 '',
-                { text: grandTotalFormatted, bold: true }, // Grand total (ustama bilan) - bold
+                { text: paymentScheduleTotalFormatted, bold: true }, // Jadvaldagi oylik summalar yig'indisi
                 '0',
               ],
             ],

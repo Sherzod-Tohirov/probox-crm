@@ -30,6 +30,10 @@ export const calculatePaymentData = (selectedDevices, DocumentLines, monthlyLimi
           period,
           monthlyLimit,
           firstPayment,
+          // Invoice PDF’da monthlyPayment 0 bo‘lib qolmasligi uchun:
+          // calculatePaymentDetails ichida "markup" branch-1 maximumLimit bo‘lmasa monthlyPayment=0 qaytaradi.
+          // Shuning uchun maximumLimit ni monthlyLimit (yoki fallback 1) qilib beramiz.
+          maximumLimit: monthlyLimit > 0 ? monthlyLimit : 1,
         });
         
         grandTotal += paymentDetails.grandTotal;
@@ -105,6 +109,7 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
         period,
         monthlyLimit,
         firstPayment,
+        maximumLimit: monthlyLimit > 0 ? monthlyLimit : 1,
       });
       
       const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
@@ -131,8 +136,10 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
       }
     });
 
+    // Jadval sanalari joriy oydan emas, kelasi oydan boshlansin:
+    // month=1 => +1 oy, month=2 => +2 oy, ...
     const paymentDate = new Date();
-    paymentDate.setMonth(paymentDate.getMonth() + month - 1);
+    paymentDate.setMonth(paymentDate.getMonth() + month);
     const dateStr = paymentDate.toLocaleDateString('uz-UZ', {
       day: '2-digit',
       month: '2-digit',
