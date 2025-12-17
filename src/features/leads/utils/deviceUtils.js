@@ -205,21 +205,21 @@ export const CALCULATION_TYPE_OPTIONS = [
 ];
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {
-  1: 0.05, // 5%
-  2: 0.1, // 10%
+  1: 0.055, // 5.5%
+  2: 0.11, // 11%
   3: 0.17, // 17%
   4: 0.25, // 25%
-  5: 0.35, // 35%
-  6: 0.38, // 38%
-  7: 0.43, // 43%
-  8: 0.47, // 47%
-  9: 0.5, // 50%
-  10: 0.55, // 55%
-  11: 0.58, // 58%
-  12: 0.63, // 63%
-  13: 0.65, // 65%
-  14: 0.68, // 68%
-  15: 0.7, // 70%
+  5: 0.33, // 33%
+  6: 0.39, // 39%
+  7: 0.45, // 45%
+  8: 0.49, // 49%
+  9: 0.52, // 52%
+  10: 0.58, // 58%
+  11: 0.61, // 61%
+  12: 0.67, // 67%
+  13: 0.71, // 71%
+  14: 0.76, // 76%
+  15: 0.81, // 81%
 };
 
 export const getMarkupPercentage = (period) => {
@@ -325,16 +325,20 @@ export const calculatePaymentDetails = ({
     finalPercentageNum !== null &&
     finalPercentageNum !== undefined
   ) {
-    // First payment = price * finalPercentage / 100, 1000 ga yaxlitlangan
-    const calculatedFirstPaymentFromPercentage =
-      Math.floor((priceNum * finalPercentageNum) / 100 / 1000) * 1000;
+    // Agar foydalanuvchi birinchi to'lovni qo'lda kiritgan bo'lsa, uni ishlatamiz
+    // Aks holda, finalPercentage dan hisoblaymiz
+    let actualFirstPayment;
+    if (isFirstPaymentManual && firstPaymentNum > 0) {
+      // Foydalanuvchi qo'lda kiritgan birinchi to'lovni 1000 ga yaxlitlaymiz
+      actualFirstPayment = Math.floor(firstPaymentNum / 1000) * 1000;
+    } else {
+      // First payment = price * finalPercentage / 100, 1000 ga yaxlitlangan
+      actualFirstPayment =
+        Math.floor((priceNum * finalPercentageNum) / 100 / 1000) * 1000;
+    }
 
     // Monthly payment = price - firstPayment
-    const monthlyPaymentFromPercentage =
-      priceNum - calculatedFirstPaymentFromPercentage;
-
-    // Qolgan summa uchun eski logika (monthlyPaymentFromPercentage uchun)
-    const remainingPrice = monthlyPaymentFromPercentage;
+    const remainingPrice = priceNum - actualFirstPayment;
 
     // Ustama foizini olish
     const markup = getMarkupPercentage(periodNum);
@@ -347,12 +351,12 @@ export const calculatePaymentDetails = ({
     const totalPayment =
       Math.floor((remainingPrice * (1 + markup)) / 1000) * 1000;
 
-    // Jami to'lov (boshlang'ich + jami): totalPayment + calculatedFirstPaymentFromPercentage
-    const grandTotal = totalPayment + calculatedFirstPaymentFromPercentage;
+    // Jami to'lov (boshlang'ich + jami): totalPayment + actualFirstPayment
+    const grandTotal = totalPayment + actualFirstPayment;
 
     return {
       markup,
-      calculatedFirstPayment: calculatedFirstPaymentFromPercentage,
+      calculatedFirstPayment: actualFirstPayment,
       monthlyPayment,
       totalPayment,
       grandTotal,

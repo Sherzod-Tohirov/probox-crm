@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { DEFAULT_RENT_PERIOD } from '../utils/deviceUtils';
 import {
   extractNumericValue,
@@ -311,6 +311,65 @@ export const useSelectedDevices = ({
       maximumLimit,
     ]
   );
+
+  // calculationTypeFilter o'zgarganda, avtomatik firstPayment ni yangilash
+  useEffect(() => {
+    setSelectedDevices((prev) => {
+      const updated = prev.map((device) => {
+        // Agar foydalanuvchi qo'lda kiritgan bo'lsa, o'zgartirmaymiz
+        if (device.isFirstPaymentManual) {
+          return device;
+        }
+
+        const totalPrice = extractNumericValue(device.price);
+        const period =
+          Number(device.rentPeriod) ||
+          rentPeriodOptions[0]?.value ||
+          DEFAULT_RENT_PERIOD;
+
+        // Price yoki period noto'g'ri bo'lsa, o'zgartirmaymiz
+        if (
+          totalPrice === null ||
+          !Number.isFinite(totalPrice) ||
+          totalPrice <= 0 ||
+          !Number.isFinite(period) ||
+          period <= 0
+        ) {
+          return device;
+        }
+
+        // Yangi firstPayment ni hisoblash
+        const paymentDetails = calculatePaymentDetails({
+          price: totalPrice,
+          period,
+          monthlyLimit:
+            monthlyLimit !== null && monthlyLimit !== undefined
+              ? monthlyLimit
+              : 0,
+          firstPayment: 0,
+          calculationType: calculationTypeFilter || 'markup',
+          finalPercentage: finalPercentage,
+          maximumLimit: maximumLimit,
+        });
+
+        const newFirstPayment = paymentDetails.calculatedFirstPayment || '';
+
+        return {
+          ...device,
+          firstPayment: newFirstPayment,
+          isFirstPaymentManual: false,
+        };
+      });
+
+      return updated;
+    });
+  }, [
+    calculationTypeFilter,
+    finalPercentage,
+    maximumLimit,
+    monthlyLimit,
+    rentPeriodOptions,
+  ]);
 
   const selectedDeviceData = useMemo(() => {
     // Condition filter bo'yicha filter qilish
