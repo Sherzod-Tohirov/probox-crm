@@ -9,7 +9,7 @@ import moment from 'moment';
 
 export default function useInvoice(options = {}) {
   return useMutation({
-    mutationFn: async ({ leadId, selectedDevices, paymentType }) => {
+    mutationFn: async ({ leadId, selectedDevices, paymentType, calculationTypeFilter }) => {
       // 1. Lead ma'lumotlarini olish
       const leadResponse = await getLeadById(leadId);
       const leadData = leadResponse?.data || leadResponse;
@@ -24,7 +24,8 @@ export default function useInvoice(options = {}) {
         : null;
 
       // Calculation type va boshqa parametrlarni olish
-      const calculationType = leadData?.calculationTypeFilter || leadData?.calculationType || 'markup';
+      // Avval parametrdan, keyin leadData dan, oxirida default
+      const calculationType = calculationTypeFilter || leadData?.calculationTypeFilter || leadData?.calculationType || 'markup';
       const finalPercentage = (leadData?.finalPercentage !== null && leadData?.finalPercentage !== undefined)
         ? (Number(leadData.finalPercentage) || null)
         : null;
@@ -382,10 +383,13 @@ export default function useInvoice(options = {}) {
         U_FirstPayment: cashSum, 
         DocRate: docRate, // Dollar kursi
         paymentType: paymentType || '', // To'lov turi
+        calculationType: calculationType, // Xisoblash turi (markup yoki firstPayment)
+        finalPercentage: finalPercentage, // Final percentage (Foiz holatida)
+        maximumLimit: maximumLimit, // Maximum limit
       };
 
       // 10. Invoice yuborish
-     // await createInvoice(invoiceData);
+    //  await createInvoice(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;

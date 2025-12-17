@@ -57,7 +57,18 @@ export const generateInvoicePdf = async (invoiceData) => {
     const signatureImage = await imageToBase64('/signature-stamp.jpg');
     
     // To'lov ma'lumotlarini hisoblash
-    const paymentData = calculatePaymentData(selectedDevices, DocumentLines, invoiceData.monthlyLimit);
+    const calculationType = invoiceData.calculationType || 'markup';
+    const finalPercentage = invoiceData.finalPercentage || null;
+    const maximumLimit = invoiceData.maximumLimit || null;
+    
+    const paymentData = calculatePaymentData(
+      selectedDevices, 
+      DocumentLines, 
+      invoiceData.monthlyLimit,
+      calculationType,
+      finalPercentage,
+      maximumLimit
+    );
     const {
       maxPeriod,
       grandTotalFormatted,
@@ -72,7 +83,13 @@ export const generateInvoicePdf = async (invoiceData) => {
     } = paymentData;
 
     // To'lov jadvalini hisoblash
-    const paymentSchedule = calculatePaymentSchedule(selectedDevices, invoiceData.monthlyLimit);
+    const paymentSchedule = calculatePaymentSchedule(
+      selectedDevices, 
+      invoiceData.monthlyLimit,
+      calculationType,
+      finalPercentage,
+      maximumLimit
+    );
     const paymentScheduleTotal = paymentSchedule.reduce(
       (acc, item) => acc + (Number(item?.amount) || 0),
       0
@@ -273,7 +290,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   bold: true,
                 },
                 {
-                  text: 'amalga oshiriladi. Tovar qiymati AQSh dollarida belgilangan bo\'lib, O\'zbekiston Respublikasi Markaziy banki tomonidan belgilangan rasmiy valyutalar kursi asosida so\'mda to\'lanadi. To\'lov amalga oshirilayotgan kungi rasmiy kurs hisobga olinadi.\n\n',
+                  text: 'amalga oshiriladi.\n\n',
                   fontSize: 9,
                 },
                 {
@@ -357,7 +374,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   bold: true,
                 },
                 {
-                  text: 'каждого месяца. "Стоимость товара установлена в долларах США и подлежит оплате в сумах на основе официального курса валют, установленного Центральным банком Республики Узбекистан. При этом учитывается официальный курс валют на день осуществления платежа."\n\n',
+                  text: 'каждого месяца.\n\n',
                   fontSize: 9,
                 },
                 {
@@ -507,7 +524,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '4.2.2. Ushbu Shartnomaning to\'lov shartlari buzilgan taqdirda, Xaridordan Tovarni qaytarib olish. Shu bilan birga, Xaridor tomonidan oldin to\'langan pul miqdori qaytarilmaydi va Sotuvchining yo\'qotishlari qoplash uchun ketadi.\n\n',
+                  text: '4.2.2. Sotuvchi Xaridordan Tovarni qaytarib olish huquqiga ega. Bunda, Sotuvchi oldin Xaridor tomonidan to‘langan pul miqdoridan faqat Tovardan foydalanilganlik uchun to‘lovni, shuningdek, shartnomani bekor qilish munosabati bilan yuzaga kelgan real zararni (foydadan mahrum bo‘lishdan tashqari) ushlab qolishga haqli. Qolgan summa Xaridorga 10 (o‘n) ish kuni ichida qaytariladi.\n\n',
                   fontSize: 9,
                 },
                 { text: '4.3.Xaridorning majburiyatlari:\n', fontSize: 9, bold: true },
@@ -565,7 +582,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '4.2.2. В случае нарушения условий оплаты, предусмотренных настоящим Договором, изъять Товар у Покупателя. При этом, денежные средства, ранее оплаченные Покупателем, не возвращаются, а идут в счет покрытия убытков Продавца.\n\n',
+                  text: '4.2.2. Продавец имеет право изъять Товар у Покупателя. При этом, Продавец вправе удержать из ранее оплаченной Покупателем суммы только плату за использование Товара, а также реальный ущерб, возникший в связи с расторжением договора (за исключением упущенной выгоды). Оставшаяся сумма возвращается Покупателю в течение 10 (десяти) рабочих дней.\n\n',
                   fontSize: 9,
                 },
                 { text: '4.3. Обязанности Покупателя:\n', fontSize: 9, bold: true },
@@ -761,11 +778,15 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '6.5.1. Sotuvchi, Xaridor tomonidan Tovar uchun to\'lovlar 7 (etti) kalendar kunidan ortiq muddatga kechiktirilgan taqdirda, 6.5-banddagi Vaqtinchalik Olib Qo\'yish mexanizmini qo\'llamagan holda, Shartnomani bir tomonlama bekor qilish huquqiga ega. Bunda 4.2.2, 6.7.3 hamda 7-bo\'lim qoidalariga muvofiq qayta hisob-kitob qilish jarayoni boshlanadi.\n\n',
+                  text: '6.5.1. Agar Xaridor tomonidan Tovar uchun oylik to‘lovlar ketma-ket 2 (ikki) marta yoki Shartnomaning butun amal qilish muddati davomida umumiy 3 (uch) marta 7 (yetti) kalendar kunidan ortiq muddatga kechiktirilsa, Sotuvchi Shartnomani bir tomonlama bekor qilish huquqiga ega.\n\n',
                   fontSize: 9,
                 },
                 {
                   text: '6.5.2. Agar bloklash chorasi (6.2-band) qo\'llanilgandan so\'ng 3 (uch) kalendar kun ichida ham to\'lov amalga oshirilmasa yoki nizo hal etilmasa (ya\'ni, to\'lov sanasidan 7 kun o\'tsa), Sotuvchi shartnomani bir tomonlama bekor qilish to\'g\'risida Xaridorga yozma xabar yuborishga haqli va nizo sud orqali hal qilinadi.\n\n',
+                  fontSize: 9,
+                },
+                {
+                  text:'6.5.3. Ushbu Shartnoma Sotuvchi tomonidan 6.5.1-band asosida bekor qilingan taqdirda, Xaridorning Tovar bo‘yicha to‘lanmagan butun qolgan asosiy qarz summasi muddatidan oldin undiruvga qaratiladi. Bunda 7-bo‘limga muvofiq qayta hisob-kitob amalga oshiriladi.\n\n',
                   fontSize: 9,
                 },
                 {
@@ -863,11 +884,15 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '6.5. Продавец имеет право в одностороннем порядке расторгнуть Договор без применения механизма временного изъятия, указанного в пункте 6.5, если Покупатель задерживает оплату за Товар более чем на 7 (семь) календарных дней. В этом случае начинается процедура взаиморасчётов в соответствии с пунктами 4.2.2, 6.7.3 и разделом 7 настоящего Договора.\n\n',
+                  text: '6.5.1. Если Покупатель задерживает ежемесячные платежи за Товар подряд 2 (два) раза или в общей сложности 3 (три) раза в течение всего срока действия Договора более чем на 7 (семь) календарных дней, Продавец имеет право в одностороннем порядке расторгнуть Договор.\n\n',
                   fontSize: 9,
                 },
                 {
                   text: '6.5.2. Если после применения мер блокировки (пункт 6.2) в течение 3 (трёх) календарных дней оплата не поступит или спор не будет урегулирован (т.е. по истечении 7 дней с даты платежа), Продавец вправе направить Покупателю письменное уведомление о расторжении договора в одностороннем порядке и передать спор на рассмотрение суда.\n\n',
+                  fontSize: 9,
+                },
+                {
+                  text: '6.5.3. В случае расторжения Договора Продавцом на основании пункта 6.5.1, вся оставшаяся неоплаченная основная сумма задолженности Покупателя по Товару подлежит досрочному взысканию. При этом производится перерасчет в соответствии с разделом 7 настоящего Договора.\n\n',
                   fontSize: 9,
                 },
                 {

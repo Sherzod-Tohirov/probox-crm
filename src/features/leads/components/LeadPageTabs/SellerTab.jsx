@@ -242,11 +242,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     }
 
     try {
-      await sendInvoice({ leadId, selectedDevices, paymentType });
+      await sendInvoice({ leadId, selectedDevices, paymentType, calculationTypeFilter });
     } catch (error) {
       // Error already handled in onError callback
     }
-  }, [userSignature, paymentType, leadId, selectedDevices, sendInvoice]);
+  }, [userSignature, paymentType, leadId, selectedDevices, sendInvoice, calculationTypeFilter]);
 
   useEffect(() => {
     if (!form) return;

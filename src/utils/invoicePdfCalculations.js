@@ -7,9 +7,12 @@ import { numberToWordsUZ, numberToWordsRU } from './numberToWords';
  * @param {Array} selectedDevices - Tanlangan qurilmalar
  * @param {Array} DocumentLines - Document lines
  * @param {number} monthlyLimit - Oylik limit
+ * @param {string} calculationType - Xisoblash turi (markup yoki firstPayment)
+ * @param {number} finalPercentage - Final percentage (Foiz holatida)
+ * @param {number} maximumLimit - Maximum limit
  * @returns {Object} To'lov ma'lumotlari
  */
-export const calculatePaymentData = (selectedDevices, DocumentLines, monthlyLimit) => {
+export const calculatePaymentData = (selectedDevices, DocumentLines, monthlyLimit, calculationType = 'markup', finalPercentage = null, maximumLimit = null) => {
   let grandTotal = 0;
   let totalFirstPayment = 0;
   let totalRemainingAmount = 0;
@@ -23,17 +26,18 @@ export const calculatePaymentData = (selectedDevices, DocumentLines, monthlyLimi
       const price = extractNumericValue(device.price);
       const period = Number(device.rentPeriod) || 0;
       const firstPayment = extractNumericValue(device.firstPayment) || 0;
+      const isFirstPaymentManual = device?.isFirstPaymentManual || false;
       
       if (price && period > 0) {
         const paymentDetails = calculatePaymentDetails({
           price,
           period,
-          monthlyLimit,
+          monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
           firstPayment,
-          // Invoice PDF’da monthlyPayment 0 bo‘lib qolmasligi uchun:
-          // calculatePaymentDetails ichida "markup" branch-1 maximumLimit bo‘lmasa monthlyPayment=0 qaytaradi.
-          // Shuning uchun maximumLimit ni monthlyLimit (yoki fallback 1) qilib beramiz.
-          maximumLimit: monthlyLimit > 0 ? monthlyLimit : 1,
+          isFirstPaymentManual: isFirstPaymentManual,
+          calculationType: calculationType || 'markup',
+          finalPercentage: finalPercentage,
+          maximumLimit: maximumLimit !== null && maximumLimit !== undefined ? maximumLimit : (monthlyLimit > 0 ? monthlyLimit : null),
         });
         
         grandTotal += paymentDetails.grandTotal;
@@ -84,9 +88,12 @@ export const calculatePaymentData = (selectedDevices, DocumentLines, monthlyLimi
  * To'lov jadvalini hisoblaydi
  * @param {Array} selectedDevices - Tanlangan qurilmalar
  * @param {number} monthlyLimit - Oylik limit
+ * @param {string} calculationType - Xisoblash turi (markup yoki firstPayment)
+ * @param {number} finalPercentage - Final percentage (Foiz holatida)
+ * @param {number} maximumLimit - Maximum limit
  * @returns {Array} To'lov jadvali
  */
-export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
+export const calculatePaymentSchedule = (selectedDevices, monthlyLimit, calculationType = 'markup', finalPercentage = null, maximumLimit = null) => {
   if (!selectedDevices || selectedDevices.length === 0) {
     return [];
   }
@@ -100,6 +107,7 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
     const price = extractNumericValue(device.price);
     const period = Number(device.rentPeriod) || 0;
     const firstPayment = extractNumericValue(device.firstPayment) || 0;
+    const isFirstPaymentManual = device?.isFirstPaymentManual || false;
     
     if (price && period > 0) {
       maxPeriod = Math.max(maxPeriod, period);
@@ -107,9 +115,12 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
       const paymentDetails = calculatePaymentDetails({
         price,
         period,
-        monthlyLimit,
+        monthlyLimit: monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0,
         firstPayment,
-        maximumLimit: monthlyLimit > 0 ? monthlyLimit : 1,
+        isFirstPaymentManual: isFirstPaymentManual,
+        calculationType: calculationType || 'markup',
+        finalPercentage: finalPercentage,
+        maximumLimit: maximumLimit !== null && maximumLimit !== undefined ? maximumLimit : (monthlyLimit > 0 ? monthlyLimit : null),
       });
       
       const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
@@ -126,7 +137,31 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
     return [];
   }
 
-  // Har bir oy uchun faqat oylik to'lovlarni hisoblash
+  // 1. Birinchi to'lovni qo'shish (agar mavjud bo'lsa)
+  let totalFirstPayment = 0;
+  devicePayments.forEach((devicePayment) => {
+    totalFirstPayment += devicePayment.firstPayment || 0;
+  });
+
+  if (totalFirstPayment > 0) {
+    const firstPaymentDate = new Date();
+    const firstDateStr = firstPaymentDate.toLocaleDateString('uz-UZ', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+    schedule.push({
+      number: 1, // Birinchi to'lov
+      date: firstDateStr,
+      amount: Math.round(totalFirstPayment),
+      remaining: 0,
+    });
+  }
+
+  // 2. Har bir oy uchun oylik to'lovlarni hisoblash
+  // number: birinchi to'lov bo'lsa 1, keyin 2, 3, 4...
+  const startNumber = totalFirstPayment > 0 ? 2 : 1;
   for (let month = 1; month <= maxPeriod; month++) {
     let monthlyTotal = 0;
     
@@ -147,7 +182,7 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit) => {
     });
 
     schedule.push({
-      number: month,
+      number: startNumber + month - 1, // Birinchi to'lov bo'lsa 2 dan boshlanadi, aks holda 1 dan
       date: dateStr,
       amount: Math.round(monthlyTotal),
       remaining: 0,
