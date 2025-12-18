@@ -343,16 +343,24 @@ export const calculatePaymentDetails = ({
     // Ustama foizini olish
     const markup = getMarkupPercentage(periodNum);
 
-    // Qolgan summa uchun oylik to'lov: ((remainingPrice) * (1 + markup)) / period, 1000 ga yaxlitlangan
-    const monthlyPayment =
-      Math.floor((remainingPrice * (1 + markup)) / periodNum / 1000) * 1000;
-
-    // Jami to'lov (ustama bilan): FLOOR(remainingPrice * (1 + markup); 1000)
-    const totalPayment =
-      Math.floor((remainingPrice * (1 + markup)) / 1000) * 1000;
-
-    // Jami to'lov (boshlang'ich + jami): totalPayment + actualFirstPayment
-    const grandTotal = totalPayment + actualFirstPayment;
+    // Foydalanuvchi taklifi: avval yaxlitlanmagan qiymatlarni olish, jami to'lovni hisoblash, keyin yaxlitlash
+    // Oylik to'lov (yaxlitlanmagan): ((remainingPrice) * (1 + markup)) / period
+    const monthlyPaymentBeforeRound = (remainingPrice * (1 + markup)) / periodNum;
+    
+    // Jami to'lov (yaxlitlanmagan): monthlyPaymentBeforeRound * period
+    const totalPaymentBeforeRound = monthlyPaymentBeforeRound * periodNum;
+    
+    // Jami to'lov (yaxlitlanmagan): totalPaymentBeforeRound + actualFirstPayment
+    const grandTotalBeforeRound = totalPaymentBeforeRound + actualFirstPayment;
+    
+    // Jami to'lovni 1000 ga yaxlitlash (ROUND)
+    const grandTotal = Math.round(grandTotalBeforeRound / 1000) * 1000;
+    
+    // Jami to'lov (ustama bilan): grandTotal - actualFirstPayment
+    const totalPayment = grandTotal - actualFirstPayment;
+    
+    // Oylik to'lov: totalPayment / period, 1000 ga yaxlitlangan
+    const monthlyPayment = Math.round(totalPayment / periodNum / 1000) * 1000;
 
     return {
       markup,
@@ -363,7 +371,7 @@ export const calculatePaymentDetails = ({
     };
   }
 
-  // 4. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lsa - hozirgi logika
+  // 4. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lsa
   // Ustama foizini olish
   const markup = getMarkupPercentage(periodNum);
 
@@ -381,7 +389,8 @@ export const calculatePaymentDetails = ({
     firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
   const actualFirstPayment = Math.floor(actualFirstPaymentRaw / 1000) * 1000;
 
-  // Oylik to'lov: MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period), 1000 ga yaxlitlangan
+  // Foydalanuvchi taklifi: avval yaxlitlanmagan qiymatlarni olish, jami to'lovni hisoblash, keyin yaxlitlash
+  // Oylik to'lov (yaxlitlanmagan): MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period)
   // Agar foydalanuvchi birinchi to'lovni o'zi kiritgan bo'lsa, monthlyLimit cheklovi qo'llanmaydi
   const monthlyPaymentWithoutLimit =
     ((priceNum - actualFirstPayment) * (1 + markup)) / periodNum;
@@ -389,12 +398,21 @@ export const calculatePaymentDetails = ({
     isFirstPaymentManual || monthlyLimitNum === 0
       ? monthlyPaymentWithoutLimit
       : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
-  const monthlyPayment = Math.floor(monthlyPaymentRaw / 1000) * 1000;
-
-  // Muhim: UI va Invoice uchun to'lov jadvali monthlyPayment asosida ketadi.
-  // Shuning uchun total/grandTotal ham monthlyPayment * period + firstPayment bilan sinxron bo'lishi kerak.
-  const totalPayment = monthlyPayment * periodNum;
-  const grandTotal = totalPayment + actualFirstPayment;
+  
+  // Jami to'lov (yaxlitlanmagan): monthlyPaymentRaw * period
+  const totalPaymentBeforeRound = monthlyPaymentRaw * periodNum;
+  
+  // Jami to'lov (yaxlitlanmagan): totalPaymentBeforeRound + actualFirstPayment
+  const grandTotalBeforeRound = totalPaymentBeforeRound + actualFirstPayment;
+  
+  // Jami to'lovni 1000 ga yaxlitlash (ROUND)
+  const grandTotal = Math.round(grandTotalBeforeRound / 1000) * 1000;
+  
+  // Jami to'lov (ustama bilan): grandTotal - actualFirstPayment
+  const totalPayment = grandTotal - actualFirstPayment;
+  
+  // Oylik to'lov: totalPayment / period, 1000 ga yaxlitlangan
+  const monthlyPayment = Math.round(totalPayment / periodNum / 1000) * 1000;
 
   return {
     markup,

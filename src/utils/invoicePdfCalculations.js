@@ -137,31 +137,10 @@ export const calculatePaymentSchedule = (selectedDevices, monthlyLimit, calculat
     return [];
   }
 
-  // 1. Birinchi to'lovni qo'shish (agar mavjud bo'lsa)
-  let totalFirstPayment = 0;
-  devicePayments.forEach((devicePayment) => {
-    totalFirstPayment += devicePayment.firstPayment || 0;
-  });
-
-  if (totalFirstPayment > 0) {
-    const firstPaymentDate = new Date();
-    const firstDateStr = firstPaymentDate.toLocaleDateString('uz-UZ', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-
-    schedule.push({
-      number: 1, // Birinchi to'lov
-      date: firstDateStr,
-      amount: Math.round(totalFirstPayment),
-      remaining: 0,
-    });
-  }
-
-  // 2. Har bir oy uchun oylik to'lovlarni hisoblash
-  // number: birinchi to'lov bo'lsa 1, keyin 2, 3, 4...
-  const startNumber = totalFirstPayment > 0 ? 2 : 1;
+  // Jadvalda faqat oylik to'lovlar ko'rsatiladi, birinchi to'lov ko'rsatilmaydi
+  // Har bir oy uchun oylik to'lovlarni hisoblash
+  // number: 1 dan boshlanadi (birinchi to'lov jadvalda yo'q)
+  const startNumber = 1;
   for (let month = 1; month <= maxPeriod; month++) {
     let monthlyTotal = 0;
     

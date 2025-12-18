@@ -389,7 +389,7 @@ export default function useInvoice(options = {}) {
       };
 
       // 10. Invoice yuborish
-      await createInvoice(invoiceData);
+    //  await createInvoice(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return invoiceData;

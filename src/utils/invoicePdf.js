@@ -71,6 +71,7 @@ export const generateInvoicePdf = async (invoiceData) => {
     );
     const {
       maxPeriod,
+      grandTotal,
       grandTotalFormatted,
       firstPaymentFormatted,
       remainingAmountFormatted,
@@ -90,6 +91,7 @@ export const generateInvoicePdf = async (invoiceData) => {
       finalPercentage,
       maximumLimit
     );
+    // PDF da jadvaldagi jami to'lov faqat oylik to'lovlarning yig'indisi (birinchi to'lovni hisobga olmasdan)
     const paymentScheduleTotal = paymentSchedule.reduce(
       (acc, item) => acc + (Number(item?.amount) || 0),
       0
@@ -1436,8 +1438,8 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'X/p: 20208000705125899001\n', fontSize: 9 },
                 { text: 'STIR: 306737779\n\n', fontSize: 9 },
                 { text: 'S o t u v c h i konsultant: ', fontSize: 9 },
-                { text: `${finalSellerName || '_________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Imzo: ', fontSize: 9 },
+                { text: `${finalSellerName || '_________________'}\n\n`, fontSize: 9, bold: true },
+                { text: 'Direktor: Nigmatov O.X.\n', fontSize: 9, bold: true },
                 ...(signatureImage ? [
                   {
                     image: signatureImage,
