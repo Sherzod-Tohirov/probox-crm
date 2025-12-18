@@ -39,6 +39,7 @@ export const generateInvoicePdf = async (invoiceData) => {
     clientPhone, 
     cardCode = invoiceData.CardCode,
     leadId, 
+    invoiceDocNum,
     jshshir = '',
     passportId = '',
     clientAddress = '',
@@ -127,7 +128,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'Muddatli to\'lov asosida\n', fontSize: 12, bold: true },
                 { text: 'sotish-xarid qilish shartnomasi\n', fontSize: 12, bold: true },
                 { text: '№ ', fontSize: 10 },
-                { text: `${leadId || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                { text: `${invoiceDocNum  || '___________________________'}\n\n`, fontSize: 10, bold: true },
                 { text: 'Toshkent sh.   "', fontSize: 10 },
                 { text: `${day}`, fontSize: 10, bold: true },
                 { text: `" ${month} `, fontSize: 10 },
@@ -158,7 +159,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'Договор купли-продажи\n', fontSize: 12, bold: true },
                 { text: 'на основе рассрочки\n', fontSize: 12, bold: true },
                 { text: '№ ', fontSize: 10 },
-                { text: `${leadId || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                { text: `${invoiceDocNum  || '___________________________'}\n\n`, fontSize: 10, bold: true },
                 { text: 'г. Ташкент   "', fontSize: 10 },
                 { text: `${day}`, fontSize: 10, bold: true },
                 { text: `" ${monthRu} `, fontSize: 10 },
@@ -1489,7 +1490,7 @@ export const generateInvoicePdf = async (invoiceData) => {
     };
 
     // PDF yaratish va yuklab olish
-    const fileName = `${clientName}-${leadId || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    const fileName = `${clientName}-${invoiceDocNum  || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
     
     const pdfDoc = pdfMake.createPdf(docDefinition);
     

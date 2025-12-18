@@ -389,10 +389,14 @@ export default function useInvoice(options = {}) {
       };
 
       // 10. Invoice yuborish
-      await createInvoice(invoiceData);
+      const invoiceResponse = await createInvoice(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
-      return invoiceData;
+      return {
+        ...invoiceData,
+        invoiceDocNum: invoiceResponse?.invoiceDocNum || invoiceResponse?.data?.invoiceDocNum,
+        invoiceDocEntry: invoiceResponse?.invoiceDocEntry || invoiceResponse?.data?.invoiceDocEntry,
+      };
     },
     retry: false,
     ...options,
