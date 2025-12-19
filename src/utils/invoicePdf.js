@@ -118,6 +118,14 @@ export const generateInvoicePdf = async (invoiceData) => {
         fontSize: 9,
         lineHeight: 1.2,
       },
+      footer: function(currentPage, pageCount) {
+        return {
+          text: currentPage.toString(),
+          alignment: 'center',
+          fontSize: 9,
+          margin: [0, 10, 0, 0]
+        };
+      },
       content: [
         // ========== SAHIFA 1: Sarlavha va kirish ==========
         {
@@ -536,7 +544,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '4.3.2. Makur shartnomaning 2.2-banida ko\'rsatilgan oldindan to\'lov amalga oshirishdan so\'ng Tovarni qabul qilish.\n\n',
+                  text: '4.3.2. Mazkur shartnomaning 2.2-banida ko\'rsatilgan oldindan to\'lov amalga oshirishdan so\'ng Tovarni qabul qilish.\n\n',
                   fontSize: 9,
                 },
                 {
