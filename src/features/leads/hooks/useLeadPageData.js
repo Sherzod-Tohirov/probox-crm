@@ -67,7 +67,7 @@ export default function useLeadPageData(leadId) {
 
   // User permissions
   const currentUserRole = user?.['U_role'] ?? '';
-  const isOperatorManager = currentUserRole === 'OperatorM';
+  const isOperatorManager = currentUserRole === 'OperatorM' || currentUserRole === 'CEO';
   const isBlocked = lead?.isBlocked === true;
 
   const canEditTab = useCallback(
@@ -82,6 +82,7 @@ export default function useLeadPageData(leadId) {
           'Seller',
           'Scoring',
           'OperatorM',
+          'CEO',
         ]);
       }
       return currentUserRole === TAB_TO_ROLE[tabKey];

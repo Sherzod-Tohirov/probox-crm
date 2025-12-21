@@ -306,14 +306,14 @@
 }
 
 .common-fields-right {
-  border: 1px solid v.$primary-border-color;
-  border-radius: 12px;
-  padding: 24px;
-  min-width: 300px;
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: v.$primary-table-bg;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-width: auto;
 }
 
 .score-gauge {
@@ -333,22 +333,35 @@
 
 .gauge-container {
   position: relative;
-  width: 100%;
-  max-width: 280px;
+  width: 180px;
+  height: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 auto;
+  flex-shrink: 0;
+  justify-content: center;
+
+  @media (max-width: 575px) {
+    width: 150px;
+    height: 90px;
+  }
 }
 
 .gauge-svg {
-  width: 100%;
-  height: auto;
-  max-height: 160px;
+  width: 180px;
+  height: 85px;
+  flex-shrink: 0;
+
+  @media (max-width: 575px) {
+    width: 150px;
+    height: 70px;
+  }
 }
 
 .gauge-value {
   position: absolute;
-  top: 55%;
+  top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -359,16 +372,24 @@
 }
 
 .gauge-number {
-  font-size: 10.4rem;
+  font-size: 5.6rem;
   font-weight: 700;
   color: v.$primary-color;
   line-height: 1;
+
+  @media (max-width: 575px) {
+    font-size: 4.4rem;
+  }
 }
 
 .gauge-label {
-  font-size: 4.2rem;
+  font-size: 2.6rem;
   font-weight: 600;
   line-height: 1;
+
+  @media (max-width: 575px) {
+    font-size: 2.2rem;
+  }
 }
 
 .gauge-scale {
@@ -376,11 +397,191 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0 20px;
-  margin-top: -10px;
-  font-size: 5.6rem;
+  padding: 0 10px;
+  margin-top: -4px;
+  font-size: 2.8rem;
   color: v.$secondary-color;
   font-weight: 500;
   position: relative;
   z-index: 2;
+
+  @media (max-width: 575px) {
+    font-size: 2.4rem;
+    padding: 0 6px;
+  }
+}
+
+// New Payment Dashboard Styles
+.payment-dashboard {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+
+  @media (max-width: 1199px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.dashboard-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-row {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+
+  // Desktop: top row 3 columns, bottom row 4 columns
+  &:first-of-type {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &:last-of-type {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  // Tablet (768px - 1199px): both rows 2 columns
+  @media (max-width: 1199px) {
+    &:first-of-type {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &:last-of-type {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  // Small tablet (576px - 767px): top row 1 column, bottom row 2 columns
+  @media (max-width: 767px) {
+    gap: 10px;
+    &:first-of-type {
+      grid-template-columns: 1fr;
+    }
+    &:last-of-type {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  // Mobile (<576px): all 1 column
+  @media (max-width: 575px) {
+    gap: 8px;
+    &:first-of-type,
+    &:last-of-type {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Make overdue debt card full width on small devices
+.overdue-card-full {
+  @media (max-width: 1199px) {
+    grid-column: 1 / -1;
+  }
+}
+
+.dashboard-card {
+  background: #F8FAFC;
+  border: 1px solid v.$primary-border-color;
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  justify-content: center;
+  min-height: 100px;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 575px) {
+    padding: 14px 10px;
+    gap: 6px;
+    min-height: auto;
+  }
+}
+
+.gauge-card {
+  width: 280px;
+  flex-shrink: 0;
+  align-self: stretch;
+  justify-content: center;
+  padding: 20px 16px;
+  gap: 12px;
+  min-height: auto;
+
+  .card-title {
+    font-size: 3.2rem;
+    margin-bottom: 0;
+  }
+
+  // Tablet and below: full width
+  @media (max-width: 1199px) {
+    width: 100%;
+    align-self: auto;
+    min-height: 180px;
+  }
+
+  // Mobile: smaller padding and font
+  @media (max-width: 575px) {
+    padding: 16px 12px;
+    gap: 10px;
+    min-height: 160px;
+
+    .card-title {
+      font-size: 2.8rem;
+    }
+  }
+}
+
+.card-title {
+  font-size: 3.6rem;
+  font-weight: 600;
+  color: v.$primary-color;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.card-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: v.$secondary-color;
+  opacity: 0.7;
+  margin: 0;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.card-value {
+  font-size: 4.4rem;
+  font-weight: 700;
+  color: v.$primary-color;
+  text-align: center;
+  line-height: 1.1;
+  word-break: break-word;
+  margin: 0;
+}
+
+.card-label {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: v.$secondary-color;
+  text-align: center;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0 2px;
 }

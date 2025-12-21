@@ -159,6 +159,7 @@ export default function useInvoice(options = {}) {
             DiscountPercent: 0,
             UnitPrice: totalPrice, // Jami narx (ustama bilan)
             SerialNumbers: serialNumbers,
+            U_FirstPayment: firstPayment
           };
         })
       );

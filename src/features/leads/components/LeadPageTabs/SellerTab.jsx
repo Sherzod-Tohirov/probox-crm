@@ -32,8 +32,9 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const isOperatorM = user.U_role === 'OperatorM';
   const isOperator1 = user.U_role === 'Operator1';
   const isOperator2 = user.U_role === 'Operator2';
+  const isCEO = user.U_role === 'CEO';
 
-  let canOperatorEdit = isOperatorM || isOperator1 || isOperator2;
+  let canOperatorEdit = isOperatorM || isOperator1 || isOperator2 || isCEO;
 
   const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');

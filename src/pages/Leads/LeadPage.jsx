@@ -119,7 +119,16 @@ export default function LeadPage() {
         </div>
         {/* Payment Score Card */}
         <div className={styles['common-fields-right']}>
-          <PaymentScoreGauge paymentScore={lead?.paymentScore} />
+          <PaymentScoreGauge
+            paymentScore={lead?.paymentScore}
+            totalSum={lead?.totalSum}
+            closedSum={lead?.closedSum}
+            overdueDebt={lead?.overdueDebt}
+            totalContracts={lead?.totalContracts}
+            openContracts={lead?.openContracts}
+            longestDelay={lead?.longestDelay}
+            averagePaymentDay={lead?.averagePaymentDay}
+          />
         </div>
       </div>
       <ClientInfoSection lead={lead} />
