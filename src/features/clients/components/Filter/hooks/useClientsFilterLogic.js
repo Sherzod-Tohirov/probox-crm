@@ -40,11 +40,23 @@ export default function useClientsFilterLogic(executorsOptions, onFilter) {
   const watchedEndDate = watch('endDate');
 
   // Auto-set end date to end of selected start date month
+  // Only if endDate is empty or invalid, or if endDate is before startDate
+  // This effect only runs when startDate changes, not when endDate changes
   useEffect(() => {
     const startDate = moment(watchedStartDate, 'DD.MM.YYYY');
     if (!startDate.isValid()) return;
-    setValue('endDate', moment(startDate).endOf('month').format('DD.MM.YYYY'));
-  }, [watchedStartDate, setValue]);
+    
+    const endDate = moment(watchedEndDate, 'DD.MM.YYYY');
+    const endDateIsEmpty = !watchedEndDate || watchedEndDate.trim() === '';
+    const endDateIsInvalid = !endDate.isValid();
+    const endDateIsBeforeStart = endDate.isValid() && endDate.isBefore(startDate, 'day');
+    
+    // Only auto-set if endDate is empty, invalid, or before startDate
+    // Don't change if user has manually selected a valid endDate after startDate
+    if (endDateIsEmpty || endDateIsInvalid || endDateIsBeforeStart) {
+      setValue('endDate', moment(startDate).endOf('month').format('DD.MM.YYYY'), { shouldDirty: false });
+    }
+  }, [watchedStartDate, setValue]); // Removed watchedEndDate from dependencies to prevent unnecessary re-runs
 
   useEffect(() => {
     setValue(
@@ -70,6 +82,12 @@ export default function useClientsFilterLogic(executorsOptions, onFilter) {
 
       Object.keys(data).forEach((key) => {
         const value = data[key];
+
+        // Always preserve startDate and endDate, even if empty
+        if (key === 'startDate' || key === 'endDate') {
+          cleanedData[key] = value || '';
+          return;
+        }
 
         if (value === null || value === undefined || value === '') return;
         if (key === 'phone' && value === '998') return;

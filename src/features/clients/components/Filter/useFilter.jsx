@@ -168,15 +168,23 @@ const useFilter = () => {
     const startDate = moment(watchedFields.startDate, "DD.MM.YYYY");
     const endDate = moment(watchedFields.endDate, "DD.MM.YYYY");
 
-    const isSameMonth = startDate.isSame(endDate, "month");
-    if (watchedFields.startDate && !isSameMonth) {
+    // Only auto-adjust if startDate is valid
+    if (!startDate.isValid()) return;
+    
+    const endDateIsEmpty = !watchedFields.endDate || watchedFields.endDate.trim() === '';
+    const endDateIsInvalid = !endDate.isValid();
+    const endDateIsBeforeStart = endDate.isValid() && endDate.isBefore(startDate, 'day');
+    
+    // Only auto-set endDate if it's empty, invalid, or before startDate
+    // Don't change if user has manually selected a valid endDate
+    if (endDateIsEmpty || endDateIsInvalid || endDateIsBeforeStart) {
       let newEndDate = startDate.clone().endOf("month");
       if (newEndDate.date() !== startDate.date()) {
         newEndDate = newEndDate.endOf("month");
       }
       setValue("endDate", newEndDate.format("DD.MM.YYYY"));
     }
-  }, [watchedFields.startDate, setValue]);
+  }, [watchedFields.startDate, watchedFields.endDate, setValue]);
 
   useEffect(() => {
     if (!_.isEmpty(executorsOptions)) {

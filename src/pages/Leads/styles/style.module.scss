@@ -411,6 +411,13 @@
   }
 }
 
+// Dark mode adjustments for gauge background arc
+.gauge-background-arc {
+  [data-theme='dark'] & {
+    stroke: #3f4654; // Dark mode border color
+  }
+}
+
 // New Payment Dashboard Styles
 .payment-dashboard {
   width: 100%;
@@ -484,7 +491,7 @@
 }
 
 .dashboard-card {
-  background: #F8FAFC;
+  background: v.$primary-table-bg;
   border: 1px solid v.$primary-border-color;
   border-radius: 12px;
   padding: 16px 12px;
@@ -499,6 +506,10 @@
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
+    
+    [data-theme='dark'] & {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
   }
 
   @media (max-width: 575px) {

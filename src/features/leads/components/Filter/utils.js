@@ -96,8 +96,18 @@ export function serializeFilter(values) {
   if (payload.seller) payload.seller = serializeMulti(payload.seller);
   if (payload.scoring) payload.scoring = serializeMulti(payload.scoring);
 
-  // Remove empty-like values except valid booleans/numbers
+  // Preserve meetingDateStart and meetingDateEnd if meeting is selected
+  const meetingValue = payload.meeting;
+  const hasMeeting = meetingValue !== '' && meetingValue !== undefined && meetingValue !== null;
+  const preserveDateFields = hasMeeting ? ['meetingDateStart', 'meetingDateEnd'] : [];
+
+  // Remove empty-like values except valid booleans/numbers and preserved date fields
   Object.keys(payload).forEach((key) => {
+    // Skip preserved date fields
+    if (preserveDateFields.includes(key)) {
+      return;
+    }
+    
     const val = payload[key];
     if (Array.isArray(val) && val.length === 0) {
       delete payload[key];

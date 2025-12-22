@@ -17,7 +17,6 @@ export default function AdvancedFilters({
           variant="outlined"
           label="Boshlanish vaqti"
           canClickIcon={false}
-          datePickerOptions={{ maxDate: watchedEndDate }}
           type="date"
           control={control}
         />
@@ -29,7 +28,6 @@ export default function AdvancedFilters({
           variant="outlined"
           label="Tugash vaqti"
           canClickIcon={false}
-          datePickerOptions={{ minDate: watchedStartDate }}
           type="date"
           control={control}
         />

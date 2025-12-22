@@ -159,6 +159,7 @@ export default function PaymentScoreGauge({
             stroke="#e5e7eb"
             strokeWidth="14"
             strokeLinecap="round"
+            className={styles['gauge-background-arc']}
           />
           {/* Red section (0-4): Yomon */}
           <path
