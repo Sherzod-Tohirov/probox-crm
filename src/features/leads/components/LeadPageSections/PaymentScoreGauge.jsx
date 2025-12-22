@@ -18,11 +18,11 @@ export default function PaymentScoreGauge({
 
     if (numScore == null || isNaN(numScore)) {
       return { className: 'score-default', label: '-', score: '-' };
-    } 
+    }
 
     // 0.0–4.99: Yomon, 5.0–6.99: Qoniqarsiz, 7.0–8.99: Qoniqarli,
     // 9.0–9.99: Yaxshi, 10.0: Zo'r
-    const scoreText = numScore.toFixed(1);
+    const scoreText = numScore.toFixed(2);
 
     if (numScore >= 0 && numScore < 5) {
       return { className: 'score-bad', label: 'Yomon', score: scoreText };
@@ -115,9 +115,17 @@ export default function PaymentScoreGauge({
   };
 
   // Convert paymentScore to number (it may come as string from server)
-  const gaugeValueRaw = paymentScore != null ? Number(paymentScore) : null;
+  // Check for null, undefined, empty string, or 'null' string
+  const isValidScore =
+    paymentScore != null &&
+    paymentScore !== '' &&
+    paymentScore !== 'null' &&
+    paymentScore !== 'undefined';
+  const gaugeValueRaw = isValidScore ? Number(paymentScore) : null;
   const gaugeValue =
-    gaugeValueRaw != null && !isNaN(gaugeValueRaw)
+    gaugeValueRaw != null &&
+    !isNaN(gaugeValueRaw) &&
+    Number.isFinite(gaugeValueRaw)
       ? Math.min(Math.max(gaugeValueRaw, 0), 10)
       : null;
   const pointerPoint =
@@ -138,92 +146,92 @@ export default function PaymentScoreGauge({
       {/* Left: Gauge Card */}
       <div className={`${styles['dashboard-card']} ${styles['gauge-card']}`}>
         <div className={styles['card-title']}>To'lov ko'rsatkichi</div>
-        <div className={styles['gauge-container']}>
-          <svg
-            className={styles['gauge-svg']}
-            viewBox="0 0 200 120"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Background arc - light grey background visible through gaps */}
-            <path
-              d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
-              fill="none"
-              stroke="#e5e7eb"
-              strokeWidth="14"
-              strokeLinecap="round"
-            />
-            {/* Red section (0-4): Yomon */}
-            <path
-              d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point4End.x} ${point4End.y}`}
-              fill="none"
-              stroke="#ef4444"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-            {/* Orange section (5-6): Qoniqarsiz */}
-            <path
-              d={`M ${point5Start.x} ${point5Start.y} A ${radius} ${radius} 0 0 1 ${point6End.x} ${point6End.y}`}
-              fill="none"
-              stroke="#f97316"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-            {/* Yellow section (7-8): Qoniqarli */}
-            <path
+      <div className={styles['gauge-container']}>
+        <svg
+          className={styles['gauge-svg']}
+          viewBox="0 0 200 120"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Background arc - light grey background visible through gaps */}
+          <path
+            d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
+            fill="none"
+            stroke="#e5e7eb"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+          {/* Red section (0-4): Yomon */}
+          <path
+            d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point4End.x} ${point4End.y}`}
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+          {/* Orange section (5-6): Qoniqarsiz */}
+          <path
+            d={`M ${point5Start.x} ${point5Start.y} A ${radius} ${radius} 0 0 1 ${point6End.x} ${point6End.y}`}
+            fill="none"
+            stroke="#f97316"
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+          {/* Yellow section (7-8): Qoniqarli */}
+          <path
               d={`M ${point7Start.x} ${point7Start.y} A ${radius} ${radius} 0 0 1 ${point9End.x} ${point9End.y}`}
-              fill="none"
-              stroke="#eab308"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
+            fill="none"
+            stroke="#eab308"
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
             {/* Green section (9-<10): Yaxshi */}
-            <path
+          <path
               d={`M ${point9Start.x} ${point9Start.y} A ${radius} ${radius} 0 0 1 ${pointZorStart.x} ${pointZorStart.y}`}
-              fill="none"
-              stroke="#22c55e"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-            {/* Bright Green section (10): Zo'r */}
-            <path
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+          {/* Bright Green section (10): Zo'r */}
+          <path
               d={`M ${pointZorStart.x} ${pointZorStart.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
-              fill="none"
+            fill="none"
               stroke="#1CF271"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-            {/* Pointer - circular indicator matching segment color */}
-            {pointerPoint && (
-              <g transform={`translate(${centerX}, ${centerY})`}>
-                <circle
-                  cx={Math.cos(pointerPoint.radian) * 78}
-                  cy={-Math.sin(pointerPoint.radian) * 78}
-                  r="8"
-                  fill={pointerColor}
-                  stroke="#ffffff"
-                  strokeWidth="2.5"
-                />
-                <circle
-                  cx={Math.cos(pointerPoint.radian) * 78}
-                  cy={-Math.sin(pointerPoint.radian) * 78}
-                  r="3"
-                  fill="#ffffff"
-                />
-              </g>
-            )}
-          </svg>
-          <div className={styles['gauge-value']}>
-            <span className={styles['gauge-number']}>{scoreInfo.score}</span>
-          </div>
-          <div className={styles['gauge-scale']}>
-            <span>0</span>
-            <span
-              className={styles['gauge-label']}
-              style={{ color: pointerColor }}
-            >
-              {scoreInfo.label}
-            </span>
-            <span>10</span>
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+          {/* Pointer - circular indicator matching segment color */}
+          {pointerPoint && (
+            <g transform={`translate(${centerX}, ${centerY})`}>
+              <circle
+                cx={Math.cos(pointerPoint.radian) * 78}
+                cy={-Math.sin(pointerPoint.radian) * 78}
+                r="8"
+                fill={pointerColor}
+                stroke="#ffffff"
+                strokeWidth="2.5"
+              />
+              <circle
+                cx={Math.cos(pointerPoint.radian) * 78}
+                cy={-Math.sin(pointerPoint.radian) * 78}
+                r="3"
+                fill="#ffffff"
+              />
+            </g>
+          )}
+        </svg>
+        <div className={styles['gauge-value']}>
+          <span className={styles['gauge-number']}>{scoreInfo.score}</span>
+        </div>
+        <div className={styles['gauge-scale']}>
+          <span>0</span>
+          <span
+            className={styles['gauge-label']}
+            style={{ color: pointerColor }}
+          >
+            {scoreInfo.label}
+          </span>
+          <span>10</span>
           </div>
         </div>
       </div>
@@ -392,8 +400,24 @@ export default function PaymentScoreGauge({
                 </text>
               </svg>
             </div>
-            <div className={styles['card-value']}>
-              {averagePaymentDay > 0 ? `${formatNumber(averagePaymentDay)}-sana` : '-'}
+            <div
+              className={styles['card-value']}
+              style={{
+                color:
+                  averagePaymentDay == null || isNaN(averagePaymentDay)
+                    ? '#9ca3af'
+                    : averagePaymentDay < 0
+                    ? '#22c55e'
+                    : averagePaymentDay === 0
+                    ? '#9ca3af'
+                    : '#ef4444',
+              }}
+            >
+              {averagePaymentDay != null &&
+              !isNaN(averagePaymentDay) &&
+              averagePaymentDay !== null
+                ? `${formatNumber(averagePaymentDay)}-sana`
+                : '-'}
             </div>
             <div className={styles['card-label']}>O'rtacha to'lov kuni</div>
           </div>

@@ -17,6 +17,7 @@ import useToggle from '@hooks/useToggle';
 import useClickOutside from '@hooks/helper/useClickOutside';
 import useMessengerActions from '@hooks/useMessengerActions';
 import useFetchMessages from '@hooks/data/useFetchMessages';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import Messenger from '@components/ui/Messenger';
 
 // Import tab components
@@ -73,6 +74,7 @@ export default function LeadPage() {
     defaultTab,
   } = useLeadPageData(id);
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const { data: rate } = useFetchCurrency();
 
   // Fetch messenger messages with infinite scroll
   const {
@@ -120,14 +122,26 @@ export default function LeadPage() {
         {/* Payment Score Card */}
         <div className={styles['common-fields-right']}>
           <PaymentScoreGauge
-            paymentScore={lead?.paymentScore}
-            totalSum={lead?.totalSum}
-            closedSum={lead?.closedSum}
-            overdueDebt={lead?.overdueDebt}
-            totalContracts={lead?.totalContracts}
-            openContracts={lead?.openContracts}
-            longestDelay={lead?.longestDelay}
-            averagePaymentDay={lead?.averagePaymentDay}
+            paymentScore={lead?.paymentScore ?? null}
+            totalSum={
+              lead?.totalAmount && rate?.Rate
+                ? lead.totalAmount * rate.Rate
+                : 0
+            }
+            closedSum={
+              lead?.totalPaid && rate?.Rate
+                ? lead.totalPaid * rate.Rate
+                : 0
+            }
+            overdueDebt={
+              lead?.overdueDebt && rate?.Rate
+                ? lead.overdueDebt * rate.Rate
+                : 0
+            }
+            totalContracts={lead?.totalContracts ?? 0}
+            openContracts={lead?.openContracts ?? 0}
+            longestDelay={lead?.maxDelay ?? 0}
+            averagePaymentDay={lead?.avgPaymentDelay  ?? 0}
           />
         </div>
       </div>

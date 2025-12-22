@@ -54,6 +54,7 @@ export default function useInvoice(options = {}) {
           const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
           
           let totalPrice = price; // Default: faqat narx
+          let monthlyPayment = 0; // Oylik to'lov
           
           // Agar price va period to'g'ri bo'lsa, grandTotal ni hisoblaymiz
           if (price && price > 0 && period > 0) {
@@ -70,6 +71,7 @@ export default function useInvoice(options = {}) {
               maximumLimit: maximumLimit,
             });
             totalPrice = paymentDetails.grandTotal || price;
+            monthlyPayment = paymentDetails.monthlyPayment || 0;
           }
 
           if (!itemCode || !whsCode) {
@@ -159,7 +161,9 @@ export default function useInvoice(options = {}) {
             DiscountPercent: 0,
             UnitPrice: totalPrice, // Jami narx (ustama bilan)
             SerialNumbers: serialNumbers,
-            U_FirstPayment: firstPayment
+            U_FirstPayment: firstPayment,
+            U_QP: period, // Ijara oyi (har bir device uchun o'zining period)
+            U_SP: monthlyPayment, // Oylik to'lov
           };
         })
       );
@@ -390,7 +394,7 @@ export default function useInvoice(options = {}) {
       };
 
       // 10. Invoice yuborish
-      const invoiceResponse = await createInvoice(invoiceData);
+     const invoiceResponse = await createInvoice(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return {

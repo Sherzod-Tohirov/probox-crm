@@ -609,12 +609,26 @@ function ClientPageForm({
         {/* Payment Score Gauge */}
         <Col fullWidth>
           <PaymentScoreGauge
-            paymentScore={
-              invoiceScoreData?.paymentScore ??
-              invoiceScoreData?.score ??
-              invoiceScoreData ??
-              currentClient?.['paymentScore']
+            paymentScore={invoiceScoreData?.score ?? null}
+            totalSum={
+              invoiceScoreData?.totalAmount && rate?.Rate
+                ? invoiceScoreData.totalAmount * rate.Rate
+                : 0
             }
+            closedSum={
+              invoiceScoreData?.totalPaid && rate?.Rate
+                ? invoiceScoreData.totalPaid * rate.Rate
+                : 0
+            }
+            overdueDebt={
+              invoiceScoreData?.overdueDebt && rate?.Rate
+                ? invoiceScoreData.overdueDebt * rate.Rate
+                : 0
+            }
+            totalContracts={invoiceScoreData?.totalContracts ?? 0}
+            openContracts={invoiceScoreData?.openContracts ?? 0}
+            longestDelay={invoiceScoreData?.maxDelay ?? 0}
+            averagePaymentDay={invoiceScoreData?.avgPaymentDelay ?? 0}
           />
         </Col>
         {hasRole(user, ['Manager', 'Agent', 'CEO']) && (

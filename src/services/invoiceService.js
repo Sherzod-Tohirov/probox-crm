@@ -14,8 +14,8 @@ export const getInvoiceScore = async ({ CardCode }) => {
     const response = await api.get('/invoice/score', {
       params: { CardCode },
     });
-    // API turlicha qaytarishi mumkin: {data: ...} yoki to'g'ridan-to'g'ri qiymat
-    return response?.data?.data ?? response?.data;
+    // API response format: { score: { score: 9.8, totalContracts: 1, ... } }
+    return response?.data?.score ?? response?.data;
   } catch (error) {
     throw error.response?.data || error;
   }
