@@ -416,7 +416,7 @@ export default function PaymentScoreGauge({
               {averagePaymentDay != null &&
               !isNaN(averagePaymentDay) &&
               averagePaymentDay !== null
-                ? `${formatNumber(averagePaymentDay)}-kun`
+                ? `${formatNumber(averagePaymentDay)} kun`
                 : '-'}
             </div>
             <div className={styles['card-label']}>O'rtacha to'lov kuni</div>
