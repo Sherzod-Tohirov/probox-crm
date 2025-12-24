@@ -23,8 +23,8 @@ export const getInvoiceScore = async ({ CardCode }) => {
 
 // Invoice PDF / fayllarini yuklash servisi
 // Backend: /lead-images/upload method: POST
-// payload: { image: file.pdf, leadId: 123 }
-export const uploadInvoiceFile = async ({ file, leadId }) => {
+// payload: { image: file.pdf, leadId: 123, docNum: invoiceDocNum }
+export const uploadInvoiceFile = async ({ file, leadId, docNum }) => {
   try {
     const formData = new FormData();
 
@@ -34,6 +34,10 @@ export const uploadInvoiceFile = async ({ file, leadId }) => {
 
     if (leadId) {
       formData.append('leadId', leadId);
+    }
+
+    if (docNum) {
+      formData.append('docNum', docNum);
     }
 
     const config = {

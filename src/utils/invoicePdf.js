@@ -12,6 +12,7 @@
 
 import { imageToBase64,  pdfMake } from './pdfHelpers';
 import { calculatePaymentData, calculatePaymentSchedule, getDateInfo } from './invoicePdfCalculations';
+import QRCode from 'qrcode';
 
 // pdfmake uzun "bitta so'z"larni (bo'sh joysiz) satrga bo'la olmaydi va matn kesilib qoladi.
 // \u200B ba'zi holatlarda wrap bo'lmasligi mumkin, shuning uchun bu yerda majburiy newline (\n) qo'yamiz.
@@ -54,8 +55,29 @@ export const generateInvoicePdf = async (invoiceData) => {
   const finalSellerName = sellerName || currentUser?.SlpName || '';
 
   try {
-    // Imzo va muhur rasmini yuklab olish
-    const signatureImage = await imageToBase64('/signature-stamp.jpg');
+    // QR kodni yaratish - contract sahifasiga link
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://work-api.probox.uz/api';
+    // /api qismini olib tashlaymiz agar mavjud bo'lsa
+    const baseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+    const qrCodeUrl = invoiceDocNum 
+      ? `${baseUrl}/api/public/contracts/${invoiceDocNum}`
+      : null;
+    
+    let qrCodeImage = null;
+    if (qrCodeUrl) {
+      try {
+        qrCodeImage = await QRCode.toDataURL(qrCodeUrl, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF',
+          },
+        });
+      } catch (error) {
+        console.error('QR kod yaratishda xatolik:', error);
+      }
+    }
     
     // To'lov ma'lumotlarini hisoblash
     const calculationType = invoiceData.calculationType || 'markup';
@@ -1292,7 +1314,6 @@ export const generateInvoicePdf = async (invoiceData) => {
         },
 
         // ========== SAHIFA 12: Tomonlarning manzillari ==========
-        { text: '', pageBreak: 'before' },
         {
           columns: [
             {
@@ -1449,16 +1470,6 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'S o t u v c h i konsultant: ', fontSize: 9 },
                 { text: `${finalSellerName || '_________________'}\n\n`, fontSize: 9, bold: true },
                 { text: 'Direktor: Nigmatov O.X.\n', fontSize: 9, bold: true },
-                ...(signatureImage ? [
-                  {
-                    image: signatureImage,
-                    width: 290,
-                    height: 150,
-                    margin: [0, 5, 0, 0],
-                  },
-                ] : [
-                  { text: '_________________\n', fontSize: 9 },
-                ]),
               ],
             },
             {
@@ -1494,6 +1505,26 @@ export const generateInvoicePdf = async (invoiceData) => {
           ],
           columnGap: 10,
         },
+        // QR kod - alohida element sifatida sahifaning markazida
+        ...(qrCodeImage ? [
+          {
+            columns: [
+              { width: '*', text: '' },
+              {
+                width: 'auto',
+                stack: [
+                  {
+                    image: qrCodeImage,
+                    width: 80,
+                    height: 80,
+                  },
+                ],
+              },
+              { width: '*', text: '' },
+            ],
+            margin: [0, 10, 0, 0],
+          },
+        ] : []),
       ],
     };
 

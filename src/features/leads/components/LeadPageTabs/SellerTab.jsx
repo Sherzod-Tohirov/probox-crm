@@ -188,7 +188,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           
           // PDF faylni serverga yuborish
           if (pdfFile) {
-            await uploadInvoiceFile({ file: pdfFile, leadId });
+            await uploadInvoiceFile({ 
+              file: pdfFile, 
+              leadId,
+              docNum: invoiceData.invoiceDocNum,
+            });
           }
           
           // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
