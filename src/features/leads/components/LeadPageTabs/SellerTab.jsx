@@ -198,7 +198,9 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
           alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', { type: 'success' });
         } catch (error) {
-          alert('PDF fayl yaratish yoki yuborishda xatolik yuz berdi', { type: 'error' });
+          console.error('PDF fayl yaratish yoki yuborishda xatolik:', error);
+          const errorMessage = error?.message || 'PDF fayl yaratish yoki yuborishda xatolik yuz berdi';
+          alert(errorMessage, { type: 'error' });
         }
       } else {
         alert('Invoice muvaffaqiyatli yuborildi!', { type: 'success' });

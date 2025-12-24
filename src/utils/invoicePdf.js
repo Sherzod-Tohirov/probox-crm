@@ -1533,36 +1533,56 @@ export const generateInvoicePdf = async (invoiceData) => {
     
     const pdfDoc = pdfMake.createPdf(docDefinition);
     
-    // iPad va mobile browser'lar uchun blob URL yordamida download qilish
-    // pdfDoc.download() iPad Safari'da ishlamaydi
-    return new Promise((resolve, reject) => {
+        // iPad va mobile browser'lar uchun blob URL yordamida download qilish
+        // pdfDoc.download() iPad Safari'da ishlamaydi
+        return new Promise((resolve, reject) => {
       pdfDoc.getBlob((blob) => {
-        const file = new File([blob], fileName, { type: 'application/pdf' });
-        
-        // iPad va mobile browser'lar uchun blob URL yaratish
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isIOS || isMobile) {
-          // Mobile/iPad uchun blob URL yaratib, yangi tab'da ochish yoki download
-          const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = blobUrl;
-          link.download = fileName;
-          link.target = '_blank';
-          // iOS Safari'da download attribute ishlamasligi mumkin, shuning uchun ochish ham mumkin
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          // Blob URL'ni tozalash
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-        } else {
-          // Desktop browser'lar uchun odatiy download
-          pdfDoc.download(fileName);
+        try {
+          const file = new File([blob], fileName, { type: 'application/pdf' });
+          
+          // iPad va mobile browser'lar uchun blob URL yaratish
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          
+          if (isIOS || isMobile) {
+            // Mobile/iPad uchun blob URL yaratib, yangi tab'da ochish
+            try {
+              const blobUrl = URL.createObjectURL(blob);
+              // iOS Safari'da download attribute ishlamaydi, shuning uchun window.open() ishlatamiz
+              const newWindow = window.open(blobUrl, '_blank');
+              if (!newWindow) {
+                // Agar popup bloklangan bo'lsa, link yaratish
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.target = '_blank';
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }
+              // Blob URL'ni tozalash
+              setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            } catch (mobileError) {
+              console.error('Mobile/iPad PDF yuklab olishda xatolik:', mobileError);
+              // Agar mobile method ishlamasa, desktop method'ni sinab ko'ramiz
+              try {
+                pdfDoc.download(fileName);
+              } catch (downloadError) {
+                console.error('PDF download qilishda xatolik:', downloadError);
+                // Xatolikni throw qilmaymiz, chunki file allaqachon yaratildi
+              }
+            }
+          } else {
+            // Desktop browser'lar uchun odatiy download
+            pdfDoc.download(fileName);
+          }
+          
+          resolve(file);
+        } catch (error) {
+          console.error('PDF blob yaratishda xatolik:', error);
+          reject(error);
         }
-        
-        resolve(file);
       });
     });
   } catch (error) {
