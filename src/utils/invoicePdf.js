@@ -1533,13 +1533,35 @@ export const generateInvoicePdf = async (invoiceData) => {
     
     const pdfDoc = pdfMake.createPdf(docDefinition);
     
-    // PDF faylni yuklab olish
-    pdfDoc.download(fileName);
-    
-    // PDF faylni blob sifatida qaytarish (serverga yuborish uchun)
+    // iPad va mobile browser'lar uchun blob URL yordamida download qilish
+    // pdfDoc.download() iPad Safari'da ishlamaydi
     return new Promise((resolve, reject) => {
       pdfDoc.getBlob((blob) => {
         const file = new File([blob], fileName, { type: 'application/pdf' });
+        
+        // iPad va mobile browser'lar uchun blob URL yaratish
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isIOS || isMobile) {
+          // Mobile/iPad uchun blob URL yaratib, yangi tab'da ochish yoki download
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          link.target = '_blank';
+          // iOS Safari'da download attribute ishlamasligi mumkin, shuning uchun ochish ham mumkin
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          // Blob URL'ni tozalash
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        } else {
+          // Desktop browser'lar uchun odatiy download
+          pdfDoc.download(fileName);
+        }
+        
         resolve(file);
       });
     });
