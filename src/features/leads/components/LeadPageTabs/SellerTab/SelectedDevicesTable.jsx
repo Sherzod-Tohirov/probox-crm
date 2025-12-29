@@ -1,9 +1,7 @@
 import { Row, Col, Table } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
-import { formatCurrencyUZS, PAYMENT_INTEREST_OPTIONS } from '../../../utils/deviceUtils';
+import { formatCurrencyUZS } from '../../../utils/deviceUtils';
 import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
-import FormField from '../../LeadPageForm/FormField';
-import { useWatch } from 'react-hook-form';
 
 export default function SelectedDevicesTable({
   selectedDeviceData,
@@ -16,7 +14,6 @@ export default function SelectedDevicesTable({
   onFirstPaymentBlur,
   onDeleteDevice,
   totalGrandTotal,
-  control,
   isRentPeriodDisabled = false,
   isFirstPaymentDisabled = false,
 }) {
@@ -62,18 +59,6 @@ export default function SelectedDevicesTable({
             </div>
           </Col>
 
-          {canEdit && (
-            <Col className='mb-2'>
-              <FormField
-                label="To'lov turi"
-                type="select"
-                options={PAYMENT_INTEREST_OPTIONS}
-                name="invoicePaymentType"
-                disabled={!canEdit}
-                control={control}
-              />
-            </Col>
-          )}
         </Row>
       </Col>
     </Row>

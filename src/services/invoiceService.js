@@ -9,6 +9,16 @@ export const createInvoice = async (data) => {
   }
 };
 
+// Test endpoint for invoice creation
+export const createInvoiceTest = async (data) => {
+  try {
+    const response = await api.post('/create/invoice/test', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const getInvoiceScore = async ({ CardCode }) => {
   try {
     const response = await api.get('/invoice/score', {

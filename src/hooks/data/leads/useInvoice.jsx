@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createInvoice } from '@/services/invoiceService';
+import { createInvoice, createInvoiceTest } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
 import { getExecutors } from '@/services/executorsService';
@@ -9,7 +9,7 @@ import moment from 'moment';
 
 export default function useInvoice(options = {}) {
   return useMutation({
-    mutationFn: async ({ leadId, selectedDevices, paymentType, calculationTypeFilter }) => {
+    mutationFn: async ({ leadId, selectedDevices, paymentType, calculationTypeFilter, payments }) => {
       // 1. Lead ma'lumotlarini olish
       const leadResponse = await getLeadById(leadId);
       const leadData = leadResponse?.data || leadResponse;
@@ -392,6 +392,11 @@ export default function useInvoice(options = {}) {
         finalPercentage: finalPercentage, // Final percentage (Foiz holatida)
         maximumLimit: maximumLimit, // Maximum limit
       };
+
+      // Payments array'ni qo'shish (agar mavjud bo'lsa)
+      if (payments && Array.isArray(payments) && payments.length > 0) {
+        invoiceData.payments = payments;
+      }
 
       // 10. Invoice yuborish
      const invoiceResponse = await createInvoice(invoiceData);

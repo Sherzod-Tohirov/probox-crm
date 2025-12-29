@@ -1,0 +1,151 @@
+@use '@styles/variables' as v;
+
+.invoice-payment-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.devices-info {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  [data-theme='dark'] & {
+    background-color: rgba(249, 250, 251, 0.1);
+    border-color: rgba(229, 231, 235, 0.3);
+  }
+}
+
+.info-icon-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+  padding: 0;
+}
+
+.info-icon {
+  font-size: 14px;
+  color: white;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+}
+
+.info-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.amount-highlight {
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.payment-input-row {
+  display: flex;
+  width: 100%;
+}
+
+.payment-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-with-magnet {
+  position: relative;
+  width: 100%;
+
+  .magnet-icon {
+    position: absolute;
+    // Position to align with input field center
+    // Label: ~20px, Gap: 1rem (16px), Input center: 17.5px from input-box top
+    // Total from top: 20px + 16px + 17.5px = 53.5px
+    // Icon is 36px tall, so center it: 53.5px - 18px = 35.5px
+    // Adjusted to align with input field center
+    top: 50%; // Positioned to center with input field
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #3b82f6;
+    transition: all 0.5s ease;
+    transform: rotate(180deg);
+    cursor: pointer;
+    z-index: 100;
+
+    &:hover {
+    transform: rotate(195deg);
+    transition: all 0.5s ease;
+
+
+    }
+
+    &:active {
+    transform: rotate(195deg);
+    transition: all 0.5s ease;
+
+
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.success-message {
+  background-color: var(--success-bg, #dcfce7);
+  border: 1px solid var(--success-border, #86efac);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+
+  [data-theme='dark'] & {
+    background-color: rgba(20, 83, 45, 0.3);
+    border-color: rgba(74, 222, 128, 0.4);
+  }
+}
+
+.check-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--success-color, #22c55e);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-right: 5px;
+}
+
+.success-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+

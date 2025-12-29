@@ -15,12 +15,12 @@ import SellerFormFields from './SellerTab/SellerFormFields';
 import DeviceSearchField from './SellerTab/DeviceSearchField';
 import SelectedDevicesTable from './SellerTab/SelectedDevicesTable';
 import SignatureCanvas from './SellerTab/SignatureCanvas';
+import InvoicePaymentModal from './SellerTab/InvoicePaymentModal';
 import useAuth from '@/hooks/useAuth';
 import useInvoice from '@/hooks/data/leads/useInvoice';
 import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
 import { generateInvoicePdf } from '@/utils/invoicePdf';
-import { useWatch } from 'react-hook-form';
 
 export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
@@ -170,9 +170,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     setUserSignature(signatureDataUrl);
   }, []);
 
+  // Invoice modal state
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+
   // Invoice yuborish logikasi
   const { mutateAsync: uploadInvoiceFile } = useUploadInvoiceFile();
-  const paymentType = useWatch({ control, name: 'invoicePaymentType' });
 
   const { mutateAsync: sendInvoice, isPending: isSendingInvoice } = useInvoice({
     onSuccess: async (invoiceData) => {
@@ -215,16 +217,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     },
   });
 
-  const handleSendInvoice = useCallback(async () => {
+  // Invoice modalni ochish
+  const handleOpenInvoiceModal = useCallback(() => {
     // Imzo qo'yilganligini birinchi navbatda tekshirish
     if (!userSignature) {
       alert('Invoice yuborishdan oldin imzo qo\'yishingiz kerak', { type: 'error' });
-      return;
-    }
-
-    // To'lov turi tanlanganligini tekshirish
-    if (!paymentType || paymentType === '' || paymentType === 'all') {
-      alert('To\'lov turini tanlang', { type: 'error' });
       return;
     }
 
@@ -248,12 +245,42 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       return;
     }
 
+    setIsInvoiceModalOpen(true);
+  }, [userSignature, leadId, selectedDevices]);
+
+  // Invoice modal orqali yuborish
+  const handleSendInvoice = useCallback(async (paymentData) => {
+    if (!leadId) {
+      alert('Lead ID topilmadi', { type: 'error' });
+      return;
+    }
+
+    if (!selectedDevices || selectedDevices.length === 0) {
+      alert('Qurilma tanlanmagan', { type: 'error' });
+      return;
+    }
+
     try {
-      await sendInvoice({ leadId, selectedDevices, paymentType, calculationTypeFilter });
+      // Payments array'ni formatlash
+      const payments = [];
+      if (paymentData.cash > 0) {
+        payments.push({ type: 'Cash', amount: paymentData.cash });
+      }
+      if (paymentData.card > 0) {
+        payments.push({ type: 'Card', amount: paymentData.card });
+      }
+      if (paymentData.terminal > 0) {
+        payments.push({ type: 'Terminal', amount: paymentData.terminal });
+      }
+
+      // useInvoice hook'iga payments array'ni yuborish
+      const paymentType = 'all';
+      await sendInvoice({ leadId, selectedDevices, paymentType, calculationTypeFilter, payments });
+      setIsInvoiceModalOpen(false);
     } catch (error) {
       // Error already handled in onError callback
     }
-  }, [userSignature, paymentType, leadId, selectedDevices, sendInvoice, calculationTypeFilter]);
+  }, [leadId, selectedDevices, sendInvoice, calculationTypeFilter]);
 
   useEffect(() => {
     if (!form) return;
@@ -336,7 +363,6 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   onFirstPaymentBlur={handleFirstPaymentBlur}
                   onDeleteDevice={handleDeleteDevice}
                   totalGrandTotal={totalGrandTotal}
-                  control={control}
                   isRentPeriodDisabled={isRentPeriodDisabled}
                   isFirstPaymentDisabled={isFirstPaymentDisabled}
                 />
@@ -353,7 +379,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
               <Col fullWidth className={styles.mt}>
                 <Button
                   variant="filled"
-                  onClick={handleSendInvoice}
+                  onClick={handleOpenInvoiceModal}
                   isLoading={isSendingInvoice}
                   disabled={isSendingInvoice || selectedDevices.length === 0 || !userSignature}
                 >
@@ -361,6 +387,19 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                 </Button>
               </Col>
             ) : null}
+
+            {/* Invoice Payment Modal */}
+            <InvoicePaymentModal
+              isOpen={isInvoiceModalOpen}
+              onClose={() => setIsInvoiceModalOpen(false)}
+              selectedDeviceData={selectedDeviceData}
+              onConfirm={handleSendInvoice}
+              isLoading={isSendingInvoice}
+              leadId={leadId}
+              leadData={leadData}
+              selectedDevices={selectedDevices}
+              calculationTypeFilter={calculationTypeFilter}
+            />
           </Row>
         </Col>
       </FieldGroup>
