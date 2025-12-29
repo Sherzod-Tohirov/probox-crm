@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createInvoice, createInvoiceTest } from '@/services/invoiceService';
+import { createInvoiceTest } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
 import { getExecutors } from '@/services/executorsService';
@@ -399,7 +399,7 @@ export default function useInvoice(options = {}) {
       }
 
       // 10. Invoice yuborish
-     const invoiceResponse = await createInvoice(invoiceData);
+     const invoiceResponse = await createInvoiceTest(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return {
