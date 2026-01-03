@@ -85,6 +85,12 @@ export default function useLeadPageData(leadId) {
           'CEO',
         ]);
       }
+      
+      // Operator1 ga operator2 accesslarini ham berish
+      if (tabKey === 'operator2' && currentUserRole === 'Operator1') {
+        return true;
+      }
+      
       return currentUserRole === TAB_TO_ROLE[tabKey];
     },
     [currentUserRole, isBlocked]

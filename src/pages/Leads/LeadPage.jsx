@@ -193,7 +193,7 @@ export default function LeadPage() {
           <Operator2Tab
             leadId={id}
             leadData={lead}
-            canEdit={canEditTab('operator2') || canEditTab('operatorM')}
+            canEdit={canEditTab('operator2') || canEditTab('operator1') || canEditTab('operatorM')}
           />
         ),
       },
