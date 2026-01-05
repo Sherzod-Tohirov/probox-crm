@@ -248,9 +248,6 @@ export default function useInvoice(options = {}) {
       const maxRentPeriod = selectedDevices.length > 0
         ? Math.max(...selectedDevices.map(device => Number(device.rentPeriod) || 1))
         : 1;
-      
-      // 1. numberOfInstallments = rentPeriod + 1 (har doim)
-      const numberOfInstallments = maxRentPeriod + 1;
 
       // 10. DocumentInstallments (to'lov jadvali) ni hisoblash
       const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
@@ -291,6 +288,11 @@ export default function useInvoice(options = {}) {
 
       // 6. CashSum (birinchi to'lov summasi) ni hisoblash - totalFirstPayment dan foydalanamiz
       const cashSum = totalFirstPayment;
+      
+      // NumberOfInstallments ni hisoblash:
+      // Agar birinchi to'lov 0 bo'lsa, numberOfInstallments = rentPeriod
+      // Agar birinchi to'lov mavjud bo'lsa, numberOfInstallments = rentPeriod + 1
+      const numberOfInstallments = totalFirstPayment > 0 ? maxRentPeriod + 1 : maxRentPeriod;
 
       // DocumentInstallments ni yaratish (uzunligi numberOfInstallments ga teng = rentPeriod + 1)
       const documentInstallments = [];
