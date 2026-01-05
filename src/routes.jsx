@@ -24,6 +24,9 @@ const Leads = lazy(() => import('./pages/Leads'));
 const LeadPage = lazy(() => import('./pages/Leads/LeadPage'));
 const LeadsStatistics = lazy(() => import('./features/leads/statistics'));
 
+// Calculator
+const Calculator = lazy(() => import('./pages/Calculator/Calculator'));
+
 // Helper pages
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
@@ -116,6 +119,16 @@ const router = createBrowserRouter([
       {
         path: '/calendar',
         element: <h2 style={{ fontSize: '5rem' }}>Calendar</h2>,
+      },
+      {
+        path: '/calculator',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader fullscreen={true} />}>
+              <Calculator />
+            </Suspense>
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/products',

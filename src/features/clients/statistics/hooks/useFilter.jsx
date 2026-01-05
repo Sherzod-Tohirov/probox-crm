@@ -9,10 +9,12 @@ const useFilter = () => {
   });
 
   const executorsOptions = useMemo(() => {
-    return selectOptionsCreator(executors, {
-      label: 'SlpName',
-      value: 'SlpCode',
-    });
+    return executors.length > 0
+      ? selectOptionsCreator(executors, {
+          label: 'SlpName',
+          value: 'SlpCode',
+        })
+      : [];
   }, [executors]);
 
   return {
