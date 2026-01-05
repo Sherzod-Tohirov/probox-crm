@@ -56,11 +56,16 @@ export default function ClientsFilter({ onFilter }) {
 
   const executorsOptions = useMemo(
     () =>
-      executors?.map((executor) => ({
-        label: executor.SlpName,
-        value: executor.SlpCode,
-        avatarUrl: executor.avatarUrl || executor.Avatar || executor.image,
-      })) || [],
+      executors.length > 0
+        ? [
+            ...executors.map((executor) => ({
+              label: executor.SlpName,
+              value: executor.SlpCode,
+              avatarUrl:
+                executor.avatarUrl || executor.Avatar || executor.image,
+            })),
+          ]
+        : [],
     [executors]
   );
 

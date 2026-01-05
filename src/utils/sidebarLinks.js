@@ -34,6 +34,12 @@ const sidebarLinks = [
     ...getRoutePermissions('/calendar'),
   },
   {
+    title: 'Kalkulyator',
+    icon: 'calculator',
+    path: '/calculator',
+    ...getRoutePermissions('/calculator'),
+  },
+  {
     title: 'Mahsulotlar',
     icon: 'products',
     path: '/products',

@@ -5,8 +5,6 @@ export default function AdvancedFilters({
   control,
   executorsOptions,
   isExecutorsLoading,
-  watchedStartDate,
-  watchedEndDate,
 }) {
   return (
     <>

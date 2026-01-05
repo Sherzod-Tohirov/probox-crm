@@ -2111,3 +2111,20 @@ export const Meta = () => {
     </svg>
   );
 };
+
+export const Calculator = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        fill="currentColor"
+        d="M6 2C4.895 2 4 2.895 4 4V20C4 21.105 4.895 22 6 22H18C19.105 22 20 21.105 20 20V4C20 2.895 19.105 2 18 2H6ZM7 5H17V8H7V5ZM7 10H10V13H7V10ZM11 10H14V13H11V10ZM15 10H18V13H15V10ZM7 14H10V17H7V14ZM11 14H14V17H11V14ZM15 14H18V17H15V14Z"
+      />
+    </svg>
+  );
+};
