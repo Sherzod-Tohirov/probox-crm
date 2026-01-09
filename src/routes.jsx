@@ -27,6 +27,9 @@ const LeadsStatistics = lazy(() => import('./features/leads/statistics'));
 // Calculator
 const Calculator = lazy(() => import('./pages/Calculator/Calculator'));
 
+// Products
+const Products = lazy(() => import('./pages/Products/Products'));
+
 // Helper pages
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
 const PageLoader = lazy(() => import('./pages/helper/PageLoader'));
@@ -132,7 +135,13 @@ const router = createBrowserRouter([
       },
       {
         path: '/products',
-        element: <h2 style={{ fontSize: '5rem' }}>Products</h2>,
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader fullscreen={true} />}>
+              <Products />
+            </Suspense>
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/leads',

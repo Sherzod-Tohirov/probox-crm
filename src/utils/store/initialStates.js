@@ -46,3 +46,9 @@ export const initialLeadsFilterState = {
   jshshir2: '',
   finalLimit: '',
 };
+
+export const initialProductsFilterState = {
+  search: '',
+  whsCode: '',
+  condition: '',
+};
