@@ -6,7 +6,13 @@ export const AVAILABLE_LEAD_SOURCES = [
   'Community',
 ];
 
-export const AVAILABLE_LEAD_STATUSES = ['Active', 'Archived', 'Processing', 'Closed'];
+export const AVAILABLE_LEAD_STATUSES = [
+  'Active',
+  'Archived',
+  'Processing',
+  'Closed',
+  'Purchased',
+];
 
 export const REJECTION_REASON_OPTIONS = [
   { value: '', label: '' },
