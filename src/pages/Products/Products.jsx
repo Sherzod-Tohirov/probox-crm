@@ -30,7 +30,7 @@ export default function Products() {
             <Col flexGrow>
               <Typography variant="h5">Mahsulotlar</Typography>
             </Col>
-            <Col flexGrow>
+            <Col flexGrow span={8}>
               <ProductsFilter />
             </Col>
           </Row>

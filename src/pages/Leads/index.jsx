@@ -31,7 +31,7 @@ export default function Leads() {
   const { user } = useAuth();
   const role = user?.U_role;
   const { leadsTableColumns } = useLeadsTableColumns();
-
+  
   // Refs
   const leadsTableRef = useRef(null);
   const { currentPage, pageSize, filter, currentLead } = useSelector(
