@@ -3,7 +3,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, Col, Row, Accordion } from '@components/ui';
-import { initialLeadsFilterState } from '@utils/store/initialStates';
+import { initialLeadsFilterState } from '@/store/utils/initialStates';
 import { setLeadsCurrentPage } from '@store/slices/leadsPageSlice';
 import useIsMobile from '@/hooks/useIsMobile';
 import useFetchBranches from '@hooks/data/useFetchBranches';

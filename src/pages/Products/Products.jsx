@@ -6,14 +6,22 @@ import ProductsFooter from '@/features/products/components/ProductsFooter';
 import { useProductsTableColumns } from '@/features/products/hooks/useProductsTableColumns';
 import useFetchProducts from '@/hooks/data/products/useFetchProducts';
 import { useState } from 'react';
-
+import { useSelector } from 'react-redux';
 
 export default function Products() {
   const { productsTableColumns } = useProductsTableColumns();
   const [isProductModalInfoOpen, setProductModalInfoOpen] = useState(false);
   const [chosenProduct, setChosenProduct] = useState({});
-  const { data, isLoading } = useFetchProducts();
-  console.log(data, 'products');
+  const { currentPage, pageSize, filter } = useSelector(
+    (state) => state.page.products
+  );
+  const { search, condition } = filter || {};
+  const { data, isLoading } = useFetchProducts({
+    search,
+    condition,
+    limit: pageSize,
+    offset: currentPage * pageSize,
+  });
   return (
     <>
       <Row gutter={4}>
@@ -30,24 +38,24 @@ export default function Products() {
         <Col fullWidth>
           <Table
             id="products-table"
-            uniqueKey="imei"
+            uniqueKey="ItemCode"
             scrollable
             showPivotColumn
             columns={productsTableColumns}
             data={data?.items}
             isLoading={isLoading}
+            rowNumberOffset={currentPage * pageSize}
             onRowClick={(row) => {
               setChosenProduct(row);
               setProductModalInfoOpen(true);
             }}
             getRowStyles={() => {}}
           />
-          <ProductsFooter />
+          <ProductsFooter meta={{ total: data?.total }} />
         </Col>
       </Row>
       <ProductModal
         currentProduct={chosenProduct}
-        title={chosenProduct?.product_name || "Hech narsa yo'q"}
         isOpen={isProductModalInfoOpen}
         onClose={() => setProductModalInfoOpen(false)}
       />

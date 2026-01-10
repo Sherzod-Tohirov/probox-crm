@@ -49,6 +49,9 @@ export const initialLeadsFilterState = {
 
 export const initialProductsFilterState = {
   search: '',
-  whsCode: '',
   condition: '',
+};
+
+export const initialProductModalFilterState = {
+  whsCode: '',
 };

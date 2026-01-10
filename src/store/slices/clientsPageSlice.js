@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   initialClientsFilterState,
   initialStatisticsFilterState,
-} from '@utils/store/initialStates';
+} from '@/store/utils/initialStates';
 
 const loadState = () => {
   try {

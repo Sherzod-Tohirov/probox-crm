@@ -12,7 +12,7 @@ import useStatisticsTableColumns from '@/features/clients/statistics/hooks/useSt
 import useAuth from '@hooks/useAuth';
 import useIsMobile from '@hooks/useIsMobile';
 import formatDate from '@utils/formatDate';
-import { initialStatisticsFilterState } from '@utils/store/initialStates';
+import { initialStatisticsFilterState } from '@/store/utils/initialStates';
 import styles from './style.module.scss';
 import Footer from '@/components/Footer';
 import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';

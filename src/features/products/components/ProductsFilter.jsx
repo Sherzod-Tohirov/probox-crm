@@ -1,6 +1,8 @@
 import { Row, Col, Input } from '@/components/ui';
-import useFetchBranches from '@/hooks/data/useFetchBranches';
-import selectOptionsCreator from '@/utils/selectOptionsCreator';
+import { setProductsFilter } from '@/store/slices/productsPageSlice';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 
 const statusOptions = [
   { label: 'Hammasi', value: 'all' },
@@ -9,22 +11,40 @@ const statusOptions = [
 ];
 
 export default function ProductsFilter() {
-  const { data: branches } = useFetchBranches();
-  const branchOptions = selectOptionsCreator(branches, {
-    label: 'name',
-    value: 'id',
-    includeAll: true,
-  });
+  const { setValue, watch } = useForm();
+  const dispatch = useDispatch();
+  const watchedSearch = watch('search');
+  const watchedCondition = watch('condition');
+  useEffect(() => {
+    
+    dispatch(
+      setProductsFilter({ search: watchedSearch, condition: watchedCondition })
+    );
+  }, [watchedSearch, watchedCondition]);
   return (
     <Row direction="row" gutter={4} align="center">
       <Col flexGrow>
-        <Input type="search" variant="outlined" placeholder="Qidirish" />
+        <Input
+          name="search"
+          type="search"
+          variant="outlined"
+          placeholder="Qidirish"
+          value={watchedSearch}
+          onChange={(e) => {
+            setValue('search', e.target.value);
+          }}
+        />
       </Col>
       <Col flexGrow>
-        <Input type="select" variant="outlined" options={branchOptions} />
-      </Col>
-      <Col flexGrow>
-        <Input type="select" variant="outlined" options={statusOptions} />
+        <Input
+          type="select"
+          variant="outlined"
+          options={statusOptions}
+          value={watchedCondition}
+          onChange={(e) => {
+            setValue('condition', e.target.value);
+          }}
+        />
       </Col>
     </Row>
   );
@@ -43,3 +63,14 @@ export default function ProductsFilter() {
           onBlur={onBlurSearch}
         /> */
 // }
+// import useFetchBranches from '@/hooks/data/useFetchBranches';
+// import selectOptionsCreator from '@/utils/selectOptionsCreator';
+// const { data: branches } = useFetchBranches();
+// const branchOptions = selectOptionsCreator(branches, {
+//   label: 'name',
+//   value: 'id',
+//   includeAll: true,
+// });
+// <Col flexGrow>
+//   <Input type="select" variant="outlined" options={branchOptions} />
+// </Col>;

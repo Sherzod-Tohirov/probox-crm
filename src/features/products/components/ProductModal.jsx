@@ -54,12 +54,7 @@ const sampleData = [
   },
 ];
 
-export default function ProductModal({
-  currentProduct,
-  title,
-  isOpen,
-  onClose,
-}) {
+export default function ProductModal({ currentProduct, isOpen, onClose }) {
   const { productTableColumns } = useProductsTableColumns();
   const { data, isLoading } = useFetchProductItems({
     itemCode: currentProduct?.ItemCode,
@@ -67,7 +62,12 @@ export default function ProductModal({
   });
   console.log(data, 'data product');
   return (
-    <Modal size="lg" title={title} isOpen={isOpen} onClose={onClose}>
+    <Modal
+      size="lg"
+      title={currentProduct?.name || "Hech narsa yo'q"}
+      isOpen={isOpen}
+      onClose={onClose}
+    >
       <Row>
         <Col fullWidth flexGrow>
           <Table

@@ -39,7 +39,9 @@ function ClientPageForm({
 }) {
   const currentClient = store.getState().page.clients.currentClient;
   const cardCode = currentClient?.['CardCode'] || currentClient?.['cardCode'];
-  const { data: invoiceScoreData } = useFetchInvoiceScore({ CardCode: cardCode });
+  const { data: invoiceScoreData } = useFetchInvoiceScore({
+    CardCode: cardCode,
+  });
   const [userAddressCoords, setUserAddressCoords] = useState({});
   const [filePreviewModal, setFilePreviewModal] = useState(false);
   const [softDeletedFileIds, setSoftDeletedFileIds] = useState([]);
@@ -511,7 +513,7 @@ function ClientPageForm({
                       </Col>
                       <Col>
                         <Clipboard
-                          text={currentClient?.['ProductName']}
+                          text={currentClient?.['Dscription']}
                           size={18}
                           aria-label="Mahsulot nomi nusxalash"
                           title="Mahsulot nomi nusxalash"
