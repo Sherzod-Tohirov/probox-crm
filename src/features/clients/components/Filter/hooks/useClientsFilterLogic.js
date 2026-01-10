@@ -8,7 +8,7 @@ import {
   setClientsCurrentPage,
   setLastAction,
 } from '@store/slices/clientsPageSlice';
-import { initialClientsFilterState } from '@utils/store/initialStates';
+import { initialClientsFilterState } from '@/store/utils/initialStates';
 import getSelectOptionsFromKeys from '@utils/getSelectOptionsFromKeys';
 import { statusOptions } from '@utils/options';
 
@@ -45,16 +45,21 @@ export default function useClientsFilterLogic(executorsOptions, onFilter) {
   useEffect(() => {
     const startDate = moment(watchedStartDate, 'DD.MM.YYYY');
     if (!startDate.isValid()) return;
-    
+
     const endDate = moment(watchedEndDate, 'DD.MM.YYYY');
     const endDateIsEmpty = !watchedEndDate || watchedEndDate.trim() === '';
     const endDateIsInvalid = !endDate.isValid();
-    const endDateIsBeforeStart = endDate.isValid() && endDate.isBefore(startDate, 'day');
-    
+    const endDateIsBeforeStart =
+      endDate.isValid() && endDate.isBefore(startDate, 'day');
+
     // Only auto-set if endDate is empty, invalid, or before startDate
     // Don't change if user has manually selected a valid endDate after startDate
     if (endDateIsEmpty || endDateIsInvalid || endDateIsBeforeStart) {
-      setValue('endDate', moment(startDate).endOf('month').format('DD.MM.YYYY'), { shouldDirty: false });
+      setValue(
+        'endDate',
+        moment(startDate).endOf('month').format('DD.MM.YYYY'),
+        { shouldDirty: false }
+      );
     }
   }, [watchedStartDate, setValue]); // Removed watchedEndDate from dependencies to prevent unnecessary re-runs
 

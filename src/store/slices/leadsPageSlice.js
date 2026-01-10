@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
-import { initialLeadsFilterState } from '@utils/store/initialStates';
+import { initialLeadsFilterState } from '@/store/utils/initialStates';
 
 const loadState = () => {
   try {

@@ -9,6 +9,7 @@ export const useProductsTableColumns = () => {
         key: 'ItemName',
         title: 'Mahsulot Nomi',
         icon: 'products',
+        width: '30%',
       },
       {
         key: 'OnHand',
@@ -43,6 +44,7 @@ export const useProductsTableColumns = () => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
+                  disabled
                   icon="edit"
                   variant="text"
                 ></Button>
@@ -53,6 +55,7 @@ export const useProductsTableColumns = () => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
+                  disabled
                   icon="delete"
                   variant="text"
                 ></Button>
@@ -69,6 +72,7 @@ export const useProductsTableColumns = () => {
         key: 'ItemName',
         title: 'Mahsulot Nomi',
         icon: 'products',
+        width: '30%',
       },
       {
         key: 'U_Condition',
@@ -129,6 +133,7 @@ export const useProductsTableColumns = () => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
+                  disabled
                   icon="edit"
                   variant="text"
                 ></Button>
@@ -139,6 +144,7 @@ export const useProductsTableColumns = () => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
+                  disabled
                   icon="delete"
                   variant="text"
                 ></Button>

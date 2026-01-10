@@ -6,7 +6,7 @@ import { Row, Col, Input, Button, Accordion } from '@components/ui';
 import useFilter from '@/features/clients/statistics/hooks/useFilter';
 import getSelectOptionsFromKeys from '@utils/getSelectOptionsFromKeys';
 import useWatchedFields from '@/features/clients/statistics/hooks/useWatchedFields';
-import { initialStatisticsFilterState } from '@utils/store/initialStates';
+import { initialStatisticsFilterState } from '@/store/utils/initialStates';
 import { setClientsStatisticsFilter } from '@store/slices/clientsPageSlice';
 import styles from './style.module.scss';
 import _ from 'lodash';

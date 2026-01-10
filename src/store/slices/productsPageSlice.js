@@ -1,20 +1,35 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initialLeadsFilterState } from '@utils/store/initialStates';
+import {
+  initialProductModalFilterState,
+  initialProductsFilterState,
+} from '@/store/utils/initialStates';
+
+import normalizePageAndSize from '../utils/normalizePageAndSize';
 
 const loadState = () => {
   try {
     const serializedState = localStorage.getItem('productsPageState');
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
-    const storedPage = Number.parseInt(parsedState.currentPage, 10);
-    const normalizedPage =
-      Number.isNaN(storedPage) || storedPage < 0 ? 0 : storedPage;
-    const storedPageSize = Number.parseInt(parsedState.pageSize, 10);
-    const normalizedPageSize = Number.isNaN(storedPageSize)
-      ? 10
-      : Math.max(storedPageSize, 1);
+    const { normalizedPageSize, normalizedPage } = normalizePageAndSize({
+      page: parsedState.currentPage,
+      size: parsedState.pageSize,
+    });
+
+    const {
+      normalizedPageSize: modalNormalizedPageSize,
+      normalizedPage: modalNormalizedPage,
+    } = normalizePageAndSize({
+      page: parsedState.productModal.currentPage,
+      size: parsedState.productModal.pageSize,
+    });
 
     return {
-      filter: parsedState.filter || initialLeadsFilterState,
+      filter: parsedState.filter || initialProductsFilterState,
+      productModal: {
+        ...parsedState.productModal,
+        pageSize: modalNormalizedPageSize,
+        currentPage: modalNormalizedPage,
+      },
       currentPage: normalizedPage,
       pageSize: normalizedPageSize,
     };
@@ -22,7 +37,12 @@ const loadState = () => {
     console.log('Error loading products page state', error);
 
     return {
-      filter: initialLeadsFilterState,
+      filter: initialProductsFilterState,
+      productModal: {
+        currentPage: 0,
+        filter: initialProductModalFilterState,
+        pageSize: 10,
+      },
       currentPage: 0,
       pageSize: 10,
     };
@@ -31,11 +51,12 @@ const loadState = () => {
 
 const saveState = (state) => {
   try {
-    const { filter, currentPage, pageSize } = state;
+    const { filter, currentPage, pageSize, productModal } = state;
     const serializedState = JSON.stringify({
       filter,
       currentPage,
       pageSize,
+      productModal,
     });
     localStorage.setItem('productsPageState', serializedState);
   } catch (error) {
@@ -63,6 +84,15 @@ const productsPageSlice = createSlice({
       state.pageSize = action.payload;
       saveState(state);
     },
+    setProductModalCurrentPage(state, action) {
+      state.productModal.currentPage = action.payload;
+    },
+    setProductModalPageSize(state, action) {
+      state.productModal.pageSize = action.payload;
+    },
+    setProductsModalFilter(state, action) {
+      state.productModal.filter = { ...action.filter };
+    },
   },
 });
 
@@ -70,6 +100,9 @@ export const {
   setProductsFilter,
   setProductsPageSize,
   setProductsCurrentPage,
+  setProductModalCurrentPage,
+  setProductModalPageSize,
+  setProductsModalFilter,
 } = productsPageSlice.actions;
 
 export default productsPageSlice.reducer;

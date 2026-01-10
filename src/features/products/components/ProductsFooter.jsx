@@ -2,6 +2,11 @@ import Footer from '@/components/Footer';
 import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';
 import { Row, Col, Typography, Pagination, Input } from '@/components/ui';
 import style from './style.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setProductsCurrentPage,
+  setProductsPageSize,
+} from '@/store/slices/productsPageSlice';
 
 const tableSizeSelectOptions = [
   { value: 10, label: '10' },
@@ -10,7 +15,9 @@ const tableSizeSelectOptions = [
   { value: 100, label: '100' },
 ];
 
-export default function ProductsFooter() {
+export default function ProductsFooter({ meta }) {
+  const { currentPage, pageSize } = useSelector((state) => state.page.products);
+  const dispatch = useDispatch();
   return (
     <StickyFooterPortal>
       <Footer className={style['footer-container']}>
@@ -22,20 +29,29 @@ export default function ProductsFooter() {
                   variant="outlined"
                   type="select"
                   options={tableSizeSelectOptions}
-                  //   value={Number(pageSize)}
-                  //   onChange={(value) => {
-                  //     dispatch(setLeadsPageSize(Number(value)));
-                  //   }}
+                  value={Number(pageSize)}
+                  onChange={(value) => {
+                    dispatch(setProductsPageSize(Number(value)));
+                  }}
                   canClickIcon={false}
                 />
               </Col>
               <Col>
-                <Typography variant="body1">1-10 gacha 100ta dan</Typography>
+                <Typography variant="body1">
+                  {currentPage * pageSize + 1}-{(currentPage + 1) * pageSize}{' '}
+                  gacha {meta.total} ta dan
+                </Typography>
               </Col>
             </Row>
           </Col>
           <Col>
-            <Pagination pageCount={10} />
+            <Pagination
+              pageCount={meta.total}
+              activePage={currentPage}
+              onPageChange={({ selected }) => {
+                dispatch(setProductsCurrentPage(selected));
+              }}
+            />
           </Col>
         </Row>
       </Footer>
