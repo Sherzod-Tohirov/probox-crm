@@ -392,6 +392,21 @@
   }
 }
 
+.gauge-info {
+  padding-top: 12px;
+  @include m.flex(start, center, 12px, column);
+}
+
+.gauge-info-label {
+  font-size: 3.2rem;
+  font-weight: 600;
+  line-height: 1;
+
+  @media (max-width: 575px) {
+    font-size: 3.2rem;
+  }
+}
+
 .gauge-scale {
   display: flex;
   justify-content: space-between;
@@ -506,7 +521,7 @@
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
-    
+
     [data-theme='dark'] & {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }

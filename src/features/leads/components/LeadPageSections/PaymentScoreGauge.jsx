@@ -1,8 +1,11 @@
 import styles from '@/pages/Leads/styles/style.module.scss';
 import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
+import { Typography } from '@/components/ui';
 
 export default function PaymentScoreGauge({
   paymentScore,
+  limit = 0,
+  trustLabel = '',
   totalSum = 0,
   closedSum = 0,
   overdueDebt = 0,
@@ -88,7 +91,13 @@ export default function PaymentScoreGauge({
   );
   const point9End = getGaugePoint(9, gaugeMax, radius, centerX, centerY);
   // Equal gap, then Green segment starts at 9
-  const point9Start = getGaugePoint(9 + gapSize, gaugeMax, radius, centerX, centerY);
+  const point9Start = getGaugePoint(
+    9 + gapSize,
+    gaugeMax,
+    radius,
+    centerX,
+    centerY
+  );
   const point10 = getGaugePoint(10, gaugeMax, radius, centerX, centerY);
   // Separate tiny segment for 10 (Zo'r) to make it visible as an arc (not a dot)
   const zorSegmentStartValue = 9.7; // tweak: how long the 10-segment is
@@ -146,93 +155,114 @@ export default function PaymentScoreGauge({
       {/* Left: Gauge Card */}
       <div className={`${styles['dashboard-card']} ${styles['gauge-card']}`}>
         <div className={styles['card-title']}>To'lov ko'rsatkichi</div>
-      <div className={styles['gauge-container']}>
-        <svg
-          className={styles['gauge-svg']}
-          viewBox="0 0 200 120"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Background arc - light grey background visible through gaps */}
-          <path
-            d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
-            fill="none"
-            stroke="#e5e7eb"
-            strokeWidth="14"
-            strokeLinecap="round"
-            className={styles['gauge-background-arc']}
-          />
-          {/* Red section (0-4): Yomon */}
-          <path
-            d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point4End.x} ${point4End.y}`}
-            fill="none"
-            stroke="#ef4444"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-          {/* Orange section (5-6): Qoniqarsiz */}
-          <path
-            d={`M ${point5Start.x} ${point5Start.y} A ${radius} ${radius} 0 0 1 ${point6End.x} ${point6End.y}`}
-            fill="none"
-            stroke="#f97316"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-          {/* Yellow section (7-8): Qoniqarli */}
-          <path
-              d={`M ${point7Start.x} ${point7Start.y} A ${radius} ${radius} 0 0 1 ${point9End.x} ${point9End.y}`}
-            fill="none"
-            stroke="#eab308"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-            {/* Green section (9-<10): Yaxshi */}
-          <path
-              d={`M ${point9Start.x} ${point9Start.y} A ${radius} ${radius} 0 0 1 ${pointZorStart.x} ${pointZorStart.y}`}
-            fill="none"
-            stroke="#22c55e"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-          {/* Bright Green section (10): Zo'r */}
-          <path
-              d={`M ${pointZorStart.x} ${pointZorStart.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
-            fill="none"
-              stroke="#1CF271"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-          {/* Pointer - circular indicator matching segment color */}
-          {pointerPoint && (
-            <g transform={`translate(${centerX}, ${centerY})`}>
-              <circle
-                cx={Math.cos(pointerPoint.radian) * 78}
-                cy={-Math.sin(pointerPoint.radian) * 78}
-                r="8"
-                fill={pointerColor}
-                stroke="#ffffff"
-                strokeWidth="2.5"
-              />
-              <circle
-                cx={Math.cos(pointerPoint.radian) * 78}
-                cy={-Math.sin(pointerPoint.radian) * 78}
-                r="3"
-                fill="#ffffff"
-              />
-            </g>
-          )}
-        </svg>
-        <div className={styles['gauge-value']}>
-          <span className={styles['gauge-number']}>{scoreInfo.score}</span>
-        </div>
-        <div className={styles['gauge-scale']}>
-          <span>0</span>
-          <span
-            className={styles['gauge-label']}
-            style={{ color: pointerColor }}
+        <div className={styles['gauge-container']}>
+          <svg
+            className={styles['gauge-svg']}
+            viewBox="0 0 200 120"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            {scoreInfo.label}
-          </span>
-          <span>10</span>
+            {/* Background arc - light grey background visible through gaps */}
+            <path
+              d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
+              fill="none"
+              stroke="#e5e7eb"
+              strokeWidth="14"
+              strokeLinecap="round"
+              className={styles['gauge-background-arc']}
+            />
+            {/* Red section (0-4): Yomon */}
+            <path
+              d={`M ${point0.x} ${point0.y} A ${radius} ${radius} 0 0 1 ${point4End.x} ${point4End.y}`}
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            {/* Orange section (5-6): Qoniqarsiz */}
+            <path
+              d={`M ${point5Start.x} ${point5Start.y} A ${radius} ${radius} 0 0 1 ${point6End.x} ${point6End.y}`}
+              fill="none"
+              stroke="#f97316"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            {/* Yellow section (7-8): Qoniqarli */}
+            <path
+              d={`M ${point7Start.x} ${point7Start.y} A ${radius} ${radius} 0 0 1 ${point9End.x} ${point9End.y}`}
+              fill="none"
+              stroke="#eab308"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            {/* Green section (9-<10): Yaxshi */}
+            <path
+              d={`M ${point9Start.x} ${point9Start.y} A ${radius} ${radius} 0 0 1 ${pointZorStart.x} ${pointZorStart.y}`}
+              fill="none"
+              stroke="#22c55e"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            {/* Bright Green section (10): Zo'r */}
+            <path
+              d={`M ${pointZorStart.x} ${pointZorStart.y} A ${radius} ${radius} 0 0 1 ${point10.x} ${point10.y}`}
+              fill="none"
+              stroke="#1CF271"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            {/* Pointer - circular indicator matching segment color */}
+            {pointerPoint && (
+              <g transform={`translate(${centerX}, ${centerY})`}>
+                <circle
+                  cx={Math.cos(pointerPoint.radian) * 78}
+                  cy={-Math.sin(pointerPoint.radian) * 78}
+                  r="8"
+                  fill={pointerColor}
+                  stroke="#ffffff"
+                  strokeWidth="2.5"
+                />
+                <circle
+                  cx={Math.cos(pointerPoint.radian) * 78}
+                  cy={-Math.sin(pointerPoint.radian) * 78}
+                  r="3"
+                  fill="#ffffff"
+                />
+              </g>
+            )}
+          </svg>
+          <div className={styles['gauge-value']}>
+            <span className={styles['gauge-number']}>{scoreInfo.score}</span>
+          </div>
+          <div className={styles['gauge-scale']}>
+            <span>0</span>
+            <span
+              className={styles['gauge-label']}
+              style={{ color: pointerColor }}
+            >
+              {scoreInfo.label}
+            </span>
+            <span>10</span>
+          </div>
+          <div className={styles['gauge-info']}>
+            <span className={styles['gauge-info-label']}>
+              Limit:{' '}
+              <span style={{ color: '#22c55e' }}>
+                {formatCurrencyUZS(limit)}
+              </span>
+            </span>
+            <span className={styles['gauge-info-label']}>
+              Ishonchlilik:{' '}
+              <span
+                style={{
+                  color:
+                    String(trustLabel).toLowerCase() === 'xavfli'
+                      ? '#ef4444'
+                      : '#22c55e',
+                }}
+              >
+                {trustLabel}
+              </span>
+            </span>
           </div>
         </div>
       </div>
@@ -242,7 +272,9 @@ export default function PaymentScoreGauge({
         {/* Top Row: 3 Cards */}
         <div className={styles['dashboard-row']}>
           {/* Total Sum Card */}
-          <div className={`${styles['dashboard-card']} ${styles['top-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['top-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -264,7 +296,9 @@ export default function PaymentScoreGauge({
           </div>
 
           {/* Closed Sum Card */}
-          <div className={`${styles['dashboard-card']} ${styles['top-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['top-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -286,7 +320,9 @@ export default function PaymentScoreGauge({
           </div>
 
           {/* Overdue Debt Card */}
-          <div className={`${styles['dashboard-card']} ${styles['top-row-card']} ${styles['overdue-card-full']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['top-row-card']} ${styles['overdue-card-full']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -314,7 +350,9 @@ export default function PaymentScoreGauge({
         {/* Bottom Row: 4 Cards */}
         <div className={styles['dashboard-row']}>
           {/* Total Contracts Card */}
-          <div className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -329,12 +367,16 @@ export default function PaymentScoreGauge({
                 />
               </svg>
             </div>
-            <div className={styles['card-value']}>{formatNumber(totalContracts)}</div>
+            <div className={styles['card-value']}>
+              {formatNumber(totalContracts)}
+            </div>
             <div className={styles['card-label']}>Umumiy shartnomalar soni</div>
           </div>
 
           {/* Open Contracts Card */}
-          <div className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -349,12 +391,16 @@ export default function PaymentScoreGauge({
                 />
               </svg>
             </div>
-            <div className={styles['card-value']}>{formatNumber(openContracts)}</div>
+            <div className={styles['card-value']}>
+              {formatNumber(openContracts)}
+            </div>
             <div className={styles['card-label']}>Ochiq shartnomalar</div>
           </div>
 
           {/* Longest Delay Card */}
-          <div className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -376,7 +422,9 @@ export default function PaymentScoreGauge({
           </div>
 
           {/* Average Payment Day Card */}
-          <div className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}>
+          <div
+            className={`${styles['dashboard-card']} ${styles['bottom-row-card']}`}
+          >
             <div className={styles['card-icon']}>
               <svg
                 width="24"
@@ -408,10 +456,10 @@ export default function PaymentScoreGauge({
                   averagePaymentDay == null || isNaN(averagePaymentDay)
                     ? '#9ca3af'
                     : averagePaymentDay < 0
-                    ? '#22c55e'
-                    : averagePaymentDay === 0
-                    ? '#9ca3af'
-                    : '#ef4444',
+                      ? '#22c55e'
+                      : averagePaymentDay === 0
+                        ? '#9ca3af'
+                        : '#ef4444',
               }}
             >
               {averagePaymentDay != null &&

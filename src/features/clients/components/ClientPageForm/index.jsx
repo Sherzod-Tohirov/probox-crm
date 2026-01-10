@@ -611,6 +611,8 @@ function ClientPageForm({
         {/* Payment Score Gauge */}
         <Col fullWidth>
           <PaymentScoreGauge
+            limit={invoiceScoreData?.limit || 0}
+            trustLabel={invoiceScoreData?.trustLabel || ''}
             paymentScore={invoiceScoreData?.score ?? null}
             totalSum={
               invoiceScoreData?.totalAmount && rate?.Rate

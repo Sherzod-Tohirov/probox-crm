@@ -42,6 +42,7 @@ import {
 import styles from './styles/style.module.scss';
 import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
+import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -75,7 +76,10 @@ export default function LeadPage() {
   } = useLeadPageData(id);
   const [activeTab, setActiveTab] = useState(defaultTab);
   const { data: rate } = useFetchCurrency();
-
+  const { data: invoiceScoreData } = useFetchInvoiceScore({
+    CardCode: lead?.cardCode || lead?.CardCode,
+  });
+  console.log(invoiceScoreData, 'data invoice card');
   // Fetch messenger messages with infinite scroll
   const {
     data: messages,
@@ -122,26 +126,28 @@ export default function LeadPage() {
         {/* Payment Score Card */}
         <div className={styles['common-fields-right']}>
           <PaymentScoreGauge
-            paymentScore={lead?.paymentScore ?? null}
+            limit={invoiceScoreData?.limit || 0}
+            trustLabel={invoiceScoreData?.trustLabel || ''}
+            paymentScore={invoiceScoreData?.score ?? null}
             totalSum={
-              lead?.totalAmount && rate?.Rate
-                ? lead.totalAmount * rate.Rate
+              invoiceScoreData?.totalAmount && rate?.Rate
+                ? invoiceScoreData.totalAmount * rate.Rate
                 : 0
             }
             closedSum={
-              lead?.totalPaid && rate?.Rate
-                ? lead.totalPaid * rate.Rate
+              invoiceScoreData?.totalPaid && rate?.Rate
+                ? invoiceScoreData.totalPaid * rate.Rate
                 : 0
             }
             overdueDebt={
-              lead?.overdueDebt && rate?.Rate
-                ? lead.overdueDebt * rate.Rate
+              invoiceScoreData?.overdueDebt && rate?.Rate
+                ? invoiceScoreData.overdueDebt * rate.Rate
                 : 0
             }
-            totalContracts={lead?.totalContracts ?? 0}
-            openContracts={lead?.openContracts ?? 0}
-            longestDelay={lead?.maxDelay ?? 0}
-            averagePaymentDay={lead?.avgPaymentDelay  ?? 0}
+            totalContracts={invoiceScoreData?.totalContracts ?? 0}
+            openContracts={invoiceScoreData?.openContracts ?? 0}
+            longestDelay={invoiceScoreData?.maxDelay ?? 0}
+            averagePaymentDay={invoiceScoreData?.avgPaymentDelay ?? 0}
           />
         </div>
       </div>
@@ -193,7 +199,11 @@ export default function LeadPage() {
           <Operator2Tab
             leadId={id}
             leadData={lead}
-            canEdit={canEditTab('operator2') || canEditTab('operator1') || canEditTab('operatorM')}
+            canEdit={
+              canEditTab('operator2') ||
+              canEditTab('operator1') ||
+              canEditTab('operatorM')
+            }
           />
         ),
       },

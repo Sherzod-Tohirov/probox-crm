@@ -1,6 +1,7 @@
 import { Row, Col, Input } from '@/components/ui';
 import { setProductsFilter } from '@/store/slices/productsPageSlice';
-import { useEffect } from 'react';
+import _ from 'lodash';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
@@ -15,11 +16,15 @@ export default function ProductsFilter() {
   const dispatch = useDispatch();
   const watchedSearch = watch('search');
   const watchedCondition = watch('condition');
+
+  const debouncedSearch = useMemo(
+    () =>
+      _.debounce((filter) => dispatch(setProductsFilter({ ...filter })), 300),
+    []
+  );
+
   useEffect(() => {
-    
-    dispatch(
-      setProductsFilter({ search: watchedSearch, condition: watchedCondition })
-    );
+    debouncedSearch({ search: watchedSearch, condition: watchedCondition });
   }, [watchedSearch, watchedCondition]);
   return (
     <Row direction="row" gutter={4} align="center">
