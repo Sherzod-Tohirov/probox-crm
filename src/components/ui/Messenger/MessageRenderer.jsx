@@ -37,7 +37,7 @@ const MessageRenderer = ({
   useLayoutEffect(() => {
     const now = moment();
     const filteredMessages = safeMessages.filter((msg) => {
-      const msgDate = moment(msg.created_at);
+      const msgDate = moment(msg.created_at ?? msg.createdAt);
       return !now.isSame(msgDate, 'month');
     });
     setLastMonthMessages(filteredMessages);
@@ -51,7 +51,7 @@ const MessageRenderer = ({
       }
       const now = moment();
       const filteredMessages = safeMessages.filter((msg) => {
-        const msgDate = moment(msg.created_at);
+        const msgDate = moment(msg.created_at ?? msg.createdAt);
         return now.isSame(msgDate, 'month');
       });
       setFormattedMessages(filteredMessages);
@@ -102,9 +102,9 @@ const MessageRenderer = ({
         {(formattedMessages.length > 0
           ? Object.entries(
               groupBy((msg) => {
-                const formattedDate = moment(msg?.['createdAt']).format(
-                  'DD-MM-YYYY'
-                );
+                const formattedDate = moment(
+                  msg?.created_at ?? msg?.createdAt
+                ).format('DD-MM-YYYY');
                 return formattedDate;
               }, formattedMessages)
             )

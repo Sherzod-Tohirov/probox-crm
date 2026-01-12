@@ -1,20 +1,14 @@
+import style from './style.module.scss';
 import Footer from '@/components/Footer';
 import StickyFooterPortal from '@/components/Footer/StickyFooterPortal';
 import { Row, Col, Typography, Pagination, Input } from '@/components/ui';
-import style from './style.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setProductsCurrentPage,
   setProductsPageSize,
 } from '@/store/slices/productsPageSlice';
 import useIsMobile from '@/hooks/useIsMobile';
-
-const tableSizeSelectOptions = [
-  { value: 10, label: '10' },
-  { value: 20, label: '20' },
-  { value: 50, label: '50' },
-  { value: 100, label: '100' },
-];
+import { PRODUCTS_PAGE_SIZE_OPTIONS } from '../utils/options';
 
 export default function ProductsFooter({ meta }) {
   const { currentPage, pageSize } = useSelector((state) => state.page.products);
@@ -36,7 +30,7 @@ export default function ProductsFooter({ meta }) {
                 <Input
                   variant="outlined"
                   type="select"
-                  options={tableSizeSelectOptions}
+                  options={PRODUCTS_PAGE_SIZE_OPTIONS}
                   value={Number(pageSize)}
                   onChange={(value) => {
                     dispatch(setProductsPageSize(Number(value)));
@@ -54,7 +48,7 @@ export default function ProductsFooter({ meta }) {
           </Col>
           <Col flexGrow={isMobile}>
             <Pagination
-              pageCount={meta.total}
+              pageCount={meta.total ?? 0}
               activePage={currentPage}
               onPageChange={({ selected }) => {
                 dispatch(setProductsCurrentPage(selected));

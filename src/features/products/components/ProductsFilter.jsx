@@ -3,19 +3,22 @@ import { setProductsFilter } from '@/store/slices/productsPageSlice';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-
-const statusOptions = [
-  { label: 'Hammasi', value: 'all' },
-  { label: 'Yangi', value: 'new' },
-  { label: 'B/U', value: 'old' },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { PRODUCT_CONDITION_OPTIONS } from '../utils/options';
 
 export default function ProductsFilter() {
-  const { setValue, watch } = useForm();
   const dispatch = useDispatch();
+  const { filter } = useSelector((state) => state.page.products);
+
+  const { setValue, watch } = useForm({
+    defaultValues: {
+      ...filter,
+    },
+  });
+
   const watchedSearch = watch('search');
   const watchedCondition = watch('condition');
+
   const debouncedSearch = useMemo(
     () =>
       _.debounce((filter) => dispatch(setProductsFilter({ ...filter })), 300),
@@ -28,6 +31,7 @@ export default function ProductsFilter() {
       condition: watchedCondition ?? '',
     });
   }, [watchedSearch, watchedCondition]);
+
   return (
     <Row direction="row" gutter={4} align="center">
       <Col flexGrow>
@@ -46,7 +50,7 @@ export default function ProductsFilter() {
         <Input
           type="select"
           variant="outlined"
-          options={statusOptions}
+          options={PRODUCT_CONDITION_OPTIONS}
           value={watchedCondition}
           onChange={(value) => {
             setValue('condition', value);
