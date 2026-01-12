@@ -7,6 +7,7 @@ import {
   setProductsCurrentPage,
   setProductsPageSize,
 } from '@/store/slices/productsPageSlice';
+import useIsMobile from '@/hooks/useIsMobile';
 
 const tableSizeSelectOptions = [
   { value: 10, label: '10' },
@@ -18,10 +19,17 @@ const tableSizeSelectOptions = [
 export default function ProductsFooter({ meta }) {
   const { currentPage, pageSize } = useSelector((state) => state.page.products);
   const dispatch = useDispatch();
+  const { isMobile } = useIsMobile({ withDetails: true });
   return (
     <StickyFooterPortal>
       <Footer className={style['footer-container']}>
-        <Row direction="row" gutter={4} justify="space-between" align="center">
+        <Row
+          direction="row"
+          gutter={4}
+          justify="space-between"
+          align="center"
+          wrap
+        >
           <Col>
             <Row direction="row" align="center" gutter={3}>
               <Col>
@@ -44,7 +52,7 @@ export default function ProductsFooter({ meta }) {
               </Col>
             </Row>
           </Col>
-          <Col>
+          <Col flexGrow={isMobile}>
             <Pagination
               pageCount={meta.total}
               activePage={currentPage}

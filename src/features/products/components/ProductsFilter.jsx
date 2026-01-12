@@ -16,7 +16,6 @@ export default function ProductsFilter() {
   const dispatch = useDispatch();
   const watchedSearch = watch('search');
   const watchedCondition = watch('condition');
-
   const debouncedSearch = useMemo(
     () =>
       _.debounce((filter) => dispatch(setProductsFilter({ ...filter })), 300),
@@ -24,7 +23,10 @@ export default function ProductsFilter() {
   );
 
   useEffect(() => {
-    debouncedSearch({ search: watchedSearch, condition: watchedCondition });
+    debouncedSearch({
+      search: watchedSearch ?? '',
+      condition: watchedCondition ?? '',
+    });
   }, [watchedSearch, watchedCondition]);
   return (
     <Row direction="row" gutter={4} align="center">
@@ -46,8 +48,8 @@ export default function ProductsFilter() {
           variant="outlined"
           options={statusOptions}
           value={watchedCondition}
-          onChange={(e) => {
-            setValue('condition', e.target.value);
+          onChange={(value) => {
+            setValue('condition', value);
           }}
         />
       </Col>
