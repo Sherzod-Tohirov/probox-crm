@@ -17,6 +17,7 @@ const MessageRenderer = ({
   hasMore = false,
   isLoadingMore = false,
 }) => {
+  console.log(messages, 'messages');
   const scrollRef = useRef(null);
   const [formattedMessages, setFormattedMessages] = useState([]);
   const [lastMonthMessages, setLastMonthMessages] = useState([]);
@@ -101,7 +102,7 @@ const MessageRenderer = ({
         {(formattedMessages.length > 0
           ? Object.entries(
               groupBy((msg) => {
-                const formattedDate = moment(msg?.['DocDate']).format(
+                const formattedDate = moment(msg?.['createdAt']).format(
                   'DD-MM-YYYY'
                 );
                 return formattedDate;
