@@ -132,8 +132,8 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   );
 
   const timestamp = useMemo(
-    () => moment(msg?.['DocDate']).local().format('HH:mm'),
-    [msg?.['DocDate']]
+    () => moment(msg?.['createdAt']).local().format('HH:mm'),
+    [msg?.['createdAt']]
   );
 
   const msgColor = useMemo(
