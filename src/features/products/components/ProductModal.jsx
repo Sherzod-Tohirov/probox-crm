@@ -60,7 +60,6 @@ export default function ProductModal({ currentProduct, isOpen, onClose }) {
     itemCode: currentProduct?.ItemCode,
     whsCode: currentProduct?.WhsCode,
   });
-  console.log(data, 'data product');
   return (
     <Modal
       size="lg"

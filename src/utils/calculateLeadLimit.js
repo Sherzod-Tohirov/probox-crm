@@ -94,5 +94,5 @@ export function calculateLeadLimit(lead, pult, options) {
       }
     }
   }
-  return monthly > 30_000_000 ? 30_000_000 : Math.round(monthly);
+  return monthly > 2_500_000 ? 2_500_000 : Math.round(monthly);
 }

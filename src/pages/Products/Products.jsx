@@ -5,6 +5,7 @@ import ProductsFilter from '@/features/products/components/ProductsFilter';
 import ProductsFooter from '@/features/products/components/ProductsFooter';
 import { useProductsTableColumns } from '@/features/products/hooks/useProductsTableColumns';
 import useFetchProducts from '@/hooks/data/products/useFetchProducts';
+import useIsMobile from '@/hooks/useIsMobile';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,6 +13,7 @@ export default function Products() {
   const { productsTableColumns } = useProductsTableColumns();
   const [isProductModalInfoOpen, setProductModalInfoOpen] = useState(false);
   const [chosenProduct, setChosenProduct] = useState({});
+  const isMobile = useIsMobile();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.products
   );
@@ -26,11 +28,16 @@ export default function Products() {
     <>
       <Row gutter={4}>
         <Col fullWidth>
-          <Row direction="row" gutter={4} align="center">
-            <Col flexGrow>
+          <Row
+            direction="row"
+            gutter={4}
+            align="center"
+            justify={'space-between'}
+          >
+            <Col flexGrow span={isMobile ? 8 : 12}>
               <Typography variant="h5">Mahsulotlar</Typography>
             </Col>
-            <Col flexGrow span={8}>
+            <Col fullWidth flexGrow span={isMobile ? 15 : 7}>
               <ProductsFilter />
             </Col>
           </Row>

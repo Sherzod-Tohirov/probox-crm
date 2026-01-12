@@ -1,8 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  initialProductModalFilterState,
-  initialProductsFilterState,
-} from '@/store/utils/initialStates';
+import { initialProductsFilterState } from '@/store/utils/initialStates';
 
 import normalizePageAndSize from '../utils/normalizePageAndSize';
 
@@ -14,35 +11,17 @@ const loadState = () => {
       page: parsedState.currentPage,
       size: parsedState.pageSize,
     });
-
-    const {
-      normalizedPageSize: modalNormalizedPageSize,
-      normalizedPage: modalNormalizedPage,
-    } = normalizePageAndSize({
-      page: parsedState.productModal.currentPage,
-      size: parsedState.productModal.pageSize,
-    });
-
+    console.log(parsedState, 'parsed state');
     return {
-      filter: parsedState.filter || initialProductsFilterState,
-      productModal: {
-        ...parsedState.productModal,
-        pageSize: modalNormalizedPageSize,
-        currentPage: modalNormalizedPage,
-      },
+      filter: { ...(parsedState.filter ?? initialProductsFilterState) },
       currentPage: normalizedPage,
       pageSize: normalizedPageSize,
     };
   } catch (error) {
     console.log('Error loading products page state', error);
-
+    console.log('This is catch block');
     return {
       filter: initialProductsFilterState,
-      productModal: {
-        currentPage: 0,
-        filter: initialProductModalFilterState,
-        pageSize: 10,
-      },
       currentPage: 0,
       pageSize: 10,
     };
@@ -51,12 +30,11 @@ const loadState = () => {
 
 const saveState = (state) => {
   try {
-    const { filter, currentPage, pageSize, productModal } = state;
+    const { filter, currentPage, pageSize } = state;
     const serializedState = JSON.stringify({
       filter,
       currentPage,
       pageSize,
-      productModal,
     });
     localStorage.setItem('productsPageState', serializedState);
   } catch (error) {
@@ -65,6 +43,7 @@ const saveState = (state) => {
 };
 
 const initialState = loadState();
+console.log(initialState, 'initial state');
 // Save initial state
 saveState(initialState);
 
@@ -84,15 +63,6 @@ const productsPageSlice = createSlice({
       state.pageSize = action.payload;
       saveState(state);
     },
-    setProductModalCurrentPage(state, action) {
-      state.productModal.currentPage = action.payload;
-    },
-    setProductModalPageSize(state, action) {
-      state.productModal.pageSize = action.payload;
-    },
-    setProductsModalFilter(state, action) {
-      state.productModal.filter = { ...action.filter };
-    },
   },
 });
 
@@ -100,9 +70,6 @@ export const {
   setProductsFilter,
   setProductsPageSize,
   setProductsCurrentPage,
-  setProductModalCurrentPage,
-  setProductModalPageSize,
-  setProductsModalFilter,
 } = productsPageSlice.actions;
 
 export default productsPageSlice.reducer;
