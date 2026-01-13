@@ -83,7 +83,10 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [leadData?.finalLimit]);
 
   const finalPercentage = useMemo(() => {
-    if (leadData?.finalPercentage === null || leadData?.finalPercentage === undefined) {
+    if (
+      leadData?.finalPercentage === null ||
+      leadData?.finalPercentage === undefined
+    ) {
       return null;
     }
     const percentage = Number(leadData.finalPercentage);
@@ -101,11 +104,19 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   // Disabled holatini aniqlash
   const isRentPeriodDisabled = useMemo(() => {
     // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
-    if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+    if (
+      calculationTypeFilter === 'markup' &&
+      (maximumLimit === null ||
+        maximumLimit === undefined ||
+        maximumLimit === 0)
+    ) {
       return true;
     }
     // Agar "percent" tanlangan va final percentage mavjud bo'lmasa
-    if (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined)) {
+    if (
+      calculationTypeFilter === 'firstPayment' &&
+      (finalPercentage === null || finalPercentage === undefined)
+    ) {
       return true;
     }
     return false;
@@ -113,11 +124,19 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
   const isFirstPaymentDisabled = useMemo(() => {
     // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
-    if (calculationTypeFilter === 'markup' && (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0)) {
+    if (
+      calculationTypeFilter === 'markup' &&
+      (maximumLimit === null ||
+        maximumLimit === undefined ||
+        maximumLimit === 0)
+    ) {
       return true;
     }
     // Agar "percent" tanlangan va final percentage mavjud bo'lmasa
-    if (calculationTypeFilter === 'firstPayment' && (finalPercentage === null || finalPercentage === undefined)) {
+    if (
+      calculationTypeFilter === 'firstPayment' &&
+      (finalPercentage === null || finalPercentage === undefined)
+    ) {
       return true;
     }
     return false;
@@ -134,9 +153,9 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     handleRentPeriodChange,
     handleFirstPaymentChange,
     handleFirstPaymentBlur,
-  } = useSelectedDevices({ 
-    rentPeriodOptions, 
-    monthlyLimit, 
+  } = useSelectedDevices({
+    rentPeriodOptions,
+    monthlyLimit,
     conditionFilter,
     calculationTypeFilter: calculationTypeFilter || '',
     finalPercentage: finalPercentage,
@@ -187,21 +206,25 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
             userSignature: userSignature || null,
             currentUser: user || null,
           });
-          
+
           // PDF faylni serverga yuborish
           if (pdfFile) {
-            await uploadInvoiceFile({ 
-              file: pdfFile, 
+            await uploadInvoiceFile({
+              file: pdfFile,
               leadId,
               docNum: invoiceData.invoiceDocNum,
             });
           }
-          
+
           // Faqat bitta alert - invoice va PDF muvaffaqiyatli yuborilgandan keyin
-          alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', { type: 'success' });
+          alert('Invoice va PDF fayl muvaffaqiyatli yuborildi!', {
+            type: 'success',
+          });
         } catch (error) {
           console.error('PDF fayl yaratish yoki yuborishda xatolik:', error);
-          const errorMessage = error?.message || 'PDF fayl yaratish yoki yuborishda xatolik yuz berdi';
+          const errorMessage =
+            error?.message ||
+            'PDF fayl yaratish yoki yuborishda xatolik yuz berdi';
           alert(errorMessage, { type: 'error' });
         }
       } else {
@@ -221,7 +244,9 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   const handleOpenInvoiceModal = useCallback(() => {
     // Imzo qo'yilganligini birinchi navbatda tekshirish
     if (!userSignature) {
-      alert('Invoice yuborishdan oldin imzo qo\'yishingiz kerak', { type: 'error' });
+      alert("Invoice yuborishdan oldin imzo qo'yishingiz kerak", {
+        type: 'error',
+      });
       return;
     }
 
@@ -249,38 +274,47 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [userSignature, leadId, selectedDevices]);
 
   // Invoice modal orqali yuborish
-  const handleSendInvoice = useCallback(async (paymentData) => {
-    if (!leadId) {
-      alert('Lead ID topilmadi', { type: 'error' });
-      return;
-    }
-
-    if (!selectedDevices || selectedDevices.length === 0) {
-      alert('Qurilma tanlanmagan', { type: 'error' });
-      return;
-    }
-
-    try {
-      // Payments array'ni formatlash
-      const payments = [];
-      if (paymentData.cash > 0) {
-        payments.push({ type: 'Cash', amount: paymentData.cash });
-      }
-      if (paymentData.card > 0) {
-        payments.push({ type: 'Card', amount: paymentData.card });
-      }
-      if (paymentData.terminal > 0) {
-        payments.push({ type: 'Terminal', amount: paymentData.terminal });
+  const handleSendInvoice = useCallback(
+    async (paymentData) => {
+      if (!leadId) {
+        alert('Lead ID topilmadi', { type: 'error' });
+        return;
       }
 
-      // useInvoice hook'iga payments array'ni yuborish
-      const paymentType = 'all';
-      await sendInvoice({ leadId, selectedDevices, paymentType, calculationTypeFilter, payments });
-      setIsInvoiceModalOpen(false);
-    } catch (error) {
-      // Error already handled in onError callback
-    }
-  }, [leadId, selectedDevices, sendInvoice, calculationTypeFilter]);
+      if (!selectedDevices || selectedDevices.length === 0) {
+        alert('Qurilma tanlanmagan', { type: 'error' });
+        return;
+      }
+
+      try {
+        // Payments array'ni formatlash
+        const payments = [];
+        if (paymentData.cash > 0) {
+          payments.push({ type: 'Cash', amount: paymentData.cash });
+        }
+        if (paymentData.card > 0) {
+          payments.push({ type: 'Card', amount: paymentData.card });
+        }
+        if (paymentData.terminal > 0) {
+          payments.push({ type: 'Terminal', amount: paymentData.terminal });
+        }
+
+        // useInvoice hook'iga payments array'ni yuborish
+        const paymentType = 'all';
+        await sendInvoice({
+          leadId,
+          selectedDevices,
+          paymentType,
+          calculationTypeFilter,
+          payments,
+        });
+        setIsInvoiceModalOpen(false);
+      } catch (error) {
+        // Error already handled in onError callback
+      }
+    },
+    [leadId, selectedDevices, sendInvoice, calculationTypeFilter]
+  );
 
   useEffect(() => {
     if (!form) return;
@@ -319,7 +353,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       <TabHeader
         title="Sotuvchi Ma'lumotlari"
         onSave={handleSubmit}
-        disabled={!canEdit}
+        disabled={!(isCEO ?? canEdit)}
         isSubmitting={isSubmitting}
       />
 
@@ -381,7 +415,11 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
                   variant="filled"
                   onClick={handleOpenInvoiceModal}
                   isLoading={isSendingInvoice}
-                  disabled={isSendingInvoice || selectedDevices.length === 0 || !userSignature}
+                  disabled={
+                    isSendingInvoice ||
+                    selectedDevices.length === 0 ||
+                    !userSignature
+                  }
                 >
                   Invoice yuborish
                 </Button>

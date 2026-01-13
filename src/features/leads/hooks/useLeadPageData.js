@@ -67,7 +67,8 @@ export default function useLeadPageData(leadId) {
 
   // User permissions
   const currentUserRole = user?.['U_role'] ?? '';
-  const isOperatorManager = currentUserRole === 'OperatorM' || currentUserRole === 'CEO';
+  const isOperatorManager =
+    currentUserRole === 'OperatorM' || currentUserRole === 'CEO';
   const isBlocked = lead?.isBlocked === true;
 
   const canEditTab = useCallback(
@@ -85,12 +86,12 @@ export default function useLeadPageData(leadId) {
           'CEO',
         ]);
       }
-      
+
       // Operator1 ga operator2 accesslarini ham berish
       if (tabKey === 'operator2' && currentUserRole === 'Operator1') {
         return true;
       }
-      
+
       return currentUserRole === TAB_TO_ROLE[tabKey];
     },
     [currentUserRole, isBlocked]
@@ -137,7 +138,7 @@ export default function useLeadPageData(leadId) {
         // Format: https://minio.probox.uz/probox-bucket/{pdfKey}
         pdfUrl = `https://minio.probox.uz/probox-bucket/${f.pdfKey}`;
       }
-      
+
       return {
         id: String(f._id || f.id || f.key),
         preview: f?.url ?? f?.urls?.small,
@@ -372,10 +373,10 @@ export default function useLeadPageData(leadId) {
   const handleDeleteDocument = useCallback(
     async (fileId) => {
       const key = ['lead-files', leadId];
-      
+
       // Normalize fileId to string for comparison
       const normalizedFileId = String(fileId);
-      
+
       // Helper function to extract images array from response
       const extractImages = (data) => {
         if (!data) return [];
@@ -383,11 +384,13 @@ export default function useLeadPageData(leadId) {
         if (Array.isArray(data?.images)) return data.images;
         return [];
       };
-      
+
       // Get current data for optimistic update and rollback
       const currentData = queryClient.getQueryData(key);
-      const previousData = currentData ? JSON.parse(JSON.stringify(currentData)) : null;
-      
+      const previousData = currentData
+        ? JSON.parse(JSON.stringify(currentData))
+        : null;
+
       // Optimistic update - remove file from cache immediately
       if (currentData) {
         const currentImages = extractImages(currentData);
@@ -395,7 +398,7 @@ export default function useLeadPageData(leadId) {
           const fId = String(f._id || f.id || f.key || '');
           return fId !== normalizedFileId;
         });
-        
+
         // Update cache with filtered list
         queryClient.setQueryData(key, (old) => {
           if (!old) return old;
@@ -413,7 +416,7 @@ export default function useLeadPageData(leadId) {
       try {
         // Delete file from server
         await mutateFileDelete.mutateAsync({ fileId });
-        
+
         // On success, refetch to ensure consistency
         await queryClient.refetchQueries({ queryKey: key });
       } catch (error) {
