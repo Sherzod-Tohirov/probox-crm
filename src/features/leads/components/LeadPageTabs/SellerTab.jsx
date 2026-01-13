@@ -353,7 +353,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
       <TabHeader
         title="Sotuvchi Ma'lumotlari"
         onSave={handleSubmit}
-        disabled={!(isCEO ?? canEdit)}
+        disabled={isCEO ? !isCEO : !canEdit}
         isSubmitting={isSubmitting}
       />
 
