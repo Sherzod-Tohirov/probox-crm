@@ -2,6 +2,7 @@ import FormField from '../../LeadPageForm/FormField';
 import FieldGroup from '../../LeadPageForm/FieldGroup';
 import { Row } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
+import useAuth from '@/hooks/useAuth';
 
 export default function SellerFormFields({
   control,
@@ -16,7 +17,7 @@ export default function SellerFormFields({
   const isAcceptedFinalPercentage =
     Number(leadData?.finalPercentage) > 0 &&
     Number(leadData?.finalPercentage) <= 25;
-
+  const { user } = useAuth();
   return (
     <>
       <FieldGroup title="Uchrashuv ma'lumotlari">
@@ -85,7 +86,7 @@ export default function SellerFormFields({
               ? 'confirmOnlyFalse'
               : 'confirm'
           }
-          disabled={!canEdit}
+          disabled={user?.U_role !== 'CEO'}
         />
         <FormField
           name="purchaseDate"
@@ -115,4 +116,3 @@ export default function SellerFormFields({
     </>
   );
 }
-
