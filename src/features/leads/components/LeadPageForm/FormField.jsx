@@ -111,7 +111,8 @@ export default function FormField({
         );
       case 'number':
         return <Input {...fieldProps} type="number" min={0} />;
-
+      case 'tel':
+        return <Input {...fieldProps} type="tel" />;
       case 'currency':
         return (
           <Input
@@ -275,7 +276,12 @@ export default function FormField({
             <Input {...directProps} type="number" min={0} />
           </Col>
         );
-
+      case 'tel':
+        return (
+          <Col span={span}>
+            <Input {...directProps} type="tel" />
+          </Col>
+        );
       case 'date':
         return (
           <Col span={span}>

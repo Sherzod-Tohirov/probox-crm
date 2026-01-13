@@ -32,7 +32,7 @@ export const updateLeadFields = async (id, fields) => {
     // Filter out empty values
     const filteredFields = {};
     Object.keys(fields).forEach((key) => {
-      if (fields[key] !== undefined && fields[key] !== '') {
+      if (fields[key] !== undefined && fields[key] !== null) {
         filteredFields[key] = fields[key];
       }
     });

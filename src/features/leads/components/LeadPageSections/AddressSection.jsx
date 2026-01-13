@@ -27,6 +27,7 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
       region: lead?.region || '',
       district: lead?.district || '',
       address: lead?.address || '',
+      address2: lead?.address2 || '',
     },
   });
 
@@ -42,6 +43,7 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
       region: lead?.region || '',
       district: lead?.district || '',
       address: lead?.address || '',
+      address2: lead.address2 || '',
     });
   }, [lead, resetAddress]);
 
@@ -50,6 +52,7 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
       region: values?.region ?? '',
       district: values?.district ?? '',
       address: values?.address ?? '',
+      address2: values.address2 ?? '',
     };
     onSave(payload);
   });
@@ -74,6 +77,12 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
       <FormField
         name="address"
         label="Manzil"
+        control={addressControl}
+        disabled={!canEdit}
+      />
+      <FormField
+        name="address2"
+        label="Qo'shimcha manzil"
         control={addressControl}
         disabled={!canEdit}
       />

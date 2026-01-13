@@ -43,6 +43,7 @@ import styles from './styles/style.module.scss';
 import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
 import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
+import ClientExtraInfoSection from '@/features/leads/components/LeadPageSections/ClientExtraInfoSection';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -79,7 +80,6 @@ export default function LeadPage() {
   const { data: invoiceScoreData } = useFetchInvoiceScore({
     CardCode: lead?.cardCode || lead?.CardCode,
   });
-  console.log(invoiceScoreData, 'data invoice card');
   // Fetch messenger messages with infinite scroll
   const {
     data: messages,
@@ -152,6 +152,7 @@ export default function LeadPage() {
         </div>
       </div>
       <ClientInfoSection lead={lead} />
+      <ClientExtraInfoSection lead={lead} onSave={handleSave} />
       <AddressSection
         lead={lead}
         canEdit={canEditAddress}

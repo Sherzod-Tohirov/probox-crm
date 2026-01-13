@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { Modal, Row, Col, Button, Input } from '@components/ui';
+import { Modal, Row, Col, Button, Input, Typography } from '@components/ui';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { createLead } from '@services/leadsService';
@@ -9,6 +9,9 @@ import FieldGroup from './LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
 import { formatUZPhone, isValidPhonenumber } from '@/utils/formatPhoneNumber';
 import useAlert from '@/hooks/useAlert';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { addNewLeadFormSchema } from '../utils/validationSchemas';
+import { isEmpty } from 'lodash';
 
 const category = {
   incomingCall: 'Kiruvchi qongiroq',
@@ -67,7 +70,13 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const sourceOptions = getSourceOptions(isSeller);
   const operatorOptions = getOperatorOptions(operators);
 
-  const { handleSubmit, reset, watch, setValue } = useForm({
+  const {
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       sourceCategory: sourceOptions[0].value,
       clientName: '',
@@ -78,12 +87,12 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       comment: '',
       operator1: '',
     },
+    resolver: yupResolver(addNewLeadFormSchema),
     mode: 'all',
   });
 
   const sourceCategory = watch('sourceCategory');
   const selectedBranchId = watch('branchId');
-
   const { data: sellers = [], isLoading: isSellersLoading } = useFetchExecutors(
     selectedBranchId
       ? { include_role: 'Seller', branch: selectedBranchId }
@@ -114,7 +123,9 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const canSubmit = () => {
     const name = watch('clientName');
     const phone = watch('clientPhone');
-
+    if (!isEmpty(errors)) {
+      return false;
+    }
     if (!sourceCategory || !name || !phone || !isValidPhonenumber(phone))
       return false;
 
@@ -125,7 +136,6 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
     if (sourceCategory === category.incomingCall) {
       return Boolean(watch('operator1'));
     }
-
     return true;
   };
 
@@ -181,7 +191,10 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        reset();
+        onClose();
+      }}
       title={"Yangi lead qo'shish"}
       size="md"
       preventScroll
@@ -219,16 +232,30 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                   <Col fullWidth>
                     <Row direction={'row'} gutter={2}>
                       <Col xs={12} md={6} flexGrow>
-                        <Input
-                          size="full-grow"
-                          variant="outlined"
-                          label="F.I.O"
-                          placeholder="Ism Familiya"
-                          value={watch('clientName')}
-                          onChange={(e) =>
-                            setValue('clientName', e.target.value)
-                          }
-                        />
+                        <Row gutter={1}>
+                          <Col fullWidth>
+                            <Input
+                              size="full-grow"
+                              variant="outlined"
+                              label="F.I.O"
+                              placeholder="Ism Familiya"
+                              value={watch('clientName')}
+                              onChange={(e) =>
+                                setValue('clientName', e.target.value, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                })
+                              }
+                            />
+                          </Col>
+                          <Col>
+                            {errors.clientName ? (
+                              <Typography variant="caption" color="error">
+                                {errors.clientName.message}
+                              </Typography>
+                            ) : null}
+                          </Col>
+                        </Row>
                       </Col>
                       <Col xs={12} md={6} flexGrow>
                         <Input

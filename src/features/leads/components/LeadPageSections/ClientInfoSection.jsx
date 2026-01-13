@@ -22,19 +22,6 @@ export default function ClientInfoSection({ lead }) {
             </Col>
             <Col>
               <FormField
-                name="clientPhone"
-                label="Telefon"
-                control={null}
-                disabled={true}
-                span={{ xs: 24, md: 12 }}
-                defaultValue={formatToReadablePhoneNumber(
-                  lead?.clientPhone,
-                  true
-                )}
-              />
-            </Col>
-            <Col>
-              <FormField
                 name="birthDate"
                 label="Tug'ilgan sana"
                 control={null}

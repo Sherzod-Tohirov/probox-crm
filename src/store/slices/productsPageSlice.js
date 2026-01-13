@@ -11,7 +11,6 @@ const loadState = () => {
       page: parsedState.currentPage,
       size: parsedState.pageSize,
     });
-    console.log(parsedState, 'parsed state');
     return {
       filter: { ...(parsedState.filter ?? initialProductsFilterState) },
       currentPage: normalizedPage,
@@ -43,7 +42,6 @@ const saveState = (state) => {
 };
 
 const initialState = loadState();
-console.log(initialState, 'initial state');
 // Save initial state
 saveState(initialState);
 
