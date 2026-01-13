@@ -18,7 +18,7 @@ const formatToReadablePhoneNumber = (phone, extended = false) => {
   }
 
   // Ensure only 9 digits remain
-  if (digits.length !== 9) return phone; // Return as-is if invalid
+  if (digits.length !== 9) return digits; // Return as-is if invalid
 
   // Format: XX XXX XX XX
   return `${extended ? '+998 ' : ''}${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(

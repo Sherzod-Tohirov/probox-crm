@@ -17,7 +17,6 @@ const MessageRenderer = ({
   hasMore = false,
   isLoadingMore = false,
 }) => {
-  console.log(messages, 'messages');
   const scrollRef = useRef(null);
   const [formattedMessages, setFormattedMessages] = useState([]);
   const [lastMonthMessages, setLastMonthMessages] = useState([]);

@@ -13,7 +13,6 @@ import {
   booleanOptionsAll,
   sourceOptions as leadSourceOptions,
   statusFilterOptions,
-  statusOptions,
 } from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
 
@@ -38,7 +37,7 @@ export default function AdvancedFilterModal({
     useFetchExecutors({ include_role: 'Operator1' });
   const { data: operator2List = [], isLoading: isOperator2Loading } =
     useFetchExecutors({ include_role: 'Operator2' });
-  const shouldLoadSeller = role === 'Seller';
+  const shouldLoadSeller = role === 'Seller' || role === 'CEO';
   const shouldLoadScoring = role === 'Scoring';
   const { data: sellerList = [], isLoading: isSellerLoading } =
     useFetchExecutors(
