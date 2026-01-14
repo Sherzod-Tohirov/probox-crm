@@ -14,6 +14,7 @@ const SELLER_FIELDS = [
   'saleType',
   'passportId',
   'jshshir',
+  'rejectionReason2',
 ];
 
 export default function useSellerForm(leadId, leadData, onSuccess) {
@@ -28,6 +29,7 @@ export default function useSellerForm(leadId, leadData, onSuccess) {
         : '',
       consultant: leadData?.consultant || '',
       purchase: leadData?.purchase || false,
+      rejectionReason2: leadData.rejectionReason2 || '',
       purchaseDate: leadData?.purchaseDate
         ? moment(leadData?.purchaseDate, 'YYYY.MM.DD').format('DD.MM.YYYY')
         : '',
@@ -46,7 +48,9 @@ export default function useSellerForm(leadId, leadData, onSuccess) {
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
-      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", {
+        type: 'error',
+      });
     },
   });
 

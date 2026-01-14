@@ -38,7 +38,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
   const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
-
+  const { rejectReasonOptions } = useSelectOptions('common');
   const { control, reset, watch, setValue } = form || {};
   const fieldBranch = watch?.('branch2');
   const searchBranchFilter = watch?.('searchBranchFilter');
@@ -329,6 +329,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         branch2: leadData?.branch2,
         seller: leadData.seller === null ? 'null' : leadData.seller,
         purchase: leadData.purchase,
+        rejectionReason2: leadData.rejectionReason2,
         purchaseDate: leadData.purchaseDate
           ? moment(leadData.purchaseDate, 'YYYY.MM.DD').format('DD.MM.YYYY')
           : '',
@@ -350,25 +351,25 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
 
   return (
     <Row direction="column" className={styles['tab-content']}>
-
       <TabHeader
         title="Sotuvchi Ma'lumotlari"
         onSave={handleSubmit}
         disabled={isCEO ? !isCEO : !canEdit}
         isSubmitting={isSubmitting}
       />
-        <form onSubmit={handleSubmit}>
-          <SellerFormFields
-            control={control}
-            canEdit={canEdit}
-            leadData={leadData}
-            fieldSellType={fieldSellType}
-            fieldPurchase={fieldPurchase}
-            sellerOptions={sellerOptions}
-            sellTypeOptions={sellTypeOptions}
-            branchOptions={branchOptions}
-          />
-        </form>
+      <form onSubmit={handleSubmit}>
+        <SellerFormFields
+          control={control}
+          canEdit={canEdit}
+          leadData={leadData}
+          fieldSellType={fieldSellType}
+          fieldPurchase={fieldPurchase}
+          sellerOptions={sellerOptions}
+          sellTypeOptions={sellTypeOptions}
+          rejectReasonOptions={rejectReasonOptions}
+          branchOptions={branchOptions}
+        />
+      </form>
       <FieldGroup title="Shartnoma ma'lumotlari">
         <Col span={{ xs: 24, md: 24 }} flexGrow fullWidth>
           <Row>
