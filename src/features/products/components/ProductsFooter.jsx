@@ -40,7 +40,10 @@ export default function ProductsFooter({ meta }) {
               </Col>
               <Col>
                 <Typography variant="body1">
-                  {currentPage * pageSize + 1}-{(currentPage + 1) * pageSize}{' '}
+                  {currentPage * pageSize + 1}-
+                  {(currentPage + 1) * pageSize < meta.total
+                    ? (currentPage + 1) * pageSize
+                    : meta.total}{' '}
                   gacha {meta.total} ta dan
                 </Typography>
               </Col>
@@ -48,7 +51,7 @@ export default function ProductsFooter({ meta }) {
           </Col>
           <Col flexGrow={isMobile}>
             <Pagination
-              pageCount={meta.total ?? 0}
+              pageCount={meta.totalPage ?? 0}
               activePage={currentPage}
               onPageChange={({ selected }) => {
                 dispatch(setProductsCurrentPage(selected));

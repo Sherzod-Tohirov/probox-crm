@@ -1,8 +1,13 @@
 import { Button, Badge, Col, Row } from '@/components/ui';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import formatterCurrency from '@/utils/formatterCurrency';
 import { useMemo } from 'react';
+import calculateProductPrice from '../utils/calculateProductPrice';
 
-export const useProductsTableColumns = () => {
+export const useProductsTableColumns = (currentProduct) => {
+  const { data: branches } = useFetchBranches();
+  const { data: rate } = useFetchCurrency();
   const productsTableColumns = useMemo(() => {
     return [
       {
@@ -24,11 +29,21 @@ export const useProductsTableColumns = () => {
         title: 'Narxi',
         icon: 'income',
         renderCell: (row) => {
-          return (
-            <span>
-              {row?.SalePrice ? formatterCurrency(row.SalePrice, 'uzs') : '-'}
-            </span>
+          const conditionItem =
+            currentProduct?.U_PROD_CONDITION ?? row.U_PROD_CONDITION ?? null;
+          if (conditionItem === 'Yangi' || conditionItem === null) {
+            if (!row.SalePrice) return '-';
+            return formatterCurrency(row.SalePrice, 'uzs');
+          }
+          if (row?.PurchasePrice === null) return '-';
+          const salePriceOldUZS = formatterCurrency(
+            (
+              parseInt(calculateProductPrice(row.PurchasePrice)) *
+              parseInt(rate?.Rate)
+            ).toFixed(2),
+            'uzs'
           );
+          return salePriceOldUZS;
         },
       },
       {
@@ -69,25 +84,13 @@ export const useProductsTableColumns = () => {
   const productTableColumns = useMemo(() => {
     return [
       {
-        key: 'ItemName',
-        title: 'Mahsulot Nomi',
+        key: 'ItemCode',
+        title: 'Mahsulot kodi',
         icon: 'products',
         width: '30%',
       },
       {
-        key: 'U_Condition',
-        title: 'Holati',
-        icon: 'calendarFact',
-        renderCell: (row) => {
-          const dict = {
-            new: 'Yangi',
-            old: 'B/U',
-          };
-          return <span>{dict[row?.status] || '-'}</span>;
-        },
-      },
-      {
-        key: 'battery',
+        key: 'Battery',
         title: 'Batareya foizi',
         icon: 'barCodeFilled',
         renderCell: (row) => {
@@ -104,20 +107,36 @@ export const useProductsTableColumns = () => {
         },
       },
       {
-        key: 'WhsName',
+        key: 'WhsCode',
         title: 'Filial',
         icon: 'presentationChart',
+        renderCell: (row) => {
+          const foundBranch = branches?.find((br) => {
+            return br.code == row?.WhsCode;
+          });
+          return foundBranch?.name || '-';
+        },
       },
       {
         key: 'SalePrice',
         title: 'Narxi',
         icon: 'income',
         renderCell: (row) => {
-          return (
-            <span>
-              {row?.SalePrice ? formatterCurrency(row.SalePrice, 'uzs') : '-'}
-            </span>
+          const conditionItem =
+            currentProduct?.U_PROD_CONDITION ?? row.U_PROD_CONDITION ?? null;
+          if (conditionItem === 'Yangi' || conditionItem === null) {
+            if (!row.SalePrice) return '-';
+            return formatterCurrency(row.SalePrice, 'uzs');
+          }
+          if (row?.PurchasePrice === null) return '-';
+          const salePriceOldUZS = formatterCurrency(
+            (
+              parseInt(calculateProductPrice(row.PurchasePrice)) *
+              parseInt(rate?.Rate)
+            ).toFixed(2),
+            'uzs'
           );
+          return salePriceOldUZS;
         },
       },
       {

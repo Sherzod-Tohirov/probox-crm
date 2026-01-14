@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 export default function Products() {
   const { productsTableColumns } = useProductsTableColumns();
   const [isProductModalInfoOpen, setProductModalInfoOpen] = useState(false);
-  const [chosenProduct, setChosenProduct] = useState({});
+  const [chosenProduct, setChosenProduct] = useState(null);
   const isMobile = useIsMobile();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.products
@@ -58,7 +58,9 @@ export default function Products() {
             }}
             getRowStyles={() => {}}
           />
-          <ProductsFooter meta={{ total: data?.total }} />
+          <ProductsFooter
+            meta={{ total: data?.total, totalPage: data?.totalPage }}
+          />
         </Col>
       </Row>
       <ProductModal
