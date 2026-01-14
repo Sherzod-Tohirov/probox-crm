@@ -13,6 +13,7 @@ export default function SellerFormFields({
   sellerOptions,
   sellTypeOptions,
   branchOptions,
+  rejectReasonOptions
 }) {
   const isAcceptedFinalPercentage =
     Number(leadData?.finalPercentage) > 0 &&
@@ -94,6 +95,15 @@ export default function SellerFormFields({
           control={control}
           type="date"
           disabled={!canEdit || fieldPurchase !== 'true'}
+        />
+        <FormField
+          name="rejectionReason2"
+          label="Rad etish sababi 2"
+          control={control}
+          type="select"
+          options={rejectReasonOptions}
+          placeholderOption={true}
+          disabled={!canEdit}
         />
       </FieldGroup>
 
