@@ -9,8 +9,8 @@ import FieldGroup from './LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
 import { formatUZPhone, isValidPhonenumber } from '@/utils/formatPhoneNumber';
 import useAlert from '@/hooks/useAlert';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { addNewLeadFormSchema } from '../utils/validationSchemas';
+// import { yupResolver } from '@hookform/resolvers/yup';
+// import { addNewLeadFormSchema } from '../utils/validationSchemas';
 import { isEmpty } from 'lodash';
 
 const category = {
@@ -87,7 +87,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
       comment: '',
       operator1: '',
     },
-    resolver: yupResolver(addNewLeadFormSchema),
+    // resolver: yupResolver(addNewLeadFormSchema),
     mode: 'all',
   });
 
