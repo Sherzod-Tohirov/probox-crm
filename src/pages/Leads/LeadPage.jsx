@@ -215,6 +215,7 @@ export default function LeadPage() {
           <SellerTab
             leadId={id}
             leadData={lead}
+            invoiceScoreData={invoiceScoreData}
             canEdit={canEditTab('seller')}
           />
         ),
@@ -231,7 +232,7 @@ export default function LeadPage() {
         ),
       },
     ],
-    [id, lead, canEditTab]
+    [id, lead, canEditTab, invoiceScoreData]
   );
 
   if (isLoading) {

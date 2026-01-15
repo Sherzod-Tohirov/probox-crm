@@ -401,7 +401,7 @@ export const useSelectedDevices = ({
           maximumLimit === 0)) ||
       (calculationTypeFilter === 'firstPayment' &&
         (finalPercentage === null || finalPercentage === undefined));
-
+    console.log(filteredDevices, 'filtered Devices');
     return filteredDevices.map((device) => ({
       id: device.id ?? device.name,
       name: device.name,

@@ -56,6 +56,7 @@ export const useSelectedDevicesColumns = ({
         horizontal: 'start',
         width: '18%',
         renderCell: (row) => {
+          console.log(row);
           if (row.imeiLoading) {
             return (
               <span className={styles['selected-device-imei']}>
@@ -115,7 +116,7 @@ export const useSelectedDevicesColumns = ({
         width: '10%',
         renderCell: (row) => (
           <span className={styles['selected-device-price']}>
-            {row.price ? row.price : '0 so\'m'}
+            {row.price ? row.price : "0 so'm"}
           </span>
         ),
       },
@@ -127,18 +128,21 @@ export const useSelectedDevicesColumns = ({
         renderCell: (row) => {
           // Agar disabled bo'lsa va rentPeriod 0 bo'lsa, 0 ni ko'rsatamiz
           const isDisabled = !canEdit || isRentPeriodDisabled;
-          const value = isRentPeriodDisabled && row.rentPeriod === 0
-            ? 0
-            : (row.rentPeriod ?? rentPeriodOptionsWithPct[0]?.value ?? undefined);
-          
+          const value =
+            isRentPeriodDisabled && row.rentPeriod === 0
+              ? 0
+              : (row.rentPeriod ??
+                rentPeriodOptionsWithPct[0]?.value ??
+                undefined);
+
           // Agar disabled bo'lsa va value 0 bo'lsa, maxsus options yaratamiz
           const options =
             isRentPeriodDisabled && value === 0
-              ? (rentPeriodOptionsWithPct.some((o) => Number(o?.value) === 0)
-                  ? rentPeriodOptionsWithPct
-                  : [{ value: 0, label: '0' }, ...rentPeriodOptionsWithPct])
+              ? rentPeriodOptionsWithPct.some((o) => Number(o?.value) === 0)
+                ? rentPeriodOptionsWithPct
+                : [{ value: 0, label: '0' }, ...rentPeriodOptionsWithPct]
               : rentPeriodOptionsWithPct;
-          
+
           return (
             <Input
               type="select"
@@ -192,7 +196,7 @@ export const useSelectedDevicesColumns = ({
       },
       {
         key: 'totalPayment',
-        title: 'Jami to\'lov',
+        title: "Jami to'lov",
         horizontal: 'start',
         width: '12%',
         renderCell: (row) => (
@@ -231,4 +235,3 @@ export const useSelectedDevicesColumns = ({
     ]
   );
 };
-

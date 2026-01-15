@@ -78,7 +78,6 @@ export const getItemBasePriceUSD = (item) => {
     } else if (base > 500 && base <= 1000) {
       // 6foiz
       multiplier = 1.06; // +6%
-    
     } else if (base > 1000) {
       multiplier = 1.03; // +3%
     }
@@ -201,6 +200,7 @@ export const PAYMENT_INTEREST_OPTIONS = [
 export const CALCULATION_TYPE_OPTIONS = [
   { value: '', label: 'Tanlash' },
   { value: 'markup', label: 'Limit' },
+  { value: 'internalLimit', label: 'Ichki limit' },
   { value: 'firstPayment', label: 'Foiz' },
 ];
 // Ustama foizlari periodga qarab
@@ -345,20 +345,21 @@ export const calculatePaymentDetails = ({
 
     // Foydalanuvchi taklifi: avval yaxlitlanmagan qiymatlarni olish, jami to'lovni hisoblash, keyin yaxlitlash
     // Oylik to'lov (yaxlitlanmagan): ((remainingPrice) * (1 + markup)) / period
-    const monthlyPaymentBeforeRound = (remainingPrice * (1 + markup)) / periodNum;
-    
+    const monthlyPaymentBeforeRound =
+      (remainingPrice * (1 + markup)) / periodNum;
+
     // Jami to'lov (yaxlitlanmagan): monthlyPaymentBeforeRound * period
     const totalPaymentBeforeRound = monthlyPaymentBeforeRound * periodNum;
-    
+
     // Jami to'lov (yaxlitlanmagan): totalPaymentBeforeRound + actualFirstPayment
     const grandTotalBeforeRound = totalPaymentBeforeRound + actualFirstPayment;
-    
+
     // Jami to'lovni 1000 ga yaxlitlash (ROUND)
     const grandTotal = Math.round(grandTotalBeforeRound / 1000) * 1000;
-    
+
     // Jami to'lov (ustama bilan): grandTotal - actualFirstPayment
     const totalPayment = grandTotal - actualFirstPayment;
-    
+
     // Oylik to'lov: totalPayment / period, 1000 ga yaxlitlangan
     const monthlyPayment = Math.round(totalPayment / periodNum / 1000) * 1000;
 
@@ -398,19 +399,19 @@ export const calculatePaymentDetails = ({
     isFirstPaymentManual || monthlyLimitNum === 0
       ? monthlyPaymentWithoutLimit
       : Math.min(monthlyLimitNum, monthlyPaymentWithoutLimit);
-  
+
   // Jami to'lov (yaxlitlanmagan): monthlyPaymentRaw * period
   const totalPaymentBeforeRound = monthlyPaymentRaw * periodNum;
-  
+
   // Jami to'lov (yaxlitlanmagan): totalPaymentBeforeRound + actualFirstPayment
   const grandTotalBeforeRound = totalPaymentBeforeRound + actualFirstPayment;
-  
+
   // Jami to'lovni 1000 ga yaxlitlash (ROUND)
   const grandTotal = Math.round(grandTotalBeforeRound / 1000) * 1000;
-  
+
   // Jami to'lov (ustama bilan): grandTotal - actualFirstPayment
   const totalPayment = grandTotal - actualFirstPayment;
-  
+
   // Oylik to'lov: totalPayment / period, 1000 ga yaxlitlangan
   const monthlyPayment = Math.round(totalPayment / periodNum / 1000) * 1000;
 

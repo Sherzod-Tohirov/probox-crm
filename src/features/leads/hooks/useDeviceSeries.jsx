@@ -3,7 +3,10 @@ import useFetchItemSeries from '@/hooks/data/leads/useFetchItemSeries';
 import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import { floorToThousands, formatCurrencyUZS } from '../utils/deviceUtils';
 
-export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => {
+export const useDeviceSeries = ({
+  branchCodeToNameMap,
+  setSelectedDevices,
+}) => {
   const { mutateAsync: fetchItemSeries } = useFetchItemSeries();
   const { data: currency } = useFetchCurrency();
 
@@ -16,7 +19,8 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
     async ({ deviceId, itemCode, whsCode, whsName, deviceCondition }) => {
       if (!deviceId) return;
 
-      const deviceWhsName = whsName || branchCodeToNameMap.get(String(whsCode || '')) || '';
+      const deviceWhsName =
+        whsName || branchCodeToNameMap.get(String(whsCode || '')) || '';
 
       setSelectedDevices((prev) =>
         prev.map((device) =>
@@ -36,7 +40,7 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
                   imeiOptions: [],
                   imeiValue: '',
                   imeiError: !whsCode
-                    ? "Filial tanlanmagani uchun IMEI olinmadi"
+                    ? 'Filial tanlanmagani uchun IMEI olinmadi'
                     : 'ItemCode topilmadi',
                 }
               : device
@@ -51,7 +55,7 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
           ? response.items
           : Array.isArray(response)
             ? response
-            : response?.data ?? [];
+            : (response?.data ?? []);
 
         // Device itemning condition ni ishlatamiz (IMEI seriyadan emas)
         const condition = deviceCondition ?? null;
@@ -122,10 +126,9 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
           } else if (baseUsd) {
             priceText = `${baseUsd} USD`;
           }
-
           return {
             value: imei,
-            label: priceText ? `${imei} - ${priceText}` : imei,
+            label: priceText ? `${imei} - ${priceText} - ${battery}` : imei,
             meta: {
               ...series,
               calculatedPriceUZS,
@@ -138,8 +141,7 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
           prev.map((device) => {
             if (device.id !== deviceId) return device;
 
-            const autoSelectedOption =
-              options.length === 1 ? options[0] : null;
+            const autoSelectedOption = options.length === 1 ? options[0] : null;
 
             // Agar avtomatik bitta IMEI tanlansa va narx hisoblangan bo'lsa, devicening price ni ham yangilaymiz
             const nextPrice =
@@ -184,4 +186,3 @@ export const useDeviceSeries = ({ branchCodeToNameMap, setSelectedDevices }) => 
 
   return { fetchDeviceSeries };
 };
-
