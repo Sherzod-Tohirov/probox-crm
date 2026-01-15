@@ -22,7 +22,13 @@ import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
 import { generateInvoicePdf } from '@/utils/invoicePdf';
 
-export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
+export default function SellerTab({
+  leadId,
+  leadData,
+  invoiceScoreData,
+  canEdit,
+  onSuccess,
+}) {
   const { form, handleSubmit, isSubmitting, error } = useSellerForm(
     leadId,
     leadData,
@@ -298,7 +304,6 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
         if (paymentData.terminal > 0) {
           payments.push({ type: 'Terminal', amount: paymentData.terminal });
         }
-
         // useInvoice hook'iga payments array'ni yuborish
         const paymentType = 'all';
         await sendInvoice({
@@ -306,6 +311,7 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
           selectedDevices,
           paymentType,
           calculationTypeFilter,
+          internalLimit: invoiceScoreData.limit,
           payments,
         });
         setIsInvoiceModalOpen(false);
@@ -315,7 +321,8 @@ export default function SellerTab({ leadId, leadData, canEdit, onSuccess }) {
     },
     [leadId, selectedDevices, sendInvoice, calculationTypeFilter]
   );
-
+  console.log(leadData, 'LeadData');
+  console.log();
   useEffect(() => {
     if (!form) return;
     if (leadData) {

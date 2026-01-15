@@ -3,40 +3,67 @@ import { createInvoiceTest } from '@/services/invoiceService';
 import { getLeadById } from '@/services/leadsService';
 import { fetchItemSeries } from '@/services/leadsService';
 import { getExecutors } from '@/services/executorsService';
-import { extractNumericValue, resolveItemCode, calculatePaymentDetails } from '@/features/leads/utils/deviceUtils';
+import {
+  extractNumericValue,
+  resolveItemCode,
+  calculatePaymentDetails,
+} from '@/features/leads/utils/deviceUtils';
 import { getCurrency } from '@/services/currencyService';
 import moment from 'moment';
 
 export default function useInvoice(options = {}) {
   return useMutation({
-    mutationFn: async ({ leadId, selectedDevices, paymentType, calculationTypeFilter, payments }) => {
+    mutationFn: async ({
+      leadId,
+      selectedDevices,
+      paymentType,
+      calculationTypeFilter,
+      payments,
+      internalLimit,
+    }) => {
       // 1. Lead ma'lumotlarini olish
       const leadResponse = await getLeadById(leadId);
       const leadData = leadResponse?.data || leadResponse;
 
       if (!leadData) {
-        throw new Error('Lead ma\'lumotlari topilmadi');
+        throw new Error("Lead ma'lumotlari topilmadi");
       }
 
       // 2. Monthly limit ni hisoblash (DocumentLines dan oldin kerak)
-      const monthlyLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) 
-        ? (Number(leadData.finalLimit) || null)
-        : null;
+      const monthlyLimit =
+        leadData?.finalLimit !== null && leadData?.finalLimit !== undefined
+          ? Number(leadData.finalLimit) || null
+          : null;
 
       // Calculation type va boshqa parametrlarni olish
       // Avval parametrdan, keyin leadData dan, oxirida default
-      const calculationType = calculationTypeFilter || leadData?.calculationTypeFilter || leadData?.calculationType || 'markup';
-      const finalPercentage = (leadData?.finalPercentage !== null && leadData?.finalPercentage !== undefined)
-        ? (Number(leadData.finalPercentage) || null)
-        : null;
+      const calculationType =
+        calculationTypeFilter ||
+        leadData?.calculationTypeFilter ||
+        leadData?.calculationType ||
+        'markup';
+      const finalPercentage =
+        leadData?.finalPercentage !== null &&
+        leadData?.finalPercentage !== undefined
+          ? Number(leadData.finalPercentage) || null
+          : null;
       // maximumLimit - agar monthlyLimit bo'lsa, uni ishlatamiz, aks holda finalLimit
-      let maximumLimit = (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined)
-        ? (Number(leadData.finalLimit) || null)
-        : null;
-      
+      let maximumLimit =
+        leadData?.finalLimit !== null && leadData?.finalLimit !== undefined
+          ? Number(leadData.finalLimit) || null
+          : null;
+
       // Agar monthlyLimit bo'lsa va maximumLimit 0 yoki null bo'lsa, maximumLimit ni monthlyLimit ga tenglashtiramiz
-      if (monthlyLimit !== null && monthlyLimit !== undefined && monthlyLimit > 0) {
-        if (maximumLimit === null || maximumLimit === undefined || maximumLimit === 0) {
+      if (
+        monthlyLimit !== null &&
+        monthlyLimit !== undefined &&
+        monthlyLimit > 0
+      ) {
+        if (
+          maximumLimit === null ||
+          maximumLimit === undefined ||
+          maximumLimit === 0
+        ) {
           maximumLimit = monthlyLimit;
         }
       }
@@ -47,19 +74,23 @@ export default function useInvoice(options = {}) {
           const itemCode = resolveItemCode(device);
           const whsCode = device?.whsCode || device?.raw?.WhsCode || '';
           const price = extractNumericValue(device.price) || 0;
-          
+
           // Jami narxni hisoblash (ustama bilan)
           const period = Number(device.rentPeriod) || 1;
           const firstPayment = extractNumericValue(device.firstPayment) || 0;
-          const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
-          
+          const monthlyLimitNum =
+            monthlyLimit !== null && monthlyLimit !== undefined
+              ? monthlyLimit
+              : 0;
+
           let totalPrice = price; // Default: faqat narx
           let monthlyPayment = 0; // Oylik to'lov
-          
+
           // Agar price va period to'g'ri bo'lsa, grandTotal ni hisoblaymiz
           if (price && price > 0 && period > 0) {
-            const deviceFirstPaymentManual = device?.isFirstPaymentManual || false;
-            
+            const deviceFirstPaymentManual =
+              device?.isFirstPaymentManual || false;
+
             const paymentDetails = calculatePaymentDetails({
               price,
               period,
@@ -78,10 +109,10 @@ export default function useInvoice(options = {}) {
             const missingFields = [];
             if (!itemCode) missingFields.push('ItemCode');
             if (!whsCode) missingFields.push('WhsCode');
-            
+
             throw new Error(
               `Qurilma ma'lumotlari to'liq emas: ${device.name || "Noma'lum"}. ` +
-              `Yetishmayotgan maydonlar: ${missingFields.join(', ')}`
+                `Yetishmayotgan maydonlar: ${missingFields.join(', ')}`
             );
           }
 
@@ -92,13 +123,15 @@ export default function useInvoice(options = {}) {
             const selectedImeiOption = device.imeiOptions?.find(
               (opt) => opt.value === device.imeiValue
             );
-            
+
             if (selectedImeiOption?.meta) {
               const seriesData = selectedImeiOption.meta;
               serialNumbers = [
                 {
-                  ManufacturerSerialNumber: seriesData.DistNumber || device.imeiValue,
-                  InternalSerialNumber: seriesData.DistNumber || device.imeiValue,
+                  ManufacturerSerialNumber:
+                    seriesData.DistNumber || device.imeiValue,
+                  InternalSerialNumber:
+                    seriesData.DistNumber || device.imeiValue,
                   SystemSerialNumber: seriesData.SysNumber || 0,
                   Quantity: 1,
                   ItemCode: itemCode,
@@ -109,12 +142,14 @@ export default function useInvoice(options = {}) {
               const selectedSeries = device.rawSeries.find(
                 (series) => series.DistNumber === device.imeiValue
               );
-              
+
               if (selectedSeries) {
                 serialNumbers = [
                   {
-                    ManufacturerSerialNumber: selectedSeries.DistNumber || device.imeiValue,
-                    InternalSerialNumber: selectedSeries.DistNumber || device.imeiValue,
+                    ManufacturerSerialNumber:
+                      selectedSeries.DistNumber || device.imeiValue,
+                    InternalSerialNumber:
+                      selectedSeries.DistNumber || device.imeiValue,
                     SystemSerialNumber: selectedSeries.SysNumber || 0,
                     Quantity: 1,
                     ItemCode: itemCode,
@@ -124,12 +159,15 @@ export default function useInvoice(options = {}) {
             } else {
               // Agar rawSeries mavjud bo'lmasa, API dan olamiz
               try {
-                const seriesResponse = await fetchItemSeries({ whsCode, itemCode });
+                const seriesResponse = await fetchItemSeries({
+                  whsCode,
+                  itemCode,
+                });
                 const seriesItems = Array.isArray(seriesResponse?.items)
                   ? seriesResponse.items
                   : Array.isArray(seriesResponse)
                     ? seriesResponse
-                    : seriesResponse?.data ?? [];
+                    : (seriesResponse?.data ?? []);
 
                 const selectedSeries = seriesItems.find(
                   (series) => series.DistNumber === device.imeiValue
@@ -138,8 +176,10 @@ export default function useInvoice(options = {}) {
                 if (selectedSeries) {
                   serialNumbers = [
                     {
-                      ManufacturerSerialNumber: selectedSeries.DistNumber || device.imeiValue,
-                      InternalSerialNumber: selectedSeries.DistNumber || device.imeiValue,
+                      ManufacturerSerialNumber:
+                        selectedSeries.DistNumber || device.imeiValue,
+                      InternalSerialNumber:
+                        selectedSeries.DistNumber || device.imeiValue,
                       SystemSerialNumber: selectedSeries.SysNumber || 0,
                       Quantity: 1,
                       ItemCode: itemCode,
@@ -173,46 +213,52 @@ export default function useInvoice(options = {}) {
       if (leadData.region) clientAddressParts.push(leadData.region);
       if (leadData.district) clientAddressParts.push(leadData.district);
       if (leadData.address) clientAddressParts.push(leadData.address);
-      const clientAddress = clientAddressParts.length > 0 
-        ? clientAddressParts.join(', ') 
-        : '';
+      const clientAddress =
+        clientAddressParts.length > 0 ? clientAddressParts.join(', ') : '';
 
       // 5. Sotuvchi nomini olish
       // Avval consultant yoki sellerName ni tekshiramiz
       let sellerName = leadData?.consultant || leadData?.sellerName || '';
-      
+
       // Agar seller kodi bo'lsa, executors ro'yxatidan ismini topamiz
       // sellerName bo'sh bo'lsa va seller kodi mavjud bo'lsa
       const sellerCode = leadData?.seller;
-      const hasSellerCode = sellerCode != null && sellerCode !== '' && sellerCode !== undefined;
-      
+      const hasSellerCode =
+        sellerCode != null && sellerCode !== '' && sellerCode !== undefined;
+
       if (!sellerName && hasSellerCode) {
         try {
-          const executorsResponse = await getExecutors({ include_role: 'Seller' });
-          
+          const executorsResponse = await getExecutors({
+            include_role: 'Seller',
+          });
+
           // Response strukturasini tekshirish
           let executors = [];
-          
+
           if (Array.isArray(executorsResponse)) {
             // To'g'ridan-to'g'ri array
             executors = executorsResponse;
-          } else if (executorsResponse?.data && Array.isArray(executorsResponse.data)) {
+          } else if (
+            executorsResponse?.data &&
+            Array.isArray(executorsResponse.data)
+          ) {
             // { total: 12, data: [...] } yoki { data: [...] } format
             executors = executorsResponse.data;
-          } else if (executorsResponse?.content && Array.isArray(executorsResponse.content)) {
+          } else if (
+            executorsResponse?.content &&
+            Array.isArray(executorsResponse.content)
+          ) {
             // { content: [...] } format
             executors = executorsResponse.content;
           }
-          
+
           // Sotuvchi kodini topish (string va number solishtirish)
-          const seller = executors.find(
-            (executor) => {
-              const executorCode = Number(executor?.SlpCode);
-              const sellerCode = Number(leadData.seller);
-              return executorCode === sellerCode;
-            }
-          );
-          
+          const seller = executors.find((executor) => {
+            const executorCode = Number(executor?.SlpCode);
+            const sellerCode = Number(leadData.seller);
+            return executorCode === sellerCode;
+          });
+
           if (seller?.SlpName) {
             sellerName = seller.SlpName;
           }
@@ -233,8 +279,13 @@ export default function useInvoice(options = {}) {
           docRate = Number(currencyResponse.Rate);
         } else if (currencyResponse?.data?.Rate) {
           docRate = Number(currencyResponse.data.Rate);
-        } else if (Array.isArray(currencyResponse) && currencyResponse.length > 0) {
-          docRate = Number(currencyResponse[0]?.Rate || currencyResponse[0]?.rate || 0);
+        } else if (
+          Array.isArray(currencyResponse) &&
+          currencyResponse.length > 0
+        ) {
+          docRate = Number(
+            currencyResponse[0]?.Rate || currencyResponse[0]?.rate || 0
+          );
         }
       } catch (error) {
         // Currency rate olishda xatolik bo'lsa ham davom etamiz
@@ -245,12 +296,16 @@ export default function useInvoice(options = {}) {
       const docDate = moment().format('YYYY-MM-DD');
 
       // 9. NumberOfInstallments va DocumentInstallments ni hisoblash
-      const maxRentPeriod = selectedDevices.length > 0
-        ? Math.max(...selectedDevices.map(device => Number(device.rentPeriod) || 1))
-        : 1;
+      const maxRentPeriod =
+        selectedDevices.length > 0
+          ? Math.max(
+              ...selectedDevices.map((device) => Number(device.rentPeriod) || 1)
+            )
+          : 1;
 
       // 10. DocumentInstallments (to'lov jadvali) ni hisoblash
-      const monthlyLimitNum = monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
+      const monthlyLimitNum =
+        monthlyLimit !== null && monthlyLimit !== undefined ? monthlyLimit : 0;
       let grandTotal = 0;
       let totalFirstPayment = 0;
       const devicePayments = [];
@@ -262,8 +317,9 @@ export default function useInvoice(options = {}) {
         const firstPayment = extractNumericValue(device.firstPayment) || 0;
 
         if (price && price > 0 && period > 0) {
-          const deviceFirstPaymentManual = device?.isFirstPaymentManual || false;
-          
+          const deviceFirstPaymentManual =
+            device?.isFirstPaymentManual || false;
+
           const paymentDetails = calculatePaymentDetails({
             price,
             period,
@@ -275,7 +331,10 @@ export default function useInvoice(options = {}) {
             maximumLimit: maximumLimit,
           });
 
-          const actualFirstPayment = firstPayment > 0 ? firstPayment : paymentDetails.calculatedFirstPayment;
+          const actualFirstPayment =
+            firstPayment > 0
+              ? firstPayment
+              : paymentDetails.calculatedFirstPayment;
           grandTotal += paymentDetails.grandTotal || 0;
           totalFirstPayment += actualFirstPayment || 0;
 
@@ -288,11 +347,12 @@ export default function useInvoice(options = {}) {
 
       // 6. CashSum (birinchi to'lov summasi) ni hisoblash - totalFirstPayment dan foydalanamiz
       const cashSum = totalFirstPayment;
-      
+
       // NumberOfInstallments ni hisoblash:
       // Agar birinchi to'lov 0 bo'lsa, numberOfInstallments = rentPeriod
       // Agar birinchi to'lov mavjud bo'lsa, numberOfInstallments = rentPeriod + 1
-      const numberOfInstallments = totalFirstPayment > 0 ? maxRentPeriod + 1 : maxRentPeriod;
+      const numberOfInstallments =
+        totalFirstPayment > 0 ? maxRentPeriod + 1 : maxRentPeriod;
 
       // DocumentInstallments ni yaratish (uzunligi numberOfInstallments ga teng = rentPeriod + 1)
       const documentInstallments = [];
@@ -364,11 +424,18 @@ export default function useInvoice(options = {}) {
       }
 
       // DocDueDate - oxirgi to'lov sanasi
-      const docDueDate = documentInstallments.length > 0
-        ? documentInstallments[documentInstallments.length - 1].DueDate
-        : docDate;
+      const docDueDate =
+        documentInstallments.length > 0
+          ? documentInstallments[documentInstallments.length - 1].DueDate
+          : docDate;
 
       // 11. Invoice body ni tayyorlash
+      const limitMap = {
+        internalLimit: 'internaLimit',
+        markup: 'finalLimit',
+        firstPayment: 'percentage',
+      };
+
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         DocDate: docDate, // Joriy sana
@@ -385,36 +452,40 @@ export default function useInvoice(options = {}) {
         monthlyLimit: monthlyLimit,
         sellerName: sellerName,
         DocumentLines: documentLines,
+        internalLimit: internalLimit,
         selectedDevices: selectedDevices, // To'lov jadvali uchun
         CashSum: cashSum, // Birinchi to'lov summasi,
-        U_FirstPayment: cashSum, 
+        U_FirstPayment: cashSum,
         DocRate: docRate, // Dollar kursi
         paymentType: paymentType || '', // To'lov turi
-        calculationType: calculationType, // Xisoblash turi (markup yoki firstPayment)
+        usedType: limitMap[calculationType], // Xisoblash turi (markup yoki firstPayment)
         finalPercentage: finalPercentage, // Final percentage (Foiz holatida)
         maximumLimit: maximumLimit, // Maximum limit
       };
-
+      console.log(invoiceData, 'invoice data');
       // Payments array'ni qo'shish (agar mavjud bo'lsa)
       if (payments && Array.isArray(payments) && payments.length > 0) {
         invoiceData.payments = payments;
       }
 
       // 10. Invoice yuborish
-     const invoiceResponse = await createInvoiceTest(invoiceData);
+      const invoiceResponse = await createInvoiceTest(invoiceData);
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return {
         ...invoiceData,
-        invoiceDocNum: invoiceResponse?.invoiceDocNum || invoiceResponse?.data?.invoiceDocNum,
-        invoiceDocEntry: invoiceResponse?.invoiceDocEntry || invoiceResponse?.data?.invoiceDocEntry,
+        invoiceDocNum:
+          invoiceResponse?.invoiceDocNum ||
+          invoiceResponse?.data?.invoiceDocNum,
+        invoiceDocEntry:
+          invoiceResponse?.invoiceDocEntry ||
+          invoiceResponse?.data?.invoiceDocEntry,
       };
     },
     retry: false,
     ...options,
   });
 }
-
 
 // /lead-images/upload method: POST
 // /lead-images/upload method: POST

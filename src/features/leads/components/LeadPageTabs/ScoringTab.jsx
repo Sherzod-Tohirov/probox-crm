@@ -143,6 +143,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
     if (!form) return;
+    if (leadData?.finalLimit) return;
     const isProvided = (value) => {
       if (typeof value === 'boolean') return true;
       if (typeof value === 'number') return !Number.isNaN(value);
