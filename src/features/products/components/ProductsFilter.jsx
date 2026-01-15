@@ -1,5 +1,8 @@
 import { Row, Col, Input } from '@/components/ui';
-import { setProductsFilter } from '@/store/slices/productsPageSlice';
+import {
+  setProductsCurrentPage,
+  setProductsFilter,
+} from '@/store/slices/productsPageSlice';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -21,7 +24,10 @@ export default function ProductsFilter() {
 
   const debouncedSearch = useMemo(
     () =>
-      _.debounce((filter) => dispatch(setProductsFilter({ ...filter })), 300),
+      _.debounce((filter) => {
+        dispatch(setProductsFilter({ ...filter }));
+        dispatch(setProductsCurrentPage(0));
+      }, 300),
     []
   );
 
@@ -60,28 +66,3 @@ export default function ProductsFilter() {
     </Row>
   );
 }
-// {
-/* <Input
-          name="search"
-          label="IMEI | FIO"
-          size={isMobileOnly ? 'full-grow' : undefined}
-          style={isMobileOnly ? {} : { minWidth: '290px' }}
-          type="search"
-          placeholder="4567890449494 | Ismi Sharif"
-          placeholderColor="secondary"
-          searchText={showSearchDropdown.search ? watchedSearch : ''}
-          onFocus={onFocusSearch}
-          onBlur={onBlurSearch}
-        /> */
-// }
-// import useFetchBranches from '@/hooks/data/useFetchBranches';
-// import selectOptionsCreator from '@/utils/selectOptionsCreator';
-// const { data: branches } = useFetchBranches();
-// const branchOptions = selectOptionsCreator(branches, {
-//   label: 'name',
-//   value: 'id',
-//   includeAll: true,
-// });
-// <Col flexGrow>
-//   <Input type="select" variant="outlined" options={branchOptions} />
-// </Col>;
