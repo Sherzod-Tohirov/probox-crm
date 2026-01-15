@@ -8,6 +8,30 @@ import calculateProductPrice from '../utils/calculateProductPrice';
 export const useProductsTableColumns = (currentProduct) => {
   const { data: branches } = useFetchBranches();
   const { data: rate } = useFetchCurrency();
+
+  const isProductNew = currentProduct?.U_PROD_CONDITION === 'Yangi';
+
+  const normalizeBattery = (battery) => {
+    if (isProductNew) return '100%';
+    if (!battery) return '-';
+    return battery.includes('%') ? battery : String(battery) + '%';
+  };
+
+  const getBatteryColor = (battery) => {
+    if (isProductNew) {
+      return 'success';
+    }
+    let normalizedBattery = parseInt(normalizeBattery(battery));
+    if (!normalizedBattery) return 'default';
+    if (normalizedBattery > 85) return 'success';
+    if (normalizedBattery > 80) return 'warning';
+    else return 'danger';
+  };
+
+  const getBatteryText = (battery) => {
+    return normalizeBattery(battery);
+  };
+
   const productsTableColumns = useMemo(() => {
     return [
       {
@@ -84,24 +108,19 @@ export const useProductsTableColumns = (currentProduct) => {
   const productTableColumns = useMemo(() => {
     return [
       {
-        key: 'ItemCode',
-        title: 'Mahsulot kodi',
-        icon: 'products',
-        width: '30%',
+        key: 'IMEI',
+        title: 'IMEI',
+        icon: 'barCodeFilled',
+        width: '20%',
       },
       {
         key: 'Battery',
         title: 'Batareya foizi',
         icon: 'barCodeFilled',
         renderCell: (row) => {
-          const getColor = (battery) => {
-            if (battery > 85) return 'success';
-            if (battery > 80) return 'warning';
-            else return 'danger';
-          };
           return (
-            <Badge color={getColor(row?.battery)}>
-              {row?.battery ? row?.battery + '%' : '-'}
+            <Badge color={getBatteryColor(row?.Battery)}>
+              {getBatteryText(row?.Battery)}
             </Badge>
           );
         },
@@ -143,7 +162,7 @@ export const useProductsTableColumns = (currentProduct) => {
         key: 'actions',
         title: 'Hodisalar',
         icon: 'editFilled',
-        renderCell: (row) => {
+        renderCell: () => {
           return (
             <Row direction="row" gutter={3} align="center">
               <Col>
@@ -173,7 +192,7 @@ export const useProductsTableColumns = (currentProduct) => {
         },
       },
     ];
-  }, []);
+  }, [currentProduct]);
 
   return { productsTableColumns, productTableColumns };
 };
