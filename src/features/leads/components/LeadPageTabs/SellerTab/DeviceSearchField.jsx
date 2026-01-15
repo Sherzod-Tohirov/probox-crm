@@ -67,9 +67,9 @@ export default function DeviceSearchField({
     []
   );
 
-  const getFinalLimitInfo = () => {
+  // const getFinalLimitInfo = () => {
       
-  };
+  // };
 
   return (
     <Row
