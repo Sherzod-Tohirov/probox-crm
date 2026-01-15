@@ -126,9 +126,17 @@ export const useDeviceSeries = ({
           } else if (baseUsd) {
             priceText = `${baseUsd} USD`;
           }
+          const getBatteryText = (battery) => {
+            if (condition === 'Yangi') return '🔋 100%';
+            if (!battery) return "🪫 yo'q";
+            if (battery?.includes('%')) return '🔋 ' + battery;
+            return '🔋' + battery + '%';
+          };
           return {
             value: imei,
-            label: priceText ? `${imei} - ${priceText} - ${battery}` : imei,
+            label: priceText
+              ? `${imei} - ${priceText} - ${getBatteryText(series?.Battery)}`
+              : imei,
             meta: {
               ...series,
               calculatedPriceUZS,
