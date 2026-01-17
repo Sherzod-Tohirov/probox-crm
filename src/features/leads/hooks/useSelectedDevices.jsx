@@ -387,7 +387,8 @@ export const useSelectedDevices = ({
 
     // Disabled holatni aniqlash
     const isRentPeriodDisabled =
-      (calculationTypeFilter === 'markup' &&
+      ((calculationTypeFilter === 'markup' ||
+        calculationTypeFilter === 'internalLimit') &&
         (maximumLimit === null ||
           maximumLimit === undefined ||
           maximumLimit === 0)) ||
@@ -395,7 +396,8 @@ export const useSelectedDevices = ({
         (finalPercentage === null || finalPercentage === undefined));
 
     const isFirstPaymentDisabled =
-      (calculationTypeFilter === 'markup' &&
+      ((calculationTypeFilter === 'markup' ||
+        calculationTypeFilter === 'internalLimit') &&
         (maximumLimit === null ||
           maximumLimit === undefined ||
           maximumLimit === 0)) ||
@@ -548,9 +550,10 @@ export const useSelectedDevices = ({
       totalPayment: (() => {
         const totalPrice = extractNumericValue(device.price);
 
-        // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
+        // Agar "limit" yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
         if (
-          calculationTypeFilter === 'markup' &&
+          (calculationTypeFilter === 'markup' ||
+            calculationTypeFilter === 'internalLimit') &&
           (maximumLimit === null ||
             maximumLimit === undefined ||
             maximumLimit === 0)
@@ -668,9 +671,10 @@ export const useSelectedDevices = ({
           return acc;
         }
 
-        // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
+        // Agar "limit" yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa, narx bilan bir xil qaytaramiz
         if (
-          calculationTypeFilter === 'markup' &&
+          (calculationTypeFilter === 'markup' ||
+            calculationTypeFilter === 'internalLimit') &&
           (maximumLimit === null ||
             maximumLimit === undefined ||
             maximumLimit === 0)

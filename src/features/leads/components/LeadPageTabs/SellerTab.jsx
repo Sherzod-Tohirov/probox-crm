@@ -78,8 +78,8 @@ export default function SellerTab({
     // Oylik limit = finalLimit / muddat (agar finalLimit bo'lsa)
     // Yoki finalLimit ni oylik limit sifatida ishlatish
     if (calculationTypeFilter === 'internalLimit') {
-      if (!invoiceScoreData?.limit) return null;
-      const limit = Number(invoiceScoreData.limit);
+      if (!invoiceScoreData?.monthlyLimit) return null;
+      const limit = Number(invoiceScoreData.monthlyLimit);
       return Number.isFinite(limit) && limit > 0 ? limit : null;
     }
 
@@ -88,7 +88,11 @@ export default function SellerTab({
     }
     const limit = Number(leadData.finalLimit);
     return Number.isFinite(limit) && limit > 0 ? limit : null;
-  }, [leadData?.finalLimit, calculationTypeFilter, invoiceScoreData?.limit]);
+  }, [
+    leadData?.finalLimit,
+    calculationTypeFilter,
+    invoiceScoreData?.monthlyLimit,
+  ]);
 
   const finalPercentage = useMemo(() => {
     if (
@@ -120,9 +124,10 @@ export default function SellerTab({
   ]);
   // Disabled holatini aniqlash
   const isRentPeriodDisabled = useMemo(() => {
-    // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
+    // Agar "limit" yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa
     if (
-      calculationTypeFilter === 'markup' &&
+      (calculationTypeFilter === 'markup' ||
+        calculationTypeFilter === 'internalLimit') &&
       (maximumLimit === null ||
         maximumLimit === undefined ||
         maximumLimit === 0)
@@ -140,9 +145,10 @@ export default function SellerTab({
   }, [calculationTypeFilter, maximumLimit, finalPercentage]);
 
   const isFirstPaymentDisabled = useMemo(() => {
-    // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
+    // Agar "limit" yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa
     if (
-      calculationTypeFilter === 'markup' &&
+      (calculationTypeFilter === 'markup' ||
+        calculationTypeFilter === 'internalLimit') &&
       (maximumLimit === null ||
         maximumLimit === undefined ||
         maximumLimit === 0)

@@ -18,7 +18,12 @@ export default function FormField({
   prefix,
   rules = {},
   defaultValue = '',
+  icon = '',
   iconText = '',
+  canClickIcon = false,
+  onIconClick = () => {
+    console.log('clicked');
+  },
 }) {
   const commonProps = {
     label,
@@ -27,7 +32,10 @@ export default function FormField({
     disabled,
     dimOnDisabled,
     prefix,
+    icon,
     iconText,
+    canClickIcon,
+    onIconClick,
   };
 
   const booleanOptions = [
@@ -53,7 +61,6 @@ export default function FormField({
       control,
       error: fieldState?.error?.message,
     };
-
     switch (type) {
       case 'boolean':
         return (

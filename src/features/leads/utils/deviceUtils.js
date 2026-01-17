@@ -287,9 +287,9 @@ export const calculatePaymentDetails = ({
   }
 
   // Calculation type bo'yicha logika
-  // 1. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lmasa
+  // 1. Agar "limit" (markup) yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa
   if (
-    calculationType === 'markup' &&
+    (calculationType === 'markup' || calculationType === 'internalLimit') &&
     (maximumLimitNum === null ||
       maximumLimitNum === undefined ||
       maximumLimitNum === 0)
@@ -372,7 +372,7 @@ export const calculatePaymentDetails = ({
     };
   }
 
-  // 4. Agar "limit" (markup) tanlangan va maximum limit mavjud bo'lsa
+  // 4. Agar "limit" (markup) yoki "internalLimit" tanlangan va maximum limit mavjud bo'lsa
   // Ustama foizini olish
   const markup = getMarkupPercentage(periodNum);
 

@@ -1,0 +1,6 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+.table {
+  @include m.flex(start, start, 12px, column);
+}

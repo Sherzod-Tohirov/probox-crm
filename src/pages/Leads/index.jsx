@@ -6,7 +6,7 @@ import { Col, Row, Table } from '@components/ui';
 import LeadsToolbar from '@features/leads/components/LeadsToolbar';
 import LeadsFilter from '@features/leads/components/Filter';
 import AdvancedFilterModal from '@features/leads/components/Filter/AdvancedFilterModal';
-import AddLeadModal from '@features/leads/components/AddLeadModal';
+import AddLeadModal from '@/features/leads/components/modals/AddLeadModal';
 import LeadsPageFooter from '@features/leads/components/LeadsPageFooter';
 import useLeadsTableColumns from '@features/leads/hooks/useLeadsTableColumns';
 import useUIScale from '@/features/clients/hooks/useUIScale';
@@ -31,7 +31,7 @@ export default function Leads() {
   const { user } = useAuth();
   const role = user?.U_role;
   const { leadsTableColumns } = useLeadsTableColumns();
-  
+
   // Refs
   const leadsTableRef = useRef(null);
   const { currentPage, pageSize, filter, currentLead } = useSelector(
