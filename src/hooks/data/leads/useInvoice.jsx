@@ -330,7 +330,6 @@ export default function useInvoice(options = {}) {
             finalPercentage: finalPercentage,
             maximumLimit: maximumLimit,
           });
-
           const actualFirstPayment =
             firstPayment > 0
               ? firstPayment

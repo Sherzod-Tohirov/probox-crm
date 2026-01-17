@@ -53,21 +53,17 @@ export default function SellerTab({
   const fieldPurchase = watch('purchase');
   const fieldSellType = watch('saleType');
 
-  const {
-    branchCodeToNameMap,
-    contractWhsCode,
-    activeWhsCode,
-    branchFilterOptions,
-  } = useBranchFilters({
-    branchOptions,
-    fieldBranch,
-    searchBranchFilter,
-    leadData,
-    form,
-    watch,
-    setValue,
-    leadId,
-  });
+  const { branchCodeToNameMap, activeWhsCode, branchFilterOptions } =
+    useBranchFilters({
+      branchOptions,
+      fieldBranch,
+      searchBranchFilter,
+      leadData,
+      form,
+      watch,
+      setValue,
+      leadId,
+    });
 
   const rentPeriodOptions = useMemo(
     () =>
@@ -81,12 +77,18 @@ export default function SellerTab({
   const monthlyLimit = useMemo(() => {
     // Oylik limit = finalLimit / muddat (agar finalLimit bo'lsa)
     // Yoki finalLimit ni oylik limit sifatida ishlatish
+    if (calculationTypeFilter === 'internalLimit') {
+      if (!invoiceScoreData?.limit) return null;
+      const limit = Number(invoiceScoreData.limit);
+      return Number.isFinite(limit) && limit > 0 ? limit : null;
+    }
+
     if (leadData?.finalLimit === null || leadData?.finalLimit === undefined) {
       return null;
     }
     const limit = Number(leadData.finalLimit);
     return Number.isFinite(limit) && limit > 0 ? limit : null;
-  }, [leadData?.finalLimit]);
+  }, [leadData?.finalLimit, calculationTypeFilter, invoiceScoreData?.limit]);
 
   const finalPercentage = useMemo(() => {
     if (
@@ -100,13 +102,22 @@ export default function SellerTab({
   }, [leadData?.finalPercentage]);
 
   const maximumLimit = useMemo(() => {
+    if (calculationTypeFilter === 'internalLimit')
+      return Number(invoiceScoreData?.monthlyLimit ?? 0);
     if (leadData?.finalLimit === null || leadData?.finalLimit === undefined) {
       return null;
     }
-    const limit = Number(leadData.finalLimit);
+    const limit =
+      calculationTypeFilter === 'internalLimit'
+        ? Number(invoiceScoreData?.monthlyLimit)
+        : Number(leadData.finalLimit);
     return Number.isFinite(limit) && limit > 0 ? limit : null;
-  }, [leadData?.finalLimit]);
-
+  }, [
+    leadData?.finalLimit,
+    calculationTypeFilter,
+    invoiceScoreData?.monthlyLimit,
+    invoiceScoreData,
+  ]);
   // Disabled holatini aniqlash
   const isRentPeriodDisabled = useMemo(() => {
     // Agar "limit" tanlangan va maximum limit mavjud bo'lmasa
@@ -321,8 +332,6 @@ export default function SellerTab({
     },
     [leadId, selectedDevices, sendInvoice, calculationTypeFilter]
   );
-  console.log(leadData, 'LeadData');
-  console.log();
   useEffect(() => {
     if (!form) return;
     if (leadData) {
@@ -386,6 +395,8 @@ export default function SellerTab({
                 selectedDevicesCount={selectedDevices.length}
                 leadData={leadData}
                 branchFilterOptions={branchFilterOptions}
+                calculationTypeFilter={calculationTypeFilter}
+                internalLimit={invoiceScoreData?.monthlyLimit}
                 control={control}
                 onSearch={handleDeviceSearch}
                 onSelect={handleSelectDevice}

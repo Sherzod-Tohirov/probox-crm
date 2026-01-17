@@ -76,6 +76,8 @@ import {
   ClockFilled,
   GlobeFilled,
   Calculator,
+  CheckList,
+  Settings,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -157,6 +159,8 @@ const iconsMap = {
   meta: <Meta />,
   copy: <Download />,
   calculator: <Calculator />,
+  checkList: <CheckList />,
+  settings: <Settings />,
 };
 
 export default iconsMap;

@@ -37,6 +37,7 @@ const filterSidebarLinks = (links, user) => {
       const visibleSelf = canSee(item);
       // Keep item if itself is visible OR it has any visible children
       if (visibleSelf || (children && children.length)) {
+        if (item?.mode?.includes('dev')) return acc;
         acc.push({ ...item, ...(children ? { children } : {}) });
       }
       return acc;

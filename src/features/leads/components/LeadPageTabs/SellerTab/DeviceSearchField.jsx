@@ -13,6 +13,8 @@ import useIsMobile from '@/hooks/useIsMobile';
 export default function DeviceSearchField({
   canEdit,
   selectedDevicesCount,
+  calculationTypeFilter,
+  internalLimit,
   leadData,
   branchFilterOptions,
   control,
@@ -66,10 +68,19 @@ export default function DeviceSearchField({
     ),
     []
   );
-
-  // const getFinalLimitInfo = () => {
-      
-  // };
+  const getFinalLimitText = () => {
+    switch (calculationTypeFilter) {
+      case 'internalLimit': {
+        return `Maximum ichki limit: ${internalLimit ? formatCurrencyUZS(internalLimit) : "Ma'lumot yo'q"}`;
+      }
+      case 'firstPayment': {
+        return `Dastlabki to'lov foizi: ${leadData?.finalPercentage ? String(leadData.finalPercentage) + ' %' : "Ma'lumot yo'q"}`;
+      }
+      default: {
+        return `Maximum limit: ${leadData?.finalLimit ? formatCurrencyUZS(leadData.finalLimit) : "Ma'lumot yo'q"}`;
+      }
+    }
+  };
 
   return (
     <Row
@@ -107,10 +118,7 @@ export default function DeviceSearchField({
         <Row gutter={2}>
           <Col align={isMobile ? 'start' : 'end'}>
             <span className={styles['search-field-wrapper-inner-text']}>
-              Maximum limit:{' '}
-              {leadData?.finalLimit
-                ? formatCurrencyUZS(leadData.finalLimit)
-                : "Ma'lumot yo'q"}
+              {getFinalLimitText()}
             </span>
           </Col>
           <Col justify={'end'} align={'end'}>

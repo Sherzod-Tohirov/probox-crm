@@ -17,7 +17,7 @@ export const useSelectedDevices = ({
   maximumLimit = null,
 }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
-
+  console.log(selectedDevices, 'selectedDevices');
   const handleImeiSelect = useCallback((deviceId, value) => {
     setSelectedDevices((prev) =>
       prev.map((device) => {
@@ -401,7 +401,6 @@ export const useSelectedDevices = ({
           maximumLimit === 0)) ||
       (calculationTypeFilter === 'firstPayment' &&
         (finalPercentage === null || finalPercentage === undefined));
-    console.log(filteredDevices, 'filtered Devices');
     return filteredDevices.map((device) => ({
       id: device.id ?? device.name,
       name: device.name,
