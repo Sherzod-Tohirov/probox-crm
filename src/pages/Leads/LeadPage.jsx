@@ -44,6 +44,7 @@ import Offline from '@/pages/helper/Offline';
 import Error from '@/pages/helper/Error';
 import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 import ClientExtraInfoSection from '@/features/leads/components/LeadPageSections/ClientExtraInfoSection';
+import { LeadLimitHistoryModal } from '@/features/leads/components/modals/LeadLimitHistoryModal';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -76,6 +77,7 @@ export default function LeadPage() {
     defaultTab,
   } = useLeadPageData(id);
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [isLimitHistoryModalOpen, setLimitHistoryModalOpen] = useState(false);
   const { data: rate } = useFetchCurrency();
   const { data: invoiceScoreData } = useFetchInvoiceScore({
     CardCode: lead?.cardCode || lead?.CardCode,
@@ -151,7 +153,12 @@ export default function LeadPage() {
           />
         </div>
       </div>
-      <ClientInfoSection lead={lead} />
+      <ClientInfoSection
+        lead={lead}
+        onLimitHistoryClick={() => {
+          setLimitHistoryModalOpen(true);
+        }}
+      />
       <ClientExtraInfoSection lead={lead} onSave={handleSave} />
       <AddressSection
         lead={lead}
@@ -353,6 +360,11 @@ export default function LeadPage() {
         onLoadMore={fetchNextPage}
         hasMore={hasNextPage}
         isLoadingMore={isFetchingNextPage}
+      />
+      <LeadLimitHistoryModal
+        isOpen={isLimitHistoryModalOpen}
+        onClose={() => setLimitHistoryModalOpen(false)}
+        cardCode={lead?.cardCode}
       />
     </>
   );

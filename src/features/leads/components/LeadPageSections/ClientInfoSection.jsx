@@ -1,10 +1,9 @@
 import { Row, Col } from '@components/ui';
 import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
-import { formatToReadablePhoneNumber } from '@/utils/formatPhoneNumber';
 import formatterCurrency from '@/utils/formatterCurrency';
 
-export default function ClientInfoSection({ lead }) {
+export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
   return (
     <FieldGroup title="Mijoz ma'lumotlari">
       <Row gutter={4}>
@@ -71,12 +70,13 @@ export default function ClientInfoSection({ lead }) {
                 name="finalLimit"
                 label="Yakuniy limit"
                 control={null}
-                disabled={true}
+                icon="history"
+                canClickIcon={true}
+                onIconClick={onLimitHistoryClick}
                 span={{ xs: 24, md: 8 }}
                 defaultValue={
                   lead?.finalLimit ? formatterCurrency(lead?.finalLimit) : ''
                 }
-                iconText="so'm"
               />
             </Col>
           </Row>

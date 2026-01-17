@@ -18,6 +18,15 @@ export const getLeadById = async (id) => {
   }
 };
 
+export const getLeadLimitHistory = async (params) => {
+  try {
+    const response = await api.get(`/limit/usage`, { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const updateLead = async (id, data) => {
   try {
     const response = await api.put(`/leads/${id}`, data);

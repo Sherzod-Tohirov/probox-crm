@@ -5,7 +5,7 @@ import { Modal, Row, Col, Button, Input, Typography } from '@components/ui';
 import useFetchBranches from '@hooks/data/useFetchBranches';
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import { createLead } from '@services/leadsService';
-import FieldGroup from './LeadPageForm/FieldGroup';
+import FieldGroup from '../LeadPageForm/FieldGroup';
 import useAuth from '@/hooks/useAuth';
 import { formatUZPhone, isValidPhonenumber } from '@/utils/formatPhoneNumber';
 import useAlert from '@/hooks/useAlert';

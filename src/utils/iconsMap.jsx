@@ -78,6 +78,7 @@ import {
   Calculator,
   CheckList,
   Settings,
+  History,
 } from '@assets/images/icons/Icons';
 
 const iconsMap = {
@@ -161,6 +162,7 @@ const iconsMap = {
   calculator: <Calculator />,
   checkList: <CheckList />,
   settings: <Settings />,
+  history: <History />,
 };
 
 export default iconsMap;

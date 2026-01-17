@@ -5,10 +5,15 @@ import Typography from '../Typography';
 import Button from '../Button';
 import { forwardRef, memo, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
+import { SkeletonCard } from '../Skeleton';
+import Row from '../Row';
+import Col from '../Col';
 
 const Modal = forwardRef(function (
   {
     isOpen = false,
+    isLoading = false,
+    isEmpty = false,
     onClose = () => '',
     title,
     footer,
@@ -46,7 +51,21 @@ const Modal = forwardRef(function (
   );
 
   if (!isOpen) return null;
-
+  const getMainText = () => {
+    if (isLoading) return <SkeletonCard />;
+    if (isEmpty)
+      return (
+        <Row
+          flexGrow
+          style={{ height: '100%' }}
+        >
+          <Col fullHeight justify={'center'} align={'center'}>
+            <Typography variant="body1">Ma'lumot yo'q</Typography>
+          </Col>
+        </Row>
+      );
+    return children;
+  };
   return createPortal(
     <AnimatePresence mode="wait">
       {isOpen && (
@@ -97,7 +116,7 @@ const Modal = forwardRef(function (
                 onClick={onClose}
               ></Button>
             </div>
-            <div className={styles['modal-body']}>{children}</div>
+            <div className={styles['modal-body']}>{getMainText()}</div>
             {footer ? (
               <div className={styles['modal-footer']}>{footer}</div>
             ) : (

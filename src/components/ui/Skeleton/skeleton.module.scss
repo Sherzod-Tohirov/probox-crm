@@ -1,9 +1,10 @@
 @use '@styles/variables' as v;
 
 .skeleton {
-  background: linear-gradient(90deg, 
-    rgba(v.$primary-border-color, 0.3) 25%, 
-    rgba(v.$primary-border-color, 0.5) 50%, 
+  background: linear-gradient(
+    90deg,
+    rgba(v.$primary-border-color, 0.3) 25%,
+    rgba(v.$primary-border-color, 0.5) 50%,
     rgba(v.$primary-border-color, 0.3) 75%
   );
   background-size: 200% 100%;
@@ -18,7 +19,7 @@
 
 .skeleton-line {
   margin-bottom: 8px;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -35,7 +36,11 @@
 .skeleton-header {
   padding: 20px 24px 16px;
   border-bottom: 1px solid v.$primary-border-color;
-  background: linear-gradient(135deg, v.$primary-table-bg 0%, rgba(v.$primary-color, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    v.$primary-table-bg 0%,
+    rgba(v.$primary-color, 0.02) 100%
+  );
 }
 
 .skeleton-body {
@@ -43,7 +48,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  
+
   @media (max-width: v.$breakpoint-md) {
     padding: 20px;
   }
