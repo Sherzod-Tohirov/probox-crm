@@ -46,6 +46,13 @@ const sidebarLinks = [
     ...getRoutePermissions('/products'),
   },
   {
+    title: 'Sotib olish',
+    icon: 'checkList',
+    path: '/purchases',
+    mode: 'dev',
+    ...getRoutePermissions('/purchases'),
+  },
+  {
     title: 'Leadlar',
     icon: 'leads',
     path: '/leads',

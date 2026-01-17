@@ -13,7 +13,7 @@ export default function SellerFormFields({
   sellerOptions,
   sellTypeOptions,
   branchOptions,
-  rejectReasonOptions
+  rejectReasonOptions,
 }) {
   const isAcceptedFinalPercentage =
     Number(leadData?.finalPercentage) > 0 &&
