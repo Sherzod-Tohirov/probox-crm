@@ -17,7 +17,6 @@ function Badge(
 ) {
   // If filled prop is used, override variant
   const effectiveVariant = filled ? 'filled' : variant;
-  
   return (
     <span
       ref={ref}

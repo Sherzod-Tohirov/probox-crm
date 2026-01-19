@@ -1,0 +1,31 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+.table {
+  @include m.flex(start, start, 12px, column);
+  width: 100%;
+}
+
+.row {
+  width: 100%;
+  padding: 12px 36px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.title {
+  color: #94a3b8;
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 16px; /* 133.333% */
+}
+
+.desc {
+  font-size: 3.5rem;
+  font-weight: 400;
+  line-height: 18px; /* 128.571% */
+  &:has:not(notApplyColor) {
+    color: #1e293b;
+  }
+}

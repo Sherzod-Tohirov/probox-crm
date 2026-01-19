@@ -167,7 +167,7 @@ export function LeadLimitHistoryModal({ isOpen, onClose, cardCode }) {
   return (
     <Modal
       isLoading={isLoading}
-      isEmpty={data?.length === 0}
+      isEmpty={data ? data?.length === 0 : true}
       isOpen={isOpen}
       onClose={onClose}
       title="Yakuniy limitlar haqida"

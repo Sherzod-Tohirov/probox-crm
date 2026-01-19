@@ -1,17 +1,42 @@
 import { Col, Row, Typography } from '@/components/ui';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import classNames from 'classnames';
+import React from 'react';
 
-export function PurchasesCell({ title, children, className = '', ...props }) {
+function renderCell(children, textColor) {
+  console.log(React.isValidElement(children));
+  if (React.isValidElement(children)) {
+    return children;
+  }
+
   return (
-    <Col className={classNames(styles.cell, className)} {...props}>
-      <Row gutter={2}>
+    <Typography
+      className={classNames(styles.desc, {
+        [styles.notApplyColor]: textColor !== 'inherit',
+      })}
+      color={textColor}
+    >
+      {children}
+    </Typography>
+  );
+}
+
+export function PurchasesCell({
+  title,
+  textColor = 'inherit',
+  children,
+  className = '',
+  ...props
+}) {
+  return (
+    <Col fullWidth className={classNames(styles.cell, className)} {...props}>
+      <Row gutter={0.5}>
         <Col>
-          <Typography variant="body1" element="h5">
+          <Typography className={styles.title} element="h5">
             {title}
           </Typography>
         </Col>
-        <Col>{children}</Col>
+        <Col>{renderCell(children, textColor)}</Col>
       </Row>
     </Col>
   );

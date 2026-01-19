@@ -22,7 +22,14 @@ export default function useInvoice(options = {}) {
       internalLimit,
     }) => {
       // 1. Lead ma'lumotlarini olish
-      const leadResponse = await getLeadById(leadId);
+      let leadResponse;
+      try {
+        leadResponse = await getLeadById(leadId);
+      } catch (error) {
+        console.error('Lead data fetch failed:', error);
+        throw new Error("Lead ma'lumotlarini olishda xatolik yuz berdi");
+      }
+
       const leadData = leadResponse?.data || leadResponse;
 
       if (!leadData) {
@@ -188,6 +195,10 @@ export default function useInvoice(options = {}) {
                 }
               } catch (error) {
                 // Serial number bo'lmasa ham davom etamiz
+                console.warn(
+                  `Serial number fetch failed for device ${device.name}:`,
+                  error
+                );
               }
             }
           }
@@ -264,6 +275,7 @@ export default function useInvoice(options = {}) {
           }
         } catch (error) {
           // Xatolik bo'lsa ham davom etamiz
+          console.warn('Seller name fetch failed:', error);
         }
       }
 
@@ -461,14 +473,26 @@ export default function useInvoice(options = {}) {
         finalPercentage: finalPercentage, // Final percentage (Foiz holatida)
         maximumLimit: maximumLimit, // Maximum limit
       };
-      console.log(invoiceData, 'invoice data');
+      // console.log(invoiceData, 'invoice data');
       // Payments array'ni qo'shish (agar mavjud bo'lsa)
       if (payments && Array.isArray(payments) && payments.length > 0) {
         invoiceData.payments = payments;
+      } else {
+        console.warn('No payments provided or payments array is empty');
       }
 
       // 10. Invoice yuborish
-      const invoiceResponse = await createInvoiceTest(invoiceData);
+      let invoiceResponse;
+      try {
+        invoiceResponse = await createInvoiceTest(invoiceData);
+        console.log('Invoice created successfully:', invoiceResponse);
+      } catch (error) {
+        console.error('Invoice creation failed:', error);
+        console.error('Invoice data that failed:', invoiceData);
+        throw new Error(
+          `Invoice yaratishda xatolik: ${error.message || "Noma'lum xatolik"}`
+        );
+      }
 
       // 11. Invoice ma'lumotlarini qaytarish (PDF fayl yaratish uchun)
       return {

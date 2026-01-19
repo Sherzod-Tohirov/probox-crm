@@ -309,6 +309,59 @@ export default function SellerTab({
         return;
       }
 
+      // // Validate required lead data
+      // if (!leadData?.cardCode) {
+      //   alert(
+      //     "Mijoz CardCode mavjud emas. Iltimos, mijoz ma'lumotlarini to'ldiring.",
+      //     { type: 'error' }
+      //   );
+      //   return;
+      // }
+
+      if (!leadData?.clientPhone) {
+        alert('Mijoz telefon raqami mavjud emas', { type: 'error' });
+        return;
+      }
+
+      if (!leadData?.clientName && !leadData?.clientFullName) {
+        alert('Mijoz ismi mavjud emas', { type: 'error' });
+        return;
+      }
+
+      // Validate payment amounts
+      const totalPayment =
+        (paymentData.cash || 0) +
+        (paymentData.card || 0) +
+        (paymentData.terminal || 0);
+      if (totalPayment === 0) {
+        alert("To'lov summasi kiritilmagan", { type: 'error' });
+        return;
+      }
+
+      // Validate devices have required fields
+      const invalidDevices = selectedDevices.filter((d) => {
+        const hasPrice = d.price && parseInt(d.price) > 0;
+        const hasPeriod = d.rentPeriod && parseInt(d.rentPeriod) > 0;
+        const hasImei = d.imeiValue;
+        return !hasPrice || !hasPeriod || !hasImei;
+      });
+
+      if (invalidDevices.length > 0) {
+        const missingFields = [];
+        invalidDevices.forEach((d) => {
+          const missing = [];
+          if (!d.price || d.price <= 0) missing.push('narx');
+          if (!d.rentPeriod || d.rentPeriod <= 0) missing.push('ijara muddati');
+          if (!d.imeiValue) missing.push('IMEI');
+          missingFields.push(`${d.name || 'Qurilma'}: ${missing.join(', ')}`);
+        });
+        alert(
+          `Ba\'zi qurilmalarda ma\'lumotlar to\'liq emas:\n${missingFields.join('\n')}`,
+          { type: 'error' }
+        );
+        return;
+      }
+
       try {
         // Payments array'ni formatlash
         const payments = [];
@@ -328,15 +381,23 @@ export default function SellerTab({
           selectedDevices,
           paymentType,
           calculationTypeFilter,
-          internalLimit: invoiceScoreData.limit,
+          internalLimit: invoiceScoreData?.limit,
           payments,
         });
         setIsInvoiceModalOpen(false);
       } catch (error) {
         // Error already handled in onError callback
+        console.error('Invoice send error:', error);
       }
     },
-    [leadId, selectedDevices, sendInvoice, calculationTypeFilter]
+    [
+      leadId,
+      selectedDevices,
+      sendInvoice,
+      calculationTypeFilter,
+      invoiceScoreData,
+      leadData,
+    ]
   );
   useEffect(() => {
     if (!form) return;

@@ -1,13 +1,16 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Modal, Row, Col, Typography, Input, Button } from '@components/ui';
-import { formatCurrencyUZS, extractNumericValue, formatNumberWithSeparators, resolveItemCode } from '../../../utils/deviceUtils';
+import {
+  formatCurrencyUZS,
+  extractNumericValue,
+  formatNumberWithSeparators,
+  resolveItemCode,
+} from '../../../utils/deviceUtils';
 import styles from './invoicePaymentModal.module.scss';
 import { Magnet } from 'lucide-react';
 import { createInvoiceTest } from '@/services/invoiceService';
 import { alert } from '@/utils/globalAlert';
 import moment from 'moment';
-
-
 
 export default function InvoicePaymentModal({
   isOpen,
@@ -24,10 +27,17 @@ export default function InvoicePaymentModal({
   const totalFirstPayment = useMemo(() => {
     return selectedDeviceData.reduce((sum, device) => {
       const firstPayment = device.firstPayment;
-      if (firstPayment === '' || firstPayment === null || firstPayment === undefined) {
+      if (
+        firstPayment === '' ||
+        firstPayment === null ||
+        firstPayment === undefined
+      ) {
         return sum;
       }
-      const numericValue = typeof firstPayment === 'number' ? firstPayment : extractNumericValue(firstPayment);
+      const numericValue =
+        typeof firstPayment === 'number'
+          ? firstPayment
+          : extractNumericValue(firstPayment);
       return sum + (numericValue || 0);
     }, 0);
   }, [selectedDeviceData]);
@@ -40,7 +50,8 @@ export default function InvoicePaymentModal({
   // Input formatlangan qiymatni qaytarish
   const formatInputValue = useCallback((value) => {
     if (!value || value === 0) return '';
-    const numericValue = typeof value === 'number' ? value : extractNumericValue(value);
+    const numericValue =
+      typeof value === 'number' ? value : extractNumericValue(value);
     return numericValue ? formatNumberWithSeparators(numericValue) : '';
   }, []);
 
@@ -53,32 +64,35 @@ export default function InvoicePaymentModal({
   }, []);
 
   // Magnit icon bosilganda qolgan summani hisoblash
-  const handleMagnetClick = useCallback((type) => {
-    const currentCash = cashPayment || 0;
-    const currentCard = cardPayment || 0;
-    const currentTerminal = terminalPayment || 0;
+  const handleMagnetClick = useCallback(
+    (type) => {
+      const currentCash = cashPayment || 0;
+      const currentCard = cardPayment || 0;
+      const currentTerminal = terminalPayment || 0;
 
-    // Boshqa inputlardagi summalarni hisoblash
-    let otherPayments = 0;
-    if (type === 'cash') {
-      otherPayments = currentCard + currentTerminal;
-    } else if (type === 'card') {
-      otherPayments = currentCash + currentTerminal;
-    } else if (type === 'terminal') {
-      otherPayments = currentCash + currentCard;
-    }
+      // Boshqa inputlardagi summalarni hisoblash
+      let otherPayments = 0;
+      if (type === 'cash') {
+        otherPayments = currentCard + currentTerminal;
+      } else if (type === 'card') {
+        otherPayments = currentCash + currentTerminal;
+      } else if (type === 'terminal') {
+        otherPayments = currentCash + currentCard;
+      }
 
-    // Qolgan summani hisoblash
-    const remaining = Math.max(0, totalFirstPayment - otherPayments);
+      // Qolgan summani hisoblash
+      const remaining = Math.max(0, totalFirstPayment - otherPayments);
 
-    if (type === 'cash') {
-      setCashPayment(remaining);
-    } else if (type === 'card') {
-      setCardPayment(remaining);
-    } else if (type === 'terminal') {
-      setTerminalPayment(remaining);
-    }
-  }, [cashPayment, cardPayment, terminalPayment, totalFirstPayment]);
+      if (type === 'cash') {
+        setCashPayment(remaining);
+      } else if (type === 'card') {
+        setCardPayment(remaining);
+      } else if (type === 'terminal') {
+        setTerminalPayment(remaining);
+      }
+    },
+    [cashPayment, cardPayment, terminalPayment, totalFirstPayment]
+  );
 
   // Jami kiritilgan to'lov
   const totalEntered = useMemo(() => {
@@ -101,28 +115,28 @@ export default function InvoicePaymentModal({
   // To'lov ma'lumotlarini formatlash
   const formatPayments = useCallback(() => {
     const payments = [];
-    
+
     if (cashPayment > 0) {
       payments.push({
         type: 'Cash',
         amount: cashPayment,
       });
     }
-    
+
     if (cardPayment > 0) {
       payments.push({
         type: 'Card',
         amount: cardPayment,
       });
     }
-    
+
     if (terminalPayment > 0) {
       payments.push({
         type: 'Terminal',
         amount: terminalPayment,
       });
     }
-    
+
     return payments;
   }, [cashPayment, cardPayment, terminalPayment]);
 
@@ -144,13 +158,7 @@ export default function InvoicePaymentModal({
 
     // Agar onConfirm bo'lmasa, to'g'ridan-to'g'ri yuborish (bu holat bo'lmasligi kerak)
     alert('Xatolik: onConfirm funksiyasi topilmadi', { type: 'error' });
-  }, [
-    isPaymentComplete,
-    cashPayment,
-    cardPayment,
-    terminalPayment,
-    onConfirm,
-  ]);
+  }, [isPaymentComplete, cashPayment, cardPayment, terminalPayment, onConfirm]);
 
   // Modal footer
   const modalFooter = (
@@ -188,10 +196,11 @@ export default function InvoicePaymentModal({
             Diqqat siz ushbu{' '}
             {selectedDeviceData.length === 1 && selectedDeviceData[0]?.name ? (
               <>
-                '<strong>{selectedDeviceData[0].name}</strong>' qurilmasi bo'yicha
+                '<strong>{selectedDeviceData[0].name}</strong>' qurilmasi
+                bo'yicha
               </>
             ) : (
-              'qurilmalari bo\'yicha'
+              "qurilmalari bo'yicha"
             )}{' '}
             boshlang'ich{' '}
             <strong className={styles['amount-highlight']}>
@@ -278,8 +287,8 @@ export default function InvoicePaymentModal({
         {/* Success message */}
         {isPaymentComplete && (
           <div className={styles['success-message']}>
-            <Row align="center" gap={5} justify="center" direction="row" >
-              <span className={styles['check-icon']} >✓</span>
+            <Row align="center" gap={5} justify="center" direction="row">
+              <span className={styles['check-icon']}>✓</span>
               <Typography element="p" className={styles['success-text']}>
                 Shartnoma tuzish uchun hamma narsa yetarli 😊
               </Typography>
@@ -290,4 +299,3 @@ export default function InvoicePaymentModal({
     </Modal>
   );
 }
-

@@ -32,6 +32,10 @@ $extrasuccess-color: var(--extrasuccess-color);
 $info-bg: var(--info-bg);
 $info-color: var(--info-color);
 
+// Warning colors
+$warning-bg: var(--warning-bg);
+$warning-color: var(--warning-color);
+
 // Danger colors
 $danger-bg: var(--danger-bg);
 $danger-color: var(--danger-color);
@@ -67,7 +71,9 @@ $primary-input-bg: var(--primary-input-bg);
 $filter-input-bg: var(--filter-input-bg);
 $filter-input-color: var(--filter-input-color);
 $filter-input-placeholder-color: var(--filter-input-placeholder-color);
-$filter-input-placeholder-color-secondary: var(--filter-input-placeholder-color-secondary);
+$filter-input-placeholder-color-secondary: var(
+  --filter-input-placeholder-color-secondary
+);
 $filter-input-border-color: var(--filter-input-border-color);
 
 // Define breakpoints as a Sass map

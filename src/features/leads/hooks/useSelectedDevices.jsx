@@ -17,7 +17,6 @@ export const useSelectedDevices = ({
   maximumLimit = null,
 }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
-  console.log(selectedDevices, 'selectedDevices');
   const handleImeiSelect = useCallback((deviceId, value) => {
     setSelectedDevices((prev) =>
       prev.map((device) => {

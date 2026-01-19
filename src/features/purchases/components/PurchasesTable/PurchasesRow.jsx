@@ -1,5 +1,5 @@
 import { Row } from '@/components/ui';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 /**
  *
