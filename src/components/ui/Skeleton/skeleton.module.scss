@@ -3,12 +3,13 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(v.$primary-border-color, 0.3) 25%,
+    v.$primary-border-color 0%,
     rgba(v.$primary-border-color, 0.5) 50%,
-    rgba(v.$primary-border-color, 0.3) 75%
+    v.$primary-border-color 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 1.2s ease-in-out infinite;
+  opacity: 0.6;
 }
 
 .skeleton-text {

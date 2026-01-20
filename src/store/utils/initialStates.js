@@ -51,3 +51,7 @@ export const initialProductsFilterState = {
   search: '',
   condition: '',
 };
+
+export const initialPurchasesFilterState = {
+  search: '',
+};

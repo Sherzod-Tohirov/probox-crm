@@ -58,6 +58,7 @@ export const calculatePaymentData = (
                 : null,
         });
 
+
         grandTotal += paymentDetails.grandTotal;
         // Use calculatedFirstPayment from paymentDetails which already handles manual vs calculated logic
         const actualFirstPayment = paymentDetails.calculatedFirstPayment;

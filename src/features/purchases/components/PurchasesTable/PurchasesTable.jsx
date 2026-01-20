@@ -1,4 +1,4 @@
-import { Badge, Card, Col, Row, Typography } from '@/components/ui';
+import { Badge, Card, Col, Row, Typography, Skeleton } from '@/components/ui';
 import styles from './styles.module.scss';
 import { PurchasesRow } from './PurchasesRow';
 import { PurchasesCell } from './PurchasesCell';
@@ -29,8 +29,49 @@ function NoData({ title }) {
   );
 }
 
+function LoadingSkeleton() {
+  return (
+    <PurchasesWrapper>
+      {[...Array(10)].map((_, index) => (
+        <PurchasesRow key={index}>
+          <PurchasesCell span={2} title={'Ariza raqami'}>
+            <Skeleton width="80%" height="18px" borderRadius="6px" />
+          </PurchasesCell>
+          <PurchasesCell span={4} title={'Yetkazib beruvchi'}>
+            <Skeleton width="90%" height="18px" borderRadius="6px" />
+          </PurchasesCell>
+          <PurchasesCell span={6} title={'Kategoriyalar'}>
+            <Row direction="row" gutter={2}>
+              <Col>
+                <Skeleton width="80px" height="24px" borderRadius="12px" />
+              </Col>
+              <Col>
+                <Skeleton width="100px" height="24px" borderRadius="12px" />
+              </Col>
+            </Row>
+          </PurchasesCell>
+          <PurchasesCell span={3} title="Mahsulot soni">
+            <Skeleton width="60%" height="18px" borderRadius="6px" />
+          </PurchasesCell>
+          <PurchasesCell span={3} title="Yaratilgan sana">
+            <Skeleton width="70%" height="18px" borderRadius="6px" />
+          </PurchasesCell>
+          <PurchasesCell span={3} title="Umumiy narx">
+            <Skeleton width="85%" height="18px" borderRadius="6px" />
+          </PurchasesCell>
+          <PurchasesCell span={3} title="Status">
+            <Skeleton width="75%" height="24px" borderRadius="12px" />
+          </PurchasesCell>
+        </PurchasesRow>
+      ))}
+    </PurchasesWrapper>
+  );
+}
+
 const statusColorMap = {
   Tasdiqlangan: 'success',
+  Kutilmoqda: 'warning',
+  'Rad etilgan': 'danger',
   waiting: 'warning',
   declined: 'danger',
 };
@@ -38,9 +79,15 @@ const statusColorMap = {
 const categoryColorMap = {
   Telefonlar: 'info',
   'Maishiy texnika': 'warning',
+  Kompyuterlar: 'success',
+  Aksessuarlar: 'black',
 };
 
-export function PurchasesTable({ data }) {
+export function PurchasesTable({ data, isLoading = false }) {
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
   if (!data?.length) {
     return <NoData />;
   }
@@ -54,9 +101,9 @@ export function PurchasesTable({ data }) {
     const visibleCategories =
       categories.length <= 2 ? categories : [...categories.slice(0, 2), '...'];
 
-    return visibleCategories.map((category) => {
+    return visibleCategories.map((category, index) => {
       return (
-        <Col>
+        <Col key={`${category}-${index}`}>
           <Badge color={categoryColorMap[category] || 'black'}>
             {category}
           </Badge>
@@ -67,9 +114,9 @@ export function PurchasesTable({ data }) {
 
   return (
     <PurchasesWrapper>
-      {data.map((item) => {
+      {data.map((item, index) => {
         return (
-          <PurchasesRow>
+          <PurchasesRow key={item.id || index}>
             <PurchasesCell span={2} title={'Ariza raqami'}>
               {item.contract_no}
             </PurchasesCell>

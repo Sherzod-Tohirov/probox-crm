@@ -9,13 +9,13 @@
 .row {
   width: 100%;
   padding: 12px 36px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: v.$sixth-bg;
+  border: 1px solid v.$fourth-border-color;
   border-radius: 16px;
 }
 
 .title {
-  color: #94a3b8;
+  color: v.$eighth-color;
   font-size: 3rem;
   font-weight: 300;
   line-height: 16px; /* 133.333% */
@@ -26,6 +26,6 @@
   font-weight: 400;
   line-height: 18px; /* 128.571% */
   &:has:not(notApplyColor) {
-    color: #1e293b;
+    color: v.$nineth-color;
   }
 }

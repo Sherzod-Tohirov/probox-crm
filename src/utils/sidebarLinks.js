@@ -49,7 +49,7 @@ const sidebarLinks = [
     title: 'Sotib olish',
     icon: 'checkList',
     path: '/purchases',
-    // mode: 'dev',
+    mode: 'dev',
     ...getRoutePermissions('/purchases'),
   },
   {

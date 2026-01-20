@@ -54,6 +54,7 @@ export default function useInvoice(options = {}) {
         leadData?.finalPercentage !== undefined
           ? Number(leadData.finalPercentage) || null
           : null;
+
       // maximumLimit - agar monthlyLimit bo'lsa, uni ishlatamiz, aks holda finalLimit
       let maximumLimit =
         leadData?.finalLimit !== null && leadData?.finalLimit !== undefined
@@ -342,10 +343,21 @@ export default function useInvoice(options = {}) {
             finalPercentage: finalPercentage,
             maximumLimit: maximumLimit,
           });
-          const actualFirstPayment =
-            firstPayment > 0
-              ? firstPayment
-              : paymentDetails.calculatedFirstPayment;
+
+          console.log('Device payment calculation:', {
+            deviceName: device.name,
+            price,
+            period,
+            calculationType,
+            finalPercentage,
+            maximumLimit,
+            calculatedFirstPayment: paymentDetails.calculatedFirstPayment,
+            monthlyPayment: paymentDetails.monthlyPayment,
+            grandTotal: paymentDetails.grandTotal,
+          });
+
+          // Always use calculatedFirstPayment as it handles both manual and automatic scenarios with proper rounding
+          const actualFirstPayment = paymentDetails.calculatedFirstPayment;
           grandTotal += paymentDetails.grandTotal || 0;
           totalFirstPayment += actualFirstPayment || 0;
 
@@ -469,7 +481,8 @@ export default function useInvoice(options = {}) {
         U_FirstPayment: cashSum,
         DocRate: docRate, // Dollar kursi
         paymentType: paymentType || '', // To'lov turi
-        usedType: limitMap[calculationType], // Xisoblash turi (markup yoki firstPayment)
+        calculationType: calculationType, // Xisoblash turi (markup, internalLimit yoki firstPayment)
+        usedType: limitMap[calculationType], // SAP uchun ko'rinish (finalLimit / internaLimit / percentage)
         finalPercentage: finalPercentage, // Final percentage (Foiz holatida)
         maximumLimit: maximumLimit, // Maximum limit
       };
