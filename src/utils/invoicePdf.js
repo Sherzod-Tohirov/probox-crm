@@ -10,8 +10,13 @@
  * @param {Array} invoiceData.DocumentLines - Qurilmalar ro'yxati
  */
 
-import { imageToBase64,  pdfMake } from './pdfHelpers';
-import { calculatePaymentData, calculatePaymentSchedule, getDateInfo } from './invoicePdfCalculations';
+import { imageToBase64, pdfMake } from './pdfHelpers';
+import {
+  calculatePaymentData,
+  calculatePaymentSchedule,
+  getDateInfo,
+} from './invoicePdfCalculations';
+import { numberToWordsUZ, numberToWordsRU } from './numberToWords';
 import QRCode from 'qrcode';
 
 // pdfmake uzun "bitta so'z"larni (bo'sh joysiz) satrga bo'la olmaydi va matn kesilib qoladi.
@@ -34,12 +39,12 @@ export const generateInvoicePdf = async (invoiceData) => {
   if (!invoiceData) {
     throw new Error('invoiceData topilmadi');
   }
-  
-  const { 
-    clientName, 
-    clientPhone, 
+
+  const {
+    clientName,
+    clientPhone,
     cardCode = invoiceData.CardCode,
-    leadId, 
+    leadId,
     invoiceDocNum,
     jshshir = '',
     passportId = '',
@@ -48,21 +53,22 @@ export const generateInvoicePdf = async (invoiceData) => {
     currentUser = null,
     userSignature = null,
     DocumentLines = [],
-    selectedDevices = []
+    selectedDevices = [],
   } = invoiceData;
-  
+
   // Agar sellerName bo'sh bo'lsa, currentUser dan olamiz
   const finalSellerName = sellerName || currentUser?.SlpName || '';
 
   try {
     // QR kodni yaratish - contract sahifasiga link
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://work-api.probox.uz/api';
+    const apiBaseUrl =
+      import.meta.env.VITE_API_URL || 'https://work-api.probox.uz/api';
     // /api qismini olib tashlaymiz agar mavjud bo'lsa
     const baseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
-    const qrCodeUrl = invoiceDocNum 
+    const qrCodeUrl = invoiceDocNum
       ? `${baseUrl}/api/public/contracts/${invoiceDocNum}`
       : null;
-    
+
     let qrCodeImage = null;
     if (qrCodeUrl) {
       try {
@@ -78,21 +84,21 @@ export const generateInvoicePdf = async (invoiceData) => {
         console.error('QR kod yaratishda xatolik:', error);
       }
     }
-    
+
     // To'lov ma'lumotlarini hisoblash
     const calculationType = invoiceData.calculationType || 'markup';
     const finalPercentage = invoiceData.finalPercentage || null;
     const maximumLimit = invoiceData.maximumLimit || null;
-    
+
     const paymentData = calculatePaymentData(
-      selectedDevices, 
-      DocumentLines, 
+      selectedDevices,
+      DocumentLines,
       invoiceData.monthlyLimit,
       calculationType,
       finalPercentage,
       maximumLimit
     );
-    const {
+    let {
       maxPeriod,
       grandTotal,
       grandTotalFormatted,
@@ -106,9 +112,33 @@ export const generateInvoicePdf = async (invoiceData) => {
       remainingAmountWordsRU,
     } = paymentData;
 
+    // Agar useInvoice ichida hisoblangan umumiy birinchi to'lov (CashSum) mavjud bo'lsa,
+    // PDF dagi birinchi to'lov matnini aynan shu qiymatga tenglashtiramiz.
+    // Bu qo'lda o'zgartirilgan firstPayment qiymatlari bilan PDF har doim mos bo'lishini ta'minlaydi.
+    // console.log('=== PDF GENERATION ===', {
+    //   'invoiceData.CashSum': invoiceData.CashSum,
+    //   'invoiceData.calculationType': invoiceData.calculationType,
+    //   'Before override - firstPaymentFormatted': firstPaymentFormatted,
+    // });
+
+    if (invoiceData.CashSum !== undefined && invoiceData.CashSum !== null) {
+      const cashSumNumber = Number(invoiceData.CashSum) || 0;
+      const normalizedCashSum = Math.round(cashSumNumber);
+
+      firstPaymentFormatted = normalizedCashSum.toLocaleString('uz-UZ');
+      firstPaymentWordsUZ = numberToWordsUZ(normalizedCashSum);
+      firstPaymentWordsRU = numberToWordsRU(normalizedCashSum);
+
+      // console.log('=== PDF OVERRIDE APPLIED ===', {
+      //   cashSumNumber,
+      //   normalizedCashSum,
+      //   'After override - firstPaymentFormatted': firstPaymentFormatted,
+      // });
+    }
+
     // To'lov jadvalini hisoblash
     const paymentSchedule = calculatePaymentSchedule(
-      selectedDevices, 
+      selectedDevices,
       invoiceData.monthlyLimit,
       calculationType,
       finalPercentage,
@@ -119,17 +149,30 @@ export const generateInvoicePdf = async (invoiceData) => {
       (acc, item) => acc + (Number(item?.amount) || 0),
       0
     );
-    const paymentScheduleTotalFormatted = Math.round(paymentScheduleTotal).toLocaleString('uz-UZ');
+    const paymentScheduleTotalFormatted =
+      Math.round(paymentScheduleTotal).toLocaleString('uz-UZ');
 
     // Sana ma'lumotlari
     const { day, month, monthRu, year } = getDateInfo();
 
     // IMEI ma'lumotlari
-    const imei1 = DocumentLines[0]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
-    const imei2 = DocumentLines[1]?.SerialNumbers?.[0]?.ManufacturerSerialNumber || '_______________________';
+    const imei1 =
+      DocumentLines[0]?.SerialNumbers?.[0]?.ManufacturerSerialNumber ||
+      '_______________________';
+    const imei2 =
+      DocumentLines[1]?.SerialNumbers?.[0]?.ManufacturerSerialNumber ||
+      '_______________________';
     // Telefon nomini olish - avval selectedDevices'dan, keyin DocumentLines'dan
-    const itemName1 = selectedDevices[0]?.name || DocumentLines[0]?.ItemName || DocumentLines[0]?.ItemCode || '_______________________';
-    const itemName2 = selectedDevices[1]?.name || DocumentLines[1]?.ItemName || DocumentLines[1]?.ItemCode || '_______________________';
+    const itemName1 =
+      selectedDevices[0]?.name ||
+      DocumentLines[0]?.ItemName ||
+      DocumentLines[0]?.ItemCode ||
+      '_______________________';
+    const itemName2 =
+      selectedDevices[1]?.name ||
+      DocumentLines[1]?.ItemName ||
+      DocumentLines[1]?.ItemCode ||
+      '_______________________';
 
     // PDF document definition
     const docDefinition = {
@@ -140,12 +183,12 @@ export const generateInvoicePdf = async (invoiceData) => {
         fontSize: 9,
         lineHeight: 1.2,
       },
-      footer: function(currentPage, pageCount) {
+      footer: function (currentPage, pageCount) {
         return {
           text: currentPage.toString(),
           alignment: 'center',
           fontSize: 9,
-          margin: [0, 10, 0, 0]
+          margin: [0, 10, 0, 0],
         };
       },
       content: [
@@ -155,10 +198,18 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: 'Muddatli to\'lov asosida\n', fontSize: 12, bold: true },
-                { text: 'sotish-xarid qilish shartnomasi\n', fontSize: 12, bold: true },
+                { text: "Muddatli to'lov asosida\n", fontSize: 12, bold: true },
+                {
+                  text: 'sotish-xarid qilish shartnomasi\n',
+                  fontSize: 12,
+                  bold: true,
+                },
                 { text: '№ ', fontSize: 10 },
-                { text: `${invoiceDocNum  || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                {
+                  text: `${invoiceDocNum || '___________________________'}\n\n`,
+                  fontSize: 10,
+                  bold: true,
+                },
                 { text: 'Toshkent sh.   "', fontSize: 10 },
                 { text: `${day}`, fontSize: 10, bold: true },
                 { text: `" ${month} `, fontSize: 10 },
@@ -169,14 +220,30 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '(FISH) ', fontSize: 9 },
-                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientName || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'pasport/id: ', fontSize: 9 },
-                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                {
+                  text: `${passportId || '______________'}`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: ', JSHSHIR) ', fontSize: 9 },
-                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${jshshir || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'pasport berilgan sana)da berilgan,\n', fontSize: 9 },
                 { text: '(yashash manzili) ', fontSize: 9 },
-                { text: `${clientAddress || '_______________________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientAddress || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 {
                   text: 'manzilda istiqomat qiluvchi, O\'zbekiston Respublikasi fuqarosi, keyingi o\'rinlarda "Xaridor" deb ataluvchi boshqa tomondan, ushbu shartnomani quyidagilar haqida tuzdilar:\n\n',
                   fontSize: 9,
@@ -189,7 +256,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: 'Договор купли-продажи\n', fontSize: 12, bold: true },
                 { text: 'на основе рассрочки\n', fontSize: 12, bold: true },
                 { text: '№ ', fontSize: 10 },
-                { text: `${invoiceDocNum  || '___________________________'}\n\n`, fontSize: 10, bold: true },
+                {
+                  text: `${invoiceDocNum || '___________________________'}\n\n`,
+                  fontSize: 10,
+                  bold: true,
+                },
                 { text: 'г. Ташкент   "', fontSize: 10 },
                 { text: `${day}`, fontSize: 10, bold: true },
                 { text: `" ${monthRu} `, fontSize: 10 },
@@ -200,14 +271,30 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 { text: '(ФИО) ', fontSize: 9 },
-                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientName || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'серия и номер паспорта/id: ', fontSize: 9 },
-                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                {
+                  text: `${passportId || '______________'}`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: ', ЖШШИР) ', fontSize: 9 },
-                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${jshshir || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'выдан ____________(дата выдачи),\n', fontSize: 9 },
                 { text: 'проживающий по адресу: ', fontSize: 9 },
-                { text: `${clientAddress || '_______________________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientAddress || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 {
                   text: 'далее именуемый "Покупатель", с другой стороны, заключили настоящий Договор о нижеследующем:\n\n',
                   fontSize: 9,
@@ -226,15 +313,18 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: '1. SHARTNOMA PREDMETI\n', fontSize: 10, bold: true },
                 {
-                  text: '1.1.Sotuvchi Tovar (keyingi o\'rinlarda "Tovar" deb yuritiladi): va uning to\'plamiga kiruvchi aksessuarlarni va hujjatlari Xaridorga foydalanishi uchun topshirish, Xaridor esa Tovar qiymatini ushbu Shartnomada ko\'rsatilgan shartlarda va miqdorda to\'lash majburiyatini oladi.\n\n',
+                  text: "1.1.Sotuvchi Tovar (keyingi o'rinlarda \"Tovar\" deb yuritiladi): va uning to'plamiga kiruvchi aksessuarlarni va hujjatlari Xaridorga foydalanishi uchun topshirish, Xaridor esa Tovar qiymatini ushbu Shartnomada ko'rsatilgan shartlarda va miqdorda to'lash majburiyatini oladi.\n\n",
                   fontSize: 9,
                 },
-                { text: '1.2.Sotilgan tovar haqida ma\'lumot:\n', fontSize: 9 },
+                { text: "1.2.Sotilgan tovar haqida ma'lumot:\n", fontSize: 9 },
                 { text: `${itemName1} `, fontSize: 9, bold: true },
                 { text: 'IMEI 1 код: ', fontSize: 9 },
                 { text: `${imei1}\n`, fontSize: 9, bold: true },
                 {
-                  text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
+                  text:
+                    DocumentLines.length > 1
+                      ? `IMEI 2 код: ${imei2}\n\n`
+                      : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
                 },
               ],
@@ -247,12 +337,18 @@ export const generateInvoicePdf = async (invoiceData) => {
                   text: '1.1. Продавец обязуется передать Покупателю Товар (далее по тексту "Товар") и входящие в его состав аксессуары и документы, а Покупатель, в свою очередь, обязуется оплатить стоимость Товара на условиях настоящего Договора.\n\n',
                   fontSize: 9,
                 },
-                { text: '1.2. Информация о продаваемом Товаре:\n', fontSize: 9 },
+                {
+                  text: '1.2. Информация о продаваемом Товаре:\n',
+                  fontSize: 9,
+                },
                 { text: `${itemName1} `, fontSize: 9, bold: true },
                 { text: 'IMEI 1 код: ', fontSize: 9 },
                 { text: `${imei1}\n`, fontSize: 9, bold: true },
                 {
-                  text: DocumentLines.length > 1 ? `IMEI 2 код: ${imei2}\n\n` : 'IMEI 2 код: _____________________________\n\n',
+                  text:
+                    DocumentLines.length > 1
+                      ? `IMEI 2 код: ${imei2}\n\n`
+                      : 'IMEI 2 код: _____________________________\n\n',
                   fontSize: 9,
                 },
               ],
@@ -267,7 +363,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '2. SHARTNOMA QIYMATI VA TO\'LOV TARTIBI\n', fontSize: 10, bold: true },
+                {
+                  text: "2. SHARTNOMA QIYMATI VA TO'LOV TARTIBI\n",
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '2.1.Shartnoma imzolangan kunida Tovarning umumiy qiymati ',
                   fontSize: 9,
@@ -275,8 +375,12 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${grandTotalFormatted} `, bold: true },
-                    { text: `(${grandTotalWordsUZ} so\'m) `, fontSize: 8, italics: true },
-                    { text: 'so\'mni tashkil qiladi.\n\n', bold: true },
+                    {
+                      text: `(${grandTotalWordsUZ} so\'m) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
+                    { text: "so'mni tashkil qiladi.\n\n", bold: true },
                   ],
                   fontSize: 9,
                 },
@@ -287,8 +391,12 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${firstPaymentFormatted} `, bold: true },
-                    { text: `(${firstPaymentWordsUZ} so\'m) `, fontSize: 8, italics: true },
-                    { text: 'so\'m to\'lovni amalga oshiradi.\n\n', bold: true },
+                    {
+                      text: `(${firstPaymentWordsUZ} so\'m) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
+                    { text: "so'm to'lovni amalga oshiradi.\n\n", bold: true },
                   ],
                   fontSize: 9,
                 },
@@ -299,8 +407,12 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${remainingAmountFormatted} `, bold: true },
-                    { text: `(${remainingAmountWordsUZ} so\'m) `, fontSize: 8, italics: true },
-                    { text: 'so\'m qiymatini ', bold: true },
+                    {
+                      text: `(${remainingAmountWordsUZ} so\'m) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
+                    { text: "so'm qiymatini ", bold: true },
                   ],
                   fontSize: 9,
                 },
@@ -310,7 +422,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   bold: true,
                 },
                 {
-                  text: 'To\'lov jadvali (1-Ilova) buyicha to\'lov qilishga majbur.\n\n',
+                  text: "To'lov jadvali (1-Ilova) buyicha to'lov qilishga majbur.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -327,19 +439,19 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '2.5. Yuqorida ko\'rsatilgan ustama miqdori Tovarning qolgan narxiga (2.3-band) nisbatan hisoblanadi. To\'lovlar teng miqdordagi (annuitet) to\'lovlar usuli buyicha hisoblanadi.\n\n',
+                  text: "2.5. Yuqorida ko'rsatilgan ustama miqdori Tovarning qolgan narxiga (2.3-band) nisbatan hisoblanadi. To'lovlar teng miqdordagi (annuitet) to'lovlar usuli buyicha hisoblanadi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '2.6. Xaridor muddatidan oldin to\'liq yoki qisman to\'lovni amalga oshirish huquqiga ega. Bunda, muddatidan oldin to\'langan summa uchun oldindan shartnoma tuzilgan umumiy qiymat (2.1-band) qayta hisoblanmaydi (o\'zgartirilmaydi).\n\n',
+                  text: "2.6. Xaridor muddatidan oldin to'liq yoki qisman to'lovni amalga oshirish huquqiga ega. Bunda, muddatidan oldin to'langan summa uchun oldindan shartnoma tuzilgan umumiy qiymat (2.1-band) qayta hisoblanmaydi (o'zgartirilmaydi).\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '2.7.Shartnoma buyicha to\'lovlar va tovarlarni sotib olishda Xaridorga nisbatan hech qanday qo\'shimcha komissiya, yig\'im yoki jarimalar (penya) qo\'llanilmaydi.\n\n',
+                  text: "2.7.Shartnoma buyicha to'lovlar va tovarlarni sotib olishda Xaridorga nisbatan hech qanday qo'shimcha komissiya, yig'im yoki jarimalar (penya) qo'llanilmaydi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '2.8. Xaridor ushbu Shartnoma buyicha to\'lovlarni tasdiqlovchi cheklarni saqlashga majburdir. Aks holda, munozarali vaziyatlarda to\'lov chekni taqdim etilmasa, Xaridor tomonidan amalga oshirilgan to\'lov hisobga olinmasligi mumkin.\n\n',
+                  text: "2.8. Xaridor ushbu Shartnoma buyicha to'lovlarni tasdiqlovchi cheklarni saqlashga majburdir. Aks holda, munozarali vaziyatlarda to'lov chekni taqdim etilmasa, Xaridor tomonidan amalga oshirilgan to'lov hisobga olinmasligi mumkin.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -347,7 +459,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '2.СТОИМОСТЬ ДОГОВОРА И ПОРЯДОК ОПЛАТЫ\n', fontSize: 10, bold: true },
+                {
+                  text: '2.СТОИМОСТЬ ДОГОВОРА И ПОРЯДОК ОПЛАТЫ\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '2.1. На день подписания Договора общая стоимость Товара: составляет ',
                   fontSize: 9,
@@ -355,7 +471,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${grandTotalFormatted} `, bold: true },
-                    { text: `(${grandTotalWordsRU} сум) `, fontSize: 8, italics: true },
+                    {
+                      text: `(${grandTotalWordsRU} сум) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
                     { text: 'сум.\n\n', bold: true },
                   ],
                   fontSize: 9,
@@ -367,7 +487,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${firstPaymentFormatted} `, bold: true },
-                    { text: `(${firstPaymentWordsRU} сум) `, fontSize: 8, italics: true },
+                    {
+                      text: `(${firstPaymentWordsRU} сум) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
                     { text: 'сум.\n\n', bold: true },
                   ],
                   fontSize: 9,
@@ -379,7 +503,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                 {
                   text: [
                     { text: `${remainingAmountFormatted} `, bold: true },
-                    { text: `(${remainingAmountWordsRU} сум) `, fontSize: 8, italics: true },
+                    {
+                      text: `(${remainingAmountWordsRU} сум) `,
+                      fontSize: 8,
+                      italics: true,
+                    },
                     { text: 'сум ', bold: true },
                   ],
                   fontSize: 9,
@@ -438,45 +566,49 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '3. TOVARNI TOPSHIRISH TARTIBI\n', fontSize: 10, bold: true },
+                {
+                  text: '3. TOVARNI TOPSHIRISH TARTIBI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '3.1.Tovarni topshirish quyidagi manzillar buyicha amalga oshiriladi:\n\n',
                   fontSize: 9,
                 },
                 {
-                  text: '1) Toshkent shahri, Olmazor tumani, Nurafshon aylanma ko\'chasi, 1 uy, 12 xonadon.\n\n',
+                  text: "1) Toshkent shahri, Olmazor tumani, Nurafshon aylanma ko'chasi, 1 uy, 12 xonadon.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '2) Toshkent shahri, Shayxontohur tumani, Koratosh ko\'chasi, 55-uy.\n\n',
+                  text: "2) Toshkent shahri, Shayxontohur tumani, Koratosh ko'chasi, 55-uy.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3)Toshkent shahri Mirzo Ulug\'bek tumani Parkent ko\'chasi 195-uy 199-xonadon.\n\n',
+                  text: "3)Toshkent shahri Mirzo Ulug'bek tumani Parkent ko'chasi 195-uy 199-xonadon.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.2.Ushbu Shartnomaning 2.2.-bandida ko\'rsatilgan oldindan to\'lov amalga oshirishdan oldin Xaridor Tovarning to\'liqligi va yaroqliligini tekshirishga majbur.\n\n',
+                  text: "3.2.Ushbu Shartnomaning 2.2.-bandida ko'rsatilgan oldindan to'lov amalga oshirishdan oldin Xaridor Tovarning to'liqligi va yaroqliligini tekshirishga majbur.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.3.Oldindan to\'lovni amalga oshirishi orqali Xaridor o\'zi xarid qilgan Tovarni tanlagani tekshirib ko\'rganligi va qabul qilishga tayyorligini tasdiqlaydi.\n\n',
+                  text: "3.3.Oldindan to'lovni amalga oshirishi orqali Xaridor o'zi xarid qilgan Tovarni tanlagani tekshirib ko'rganligi va qabul qilishga tayyorligini tasdiqlaydi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.4.Sotuvchi ushbu Shartnoma buyicha Tovarni xaridorga oldindan to\'lovini amalga oshirgan paytdan boshlab 1 (bir) kalendar kun davomida topshiradi.\n\n',
+                  text: "3.4.Sotuvchi ushbu Shartnoma buyicha Tovarni xaridorga oldindan to'lovini amalga oshirgan paytdan boshlab 1 (bir) kalendar kun davomida topshiradi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.5. Tovar tegishli hujjatlar bilan IMEI-1 ni ro\'yxatdan o\'tkazgan holda topshiradi. IMEI-2 ro\'yxatdan o\'tkazish xaridorning xohishiga ko\'ra amalga oshiriladi, agar talab etilsa Davlat standartlari asosida, ro\'yxatdan o\'tkazish uchun qo\'shimcha to\'lov qilish talab qilinadi Tovarning qutisi ushbu Shartnomaning 2.1.-bandda ko\'rsatilgan to\'liq qiymati to\'langanidan keyin Xaridorga topshiradi.\n\n',
+                  text: "3.5. Tovar tegishli hujjatlar bilan IMEI-1 ni ro'yxatdan o'tkazgan holda topshiradi. IMEI-2 ro'yxatdan o'tkazish xaridorning xohishiga ko'ra amalga oshiriladi, agar talab etilsa Davlat standartlari asosida, ro'yxatdan o'tkazish uchun qo'shimcha to'lov qilish talab qilinadi Tovarning qutisi ushbu Shartnomaning 2.1.-bandda ko'rsatilgan to'liq qiymati to'langanidan keyin Xaridorga topshiradi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.6.Oldindan to\'lov amalga oshirgandan so\'ng, Xaridor tomonidan Tovarni qabul qilishdan turli sabablarga ko\'ra rad etilgan taqdirda, to\'langan oldindan to\'lov qaytarilmaydi.\n\n',
+                  text: "3.6.Oldindan to'lov amalga oshirgandan so'ng, Xaridor tomonidan Tovarni qabul qilishdan turli sabablarga ko'ra rad etilgan taqdirda, to'langan oldindan to'lov qaytarilmaydi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '3.7.Tovarga egalik huquqi ushbu Shartnomaning 2.1-bandida ko\'rsatilgan Tovarning to\'liq qiymati to\'langan paytdan boshlab Xaridorga o\'tadi.\n\n',
+                  text: "3.7.Tovarga egalik huquqi ushbu Shartnomaning 2.1-bandida ko'rsatilgan Tovarning to'liq qiymati to'langan paytdan boshlab Xaridorga o'tadi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -484,7 +616,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '3. ПОРЯДОК ПЕРЕДАЧИ ТОВАРА\n', fontSize: 10, bold: true },
+                {
+                  text: '3. ПОРЯДОК ПЕРЕДАЧИ ТОВАРА\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '3.1. Передача Товара осуществляется по следующему адресу:\n\n',
                   fontSize: 9,
@@ -537,53 +673,73 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '4. TOMONLARNING HUQUQ VA MAJBURIYATLARI\n', fontSize: 10, bold: true },
-                { text: '4.1.Sotuvchining majburiyatlari:\n', fontSize: 9, bold: true },
                 {
-                  text: '4.1.1. Tovarni sotish vaqtida O\'zbekiston Respublikasining qonun hujjatlari tomonidan belgilangan talablarga javob beradigan mahsulot haqidagi zarur va ishonchli ma\'lumotlarni xaridorga taqdim etish.\n\n',
+                  text: '4. TOMONLARNING HUQUQ VA MAJBURIYATLARI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
+                {
+                  text: '4.1.Sotuvchining majburiyatlari:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: "4.1.1. Tovarni sotish vaqtida O'zbekiston Respublikasining qonun hujjatlari tomonidan belgilangan talablarga javob beradigan mahsulot haqidagi zarur va ishonchli ma'lumotlarni xaridorga taqdim etish.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '4.1.2. Ushbu Shartnomaning 3.4-bandida ko\'rsatilgan muddatda Tovarni topshirish.\n\n',
+                  text: "4.1.2. Ushbu Shartnomaning 3.4-bandida ko'rsatilgan muddatda Tovarni topshirish.\n\n",
                   fontSize: 9,
                 },
                 {
                   text: '4.1.3. Tegishli sifatdagi Tovarni topshirish.\n\n',
                   fontSize: 9,
                 },
-                { text: '4.2.Sotuvchining huquqlari:\n', fontSize: 9, bold: true },
                 {
-                  text: '4.2.1. Ushbu Shartnomaning shartlariga muvofiq Tovar uchun o\'z vaqtida to\'lovni talab qilish.\n\n',
+                  text: '4.2.Sotuvchining huquqlari:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: "4.2.1. Ushbu Shartnomaning shartlariga muvofiq Tovar uchun o'z vaqtida to'lovni talab qilish.\n\n",
                   fontSize: 9,
                 },
                 {
                   text: '4.2.2. Sotuvchi Xaridordan Tovarni qaytarib olish huquqiga ega. Bunda, Sotuvchi oldin Xaridor tomonidan to‘langan pul miqdoridan faqat Tovardan foydalanilganlik uchun to‘lovni, shuningdek, shartnomani bekor qilish munosabati bilan yuzaga kelgan real zararni (foydadan mahrum bo‘lishdan tashqari) ushlab qolishga haqli. Qolgan summa Xaridorga 10 (o‘n) ish kuni ichida qaytariladi.\n\n',
                   fontSize: 9,
                 },
-                { text: '4.3.Xaridorning majburiyatlari:\n', fontSize: 9, bold: true },
                 {
-                  text: '4.3.1. Ushbu Shartnoma buyicha to\'lovlarni o\'z vaqtida amalga oshirish.\n\n',
+                  text: '4.3.Xaridorning majburiyatlari:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: "4.3.1. Ushbu Shartnoma buyicha to'lovlarni o'z vaqtida amalga oshirish.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '4.3.2. Mazkur shartnomaning 2.2-banida ko\'rsatilgan oldindan to\'lov amalga oshirishdan so\'ng Tovarni qabul qilish.\n\n',
+                  text: "4.3.2. Mazkur shartnomaning 2.2-banida ko'rsatilgan oldindan to'lov amalga oshirishdan so'ng Tovarni qabul qilish.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '4.3.3. Tovarni ushbu Shartnomaning 2.1.-bandida ko\'rsatilgan Tovarning umumiy qiymati to\'lamasdan uchinchi shaxsga o\'tkazmaslik.\n\n',
+                  text: "4.3.3. Tovarni ushbu Shartnomaning 2.1.-bandida ko'rsatilgan Tovarning umumiy qiymati to'lamasdan uchinchi shaxsga o'tkazmaslik.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '4.3.4. Mijoz tomonidan shartnomada belgilangan to\'lovlarning to\'liq amalga oshirilishi natijasida qarzdorlik bartaraf etilgach, mijoz mahsulotning original qutisini 3 (uch) kalendar oy ichida olib ketishi shart. Xaridordan bu jarayonda shaxsni tasdiqlovchi hujjat talab etiladi. Agar mijoz ushbu muddat ichida qutini olib ketmasa, 3 oydan ortiq saqlangan qutilar utilizatsiya qilinadi va mijoz bu borada hech qanday da\'vo yoki e\'tiroz bildirish huquqiga ega emas.\n\n',
-                  fontSize: 9,
-                },
-                { text: '4.4.Xaridorning huquqlari:\n', fontSize: 9, bold: true },
-                {
-                  text: '4.4.1. Tovarni sotib olish vaqtida O\'zbekiston Respublikasining qonun hujjatlari tomonidan belgilangan talablarga javob beradigan mahsulot haqidagi zarur va ishonchli ma\'lumotlarni talab qilish.\n\n',
+                  text: "4.3.4. Mijoz tomonidan shartnomada belgilangan to'lovlarning to'liq amalga oshirilishi natijasida qarzdorlik bartaraf etilgach, mijoz mahsulotning original qutisini 3 (uch) kalendar oy ichida olib ketishi shart. Xaridordan bu jarayonda shaxsni tasdiqlovchi hujjat talab etiladi. Agar mijoz ushbu muddat ichida qutini olib ketmasa, 3 oydan ortiq saqlangan qutilar utilizatsiya qilinadi va mijoz bu borada hech qanday da'vo yoki e'tiroz bildirish huquqiga ega emas.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '4.4.2. Tovarni qabul qilishdan oldin uning funksiyalarini tekshirishni yoki agar bu Tovarning xususiyatiga ko\'ra istisno qilinmasa Tovardan foydalanishni ko\'rsatib berishni talab qilish.\n\n',
+                  text: '4.4.Xaridorning huquqlari:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: "4.4.1. Tovarni sotib olish vaqtida O'zbekiston Respublikasining qonun hujjatlari tomonidan belgilangan talablarga javob beradigan mahsulot haqidagi zarur va ishonchli ma'lumotlarni talab qilish.\n\n",
+                  fontSize: 9,
+                },
+                {
+                  text: "4.4.2. Tovarni qabul qilishdan oldin uning funksiyalarini tekshirishni yoki agar bu Tovarning xususiyatiga ko'ra istisno qilinmasa Tovardan foydalanishni ko'rsatib berishni talab qilish.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -595,8 +751,16 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '4. ПРАВА И ОБЯЗАННОСТИ СТОРОН\n', fontSize: 10, bold: true },
-                { text: '4.1. Обязанности Продавца:\n', fontSize: 9, bold: true },
+                {
+                  text: '4. ПРАВА И ОБЯЗАННОСТИ СТОРОН\n',
+                  fontSize: 10,
+                  bold: true,
+                },
+                {
+                  text: '4.1. Обязанности Продавца:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
                 {
                   text: '4.1.1. При реализации товара предоставить Покупателю необходимую и достоверную информацию о Товаре, отвечающую требованиям норм законодательства Республики Узбекистан.\n\n',
                   fontSize: 9,
@@ -618,7 +782,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                   text: '4.2.2. Продавец имеет право изъять Товар у Покупателя. При этом, Продавец вправе удержать из ранее оплаченной Покупателем суммы только плату за использование Товара, а также реальный ущерб, возникший в связи с расторжением договора (за исключением упущенной выгоды). Оставшаяся сумма возвращается Покупателю в течение 10 (десяти) рабочих дней.\n\n',
                   fontSize: 9,
                 },
-                { text: '4.3. Обязанности Покупателя:\n', fontSize: 9, bold: true },
+                {
+                  text: '4.3. Обязанности Покупателя:\n',
+                  fontSize: 9,
+                  bold: true,
+                },
                 {
                   text: '4.3.1. Своевременно осуществлять платежи по настоящему Договору.\n\n',
                   fontSize: 9,
@@ -663,17 +831,20 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: '5. KAFOLAT\n', fontSize: 10, bold: true },
                 { text: '5.1.Tovarning kafolat muddati:\n', fontSize: 9 },
                 { text: '- yangi Tovar uchun – 1 (bir) oy;\n', fontSize: 9 },
-                { text: '- ishlatilgan Tovar uchun – 1 (bir) hafta tashil etadi.\n\n', fontSize: 9 },
                 {
-                  text: '5.2.Ushbu Shartnomaning 5.1 -bandida ko\'rsatilgan kafolat muddati Tovar Xaridorga topshirilgan paytdan boshlab hisoblanadi.\n\n',
+                  text: '- ishlatilgan Tovar uchun – 1 (bir) hafta tashil etadi.\n\n',
                   fontSize: 9,
                 },
                 {
-                  text: '5.3.Tomonlar ushbu Shartnoma buyicha sotilgan tovarning kafolati deganda Toshkent shahridagi rasmiy xizmat ko\'rsatish markazida texnik ta\'mirlash tushuniladi.\n\n',
+                  text: "5.2.Ushbu Shartnomaning 5.1 -bandida ko'rsatilgan kafolat muddati Tovar Xaridorga topshirilgan paytdan boshlab hisoblanadi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '5.4.Agar xaridorning aybi bilan emas, balki ishlab chiqaruvchining aybi bilan kafolat holati yuzaga kelsa, Sotuvchi zarur maslahatlarni beradi va tovarni xizmat ko\'rsatish va nosozliklarni bartaraf etish uchun xizmat ko\'rsatish markaziga topshirishni tashkilashtiradi..\n\n',
+                  text: "5.3.Tomonlar ushbu Shartnoma buyicha sotilgan tovarning kafolati deganda Toshkent shahridagi rasmiy xizmat ko'rsatish markazida texnik ta'mirlash tushuniladi.\n\n",
+                  fontSize: 9,
+                },
+                {
+                  text: "5.4.Agar xaridorning aybi bilan emas, balki ishlab chiqaruvchining aybi bilan kafolat holati yuzaga kelsa, Sotuvchi zarur maslahatlarni beradi va tovarni xizmat ko'rsatish va nosozliklarni bartaraf etish uchun xizmat ko'rsatish markaziga topshirishni tashkilashtiradi..\n\n",
                   fontSize: 9,
                 },
                 {
@@ -693,11 +864,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '5.6.Xaridor Tovarni boshqa maqsadlarda ishlatilgan yoki uni ishlab chiqaruvchining ko\'rsatmalaridan farqli ravishda ishlatilgan taqdirda, Sotuvchi Xaridor oldida hech qanday kafolat majburiyatlarini o\'z zimmasiga olmaydi.\n\n',
+                  text: "5.6.Xaridor Tovarni boshqa maqsadlarda ishlatilgan yoki uni ishlab chiqaruvchining ko'rsatmalaridan farqli ravishda ishlatilgan taqdirda, Sotuvchi Xaridor oldida hech qanday kafolat majburiyatlarini o'z zimmasiga olmaydi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '5.7.Yuqorida ko\'rsatilgan holatlarga qo\'shimcha ravishda, Sotuvchi Xaridorga nosozlik sabablaridan qat\'iy nazar, yangi Tovarni 10 000 000 (o\'n million) so\'mgacha bo\'lgan bir martalik texnik ta\'mirlash xizmatini taqdim etadi. Texnik ta\'mirlash xizmati   3 (uch) ish kunidan 14 (o\'n to\'rt) ish kunigacha ko\'rsatiladi.\n\n',
+                  text: "5.7.Yuqorida ko'rsatilgan holatlarga qo'shimcha ravishda, Sotuvchi Xaridorga nosozlik sabablaridan qat'iy nazar, yangi Tovarni 10 000 000 (o'n million) so'mgacha bo'lgan bir martalik texnik ta'mirlash xizmatini taqdim etadi. Texnik ta'mirlash xizmati   3 (uch) ish kunidan 14 (o'n to'rt) ish kunigacha ko'rsatiladi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -708,7 +879,10 @@ export const generateInvoicePdf = async (invoiceData) => {
                 { text: '5. ГАРАНТИЯ\n', fontSize: 10, bold: true },
                 { text: '5.1. Гарантийный срок на Товар:\n', fontSize: 9 },
                 { text: '- на новый Товар – 1 (один) месяц;\n', fontSize: 9 },
-                { text: '- на Товар, бывший в употреблении 1 (одна) неделя.\n\n', fontSize: 9 },
+                {
+                  text: '- на Товар, бывший в употреблении 1 (одна) неделя.\n\n',
+                  fontSize: 9,
+                },
                 {
                   text: '5.2. Гарантийный рок, указанный в п.5.1. настоящего Договора считается с момента передачи Товара Покупателю.\n\n',
                   fontSize: 9,
@@ -757,29 +931,33 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '6. TOMONLARNING JAVOBGARLIGI\n', fontSize: 10, bold: true },
                 {
-                  text: '6.1.Ushbu Shartnoma buyicha majburiyatlarni bajarmaganlik yoki lozim darajada bajarmaganlik uchun tomonlar O\'zbekiston Respublikasining amaldagi qonun hujjatlari muvofiq javobgar bo\'ladilar.\n\n',
+                  text: '6. TOMONLARNING JAVOBGARLIGI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
+                {
+                  text: "6.1.Ushbu Shartnoma buyicha majburiyatlarni bajarmaganlik yoki lozim darajada bajarmaganlik uchun tomonlar O'zbekiston Respublikasining amaldagi qonun hujjatlari muvofiq javobgar bo'ladilar.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.2.Ushbu Shartnoma buyicha Xaridor tomonidan to\'lovlarni o\'z vaqtida amalga oshirilmagan taqdirida Sotuvchi quyidagi chorani ko\'rish mumkin:\n\n',
+                  text: "6.2.Ushbu Shartnoma buyicha Xaridor tomonidan to'lovlarni o'z vaqtida amalga oshirilmagan taqdirida Sotuvchi quyidagi chorani ko'rish mumkin:\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.2.1. Sotuvchi Xaridorga to\'lov muddati yaqinlashganini yoki kechikkanini quyidagi usullar bilan eslatish huquqiga ega:\n',
+                  text: "6.2.1. Sotuvchi Xaridorga to'lov muddati yaqinlashganini yoki kechikkanini quyidagi usullar bilan eslatish huquqiga ega:\n",
                   fontSize: 9,
                 },
                 {
-                  text: 'To\'lov sanasidan 3 (uch) kun oldin SMS-xabarnoma yuborishi (ixtiyoriy). To\'lov sanasi kuni va undan keyingi 1 (bir) kun ichida telefon orqali qo\'ng\'iroq qilishi.\n\n',
+                  text: "To'lov sanasidan 3 (uch) kun oldin SMS-xabarnoma yuborishi (ixtiyoriy). To'lov sanasi kuni va undan keyingi 1 (bir) kun ichida telefon orqali qo'ng'iroq qilishi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.2.2. To\'lov sanasidan keyingi 5 (besh) kun ichida telefon orqali aloqa o\'rnatish imkoni bo\'lmasa, Sotuvchi xodimlari qarzni muzokara yo\'li bilan hal qilish uchun (imkon bo\'lgan hududlarda) Xaridorning yashash joyiga tashrif buyurishi mumkin.\n\n',
+                  text: "6.2.2. To'lov sanasidan keyingi 5 (besh) kun ichida telefon orqali aloqa o'rnatish imkoni bo'lmasa, Sotuvchi xodimlari qarzni muzokara yo'li bilan hal qilish uchun (imkon bo'lgan hududlarda) Xaridorning yashash joyiga tashrif buyurishi mumkin.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.2.3. Ushbu Shartnoma buyicha muddati o\'tgan to\'lovlarni Xaridorning shartnomada ko\'rsatilgan bank kartalaridan akseptsiz ravishda hisobdan chiqarish huquqi Sotuvchida mavjud. Xaridor Shartnomani imzolash orqali bunga rozilik bildiradi.\n\n',
+                  text: "6.2.3. Ushbu Shartnoma buyicha muddati o'tgan to'lovlarni Xaridorning shartnomada ko'rsatilgan bank kartalaridan akseptsiz ravishda hisobdan chiqarish huquqi Sotuvchida mavjud. Xaridor Shartnomani imzolash orqali bunga rozilik bildiradi.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -791,11 +969,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '6.3.2.Muddati o\'tgan to\'lov amalga oshirilgandan so\'ng 48 (qirq sakkiz) soat ichida mobil qurilma (Tovar) "IMEI" tizimi orqali blokdan ochiladi.\n\n',
+                  text: "6.3.2.Muddati o'tgan to'lov amalga oshirilgandan so'ng 48 (qirq sakkiz) soat ichida mobil qurilma (Tovar) \"IMEI\" tizimi orqali blokdan ochiladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.3.3. Xaridor "iCloud" orqali bloklash natijasida ma\'lumotlarning avtomatik o\'chirilishi mumkinligidan ogohlantiriladi va to\'lov majburiyatini bajarmaganligi sababli, ma\'lumotlarning yo\'qotilishi uchun javobgarlikni o\'z zimmasiga oladi.\n\n',
+                  text: "6.3.3. Xaridor \"iCloud\" orqali bloklash natijasida ma'lumotlarning avtomatik o'chirilishi mumkinligidan ogohlantiriladi va to'lov majburiyatini bajarmaganligi sababli, ma'lumotlarning yo'qotilishi uchun javobgarlikni o'z zimmasiga oladi.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -803,11 +981,11 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '6.4.1. Agar Xaridor ikki yoki undan ortiq tovar (mobil telefon va gadjetlar) sotib olsa va ulardan biri buyicha to\'lovni kechiktirsa yoki amalga oshirmasa, barcha sotib olingan tovarlar (shu jumladan, to\'lovi to\'liq amalga oshirilgan mobil telefon ham) kompaniya tomonidan bloklanishi mumkin.\n\n',
+                  text: "6.4.1. Agar Xaridor ikki yoki undan ortiq tovar (mobil telefon va gadjetlar) sotib olsa va ulardan biri buyicha to'lovni kechiktirsa yoki amalga oshirmasa, barcha sotib olingan tovarlar (shu jumladan, to'lovi to'liq amalga oshirilgan mobil telefon ham) kompaniya tomonidan bloklanishi mumkin.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.4.2. Barcha mahsulotlar blokdan chiqarilishi uchun barcha mahsulotlar buyicha qarzdorlikning to\'liq to\'lanishi zarur.\n\n',
+                  text: "6.4.2. Barcha mahsulotlar blokdan chiqarilishi uchun barcha mahsulotlar buyicha qarzdorlikning to'liq to'lanishi zarur.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -815,43 +993,43 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '6.5.2. Agar bloklash chorasi (6.2-band) qo\'llanilgandan so\'ng 3 (uch) kalendar kun ichida ham to\'lov amalga oshirilmasa yoki nizo hal etilmasa (ya\'ni, to\'lov sanasidan 7 kun o\'tsa), Sotuvchi shartnomani bir tomonlama bekor qilish to\'g\'risida Xaridorga yozma xabar yuborishga haqli va nizo sud orqali hal qilinadi.\n\n',
+                  text: "6.5.2. Agar bloklash chorasi (6.2-band) qo'llanilgandan so'ng 3 (uch) kalendar kun ichida ham to'lov amalga oshirilmasa yoki nizo hal etilmasa (ya'ni, to'lov sanasidan 7 kun o'tsa), Sotuvchi shartnomani bir tomonlama bekor qilish to'g'risida Xaridorga yozma xabar yuborishga haqli va nizo sud orqali hal qilinadi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text:'6.5.3. Ushbu Shartnoma Sotuvchi tomonidan 6.5.1-band asosida bekor qilingan taqdirda, Xaridorning Tovar bo‘yicha to‘lanmagan butun qolgan asosiy qarz summasi muddatidan oldin undiruvga qaratiladi. Bunda 7-bo‘limga muvofiq qayta hisob-kitob amalga oshiriladi.\n\n',
+                  text: '6.5.3. Ushbu Shartnoma Sotuvchi tomonidan 6.5.1-band asosida bekor qilingan taqdirda, Xaridorning Tovar bo‘yicha to‘lanmagan butun qolgan asosiy qarz summasi muddatidan oldin undiruvga qaratiladi. Bunda 7-bo‘limga muvofiq qayta hisob-kitob amalga oshiriladi.\n\n',
                   fontSize: 9,
                 },
                 {
-                  text: '6.6.1. Agar Xaridor tomonidan Tovar uchun oylik to\'lovlar 7 (etti) kalendar kunidan ortiq muddatga kechiktirilsa va bloklash mexanizmlari ishga solgan bo\'lsa-da, qarzdorlik bartaraf etilmasa:\n',
+                  text: "6.6.1. Agar Xaridor tomonidan Tovar uchun oylik to'lovlar 7 (etti) kalendar kunidan ortiq muddatga kechiktirilsa va bloklash mexanizmlari ishga solgan bo'lsa-da, qarzdorlik bartaraf etilmasa:\n",
                   fontSize: 9,
                 },
                 {
-                  text: 'Sotuvchi, Xaridorning yozma arizasi yoki og\'zaki roziligi asosida, Shartnomani to\'liq bekor qilish o\'rniga, Tovarni faqat vaqtinchalik saqlash uchun olib qo\'yish huquqiga ega.\n',
+                  text: "Sotuvchi, Xaridorning yozma arizasi yoki og'zaki roziligi asosida, Shartnomani to'liq bekor qilish o'rniga, Tovarni faqat vaqtinchalik saqlash uchun olib qo'yish huquqiga ega.\n",
                   fontSize: 9,
                 },
                 {
-                  text: 'Ushbu vaqtinchalik olib qo\'yish Xaridorning qolgan qarzdorlikni to\'lash majburiyati saqlanib qolishini tasdiqlaydi.\n\n',
+                  text: "Ushbu vaqtinchalik olib qo'yish Xaridorning qolgan qarzdorlikni to'lash majburiyati saqlanib qolishini tasdiqlaydi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.6.2. Tovar vaqtinchalik olib qo\'yilgan vaqtda, Xaridor qarzdorlikni bartaraf etish majburiyatini saqlab qoladi. Barcha qarzdorlik to\'liq yopilgan kundan boshlab, Sotuvchi Tovarni 3 (uch) ish kuni ichida Xaridorga qaytarishga majbur.\n\n',
+                  text: "6.6.2. Tovar vaqtinchalik olib qo'yilgan vaqtda, Xaridor qarzdorlikni bartaraf etish majburiyatini saqlab qoladi. Barcha qarzdorlik to'liq yopilgan kundan boshlab, Sotuvchi Tovarni 3 (uch) ish kuni ichida Xaridorga qaytarishga majbur.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.6.3. Agar Tovar vaqtinchalik olib qo\'yilgan kundan boshlab 30 (o\'ttiz) kalendar kun ichida Xaridor qarzdorlikni to\'liq bartaraf etmasa, ushbu vaqtinchalik olib qo\'yish avtomatik ravishda Shartnomani to\'liq bekor qilish sifatida tan olinadi va qayta hisob-kitob qilish jarayoni boshlanadi. Bu Shartnomani bir tomonlama bekor qilish uchun eng uzoq muddat (jami 37 kun) hisoblanadi.\n\n',
+                  text: "6.6.3. Agar Tovar vaqtinchalik olib qo'yilgan kundan boshlab 30 (o'ttiz) kalendar kun ichida Xaridor qarzdorlikni to'liq bartaraf etmasa, ushbu vaqtinchalik olib qo'yish avtomatik ravishda Shartnomani to'liq bekor qilish sifatida tan olinadi va qayta hisob-kitob qilish jarayoni boshlanadi. Bu Shartnomani bir tomonlama bekor qilish uchun eng uzoq muddat (jami 37 kun) hisoblanadi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.7.1. Agar Xaridor Tovarni uchinchi shaxslarga topshirsa yoki biror sababga ko\'ra o\'z egaligidan yo\'qotsa, Tovarni to\'lash majburiyati Xaridorda qoladi.\n\n',
+                  text: "6.7.1. Agar Xaridor Tovarni uchinchi shaxslarga topshirsa yoki biror sababga ko'ra o'z egaligidan yo'qotsa, Tovarni to'lash majburiyati Xaridorda qoladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.7.2. Xaridor vafot etgan taqdirda, ushbu Shartnoma buyicha uning majburiyatlari qonun yoki vasiyatnoma buyicha merosxo\'rlariga o\'tadi.\n\n',
+                  text: "6.7.2. Xaridor vafot etgan taqdirda, ushbu Shartnoma buyicha uning majburiyatlari qonun yoki vasiyatnoma buyicha merosxo'rlariga o'tadi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '6.7.3. Yuqoridagi chorasi Sotuvchining ixtiyoriga ko\'ra amalga oshiriladi va ulardan birini qo\'llash qonun hujjatlarida nazarda tutilgan boshqa chorani qo\'llashni cheklamaydi.\n\n',
+                  text: "6.7.3. Yuqoridagi chorasi Sotuvchining ixtiyoriga ko'ra amalga oshiriladi va ulardan birini qo'llash qonun hujjatlarida nazarda tutilgan boshqa chorani qo'llashni cheklamaydi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -859,7 +1037,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '6. ОТВЕТСТВЕННОСТЬ СТОРОН\n', fontSize: 10, bold: true },
+                {
+                  text: '6. ОТВЕТСТВЕННОСТЬ СТОРОН\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '6.1. За неисполнение или ненадлежащее исполнение обязательств по настоящему Договору стороны несут ответственность в соответствии с действующим законодательством Республики Узбекистан.\n\n',
                   fontSize: 9,
@@ -972,7 +1154,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '7. TOVARNI QAYTARISH VA MOLIYAVIY HISOB-KITOBB TAMOYILI\n', fontSize: 10, bold: true },
+                {
+                  text: '7. TOVARNI QAYTARISH VA MOLIYAVIY HISOB-KITOBB TAMOYILI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '7.1. Tovarni qaytarish va shu asosda Shartnoma buyicha hisob-kitob qilish quyidagi holatlarda amalga oshiriladi:\n',
                   fontSize: 9,
@@ -982,15 +1168,15 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: 'б) Sotuvchi Xaridor to\'lov intizomini qat\'iy buzganligi sababli Tovarni olib qo\'ygan va sotishga haqli bo\'lganda.\n\n',
+                  text: "б) Sotuvchi Xaridor to'lov intizomini qat'iy buzganligi sababli Tovarni olib qo'ygan va sotishga haqli bo'lganda.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '7.2. 7.1-bandning (а) kichik bandi asosida qaytarilgan taqdirda, Xaridor Tovarni o\'z hisobidan 5 (besh) ish kuni ichida Sotuvchi ko\'rsatgan manzilga yetkazib berish majburiyatini oladi.\n\n',
+                  text: "7.2. 7.1-bandning (а) kichik bandi asosida qaytarilgan taqdirda, Xaridor Tovarni o'z hisobidan 5 (besh) ish kuni ichida Sotuvchi ko'rsatgan manzilga yetkazib berish majburiyatini oladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '7.3.Sotuvchi qaytarib olingan Tovarni qaytarish kunidagi bozor qiymatida (Tovarning holati, eskirish darajasi va nuqsonlarini hisobga olgan holda, tarafning o\'zaro kelishuvi yoki mustaqil baholovchi asosida) hisob-kitob qilishga majbur.\n\n',
+                  text: "7.3.Sotuvchi qaytarib olingan Tovarni qaytarish kunidagi bozor qiymatida (Tovarning holati, eskirish darajasi va nuqsonlarini hisobga olgan holda, tarafning o'zaro kelishuvi yoki mustaqil baholovchi asosida) hisob-kitob qilishga majbur.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -998,7 +1184,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: 'Tovarning qayta sotib olish qiymatidan avvalo Xaridorning Sotuvchi oldidagi umumiy qarzi qoplanadi. Agar qayta sotib olish qiymati qarzdan yuqori bo\'lsa, ortgan mablag\' 10 (o\'n) ish kuni ichida Xaridorga qaytariladi. Agar qayta sotib olish qiymati qarzni to\'liq qoplamasa, yetishmayotgan qismi (Sotuvchining zarari) Xaridor tomonidan 3 (uch) ish kuni ichida qoplab beriladi.\n\n',
+                  text: "Tovarning qayta sotib olish qiymatidan avvalo Xaridorning Sotuvchi oldidagi umumiy qarzi qoplanadi. Agar qayta sotib olish qiymati qarzdan yuqori bo'lsa, ortgan mablag' 10 (o'n) ish kuni ichida Xaridorga qaytariladi. Agar qayta sotib olish qiymati qarzni to'liq qoplamasa, yetishmayotgan qismi (Sotuvchining zarari) Xaridor tomonidan 3 (uch) ish kuni ichida qoplab beriladi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -1006,7 +1192,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '7. ПРИНЦИП ВОЗВРАТА ТОВАРА И ФИНАНСОВОГО РАСЧЕТА\n', fontSize: 10, bold: true },
+                {
+                  text: '7. ПРИНЦИП ВОЗВРАТА ТОВАРА И ФИНАНСОВОГО РАСЧЕТА\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '7.1. Возврат Товара и, на его основе, расчет по Договору осуществляются в следующих случаях:\n',
                   fontSize: 9,
@@ -1051,33 +1241,37 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '8. MAXFIYLIK VA SHAXSIY MA\'LUMOTLARNI HIMOYA QILISH\n', fontSize: 10, bold: true },
                 {
-                  text: '8.1. Taraf ushbu Shartnoma shartlarini, jumladan Tovar narxi, moliyaviy hisob-kitoblar va To\'lov jadvali ma\'lumotlarini maxfiy deb hisoblaydilar va qonunchilikda belgilangan holatlardan tashqari, uchinchi shaxslarga oshkor qilmaslik majburiyatini oladilar.\n\n',
+                  text: "8. MAXFIYLIK VA SHAXSIY MA'LUMOTLARNI HIMOYA QILISH\n",
+                  fontSize: 10,
+                  bold: true,
+                },
+                {
+                  text: "8.1. Taraf ushbu Shartnoma shartlarini, jumladan Tovar narxi, moliyaviy hisob-kitoblar va To'lov jadvali ma'lumotlarini maxfiy deb hisoblaydilar va qonunchilikda belgilangan holatlardan tashqari, uchinchi shaxslarga oshkor qilmaslik majburiyatini oladilar.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '8.2. Xaridor ushbu Shartnomani imzolash orqali, Sotuvchiga o\'z shaxsiy ma\'lumotlarini (F.I.Sh., pasport/ID ma\'lumotlari, JSHSHIR, yashash manzili, telefon raqami va boshqalar) O\'zbekiston Respublikasining "Shaxsiy ma\'lumotlar to\'g\'risida"gi Qonuni talablariga muvofiq qayta ishlash, saqlash va foydalanishga o\'z roziligini beradi.\n\n',
+                  text: "8.2. Xaridor ushbu Shartnomani imzolash orqali, Sotuvchiga o'z shaxsiy ma'lumotlarini (F.I.Sh., pasport/ID ma'lumotlari, JSHSHIR, yashash manzili, telefon raqami va boshqalar) O'zbekiston Respublikasining \"Shaxsiy ma'lumotlar to'g'risida\"gi Qonuni talablariga muvofiq qayta ishlash, saqlash va foydalanishga o'z roziligini beradi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '8.3.Sotuvchi Xaridorning shaxsiy ma\'lumotlaridan faqat quyidagi maqsadlarda foydalanish huquqiga ega:\n',
+                  text: "8.3.Sotuvchi Xaridorning shaxsiy ma'lumotlaridan faqat quyidagi maqsadlarda foydalanish huquqiga ega:\n",
                   fontSize: 9,
                 },
                 {
-                  text: 'Shartnoma buyicha majburiyatlarni bajarish (Tovarni yetkazib berish, to\'lovlarni hisobga olish, kafolat xizmati);\n',
+                  text: "Shartnoma buyicha majburiyatlarni bajarish (Tovarni yetkazib berish, to'lovlarni hisobga olish, kafolat xizmati);\n",
                   fontSize: 9,
                 },
                 {
-                  text: 'Xaridorning to\'lov intizomi va kredit tarixini baholash va monitoring qilish.\n\n',
+                  text: "Xaridorning to'lov intizomi va kredit tarixini baholash va monitoring qilish.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '8.4. Xaridor, shuningdek, Sotuvchiga ushbu Shartnoma buyicha to\'lov intizomi, muddati o\'tgan qarzdorlik yoki Shartnomaning bajarilishi haqidagi ma\'lumotlarni O\'zbekiston Respublikasida faoliyat yurituvchi Kredit axborotlari byurolariga (shu jumladan, "Kredit axboroti almashinuvi to\'g\'risida"gi Qonunga asosan) uzatishga va qayta ishlashga to\'liq rozilik beradi.\n\n',
+                  text: "8.4. Xaridor, shuningdek, Sotuvchiga ushbu Shartnoma buyicha to'lov intizomi, muddati o'tgan qarzdorlik yoki Shartnomaning bajarilishi haqidagi ma'lumotlarni O'zbekiston Respublikasida faoliyat yurituvchi Kredit axborotlari byurolariga (shu jumladan, \"Kredit axboroti almashinuvi to'g'risida\"gi Qonunga asosan) uzatishga va qayta ishlashga to'liq rozilik beradi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '8.5. Sotuvchi Shaxsiy ma\'lumotlarning ruxsatsiz kirish, o\'zgartirish yoki yo\'q qilinishdan himoya qilinishini ta\'minlash uchun zarur tashkiliy va texnik chorani ko\'rish majburiyatini oladi.\n\n',
+                  text: "8.5. Sotuvchi Shaxsiy ma'lumotlarning ruxsatsiz kirish, o'zgartirish yoki yo'q qilinishdan himoya qilinishini ta'minlash uchun zarur tashkiliy va texnik chorani ko'rish majburiyatini oladi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -1085,7 +1279,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '8. КОНФИДЕНЦИАЛЬНОСТЬ И ЗАЩИТА ПЕРСОНАЛЬНЫХ ДАННЫХ\n', fontSize: 10, bold: true },
+                {
+                  text: '8. КОНФИДЕНЦИАЛЬНОСТЬ И ЗАЩИТА ПЕРСОНАЛЬНЫХ ДАННЫХ\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '8.1.Стороны считают условия настоящего Договора, включая цену Товара, финансовые расчеты и данные Графика Платежей, конфиденциальными и обязуются не разглашать их третьим лицам, за исключением случаев, установленных законодательством.\n\n',
                   fontSize: 9,
@@ -1128,15 +1326,15 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: '9. FORS-MAJOR HOLATLARI\n', fontSize: 10, bold: true },
                 {
-                  text: '9.1.Tomonlar ushbu Shartnoma buyicha majburiyatlarni qisman yoki to\'liq bajarmaganliklari uchun javobgarlikdan ozod qilinadi, agar ushbu bajarlmagan holatlar shartnoma tuzilgandan keyin tomonlar oldindan ko\'ra olmaydigan yoki oldini ololmaydigan favqulodda holatlar (fors-major holatlari) natijasida yuzaga kelgan bo\'lsa. Fors-major holatlariga quyidagilar kiradi: urush, favqulodda holat joriy etish, yong\'in, boshqa avariyalar, tabiiy ofat, epidemiya, pandemiya, ish tashlashlar (lokaut, boykot, blokada), O\'zbekiston Respublikasining normativ-huquqiy hujjatlari, maxsus komissiyalar va vakolatli mansabdor shaxslarning qarorlari, agar ularning kuchga kirishi shartnomani bajarishni imkonsiz qiladi.\n\n',
+                  text: "9.1.Tomonlar ushbu Shartnoma buyicha majburiyatlarni qisman yoki to'liq bajarmaganliklari uchun javobgarlikdan ozod qilinadi, agar ushbu bajarlmagan holatlar shartnoma tuzilgandan keyin tomonlar oldindan ko'ra olmaydigan yoki oldini ololmaydigan favqulodda holatlar (fors-major holatlari) natijasida yuzaga kelgan bo'lsa. Fors-major holatlariga quyidagilar kiradi: urush, favqulodda holat joriy etish, yong'in, boshqa avariyalar, tabiiy ofat, epidemiya, pandemiya, ish tashlashlar (lokaut, boykot, blokada), O'zbekiston Respublikasining normativ-huquqiy hujjatlari, maxsus komissiyalar va vakolatli mansabdor shaxslarning qarorlari, agar ularning kuchga kirishi shartnomani bajarishni imkonsiz qiladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '9.2. Ushbu Shartnomaning 8.1-bandda ko\'rsatilgan holatlar yuzaga kelganda, har bir tomon boshqa tomonni 3 (uch) kalendar kun ichida ular to\'g\'risida yozma ravishda xabardor qilishi kerak. Bildirishnomada vaziyatlarning mohiyati to\'g\'risidagi ma\'lumotlar, shuningdek ushbu holatlarning mavjudligini tasdiqlovchi va iloji bo\'lsa, ularning shartnoma buyicha o\'z majburiyatlarini bajarish qobiliyatiga ta\'sirini baholaydigan rasmiy hujjatlar bo\'lishi kerak.\n\n',
+                  text: "9.2. Ushbu Shartnomaning 8.1-bandda ko'rsatilgan holatlar yuzaga kelganda, har bir tomon boshqa tomonni 3 (uch) kalendar kun ichida ular to'g'risida yozma ravishda xabardor qilishi kerak. Bildirishnomada vaziyatlarning mohiyati to'g'risidagi ma'lumotlar, shuningdek ushbu holatlarning mavjudligini tasdiqlovchi va iloji bo'lsa, ularning shartnoma buyicha o'z majburiyatlarini bajarish qobiliyatiga ta'sirini baholaydigan rasmiy hujjatlar bo'lishi kerak.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '9.3. Agar tomon ushbu Shartnomaning 8.2-bandida nazarda tutilgan bildirishnomani yubormasa yoki o\'z vaqtida yubormasa, agar xabar berishning iloji yo\'qligi Shartnomaning 8.1-bandida ko\'rsatilgan holatlarning ta\'siridan kelib chiqmasa, u ikkinchi tomonga yetkazilgan zararlarni qoplashi shart.\n\n',
+                  text: "9.3. Agar tomon ushbu Shartnomaning 8.2-bandida nazarda tutilgan bildirishnomani yubormasa yoki o'z vaqtida yubormasa, agar xabar berishning iloji yo'qligi Shartnomaning 8.1-bandida ko'rsatilgan holatlarning ta'siridan kelib chiqmasa, u ikkinchi tomonga yetkazilgan zararlarni qoplashi shart.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -1144,7 +1342,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '9.5. Agar ushbu Shartnomaning 8.1 - bandida keltirilgan holatlar va ularning oqibatlari bir oydan ortiq davom etsa, ushbu Shartnoma tomonlarning o\'zaro roziligi bilan bekor qilinishi mumkin.\n\n',
+                  text: "9.5. Agar ushbu Shartnomaning 8.1 - bandida keltirilgan holatlar va ularning oqibatlari bir oydan ortiq davom etsa, ushbu Shartnoma tomonlarning o'zaro roziligi bilan bekor qilinishi mumkin.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -1185,13 +1383,17 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '10. NIZOLARNI HAL QILISH TARTIBI\n', fontSize: 10, bold: true },
                 {
-                  text: '10.1.Tomonlar ushbu Shartnoma yuzasidan kelib chiqishi mumkin bo\'lgan kelishmovchilik va nizolarni muzokara yo\'li bilan hal qilishga harakat qiladilar.\n\n',
+                  text: '10. NIZOLARNI HAL QILISH TARTIBI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
+                {
+                  text: "10.1.Tomonlar ushbu Shartnoma yuzasidan kelib chiqishi mumkin bo'lgan kelishmovchilik va nizolarni muzokara yo'li bilan hal qilishga harakat qiladilar.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '10.2. Xaridorning ushbu Shartnoma bilan bog\'liq rasmiy yozma talabnomalarni ko\'rib chiqish muddati 7 (etti) kalendar kumni tashkil etadi.\n\n',
+                  text: "10.2. Xaridorning ushbu Shartnoma bilan bog'liq rasmiy yozma talabnomalarni ko'rib chiqish muddati 7 (etti) kalendar kumni tashkil etadi.\n\n",
                   fontSize: 9,
                 },
                 {
@@ -1199,7 +1401,7 @@ export const generateInvoicePdf = async (invoiceData) => {
                   fontSize: 9,
                 },
                 {
-                  text: '10.4. Agar ko\'rsatib o\'tilgan kelishmovchilik va nizolar muzokaralar yo\'li bilan hal etilmasa, ular O\'zbekiston Respublikasining amaldagi qonunchiligi asosida Sotuvchi hududi buyicha Fuqarolik sudda hal etiladi.\n\n',
+                  text: "10.4. Agar ko'rsatib o'tilgan kelishmovchilik va nizolar muzokaralar yo'li bilan hal etilmasa, ular O'zbekiston Respublikasining amaldagi qonunchiligi asosida Sotuvchi hududi buyicha Fuqarolik sudda hal etiladi.\n\n",
                   fontSize: 9,
                 },
               ],
@@ -1207,7 +1409,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '10. ПОРЯДОК РАЗРЕШЕНИЯ СПОРОВ\n', fontSize: 10, bold: true },
+                {
+                  text: '10. ПОРЯДОК РАЗРЕШЕНИЯ СПОРОВ\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '10.1. Любые разногласия и споры, которые могут возникнуть в связи с настоящим Договором, стороны будут стараться решать путем переговоров.\n\n',
                   fontSize: 9,
@@ -1238,27 +1444,27 @@ export const generateInvoicePdf = async (invoiceData) => {
               text: [
                 { text: '11. YAKUNIY SHARTLAR\n', fontSize: 10, bold: true },
                 {
-                  text: '11.1. Ushbu Shartnomasi Sotuvchidan Tovarni olgan kundan boshlab kuchga kiradi va Xaridor o\'z majburiyatlarni bajarguncha qadar amal qiladi.\n\n',
+                  text: "11.1. Ushbu Shartnomasi Sotuvchidan Tovarni olgan kundan boshlab kuchga kiradi va Xaridor o'z majburiyatlarni bajarguncha qadar amal qiladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '11.2. Ushbu Shartnomaga qo\'shimcha va o\'zgartirishlar kiritish Tomonlarning roziligi bilan qo\'shimcha kelishuv bitimi tuzish yo\'li bilan amalga oshiriladi.\n\n',
+                  text: "11.2. Ushbu Shartnomaga qo'shimcha va o'zgartirishlar kiritish Tomonlarning roziligi bilan qo'shimcha kelishuv bitimi tuzish yo'li bilan amalga oshiriladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '11.3. Ushbu Shartnomada ko\'rsatilmagan holatlar, O\'zbekiston Respublikasining amaldagi qonunchiligi orqali hal etiladi.\n\n',
+                  text: "11.3. Ushbu Shartnomada ko'rsatilmagan holatlar, O'zbekiston Respublikasining amaldagi qonunchiligi orqali hal etiladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '11.4 Tomonlarning manzillari va revizitlari o\'zgartirilgan taqdirda, Tomon ma\'lumotlarni o\'zgartirgan paytdan boshlab 3 (uch) kun ichida boshqa Tomonni xabardor qilishi shart.\n\n',
+                  text: "11.4 Tomonlarning manzillari va revizitlari o'zgartirilgan taqdirda, Tomon ma'lumotlarni o'zgartirgan paytdan boshlab 3 (uch) kun ichida boshqa Tomonni xabardor qilishi shart.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '11.5. Ushbu Shartnoma bir xil yuridik kuchga ega bo\'lgan ikki nusxada tuzilib, Tomonlarning har biriga bir nusxadan beriladi.\n\n',
+                  text: "11.5. Ushbu Shartnoma bir xil yuridik kuchga ega bo'lgan ikki nusxada tuzilib, Tomonlarning har biriga bir nusxadan beriladi.\n\n",
                   fontSize: 9,
                 },
                 {
-                  text: '11.6. Xaridor, Shartnoma buyicha savollar yoki murojaatlar uchun quyidagi aloqa ma\'lumotlaridan foydalanishi mumkin:\n',
+                  text: "11.6. Xaridor, Shartnoma buyicha savollar yoki murojaatlar uchun quyidagi aloqa ma'lumotlaridan foydalanishi mumkin:\n",
                   fontSize: 9,
                 },
                 {
@@ -1274,7 +1480,11 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '11. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ\n', fontSize: 10, bold: true },
+                {
+                  text: '11. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 {
                   text: '11.1. Настоящий Договор вступает в силу с момента получения Товара от Продавца и действует до момента исполнения Покупателем своих обязательств.\n\n',
                   fontSize: 9,
@@ -1319,29 +1529,59 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '12. TOMONLARNING MANZILLARI VA REKVIZITLARI\n', fontSize: 10, bold: true },
+                {
+                  text: '12. TOMONLARNING MANZILLARI VA REKVIZITLARI\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 { text: 'SOTUVCHI:', fontSize: 9, bold: true },
                 { text: ' «PROBOX GROUP CO» MChJ\n', fontSize: 9 },
-                { text: 'Manzil: ' , fontSize: 9 },
-                { text: 'Toshkent sh., Olmazor tumani, Nurafshon ko\'chasi, 1-uy. 12-xonadon.\n', fontSize: 9 },
+                { text: 'Manzil: ', fontSize: 9 },
+                {
+                  text: "Toshkent sh., Olmazor tumani, Nurafshon ko'chasi, 1-uy. 12-xonadon.\n",
+                  fontSize: 9,
+                },
                 { text: 'Bank: ATB «ASIA ALLIANCE BANK»\n', fontSize: 9 },
                 { text: 'Bank kodi: 01095\n', fontSize: 9 },
                 { text: 'X/p: 20208000705125899001\n', fontSize: 9 },
                 { text: 'STIR: 306737779\n', fontSize: 9 },
                 { text: 'XARIDOR\n', fontSize: 9, bold: true },
                 { text: 'F.I.Sh.: ', fontSize: 9 },
-                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Pasport/id seriyasi va raqami: ', fontSize: 9 },
-                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
-                { text: ', JSHSHIR: ', fontSize: 9 },
-                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Manzil: ', fontSize: 9 },
-                { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
-                { text: 'Tel.raqami: ', fontSize: 9 },
-                { text: `${clientPhone || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Shartnoma 11 (o\'n bir) varoqdan iborat.\n', fontSize: 8 },
                 {
-                  text: 'Muddatli to\'lov asosida sotish-xarid qilish shartnomasiga № ',
+                  text: `${clientName || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                { text: 'Pasport/id seriyasi va raqami: ', fontSize: 9 },
+                {
+                  text: `${passportId || '______________'}`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                { text: ', JSHSHIR: ', fontSize: 9 },
+                {
+                  text: `${jshshir || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                { text: 'Manzil: ', fontSize: 9 },
+                {
+                  text: `${clientAddress || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                { text: 'Tel.raqami: ', fontSize: 9 },
+                {
+                  text: `${clientPhone || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: "Shartnoma 11 (o'n bir) varoqdan iborat.\n",
+                  fontSize: 8,
+                },
+                {
+                  text: "Muddatli to'lov asosida sotish-xarid qilish shartnomasiga № ",
                   fontSize: 8,
                 },
                 {
@@ -1368,27 +1608,57 @@ export const generateInvoicePdf = async (invoiceData) => {
             {
               width: '*',
               text: [
-                { text: '12. АДРЕСА И РЕКВИЗИТЫ СТОРОН\n', fontSize: 10, bold: true },
+                {
+                  text: '12. АДРЕСА И РЕКВИЗИТЫ СТОРОН\n',
+                  fontSize: 10,
+                  bold: true,
+                },
                 { text: 'ПРОДАВЕЦ:', fontSize: 9, bold: true },
                 { text: ' OOO «PROBOX GROUP CO»\n', fontSize: 9 },
                 { text: 'Адрес: ', fontSize: 9 },
-                { text: 'Т.Ташкент, Oламазарский р-н, ул. Нурафшон, 1-дом, 12-квартира.\n', fontSize: 9 },
+                {
+                  text: 'Т.Ташкент, Oламазарский р-н, ул. Нурафшон, 1-дом, 12-квартира.\n',
+                  fontSize: 9,
+                },
                 { text: 'Банк: АТБ «ASIA ALLIANCE BANK»\n', fontSize: 9 },
                 { text: 'МФО: 01095\n', fontSize: 9 },
                 { text: 'P/c: 20208000705125899001\n', fontSize: 9 },
                 { text: 'ИНН: 306737779\n', fontSize: 9 },
                 { text: 'ПОКУПАТЕЛЬ\n', fontSize: 9, bold: true },
                 { text: 'Ф.И.О: ', fontSize: 9 },
-                { text: `${clientName || '_______________________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientName || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'Серия и номер паспорта/ id: ', fontSize: 9 },
-                { text: `${passportId || '______________'}`, fontSize: 9, bold: true },
+                {
+                  text: `${passportId || '______________'}`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: ', ПИНФЛ: ', fontSize: 9 },
-                { text: `${jshshir || '______________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${jshshir || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'Адрес: ', fontSize: 9 },
-                { text: `${clientAddress || '______________'}\n`, fontSize: 9, bold: true },
+                {
+                  text: `${clientAddress || '______________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'Тел.номер: ', fontSize: 9 },
-                { text: `${clientPhone || '_______________________'}\n`, fontSize: 9, bold: true },
-                { text: 'Договор состоит из 11 (одиннадцати) страниц.\n', fontSize: 8 },
+                {
+                  text: `${clientPhone || '_______________________'}\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
+                {
+                  text: 'Договор состоит из 11 (одиннадцати) страниц.\n',
+                  fontSize: 8,
+                },
                 {
                   text: [
                     'Приложение №1 к Договору купли-продажи на основе рассрочки № ',
@@ -1410,7 +1680,7 @@ export const generateInvoicePdf = async (invoiceData) => {
         // ========== SAHIFA 3: To'lov jadvali ==========
         { text: '', pageBreak: 'before' },
         {
-          text: 'TO\'LOV JADVALI/GRAFIK PLATYAJEY',
+          text: "TO'LOV JADVALI/GRAFIK PLATYAJEY",
           fontSize: 12,
           bold: true,
           alignment: 'center',
@@ -1424,19 +1694,29 @@ export const generateInvoicePdf = async (invoiceData) => {
               [
                 { text: '№', bold: true, fillColor: '#f0f0f0' },
                 { text: 'Sana/Дата', bold: true, fillColor: '#f0f0f0' },
-                { text: 'To\'lov miqdori/Сумма оплаты (sum)', bold: true, fillColor: '#f0f0f0' },
-                { text: 'Qolgan miqdori/Остаток (sum)', bold: true, fillColor: '#f0f0f0' },
+                {
+                  text: "To'lov miqdori/Сумма оплаты (sum)",
+                  bold: true,
+                  fillColor: '#f0f0f0',
+                },
+                {
+                  text: 'Qolgan miqdori/Остаток (sum)',
+                  bold: true,
+                  fillColor: '#f0f0f0',
+                },
               ],
               // To'lov jadvali qatorlari (dinamik - faqat kerakli oylar soni)
-              ...(paymentSchedule.length > 0 
+              ...(paymentSchedule.length > 0
                 ? paymentSchedule.map((scheduleItem) => [
                     scheduleItem.number.toString(),
                     scheduleItem.date,
-                    { text: scheduleItem.amount.toLocaleString('uz-UZ'), bold: true }, // Faqat oylik to'lov - bold
+                    {
+                      text: scheduleItem.amount.toLocaleString('uz-UZ'),
+                      bold: true,
+                    }, // Faqat oylik to'lov - bold
                     '0', // Qolgan miqdor har doim 0
                   ])
-                : [] // Agar jadval bo'sh bo'lsa, hech narsa ko'rsatilmaydi
-              ),
+                : []), // Agar jadval bo'sh bo'lsa, hech narsa ko'rsatilmaydi
               [
                 { text: 'JAMI/ITOGO:', bold: true, colSpan: 2 },
                 '',
@@ -1462,13 +1742,20 @@ export const generateInvoicePdf = async (invoiceData) => {
               stack: [
                 { text: 'SOTUVCHI/PRODAVETS\n', fontSize: 9, bold: true },
                 { text: 'ООО «PROBOX GROUP CO»\n', fontSize: 9 },
-                { text: 'Manzil: Toshkent sh., Olmazor tumani, Nurafshon ko\'chasi, 1-uy. 12-xonadon.\n', fontSize: 9 },
+                {
+                  text: "Manzil: Toshkent sh., Olmazor tumani, Nurafshon ko'chasi, 1-uy. 12-xonadon.\n",
+                  fontSize: 9,
+                },
                 { text: 'Bank: ATB «ASIA ALLIANCE BANK»\n', fontSize: 9 },
                 { text: 'Bank kodi: 01095\n', fontSize: 9 },
                 { text: 'X/p: 20208000705125899001\n', fontSize: 9 },
                 { text: 'STIR: 306737779\n\n', fontSize: 9 },
                 { text: 'S o t u v c h i konsultant: ', fontSize: 9 },
-                { text: `${finalSellerName || '_________________'}\n\n`, fontSize: 9, bold: true },
+                {
+                  text: `${finalSellerName || '_________________'}\n\n`,
+                  fontSize: 9,
+                  bold: true,
+                },
                 { text: 'Direktor: Nigmatov O.X.\n', fontSize: 9, bold: true },
               ],
             },
@@ -1490,61 +1777,67 @@ export const generateInvoicePdf = async (invoiceData) => {
                   ],
                 },
                 { text: 'Imzo: ', fontSize: 9 },
-                ...(userSignature ? [
-                  {
-                    image: userSignature,
-                    width: 150,
-                    height: 60,
-                    margin: [0, 2, 0, 0],
-                  },
-                ] : [
-                  { text: '_________________\n', fontSize: 9 },
-                ]),
+                ...(userSignature
+                  ? [
+                      {
+                        image: userSignature,
+                        width: 150,
+                        height: 60,
+                        margin: [0, 2, 0, 0],
+                      },
+                    ]
+                  : [{ text: '_________________\n', fontSize: 9 }]),
               ],
             },
           ],
           columnGap: 10,
         },
         // QR kod - alohida element sifatida sahifaning markazida
-        ...(qrCodeImage ? [
-          {
-            columns: [
-              { width: '*', text: '' },
+        ...(qrCodeImage
+          ? [
               {
-                width: 'auto',
-                stack: [
+                columns: [
+                  { width: '*', text: '' },
                   {
-                    image: qrCodeImage,
-                    width: 80,
-                    height: 80,
+                    width: 'auto',
+                    stack: [
+                      {
+                        image: qrCodeImage,
+                        width: 80,
+                        height: 80,
+                      },
+                    ],
                   },
+                  { width: '*', text: '' },
                 ],
+                margin: [0, 10, 0, 0],
               },
-              { width: '*', text: '' },
-            ],
-            margin: [0, 10, 0, 0],
-          },
-        ] : []),
+            ]
+          : []),
       ],
     };
 
     // PDF yaratish va yuklab olish
-    const fileName = `${clientName}-${invoiceDocNum  || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    
+    const fileName = `${clientName}-${invoiceDocNum || 'unknown'}-${new Date().toISOString().slice(0, 10)}.pdf`;
+
     const pdfDoc = pdfMake.createPdf(docDefinition);
-    
-        // iPad va mobile browser'lar uchun blob URL yordamida download qilish
-        // pdfDoc.download() iPad Safari'da ishlamaydi
-        return new Promise((resolve, reject) => {
+
+    // iPad va mobile browser'lar uchun blob URL yordamida download qilish
+    // pdfDoc.download() iPad Safari'da ishlamaydi
+    return new Promise((resolve, reject) => {
       pdfDoc.getBlob((blob) => {
         try {
           const file = new File([blob], fileName, { type: 'application/pdf' });
-          
+
           // iPad va mobile browser'lar uchun blob URL yaratish
-          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-          
+          const isIOS =
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          const isMobile =
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+              navigator.userAgent
+            );
+
           if (isIOS || isMobile) {
             // Mobile/iPad uchun blob URL yaratib, yangi tab'da ochish
             try {
@@ -1564,7 +1857,10 @@ export const generateInvoicePdf = async (invoiceData) => {
               // Blob URL'ni tozalash
               setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
             } catch (mobileError) {
-              console.error('Mobile/iPad PDF yuklab olishda xatolik:', mobileError);
+              console.error(
+                'Mobile/iPad PDF yuklab olishda xatolik:',
+                mobileError
+              );
               // Agar mobile method ishlamasa, desktop method'ni sinab ko'ramiz
               try {
                 pdfDoc.download(fileName);
@@ -1577,7 +1873,7 @@ export const generateInvoicePdf = async (invoiceData) => {
             // Desktop browser'lar uchun odatiy download
             pdfDoc.download(fileName);
           }
-          
+
           resolve(file);
         } catch (error) {
           console.error('PDF blob yaratishda xatolik:', error);

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import {
   Row,
   Col,
@@ -45,6 +45,7 @@ import Error from '@/pages/helper/Error';
 import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 import ClientExtraInfoSection from '@/features/leads/components/LeadPageSections/ClientExtraInfoSection';
 import { LeadLimitHistoryModal } from '@/features/leads/components/modals/LeadLimitHistoryModal';
+import useAuth from '@/hooks/useAuth';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -55,6 +56,7 @@ export default function LeadPage() {
   // Use custom hook for all data and logic
   const {
     lead,
+    role,
     isLoading,
     isError,
     error,
@@ -295,6 +297,7 @@ export default function LeadPage() {
       />
     );
   }
+
 
   return (
     <>

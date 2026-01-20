@@ -333,6 +333,16 @@ export default function useInvoice(options = {}) {
           const deviceFirstPaymentManual =
             device?.isFirstPaymentManual || false;
 
+          // console.log('=== BEFORE calculatePaymentDetails ===', {
+          //   deviceName: device.name,
+          //   rawFirstPayment: device.firstPayment,
+          //   extractedFirstPayment: firstPayment,
+          //   isFirstPaymentManual: deviceFirstPaymentManual,
+          //   calculationType: calculationType,
+          //   finalPercentage: finalPercentage,
+          //   maximumLimit: maximumLimit,
+          // });
+
           const paymentDetails = calculatePaymentDetails({
             price,
             period,
@@ -344,17 +354,12 @@ export default function useInvoice(options = {}) {
             maximumLimit: maximumLimit,
           });
 
-          console.log('Device payment calculation:', {
-            deviceName: device.name,
-            price,
-            period,
-            calculationType,
-            finalPercentage,
-            maximumLimit,
-            calculatedFirstPayment: paymentDetails.calculatedFirstPayment,
-            monthlyPayment: paymentDetails.monthlyPayment,
-            grandTotal: paymentDetails.grandTotal,
-          });
+          // console.log('=== AFTER calculatePaymentDetails ===', {
+          //   deviceName: device.name,
+          //   calculatedFirstPayment: paymentDetails.calculatedFirstPayment,
+          //   monthlyPayment: paymentDetails.monthlyPayment,
+          //   grandTotal: paymentDetails.grandTotal,
+          // });
 
           // Always use calculatedFirstPayment as it handles both manual and automatic scenarios with proper rounding
           const actualFirstPayment = paymentDetails.calculatedFirstPayment;

@@ -12,6 +12,13 @@ export const AVAILABLE_LEAD_STATUSES = [
   'Processing',
   'Closed',
   'Purchased',
+  'Returned',
+];
+
+export const ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS = [
+  'Operator1',
+  'Operator2',
+  'OperatorM',
 ];
 
 export const REJECTION_REASON_OPTIONS = [

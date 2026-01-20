@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useFetchLeadById from '@/hooks/data/leads/useFetchLeadById';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
@@ -8,6 +8,7 @@ import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import useAuth from '@/hooks/useAuth';
 import useAlert from '@/hooks/useAlert';
 import hasRole from '@/utils/hasRole';
+import { ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS } from '../utils/constants';
 
 const TAB_TO_ROLE = {
   operator1: 'Operator1',
@@ -27,6 +28,7 @@ const ROLE_TO_TAB = {
 export default function useLeadPageData(leadId) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const role = user?.U_role ?? null;
   const { alert } = useAlert();
   const [passportFiles, setPassportFiles] = useState([]);
 
@@ -449,9 +451,15 @@ export default function useLeadPageData(leadId) {
 
   // Default tab
   const defaultTab = ROLE_TO_TAB[currentUserRole] ?? 'operator1';
-
+  useEffect(() => {
+    if (!ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS.includes(role)) return;
+    if (lead?.seen === false) {
+      updateLead.mutate({ seen: true });
+    }
+  }, [lead, user]);
   return {
     lead,
+    role,
     isLoading,
     isError,
     error,
