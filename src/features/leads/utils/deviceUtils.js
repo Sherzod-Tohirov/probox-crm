@@ -386,9 +386,26 @@ export const calculatePaymentDetails = ({
       : 0;
 
   // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz va 1000 ga yaxlitlaymiz
-  const actualFirstPaymentRaw =
-    firstPaymentNum > 0 ? firstPaymentNum : calculatedFirstPayment;
-  const actualFirstPayment = Math.floor(actualFirstPaymentRaw / 1000) * 1000;
+  // MUHIM: isFirstPaymentManual flag'ini tekshirish kerak!
+  let actualFirstPayment;
+  if (isFirstPaymentManual && firstPaymentNum > 0) {
+    // Foydalanuvchi qo'lda kiritgan birinchi to'lovni 1000 ga yaxlitlaymiz
+    actualFirstPayment = Math.floor(firstPaymentNum / 1000) * 1000;
+    console.log('>>> USING MANUAL firstPayment:', {
+      isFirstPaymentManual,
+      firstPaymentNum,
+      actualFirstPayment,
+    });
+  } else {
+    // Avtomatik hisoblangan qiymatni ishlatamiz
+    actualFirstPayment = calculatedFirstPayment;
+    console.log('>>> USING AUTO-CALCULATED firstPayment:', {
+      isFirstPaymentManual,
+      firstPaymentNum,
+      calculatedFirstPayment,
+      actualFirstPayment,
+    });
+  }
 
   // Foydalanuvchi taklifi: avval yaxlitlanmagan qiymatlarni olish, jami to'lovni hisoblash, keyin yaxlitlash
   // Oylik to'lov (yaxlitlanmagan): MIN(monthlyLimit; ((price - firstPayment)*(1 + markup))/period)
@@ -417,7 +434,7 @@ export const calculatePaymentDetails = ({
 
   return {
     markup,
-    calculatedFirstPayment,
+    calculatedFirstPayment: actualFirstPayment, // Return the actual value used (manual or auto)
     monthlyPayment,
     totalPayment,
     grandTotal,
