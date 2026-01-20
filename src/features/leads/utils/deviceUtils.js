@@ -391,20 +391,20 @@ export const calculatePaymentDetails = ({
   if (isFirstPaymentManual && firstPaymentNum > 0) {
     // Foydalanuvchi qo'lda kiritgan birinchi to'lovni 1000 ga yaxlitlaymiz
     actualFirstPayment = Math.floor(firstPaymentNum / 1000) * 1000;
-    console.log('>>> USING MANUAL firstPayment:', {
-      isFirstPaymentManual,
-      firstPaymentNum,
-      actualFirstPayment,
-    });
+    // console.log('>>> USING MANUAL firstPayment:', {
+    //   isFirstPaymentManual,
+    //   firstPaymentNum,
+    //   actualFirstPayment,
+    // });
   } else {
     // Avtomatik hisoblangan qiymatni ishlatamiz
     actualFirstPayment = calculatedFirstPayment;
-    console.log('>>> USING AUTO-CALCULATED firstPayment:', {
-      isFirstPaymentManual,
-      firstPaymentNum,
-      calculatedFirstPayment,
-      actualFirstPayment,
-    });
+    // console.log('>>> USING AUTO-CALCULATED firstPayment:', {
+    //   isFirstPaymentManual,
+    //   firstPaymentNum,
+    //   calculatedFirstPayment,
+    //   actualFirstPayment,
+    // });
   }
 
   // Foydalanuvchi taklifi: avval yaxlitlanmagan qiymatlarni olish, jami to'lovni hisoblash, keyin yaxlitlash

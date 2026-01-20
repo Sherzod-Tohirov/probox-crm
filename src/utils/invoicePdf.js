@@ -115,11 +115,11 @@ export const generateInvoicePdf = async (invoiceData) => {
     // Agar useInvoice ichida hisoblangan umumiy birinchi to'lov (CashSum) mavjud bo'lsa,
     // PDF dagi birinchi to'lov matnini aynan shu qiymatga tenglashtiramiz.
     // Bu qo'lda o'zgartirilgan firstPayment qiymatlari bilan PDF har doim mos bo'lishini ta'minlaydi.
-    console.log('=== PDF GENERATION ===', {
-      'invoiceData.CashSum': invoiceData.CashSum,
-      'invoiceData.calculationType': invoiceData.calculationType,
-      'Before override - firstPaymentFormatted': firstPaymentFormatted,
-    });
+    // console.log('=== PDF GENERATION ===', {
+    //   'invoiceData.CashSum': invoiceData.CashSum,
+    //   'invoiceData.calculationType': invoiceData.calculationType,
+    //   'Before override - firstPaymentFormatted': firstPaymentFormatted,
+    // });
 
     if (invoiceData.CashSum !== undefined && invoiceData.CashSum !== null) {
       const cashSumNumber = Number(invoiceData.CashSum) || 0;
@@ -129,11 +129,11 @@ export const generateInvoicePdf = async (invoiceData) => {
       firstPaymentWordsUZ = numberToWordsUZ(normalizedCashSum);
       firstPaymentWordsRU = numberToWordsRU(normalizedCashSum);
 
-      console.log('=== PDF OVERRIDE APPLIED ===', {
-        cashSumNumber,
-        normalizedCashSum,
-        'After override - firstPaymentFormatted': firstPaymentFormatted,
-      });
+      // console.log('=== PDF OVERRIDE APPLIED ===', {
+      //   cashSumNumber,
+      //   normalizedCashSum,
+      //   'After override - firstPaymentFormatted': firstPaymentFormatted,
+      // });
     }
 
     // To'lov jadvalini hisoblash
