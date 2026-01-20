@@ -22,6 +22,7 @@ import {
 } from '@store/slices/leadsPageSlice';
 import useFetchLeads from '@/hooks/data/leads/useFetchLeads';
 import useTheme from '@/hooks/useTheme';
+import { ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS } from '@/features/leads/utils/constants';
 
 export default function Leads() {
   const navigate = useNavigate();
@@ -268,6 +269,16 @@ export default function Leads() {
                     : 'rgba(255, 245, 200, 0.9)',
                   transition: 'background-color 0.8s ease',
                 };
+              }
+
+              if (ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS.includes(role)) {
+                if (row.seen === false && row.status === 'Returned') {
+                  return {
+                    backgroundColor: isDark
+                      ? 'rgba(255, 100, 100, 0.2)'
+                      : 'rgba(255, 200, 200, 0.5)',
+                  };
+                }
               }
             }}
           />

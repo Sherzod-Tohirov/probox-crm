@@ -28,6 +28,7 @@ export const statusOptions = [
   // { value: 'Blocked', label: 'Bloklangan' },
   { value: 'Processing', label: 'Jarayonda' },
   { value: 'Closed', label: 'Yopilgan' },
+  { value: 'Returned', label: 'Qaytarilgan' },
 ];
 
 export const passportVisitOptions = [
@@ -43,6 +44,7 @@ export const statusFilterOptions = [
   { value: 'Archived', label: 'Arxivlangan' },
   { value: 'Processing', label: 'Jarayonda' },
   { value: 'Closed', label: 'Yopilgan' },
+  { value: 'Returned', label: 'Qaytarilgan' },
 ];
 
 export const callCountOptions = [

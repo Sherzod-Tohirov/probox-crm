@@ -22,6 +22,7 @@ const StatusBadge = ({ status }) => {
       Processing: 'warning',
       Closed: 'black',
       Purchased: 'extrasuccess',
+      Returned: 'danger',
     };
     const translationMap = {
       Active: 'Active',
@@ -29,6 +30,7 @@ const StatusBadge = ({ status }) => {
       Processing: 'Jarayonda',
       Closed: 'Yopilgan',
       Purchased: 'Sotilgan',
+      Returned: 'Qaytarilgan',
     };
     return (
       <Badge color={colorMap[status]} variant="soft" size="md">
