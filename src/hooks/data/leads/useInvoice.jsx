@@ -503,7 +503,7 @@ export default function useInvoice(options = {}) {
       let invoiceResponse;
       try {
         console.log(invoiceData, 'invoice data');
-        // invoiceResponse = await createInvoiceTest(invoiceData);
+        invoiceResponse = await createInvoiceTest(invoiceData);
         console.log('Invoice created successfully:', invoiceResponse);
       } catch (error) {
         console.error('Invoice creation failed:', error);
