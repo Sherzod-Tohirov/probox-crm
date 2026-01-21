@@ -459,11 +459,11 @@ export default function useInvoice(options = {}) {
 
       // 11. Invoice body ni tayyorlash
       const limitMap = {
-        internalLimit: 'internaLimit',
+        internalLimit: 'internalLimit',
         markup: 'finalLimit',
         firstPayment: 'percentage',
       };
-
+      console.log(calculationType, 'calculationType');
       const invoiceData = {
         CardCode: leadData.cardCode || '',
         DocDate: docDate, // Joriy sana
@@ -502,7 +502,8 @@ export default function useInvoice(options = {}) {
       // 10. Invoice yuborish
       let invoiceResponse;
       try {
-        invoiceResponse = await createInvoiceTest(invoiceData);
+        console.log(invoiceData, 'invoice data');
+        // invoiceResponse = await createInvoiceTest(invoiceData);
         console.log('Invoice created successfully:', invoiceResponse);
       } catch (error) {
         console.error('Invoice creation failed:', error);

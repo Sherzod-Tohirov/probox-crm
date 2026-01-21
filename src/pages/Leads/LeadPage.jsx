@@ -45,7 +45,7 @@ import Error from '@/pages/helper/Error';
 import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 import ClientExtraInfoSection from '@/features/leads/components/LeadPageSections/ClientExtraInfoSection';
 import { LeadLimitHistoryModal } from '@/features/leads/components/modals/LeadLimitHistoryModal';
-import useAuth from '@/hooks/useAuth';
+import useFetchLeadLimitHistory from '@/hooks/data/leads/useFetchLeadLimitHistory';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -56,7 +56,6 @@ export default function LeadPage() {
   // Use custom hook for all data and logic
   const {
     lead,
-    role,
     isLoading,
     isError,
     error,
@@ -80,10 +79,26 @@ export default function LeadPage() {
   } = useLeadPageData(id);
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isLimitHistoryModalOpen, setLimitHistoryModalOpen] = useState(false);
+  const [enableFetchLimitHistory, setEnableFetchLimitHistory] = useState(false);
   const { data: rate } = useFetchCurrency();
   const { data: invoiceScoreData } = useFetchInvoiceScore({
     CardCode: lead?.cardCode || lead?.CardCode,
   });
+  const { data: limitHistoryData, isLoading: limitHistoryLoading } =
+    useFetchLeadLimitHistory({
+      jshshir: lead?.jshshir,
+      enabled: enableFetchLimitHistory,
+    });
+
+  // Agar limit tarixi modal ochilsa yuklashga ruxsat ber.
+  useEffect(() => {
+    if (isLimitHistoryModalOpen) {
+      setEnableFetchLimitHistory(true);
+      return;
+    }
+    setEnableFetchLimitHistory(false);
+  }, [isLimitHistoryModalOpen]);
+
   // Fetch messenger messages with infinite scroll
   const {
     data: messages,
@@ -298,7 +313,6 @@ export default function LeadPage() {
     );
   }
 
-
   return (
     <>
       <Row gutter={12} style={{ width: '100%', height: '100%' }}>
@@ -367,7 +381,8 @@ export default function LeadPage() {
       <LeadLimitHistoryModal
         isOpen={isLimitHistoryModalOpen}
         onClose={() => setLimitHistoryModalOpen(false)}
-        cardCode={lead?.cardCode}
+        data={limitHistoryData}
+        isLoading={limitHistoryLoading}
       />
     </>
   );

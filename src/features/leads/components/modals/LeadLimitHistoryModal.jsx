@@ -7,7 +7,6 @@ import {
   Row,
   Typography,
 } from '@/components/ui';
-import useFetchLeadLimitHistory from '@/hooks/data/leads/useFetchLeadLimitHistory';
 import formatDate from '@/utils/formatDate';
 import moment from 'moment';
 import { formatCurrencyUZS } from '../../utils/deviceUtils';
@@ -162,8 +161,7 @@ function HistoryCard({ item }) {
   );
 }
 
-export function LeadLimitHistoryModal({ isOpen, onClose, cardCode }) {
-  const { data, isLoading } = useFetchLeadLimitHistory({ CardCode: cardCode });
+export function LeadLimitHistoryModal({ isOpen, onClose, data, isLoading }) {
   return (
     <Modal
       isLoading={isLoading}

@@ -3,16 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 
 export default function useFetchLeadLimitHistory(params) {
   const isEnabled = (params) => {
-    if (!params?.CardCode) return false;
-    if (params?.enabled) return !!params.enabled;
+    if (!params.jshshir) return false;
+    if (params?.enabled !== undefined) return !!params.enabled;
     else return true;
   };
-
   const { data, error, isLoading, isError, refetch } = useQuery({
     queryKey: ['leadLimitHistory', JSON.stringify(params || {})],
     queryFn: () =>
       getLeadLimitHistory({
-        CardCode: params?.CardCode,
+        jshshir: params?.jshshir,
       }),
     refetchOnWindowFocus: false,
     refetchOnMount: false,

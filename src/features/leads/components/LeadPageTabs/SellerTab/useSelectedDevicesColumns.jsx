@@ -56,7 +56,6 @@ export const useSelectedDevicesColumns = ({
         horizontal: 'start',
         width: '18%',
         renderCell: (row) => {
-          console.log(row);
           if (row.imeiLoading) {
             return (
               <span className={styles['selected-device-imei']}>
