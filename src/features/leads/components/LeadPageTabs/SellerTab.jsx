@@ -116,12 +116,7 @@ export default function SellerTab({
         ? Number(invoiceScoreData?.monthlyLimit)
         : Number(leadData.finalLimit);
     return Number.isFinite(limit) && limit > 0 ? limit : null;
-  }, [
-    leadData?.finalLimit,
-    calculationTypeFilter,
-    invoiceScoreData?.monthlyLimit,
-    invoiceScoreData,
-  ]);
+  }, [leadData?.finalLimit, calculationTypeFilter, invoiceScoreData]);
   // Disabled holatini aniqlash
   const isRentPeriodDisabled = useMemo(() => {
     // Agar "limit" yoki "internalLimit" tanlangan va maximum limit mavjud bo'lmasa

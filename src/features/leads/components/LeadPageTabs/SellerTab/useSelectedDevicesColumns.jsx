@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
 import { Input, Button } from '@components/ui';
 import styles from '../leadPageTabs.module.scss';
-import {
-  formatNumberWithSeparators,
-  getMarkupPercentage,
-} from '../../../utils/deviceUtils';
+import { formatNumberWithSeparators } from '../../../utils/deviceUtils';
 
 export const useSelectedDevicesColumns = ({
   rentPeriodOptions,
