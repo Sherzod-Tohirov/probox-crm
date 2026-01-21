@@ -377,7 +377,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
               </Row>
             </Col>
             <Col>
-              <Row direction={'row'} gutter={4}>
+              <Row direction="row" gutter={4}>
                 <Col>
                   <Row gutter={1}>
                     <Col>

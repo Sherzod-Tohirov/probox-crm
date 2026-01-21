@@ -38,7 +38,7 @@ const MessengerModal = ({
       <div className={styles['messenger-body']}>
         {isLoading ? (
           <div className={styles['messenger-body-loader-wrapper']}>
-            <ClipLoader color={'black'} size={22} />
+            <ClipLoader color="black" size={22} />
           </div>
         ) : (
           <MessageRenderer
@@ -46,14 +46,14 @@ const MessengerModal = ({
             onDeleteMessage={onDeleteMessage}
             onEditMessage={onEditMessage}
             messages={messages}
-            size={'small'}
+            size="small"
           />
         )}
       </div>
       <AnimatePresence mode="sync">
         {showSendForm ? (
           <motion.div className={styles['messenger-modal-footer']}>
-            <MessageForm onSubmit={onSendMessage} size={'small'} />
+            <MessageForm onSubmit={onSendMessage} size="small" />
           </motion.div>
         ) : (
           ''

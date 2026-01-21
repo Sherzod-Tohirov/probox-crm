@@ -22,12 +22,12 @@ export default function Navigation({ fallbackBackPath = "/", customBreadcrumbs =
     <nav className={styles.navigation}>
       <Button
         className={styles["navigation-back-btn"]}
-        variant={"text"}
+        variant="text"
         onClick={handleBack}
-        icon={"arrowLeft"}>
+        icon="arrowLeft">
         Ortga
       </Button>
-      <Divider color="secondary" height={"12px"} />
+      <Divider color="secondary" height="12px" />
       <Breadcrumb customBreadcrumbs={customBreadcrumbs} />
     </nav>
   );

@@ -519,7 +519,7 @@ const Input = forwardRef(
           </select>
         ),
         file: (
-          <Box dir="row" align={'center'}>
+          <Box dir="row" align="center">
             <input
               id={props.id || uniqueId}
               type="file"
@@ -657,7 +657,7 @@ const Input = forwardRef(
                   disableDropdown={true}
                   countryCodeEditable={false}
                   buttonClass={styles['hidden']}
-                  country={'uz'}
+                  country="uz"
                   onChange={(value) => {
                     const formattedValue = formatPhoneNumber(value);
                     field.onChange(formattedValue);
@@ -682,7 +682,7 @@ const Input = forwardRef(
             disableDropdown={true}
             countryCodeEditable={false}
             buttonClass={styles['hidden']}
-            country={'uz'}
+            country="uz"
           />
         ),
         default: searchable ? (
@@ -745,7 +745,7 @@ const Input = forwardRef(
 
     if (variant === 'search') {
       return (
-        <Box dir="row" gap={2} align={'center'}>
+        <Box dir="row" gap={2} align="center">
           <Typography element="span" className={styles['icon-text']}>
             {iconsMap['search']}
           </Typography>

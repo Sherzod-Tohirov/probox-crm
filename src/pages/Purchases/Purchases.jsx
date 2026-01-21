@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Col, Row } from '@/components/ui';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PurchasesHeader from '@/features/purchases/components/PurchasesHeader';
 import { PurchasesTable } from '@/features/purchases/components/PurchasesTable';
 import PurchasesPageFooter from '@/features/purchases/components/PurchasesPageFooter';
+import { PurchasesFilterModal } from '@/features/purchases/components/modals/PurchasesFilterModal';
+import { setPurchasesFilter } from '@/store/slices/purchasesPageSlice';
 
 // Sample data generator
 const generateSampleData = (total = 47) => {
@@ -42,10 +44,27 @@ const generateSampleData = (total = 47) => {
 const SAMPLE_DATA = generateSampleData(47);
 
 export default function Purchases() {
-  const { currentPage, pageSize } = useSelector(
+  const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.purchases
   );
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterOpen, setFilterOpen] = useState(false);
+
+  const handleApplyFilter = (data) => {
+    console.log(filter, 'filter');
+    console.log(data, 'data');
+    dispatch(setPurchasesFilter({ search: filter.search, ...data }));
+    setFilterOpen(false);
+  };
+
+  const handleClearFilter = () => {
+    setFilterOpen(false);
+  };
+
+  const handleSearch = (searchData) => {
+    dispatch(setPurchasesFilter({ search: searchData }));
+  };
 
   // Simulate loading delay
   useEffect(() => {
@@ -78,12 +97,22 @@ export default function Purchases() {
     <>
       <Row gutter={4} style={{ width: '100%' }}>
         <Col fullWidth>
-          <PurchasesHeader pageTitle={'Sotib olish'} />
+          <PurchasesHeader
+            pageTitle="Sotib olish"
+            onOpenFilter={() => setFilterOpen(true)}
+            onSearch={handleSearch}
+          />
         </Col>
         <Col fullWidth>
           <PurchasesTable data={purchases} isLoading={isLoading} />
         </Col>
       </Row>
+      <PurchasesFilterModal
+        onClose={handleClearFilter}
+        onApply={handleApplyFilter}
+        isOpen={isFilterOpen}
+        title="Filter"
+      />
       <PurchasesPageFooter purchasesDetails={meta} />
     </>
   );

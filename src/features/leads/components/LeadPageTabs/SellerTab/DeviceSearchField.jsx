@@ -84,14 +84,14 @@ export default function DeviceSearchField({
 
   return (
     <Row
-      direction={'row'}
+      direction="row"
       className={styles['search-field-wrapper']}
       fullWidth
-      justify={'space-between'}
+      justify="space-between"
       wrap
       gutter={4}
     >
-      <Col align={'end'} flexGrow>
+      <Col align="end" flexGrow>
         <Input
           size={isMobile ? 'full-grow' : 'longer'}
           variant="outlined"
@@ -121,8 +121,8 @@ export default function DeviceSearchField({
               {getFinalLimitText()}
             </span>
           </Col>
-          <Col justify={'end'} align={'end'}>
-            <Row direction={'row'} gutter={6} wrap>
+          <Col justify="end" align="end">
+            <Row direction="row" gutter={6} wrap>
               {/* to'lov turi bo'yicha form field */}
               <Col>
                 <div className={styles['search-field-branch-filter']}>

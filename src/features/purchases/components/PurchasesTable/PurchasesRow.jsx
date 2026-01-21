@@ -11,7 +11,7 @@ import styles from './styles.module.scss';
 export function PurchasesRow({ children }) {
   return (
     <div className={styles.row}>
-      <Row direction={'row'}>{children}</Row>
+      <Row direction="row">{children}</Row>
     </div>
   );
 }

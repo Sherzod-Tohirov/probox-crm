@@ -306,11 +306,11 @@ export default function PassportUpload({
 
       <ConfirmModal
         isOpen={confirmDelete.open}
-        subtitle={"Rasmni o'chirish"}
-        message={'Haqiqatan ham bu rasmni o‘chirmoqchimisiz?'}
-        confirmText={"O'chirish"}
-        cancelText={'Bekor qilish'}
-        confirmColor={'danger'}
+        subtitle="Rasmni o'chirish"
+        message="Haqiqatan ham bu rasmni o‘chirmoqchimisiz?"
+        confirmText="O'chirish"
+        cancelText="Bekor qilish"
+        confirmColor="danger"
         onConfirm={handleConfirmDelete}
         onCancel={() => setConfirmDelete({ open: false, file: null })}
       />

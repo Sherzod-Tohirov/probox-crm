@@ -35,7 +35,7 @@ function HistoryCard({ item }) {
     <Card>
       <Row gutter={3}>
         <Col fullWidth flexGrow>
-          <Row direction="row" align="center" justify={'center'} gutter={4}>
+          <Row direction="row" align="center" justify="center" gutter={4}>
             <Col>
               <Typography variant="body1">{formattedCreatedDate}</Typography>
               <Typography variant="body1"> - </Typography>
@@ -47,14 +47,14 @@ function HistoryCard({ item }) {
           </Row>
         </Col>
         <Col fullWidth>
-          <Row direction={'row'} gutter={4}>
+          <Row direction="row" gutter={4}>
             <Col flexGrow fullWidth>
               <Row gutter={2}>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -68,9 +68,9 @@ function HistoryCard({ item }) {
                 </Col>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -84,9 +84,9 @@ function HistoryCard({ item }) {
                 </Col>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -107,9 +107,9 @@ function HistoryCard({ item }) {
               <Row gutter={2}>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -123,9 +123,9 @@ function HistoryCard({ item }) {
                 </Col>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -139,9 +139,9 @@ function HistoryCard({ item }) {
                 </Col>
                 <Col fullWidth>
                   <Row
-                    direction={'row'}
+                    direction="row"
                     align="center"
-                    justify={'space-between'}
+                    justify="space-between"
                   >
                     <Col>
                       <Typography color="secondary" variant="body2">
@@ -184,7 +184,7 @@ export function LeadLimitHistoryModal({ isOpen, onClose, cardCode }) {
                   <Col flexGrow fullWidth>
                     <Divider
                       style={{ width: '100%' }}
-                      height={'1px'}
+                      height="1px"
                       color="primary"
                     />
                   </Col>

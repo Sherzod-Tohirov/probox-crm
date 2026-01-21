@@ -44,7 +44,7 @@ export default function Alert({
 
   return (
     <Row
-      direction={'row'}
+      direction="row"
       className={classNames(styles['alert'], styles[`alert-${type}`])}
       gutter={3}
     >
@@ -66,7 +66,7 @@ export default function Alert({
         </Row>
       </Col>
       <Col style={{ marginLeft: 'auto' }}>
-        <Button icon={'close'} variant={'text'} onClick={handleClose}></Button>
+        <Button icon="close" variant="text" onClick={handleClose}></Button>
       </Col>
     </Row>
   );

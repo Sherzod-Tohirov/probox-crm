@@ -514,7 +514,7 @@ const Table = forwardRef(function Table(
                   colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
                   className={styles['empty-table']}
                 >
-                  <ClipLoader color={'#94A3B8'} size={26} />
+                  <ClipLoader color="#94A3B8" size={26} />
                 </td>
               </tr>
             ) : rows.length > 0 ? (

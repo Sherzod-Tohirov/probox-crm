@@ -28,9 +28,9 @@ export default function FilterActions({
             <Button
               fullWidth
               className={styles['filter-btn']}
-              icon={'sliders'}
+              icon="sliders"
               iconSize={18}
-              variant={'outlined'}
+              variant="outlined"
               onClick={(e) => {
                 e.preventDefault();
                 setShowMobileFiltersModal(true);
@@ -45,10 +45,10 @@ export default function FilterActions({
             ref={refs.setReference}
             fullWidth={isMobileOnly}
             className={styles['filter-btn']}
-            icon={'filter'}
+            icon="filter"
             iconSize={18}
             animated={false}
-            variant={'filled'}
+            variant="filled"
             onClick={(e) => {
               e.preventDefault();
               setShowFilterMenu((p) => !p);

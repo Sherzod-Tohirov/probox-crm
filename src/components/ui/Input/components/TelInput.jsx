@@ -17,7 +17,7 @@ const TelInput = ({ value, defaultValue, onChange, onFocus, size, variant, commo
       disableDropdown={true}
       countryCodeEditable={false}
       buttonClass={styles['hidden']}
-      country={'uz'}
+      country="uz"
       onChange={(val) => {
         onChange?.(formatPhoneNumber(val));
       }}

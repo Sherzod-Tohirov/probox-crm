@@ -35,7 +35,7 @@ export default function StatusSection({ lead, canEdit, onSave }) {
   });
 
   return (
-    <FieldGroup title={"Status ma'lumotlari"}>
+    <FieldGroup title="Status ma'lumotlari">
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Row gutter={4}>
           <Col>

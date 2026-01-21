@@ -23,7 +23,6 @@ export default function Sidebar() {
     () => filterSidebarLinks(sidebarLinks, user),
     [user]
   );
-
   // Local open state per parent path (fallbacks to active route)
   const [openMap, setOpenMap] = useState({});
   const toggleSection = useCallback((path) => {
@@ -114,8 +113,8 @@ export default function Sidebar() {
             </div>
             {hasEnabledChildren && isOpen ? (
               <Button
-                variant={'text'}
-                icon={'arrowDown'}
+                variant="text"
+                icon="arrowDown"
                 iconSize={16}
                 className={classNames(styles['toggle-btn'], {
                   [styles['open']]: isSectionOpen,
@@ -146,15 +145,15 @@ export default function Sidebar() {
   return (
     <Row className={styles.sidebar} wrap gutter={8}>
       <Col fullWidth>
-        <Row direction={'row'} justify={'space-between'} align={'center'}>
+        <Row direction="row" justify="space-between" align="center">
           <Col>
             <Logo isMinified={!isOpen && !isMobile} />
           </Col>
           <Col>
             <Button
               className={styles['close-btn']}
-              variant={'text'}
-              icon={'close'}
+              variant="text"
+              icon="close"
               onClick={toggle}
             ></Button>
           </Col>

@@ -48,7 +48,7 @@ export default function DashboardChart({ width }) {
     <div
       style={{ width: width ? width : '100%', height: 400, fontSize: '3rem' }}
     >
-      <ResponsiveContainer width={'100%'} height="100%">
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}

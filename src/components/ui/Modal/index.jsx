@@ -9,6 +9,9 @@ import { SkeletonCard } from '../Skeleton';
 import Row from '../Row';
 import Col from '../Col';
 
+
+
+
 const Modal = forwardRef(function (
   {
     isOpen = false,
@@ -59,7 +62,7 @@ const Modal = forwardRef(function (
           flexGrow
           style={{ height: '100%' }}
         >
-          <Col fullHeight justify={'center'} align={'center'}>
+          <Col fullHeight justify="center" align="center">
             <Typography variant="body1">Ma'lumot yo'q</Typography>
           </Col>
         </Row>
@@ -112,7 +115,7 @@ const Modal = forwardRef(function (
               <Button
                 className={styles['modal-close-btn']}
                 variant="text"
-                icon={'close'}
+                icon="close"
                 onClick={onClose}
               ></Button>
             </div>

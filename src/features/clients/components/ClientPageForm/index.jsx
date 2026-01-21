@@ -310,7 +310,7 @@ function ClientPageForm({
       {...props}
     >
       <FilePreviewModal
-        inputId={'file'}
+        inputId="file"
         images={allFiles}
         isOpen={filePreviewModal}
         isLoading={updateMutation.isPending || deleteMutation.isPending}
@@ -344,11 +344,11 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="avatarFilled">FIO</Label>
-                    <Row direction={'row'} gutter={2} align="center">
+                    <Row direction="row" gutter={2} align="center">
                       <Col fullWidth>
                         <Input
                           type="text"
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
                           dimOnDisabled={false}
@@ -371,45 +371,45 @@ function ClientPageForm({
                     <Label icon="avatarFilled">Ijrochi</Label>
                     <Input
                       type="select"
-                      variant={'filled'}
+                      variant="filled"
                       options={executorsOptions}
                       canClickIcon={false}
                       size={isMobile ? 'full' : 'long'}
                       disabled={!hasRole(user, ['Manager'])}
                       control={control}
-                      name={'executor'}
+                      name="executor"
                     />
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
-                    <Label icon="photo" htmlFor={'file'}>
+                    <Label icon="photo" htmlFor="file">
                       Fayllar
                     </Label>
                     <Input
-                      id={'file'}
+                      id="file"
                       type="file"
                       images={clientFilesWithAPI}
                       accept={`.${allowedExtensions.join(', .')}`}
                       multiple
-                      variant={'filled'}
+                      variant="filled"
                       size={isMobile ? 'full' : 'long'}
                       className={styles.fileInput}
                       onClick={handleFileInputClick}
                       onChange={handleFileChange}
-                      name={'files'}
+                      name="files"
                     />
                   </InputGroup>
                 </Col>
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami</Label>
-                    <Row direction={'row'} gutter={2} align="center">
+                    <Row direction="row" gutter={2} align="center">
                       <Col flexGrow>
                         <Input
                           type="tel"
                           control={control}
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           hasIcon={false}
                           style={{ cursor: 'auto' }}
@@ -430,13 +430,13 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="telephoneFilled">Telefon raqami 2</Label>
-                    <Row direction={'row'} gutter={2} align="center">
+                    <Row direction="row" gutter={2} align="center">
                       <Col flexGrow>
                         {' '}
                         <Input
                           type="text"
                           control={control}
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           hasIcon={false}
                           style={{ cursor: 'auto' }}
@@ -459,11 +459,11 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Mijoz kodi</Label>
-                    <Row direction={'row'} gutter={2} align={'center'}>
+                    <Row direction="row" gutter={2} align="center">
                       <Col fullWidth>
                         <Input
                           type="text"
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
                           dimOnDisabled={false}
@@ -490,7 +490,7 @@ function ClientPageForm({
                     <Label icon="expense">Jami qarzdorlik</Label>
                     <Input
                       type="text"
-                      variant={'filled'}
+                      variant="filled"
                       size={isMobile ? 'full' : 'long'}
                       disabled={true}
                       {...register('debtClient')}
@@ -500,11 +500,11 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="products">Mahsulot nomi</Label>
-                    <Row direction={'row'} gutter={2} align={'center'}>
+                    <Row direction="row" gutter={2} align="center">
                       <Col fullWidth>
                         <Input
                           type="text"
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
                           dimOnDisabled={false}
@@ -527,7 +527,7 @@ function ClientPageForm({
                     <Label icon="calendar">To'lov muddati</Label>
                     <Input
                       type="date"
-                      variant={'filled'}
+                      variant="filled"
                       size={isMobile ? 'full' : 'long'}
                       control={control}
                       hasIcon={false}
@@ -540,10 +540,10 @@ function ClientPageForm({
                   <InputGroup>
                     <Label icon="calendar">Kelishilgan sana</Label>
                     <Input
-                      name={'agreementDate'}
+                      name="agreementDate"
                       type="date"
                       includeTime
-                      variant={'filled'}
+                      variant="filled"
                       size={isMobile ? 'full' : 'long'}
                       datePickerOptions={{
                         minuteIncrement: 60,
@@ -557,11 +557,11 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">IMEI</Label>
-                    <Row direction={'row'} gutter={2} align={'center'}>
+                    <Row direction="row" gutter={2} align="center">
                       <Col fullWidth>
                         <Input
                           type="text"
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
                           dimOnDisabled={false}
@@ -582,11 +582,11 @@ function ClientPageForm({
                 <Col fullWidth>
                   <InputGroup>
                     <Label icon="barCodeFilled">Passport seriyasi</Label>
-                    <Row direction={'row'} gutter={2} align={'center'}>
+                    <Row direction="row" gutter={2} align="center">
                       <Col fullWidth>
                         <Input
                           type="text"
-                          variant={'filled'}
+                          variant="filled"
                           size={isMobile ? 'full' : 'long'}
                           disabled={true}
                           dimOnDisabled={false}

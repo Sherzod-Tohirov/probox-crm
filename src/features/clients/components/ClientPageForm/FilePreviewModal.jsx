@@ -35,7 +35,7 @@ const EmptyPlaceholder = memo(({ title, className }) => {
       gap={2}
       className={classNames(styles['no-image'], className)}
     >
-      <Typography element={'p'} className={styles['no-image-text']}>
+      <Typography element="p" className={styles['no-image-text']}>
         {title ?? " Hozircha hujjatlar yo'q"}
       </Typography>
     </Box>
@@ -161,7 +161,7 @@ export default function FilePreviewModal({
                               className={classNames({
                                 [styles['hidden']]: currentImage !== index,
                               })}
-                              title={'Excel faylni yuklab oling'}
+                              title="Excel faylni yuklab oling"
                             />
                           );
                         }

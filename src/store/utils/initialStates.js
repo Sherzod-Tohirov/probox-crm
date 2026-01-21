@@ -54,4 +54,7 @@ export const initialProductsFilterState = {
 
 export const initialPurchasesFilterState = {
   search: '',
+  status: '',
+  category: '',
+  warehouse: '',
 };

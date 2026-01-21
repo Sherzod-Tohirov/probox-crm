@@ -217,7 +217,7 @@ const MultipleSelect = ({
         }}
         classNamePrefix="react-select"
         isMulti
-        placeholder={'Tanlash'}
+        placeholder="Tanlash"
         options={options}
         closeMenuOnSelect={false} // Keep menu open for multiple selections
         hideSelectedOptions={false} // Keep selected options in the list

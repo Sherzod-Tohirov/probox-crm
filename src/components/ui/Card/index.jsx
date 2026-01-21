@@ -1,4 +1,3 @@
-import React from 'react';
 import { Typography } from '@components/ui';
 import styles from './card.module.scss';
 

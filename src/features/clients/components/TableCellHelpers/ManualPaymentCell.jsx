@@ -159,7 +159,7 @@ const ManualPaymentCell = ({ column }) => {
     >
       {canUserModify && !isStatusPaid ? (
         <ModalCell
-          title={"To'lov holatini o'zgartirish"}
+          title="To'lov holatini o'zgartirish"
           onClose={handleClose}
           onApply={handleSubmit(handleApply)}
           applyButtonProps={{
@@ -168,11 +168,11 @@ const ManualPaymentCell = ({ column }) => {
           }}
         >
           <Input
-            type={'select'}
-            size={'full-grow'}
+            type="select"
+            size="full-grow"
             canClickIcon={false}
             options={paymentOptions}
-            variant={'outlined'}
+            variant="outlined"
             control={control}
             value={partialField}
             name="partial"

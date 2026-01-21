@@ -109,7 +109,7 @@ const ProductCell = ({ column }) => {
     >
       {canUserModify ? (
         <ModalCell
-          title={"Buyum holatini o'zgartirish"}
+          title="Buyum holatini o'zgartirish"
           onClose={() => {
             dispatch(toggleModal(modalId));
             reset();
@@ -121,12 +121,12 @@ const ProductCell = ({ column }) => {
           }}
         >
           <Input
-            type={'select'}
-            size={'full-grow'}
+            type="select"
+            size="full-grow"
             canClickIcon={false}
             control={control}
             options={productOptions}
-            variant={'outlined'}
+            variant="outlined"
             name="phoneConfiscated"
           />
         </ModalCell>

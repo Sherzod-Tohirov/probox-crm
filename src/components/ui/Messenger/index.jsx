@@ -38,7 +38,7 @@ export const Messenger = (
   return createPortal(
     <motion.div
       ref={ref}
-      id={'messenger'}
+      id="messenger"
       initial={{ x: '100%', display: 'none' }}
       animate={{
         x: isOpen ? '0' : '100%',
@@ -51,9 +51,9 @@ export const Messenger = (
       <div className={styles['messenger-header']}>
         <Button
           className={styles['toggle-button']}
-          variant={'text'}
+          variant="text"
           iconSize={24}
-          icon={'toggleOpen'}
+          icon="toggleOpen"
           onClick={toggle}
         ></Button>
         <Typography element="h2" className={styles.title}>
@@ -63,7 +63,7 @@ export const Messenger = (
       <div className={styles['messenger-body']}>
         {isLoading ? (
           <div className={styles['messenger-body-loader-wrapper']}>
-            <ClipLoader color={'black'} size={28} />
+            <ClipLoader color="black" size={28} />
           </div>
         ) : (
           <MessageRenderer

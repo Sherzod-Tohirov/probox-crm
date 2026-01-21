@@ -95,7 +95,7 @@ export default function Statistics() {
         <Col fullWidth>
           <Table
             scrollable
-            scrollHeight={'auto'}
+            scrollHeight="auto"
             uniqueKey="SlpCode"
             data={salesPerson.data}
             isLoading={salesPerson.isLoading}
@@ -104,7 +104,7 @@ export default function Statistics() {
         </Col>
         <Col fullWidth>
           <StatisticChart
-            title={'Oylik statistika'}
+            title="Oylik statistika"
             date={{
               startDate: formatDate(
                 params.startDate,
@@ -125,7 +125,7 @@ export default function Statistics() {
         <Col fullWidth>
           <Table
             scrollable
-            scrollHeight={'auto'}
+            scrollHeight="auto"
             uniqueKey="DueDate"
             data={monthly.data}
             isLoading={monthly.isLoading}
@@ -136,7 +136,7 @@ export default function Statistics() {
       {hasRole(user, ['Manager', 'CEO']) && (
         <StickyFooterPortal>
           <Footer className={styles['footer-container']}>
-            <Row direction={'row'} justify={'end'}>
+            <Row direction="row" justify="end">
               <Col>
                 <Button
                   onClick={handleDownloadClientExcel}

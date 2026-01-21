@@ -123,12 +123,12 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
         <Row direction={isMobile ? 'column' : 'row'} gutter={4} wrap>
           <Col gutter={4} fullWidth={isMobile} flexGrow={!isMobile}>
             <Input
-              id={'startDate'}
-              size={'full-grow'}
-              variant={'outlined'}
-              label={'Boshlanish vaqti'}
+              id="startDate"
+              size="full-grow"
+              variant="outlined"
+              label="Boshlanish vaqti"
               canClickIcon={false}
-              type={'date'}
+              type="date"
               datePickerOptions={{
                 maxDate: watchedFields.endDate
                   ? moment(watchedFields.endDate, 'DD.MM.YYYY').toDate()
@@ -140,11 +140,11 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
           </Col>
           <Col fullWidth={isMobile} flexGrow={!isMobile}>
             <Input
-              size={'full-grow'}
-              variant={'outlined'}
-              label={'Tugash vaqti'}
+              size="full-grow"
+              variant="outlined"
+              label="Tugash vaqti"
               canClickIcon={false}
-              type={'date'}
+              type="date"
               datePickerOptions={{
                 minDate: watchedFields.startDate
                   ? moment(watchedFields.startDate, 'DD.MM.YYYY').toDate()
@@ -157,14 +157,14 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
           </Col>
           <Col fullWidth={isMobile} flexGrow={!isMobile}>
             <Input
-              type={'select'}
-              size={'full-grow'}
+              type="select"
+              size="full-grow"
               canClickIcon={false}
               multipleSelect={true}
               showAvatars={true}
               options={executors.options}
-              variant={'outlined'}
-              label={"Mas'ul ijrochi"}
+              variant="outlined"
+              label="Mas'ul ijrochi"
               isLoading={executors.isLoading}
               control={control}
               {...register('slpCode')}
@@ -181,9 +181,9 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
                   fullWidth
                   className={classNames(styles['filter-btn'], styles['clear'])}
                   onClick={handleFilterClear}
-                  icon={'delete'}
+                  icon="delete"
                   iconSize={18}
-                  variant={'filled'}
+                  variant="filled"
                   type="submit"
                 >
                   Tozalash
@@ -193,9 +193,9 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
                 <Button
                   fullWidth
                   className={styles['filter-btn']}
-                  icon={'search'}
+                  icon="search"
                   iconSize={18}
-                  variant={'filled'}
+                  variant="filled"
                   type="submit"
                 >
                   Qidiruv

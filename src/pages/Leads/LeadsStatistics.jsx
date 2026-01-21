@@ -109,7 +109,7 @@ export default function LeadsStatistics() {
           <Card className={styles.filterCard}>
             <Row gutter={6} className={styles.filterToolbar}>
               <Col flexGrow>
-                <Row direction={'row'} gutter={4}>
+                <Row direction="row" gutter={4}>
                   {' '}
                   <Col xs={12} md={5}>
                     <Input

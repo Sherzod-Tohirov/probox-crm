@@ -69,7 +69,7 @@ export default function ColumnsModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={'Jadval ustunlarini boshqarish'}
+      title="Jadval ustunlarini boshqarish"
       size="lg"
       preventScroll
       footer={footer}
@@ -94,7 +94,7 @@ export default function ColumnsModal({
                 gap: 10,
               }}
             >
-              <Row direction={'row'} gutter={2} align={'center'}>
+              <Row direction="row" gutter={2} align="center">
                 <Col>
                   <span>
                     Jadval ustunlari (
@@ -107,7 +107,7 @@ export default function ColumnsModal({
                 </Col>
                 <Col>
                   <Checkbox
-                    label={'Hammasini tanlash'}
+                    label="Hammasini tanlash"
                     checked={allSelected}
                     onChange={handleToggleAll}
                     style={{ width: 16, height: 16, cursor: 'pointer' }}

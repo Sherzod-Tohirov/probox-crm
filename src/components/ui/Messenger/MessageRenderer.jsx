@@ -63,8 +63,8 @@ const MessageRenderer = ({
       {/* Load More Button for infinite scroll */}
       {hasMore && onLoadMore && (
         <Box
-          align={'center'}
-          justify={'center'}
+          align="center"
+          justify="center"
           style={{ marginBottom: '1rem' }}
         >
           <Button
@@ -73,8 +73,8 @@ const MessageRenderer = ({
               onLoadMore();
             }}
             className={styles['messenger-messages-toggle-btn']}
-            variant={'text'}
-            icon={'arrowDown'}
+            variant="text"
+            icon="arrowDown"
             disabled={isLoadingMore}
             isLoading={isLoadingMore}
           >
@@ -83,14 +83,14 @@ const MessageRenderer = ({
         </Box>
       )}
       {hasToggleControl && lastMonthMessages.length > 0 ? (
-        <Box align={'center'} justify={'center'}>
+        <Box align="center" justify="center">
           <Button
             onClick={(e) => {
               e.stopPropagation();
               setIsToggleOpen((p) => !p);
             }}
             className={styles['messenger-messages-toggle-btn']}
-            variant={'text'}
+            variant="text"
             icon={isToggleOpen ? 'arrowUp' : 'arrowDown'}
           >
             {isToggleOpen ? 'Yopish' : "Hammasini ko'rish"}

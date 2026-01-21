@@ -109,9 +109,9 @@ const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
             {messageType !== 'text' ? (
               <Col>
                 <Button
-                  icon={'close'}
-                  iconSize={'18'}
-                  variant={'text'}
+                  icon="close"
+                  iconSize="18"
+                  variant="text"
                   onClick={() => {
                     setMessageType('text');
                     setAudioBlob(null);
@@ -169,12 +169,12 @@ const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
                   [styles['invalid']]: !isValid,
                 })}
                 style={{ fontWeight: 500 }}
-                icon={'send'}
-                variant={'text'}
+                icon="send"
+                variant="text"
                 iconPosition="right"
-                iconColor={'primary'}
-                color={'primary'}
-                type={'submit'}
+                iconColor="primary"
+                color="primary"
+                type="submit"
               >
                 Yuborish
               </Button>

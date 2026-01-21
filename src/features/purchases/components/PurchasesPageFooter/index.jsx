@@ -60,7 +60,7 @@ const PurchasesPageFooter = ({ purchasesDetails = {} }) => {
                     {purchasesDetails.total > 0
                       ? currentPage * pageSize + 1
                       : 0}
-                    {'-'}
+                    -
                     {(currentPage + 1) * pageSize > purchasesDetails.total
                       ? purchasesDetails.total
                       : currentPage * pageSize + pageSize}{' '}

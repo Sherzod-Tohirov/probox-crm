@@ -58,7 +58,7 @@ const LeadsFooter = ({ leadsDetails = {} }) => {
                 <Box>
                   <Typography variant="body2">
                     {leadsDetails.total > 0 ? currentPage * pageSize + 1 : 0}
-                    {'-'}
+                    -
                     {(currentPage + 1) * pageSize > leadsDetails.total
                       ? leadsDetails.total
                       : currentPage * pageSize + pageSize}{' '}

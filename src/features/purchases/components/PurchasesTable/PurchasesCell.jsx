@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import React from 'react';
 
 function renderCell(children, textColor) {
-  console.log(React.isValidElement(children));
   if (React.isValidElement(children)) {
     return children;
   }

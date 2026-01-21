@@ -24,7 +24,7 @@ const filterSidebarLinks = (links, user) => {
       if (link.excludedRoles.includes(userRole)) return false;
     }
     if (link.allowedRoles && Array.isArray(link.allowedRoles)) {
-      if (!link.allowedRoles.includes(userRole)) return false;
+      if (!link.allowedRoles?.includes(userRole)) return false;
     }
     return true;
   };
