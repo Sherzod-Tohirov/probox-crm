@@ -101,6 +101,7 @@ export default function Purchases() {
             pageTitle="Sotib olish"
             onOpenFilter={() => setFilterOpen(true)}
             onSearch={handleSearch}
+            searchValue={filter.search}
           />
         </Col>
         <Col fullWidth>

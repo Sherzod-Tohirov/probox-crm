@@ -1,8 +1,11 @@
 import { Button, Col, Divider, Input, Row, Typography } from '@/components/ui';
-import { useRef } from 'react';
 
-export default function PurchasesHeader({ pageTitle, onOpenFilter, onSearch }) {
-  const searchRef = useRef(null);
+export default function PurchasesHeader({
+  pageTitle,
+  onOpenFilter,
+  onSearch,
+  searchValue,
+}) {
   return (
     <Row direction="row" justify="space-between">
       <Col fullWidth flexGrow>
@@ -12,10 +15,10 @@ export default function PurchasesHeader({ pageTitle, onOpenFilter, onSearch }) {
         <Row direction="row" align="center" justify="end" gutter={2}>
           <Col span={8}>
             <Input
-              ref={searchRef}
               variant="outlined"
               type="search"
               placeholder="Qidirish"
+              value={searchValue}
               onChange={(e) => onSearch(e.target.value)}
             />
           </Col>
