@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initialPurchasesFilterState } from '../utils/initialStates';
 import normalizePageAndSize from '../utils/normalizePageAndSize';
+import _ from 'lodash';
 
 const loadState = () => {
   try {
@@ -58,7 +59,11 @@ const purchasesPageSlice = createSlice({
       saveState(state);
     },
     setPurchasesFilter: (state, action) => {
-      state.filter = action.payload;
+      Object.entries(action.payload).forEach((entry) => {
+        if (_.has(state.filter, entry[0])) {
+          state.filter[entry[0]] = entry[1];
+        }
+      });
       state.currentPage = 0; // Reset to first page when filter changes
       saveState(state);
     },

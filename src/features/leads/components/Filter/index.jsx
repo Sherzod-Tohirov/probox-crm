@@ -236,8 +236,8 @@ export default function LeadsFilter({
         style={{ width: '100%' }}
       >
         <Row
-          direction={'row'}
-          justify={'between'}
+          direction="row"
+          justify="between"
           gutter={{ xs: 2, sm: 4, md: 6 }}
           wrap
         >

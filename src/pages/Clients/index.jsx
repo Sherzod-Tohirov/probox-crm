@@ -199,10 +199,10 @@ export default function Clients() {
         </Col>
         <Col fullWidth>
           <Table
-            id={'clients-table'}
+            id="clients-table"
             scrollable
             ref={clientsTableRef}
-            uniqueKey={'DocEntry'}
+            uniqueKey="DocEntry"
             isLoading={isLoading}
             columns={columnsToUse}
             data={clientsDetails.data}

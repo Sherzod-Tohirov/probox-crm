@@ -195,7 +195,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
         reset();
         onClose();
       }}
-      title={"Yangi lead qo'shish"}
+      title="Yangi lead qo'shish"
       size="md"
       preventScroll
       footer={footer}
@@ -230,7 +230,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
               <Col fullWidth>
                 <Row gutter={4}>
                   <Col fullWidth>
-                    <Row direction={'row'} gutter={2}>
+                    <Row direction="row" gutter={2}>
                       <Col xs={12} md={6} flexGrow>
                         <Row gutter={1}>
                           <Col fullWidth>

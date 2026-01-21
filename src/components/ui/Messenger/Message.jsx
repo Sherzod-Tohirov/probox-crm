@@ -224,13 +224,13 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
                 ) : (
                   <p className={styles['message-text']}>{messageText}</p>
                 )}
-                <Box dir="row" gap={2} align="center" justify={'end'}>
+                <Box dir="row" gap={2} align="center" justify="end">
                   {editMode && (
                     <Button
                       className={styles['message-edit-submit-btn']}
                       onClick={handleEditSubmit}
-                      variant={'text'}
-                      icon={'send'}
+                      variant="text"
+                      icon="send"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}

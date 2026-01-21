@@ -76,7 +76,7 @@ const AgreementDateCell = ({ column }) => {
       title={<Title date={column?.NewDueDate} />}
     >
       <ModalCell
-        title={"Muddatni o'zgartirish"}
+        title="Muddatni o'zgartirish"
         onClose={() => {
           dispatch(toggleModal(modalId));
           reset();
@@ -88,11 +88,11 @@ const AgreementDateCell = ({ column }) => {
         }}
       >
         <Input
-          name={'agreementDate'}
+          name="agreementDate"
           inputBoxClassName={styles['modal-input-wrapper']}
           className={styles['modal-input']}
           type="date"
-          variant={'outlined'}
+          variant="outlined"
           canClickIcon={false}
           control={control}
           includeTime

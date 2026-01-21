@@ -38,7 +38,7 @@ export default function ConfirmModal({
       <Row
         direction="column"
         gap={1}
-        align={'center'}
+        align="center"
         style={{ padding: '4px 0' }}
       >
         <Col>

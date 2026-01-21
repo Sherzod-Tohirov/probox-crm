@@ -10,5 +10,3 @@ export default function useFetchInvoiceScore(options = {}) {
     enabled: Boolean(enabled && CardCode),
   });
 }
-
-

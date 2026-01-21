@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Row, Col, Button } from '@components/ui';
 import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
@@ -22,14 +22,19 @@ const regionOptions = [
 ];
 
 export default function AddressSection({ lead, canEdit, onSave, isPending }) {
-  const addressForm = useForm({
-    defaultValues: {
-      region: lead?.region || '',
-      district: lead?.district || '',
-      address: lead?.address || '',
-      address2: lead?.address2 || '',
-    },
-  });
+  const defaultValues = useMemo(
+    () => ({
+      region: lead?.region ?? '',
+      district: lead?.district ?? '',
+      street: lead?.street ?? '',
+      neighborhood: lead?.neighborhood ?? '',
+      house: lead?.house ?? '',
+      address2: lead?.address2 ?? '',
+    }),
+    [lead]
+  );
+
+  const addressForm = useForm(defaultValues);
 
   const {
     control: addressControl,
@@ -39,19 +44,16 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
 
   useEffect(() => {
     if (!lead) return;
-    resetAddress({
-      region: lead?.region || '',
-      district: lead?.district || '',
-      address: lead?.address || '',
-      address2: lead.address2 || '',
-    });
-  }, [lead, resetAddress]);
+    resetAddress(defaultValues);
+  }, [lead, resetAddress, defaultValues]);
 
   const onSubmit = handleAddressSubmit((values) => {
     const payload = {
       region: values?.region ?? '',
       district: values?.district ?? '',
-      address: values?.address ?? '',
+      street: values?.street ?? '',
+      neighborhood: values?.neighborhood ?? '',
+      house: values?.house ?? '',
       address2: values.address2 ?? '',
     };
     onSave(payload);
@@ -75,8 +77,20 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
         disabled={!canEdit}
       />
       <FormField
-        name="address"
-        label="Manzil"
+        name="neighborhood"
+        label="Mahalla"
+        control={addressControl}
+        disabled={!canEdit}
+      />
+      <FormField
+        name="street"
+        label="Ko'cha"
+        control={addressControl}
+        disabled={!canEdit}
+      />
+      <FormField
+        name="house"
+        label="Uy"
         control={addressControl}
         disabled={!canEdit}
       />

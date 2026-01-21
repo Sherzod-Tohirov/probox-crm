@@ -8,7 +8,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
     <FieldGroup title="Mijoz ma'lumotlari">
       <Row gutter={4}>
         <Col>
-          <Row direction={'row'} gutter={4} wrap>
+          <Row direction="row" gutter={4} wrap>
             <Col>
               <FormField
                 name="clientName"
@@ -42,7 +42,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
           </Row>
         </Col>
         <Col>
-          <Row direction={'row'} gutter={4} wrap>
+          <Row direction="row" gutter={4} wrap>
             <Col>
               <FormField
                 name="passportId"

@@ -44,7 +44,7 @@ export default function Chart({ data, keys = {}, isCompact = false }) {
     >
       <ResponsiveContainer
         width="100%"
-        height={'100%'}
+        height="100%"
         minHeight={isCompact ? 280 : 400}
       >
         <LineChart

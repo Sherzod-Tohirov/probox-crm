@@ -5,7 +5,7 @@ import styles from "./statistic.module.scss";
 export default function DashboardStatisticDate({ startDate, endDate }) {
   return (
     <div className={styles["statistic-date"]}>
-      <Row direction="row" justify={"center"} align={"center"} gutter={4}>
+      <Row direction="row" justify="center" align="center" gutter={4}>
         <Col>
           <Row gutter={1}>
             <Col>

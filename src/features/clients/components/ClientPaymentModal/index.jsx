@@ -209,8 +209,8 @@ export default function ClientPaymentModal({ isOpen, onClose }) {
                   variant="outlined"
                   iconText={CURRENCY_MAP[currency]}
                   placeholder="Miqdorni kiriting..."
-                  placeholderColor={'secondary'}
-                  name={'sum'}
+                  placeholderColor="secondary"
+                  name="sum"
                 />
               </Col>
             </Row>

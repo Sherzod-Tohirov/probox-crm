@@ -50,7 +50,7 @@ export default function SelectedDevicesTable({
           })}
         />
       </Col>
-      <Col justify={'end'} gap={2}>
+      <Col justify="end" gap={2}>
         <Row>
           <Col>
             {' '}

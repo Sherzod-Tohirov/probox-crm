@@ -327,7 +327,7 @@ const YandexMap = ({
           <div className={styles['error-message']}>
             ❌ Xarita yuklanmadi: {loadError}
             <Button
-              variant={'danger'}
+              variant="danger"
               type="button"
               onClick={initializeMap}
               style={{ marginLeft: '10px', padding: '5px 10px' }}

@@ -138,12 +138,10 @@ export default function useLeadsTableColumns() {
     };
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        {
-          <Badge color={getLimitColor(limit)} size="md">
+        <Badge color={getLimitColor(limit)} size="md">
             {iconsMap.wallet}
             {formatterCurrency(limit, 'UZS')}
           </Badge>
-        }
       </span>
     );
   };

@@ -51,11 +51,11 @@ export default function Notifications() {
   return (
     <div className={styles.container} ref={ref}>
       <Button
-        variant={'text'}
-        icon={'notification'}
-        iconColor={'primary'}
+        variant="text"
+        icon="notification"
+        iconColor="primary"
         iconSize={24}
-        aria-label={'Bildirishnomalar'}
+        aria-label="Bildirishnomalar"
         onClick={toggle}
         className={`${styles.bell} ${unreadCount > 0 ? styles['has-unread'] : ''}`}
       />

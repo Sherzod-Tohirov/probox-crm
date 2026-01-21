@@ -142,9 +142,9 @@ function Table(
           </thead>
           <tbody>
             {isLoading ? (
-              <tr key={`loading`} className={styles["loading-row"]}>
+              <tr key="loading" className={styles["loading-row"]}>
                 <td colSpan={columns.length} className={styles["empty-table"]}>
-                  <ClipLoader color={"#94A3B8"} />
+                  <ClipLoader color="#94A3B8" />
                 </td>
               </tr>
             ) : data?.length > 0 ? (

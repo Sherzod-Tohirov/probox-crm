@@ -76,7 +76,7 @@ export default function Error({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Box dir="row" gap={3} justify="center" align={"center"}>
+          <Box dir="row" gap={3} justify="center" align="center">
             <Button 
               icon="refresh" 
               variant="filled" 

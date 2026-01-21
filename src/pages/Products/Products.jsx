@@ -32,7 +32,7 @@ export default function Products() {
             direction="row"
             gutter={4}
             align="center"
-            justify={'space-between'}
+            justify="space-between"
           >
             <Col flexGrow span={isMobile ? 8 : 12}>
               <Typography variant="h5">Mahsulotlar</Typography>

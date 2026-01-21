@@ -39,7 +39,7 @@ export default function ProductModal({ currentProduct, isOpen, onClose }) {
         <Col flexGrow fullWidth span={5}>
           <Input
             name="branch"
-            label={"Filial bo'yicha"}
+            label="Filial bo'yicha"
             type="select"
             variant="outlined"
             options={branchOptions}

@@ -40,7 +40,7 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
             startRecording();
           }, 300)}
           
-          variant={'text'}
+          variant="text"
           icon={isRecording ? 'stopCircleFilled' : 'micFilled'}
         ></Button>
         <AnimatePresence initial={false} exitBeforeEnter>
@@ -56,7 +56,7 @@ const MessageVoiceRecorder = ({ onRecordingComplete }) => {
                 color="primary"
                 className={styles['voice-recorder-pause']}
                 onClick={togglePausePlay}
-                variant={'text'}
+                variant="text"
                 disabled={!isRecording}
               >
                 {isPaused ? '▶' : '⏸'}

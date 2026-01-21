@@ -1,14 +1,17 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import useIsMobile from '@hooks/useIsMobile';
+import useTheme from '@/hooks/useTheme';
 
 export const useSignatureCanvas = (onSignatureChange) => {
   const { isMobile } = useIsMobile();
   const [isDrawing, setIsDrawing] = useState(false);
   const [signatureDataUrl, setSignatureDataUrl] = useState(null);
   const [hasSignature, setHasSignature] = useState(false);
+  const { mode } = useTheme();
   const signatureCanvasRef = useRef(null);
   const signatureContextRef = useRef(null);
   const signatureWrapperRef = useRef(null);
+  const signatureModeRef = useRef(null); // Track mode when signature was drawn
 
   const initializeSignatureCanvas = useCallback(() => {
     const canvas = signatureCanvasRef.current;
@@ -30,11 +33,14 @@ export const useSignatureCanvas = (onSignatureChange) => {
     const context = canvas.getContext('2d');
     if (!context) return;
 
+    // Detect dark mode and set appropriate stroke color
+    const isDarkMode = mode === 'dark';
+    const strokeColor = isDarkMode ? '#ffffff' : '#111111';
     context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
     context.lineCap = 'round';
     context.lineJoin = 'round';
     context.lineWidth = isMobile ? 2 : 2.5;
-    context.strokeStyle = '#111111';
+    context.strokeStyle = strokeColor;
     context.imageSmoothingEnabled = false;
 
     const displayWidth = canvas.width / devicePixelRatio;
@@ -49,7 +55,22 @@ export const useSignatureCanvas = (onSignatureChange) => {
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.imageSmoothingEnabled = false;
+
+        // Only invert if current mode differs from the mode when signature was drawn
+        const originalMode = signatureModeRef.current;
+        const shouldInvert = originalMode && originalMode !== mode;
+
+        if (shouldInvert) {
+          context.filter = 'invert(1)';
+        }
+
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // Reset filter
+        if (shouldInvert) {
+          context.filter = 'none';
+        }
+
         context.restore();
         context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
         context.imageSmoothingEnabled = false;
@@ -57,7 +78,7 @@ export const useSignatureCanvas = (onSignatureChange) => {
       };
       image.src = signatureDataUrl;
     }
-  }, [isMobile, signatureDataUrl]);
+  }, [isMobile, signatureDataUrl, mode]);
 
   useEffect(() => {
     initializeSignatureCanvas();
@@ -171,9 +192,11 @@ export const useSignatureCanvas = (onSignatureChange) => {
         const dataUrl = canvas.toDataURL('image/png');
         setSignatureDataUrl(dataUrl);
         setHasSignature(true);
+        // Store the current mode when signature is drawn
+        signatureModeRef.current = mode;
       }
     },
-    [finishDrawing, isDrawing]
+    [finishDrawing, isDrawing, mode]
   );
 
   const clearSignature = useCallback(() => {
@@ -189,6 +212,7 @@ export const useSignatureCanvas = (onSignatureChange) => {
     setIsDrawing(false);
     setSignatureDataUrl(null);
     setHasSignature(false);
+    signatureModeRef.current = null; // Clear stored mode
   }, []);
 
   return {
@@ -201,4 +225,3 @@ export const useSignatureCanvas = (onSignatureChange) => {
     clearSignature,
   };
 };
-

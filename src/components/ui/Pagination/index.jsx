@@ -7,7 +7,7 @@ export default function Pagination({ pageCount, onPageChange, activePage }) {
     <ReactPaginate
       previousLabel={pageCount > 0 && "Oldingi"}
       nextLabel={pageCount > 0 && "Keyingi"}
-      breakLabel={"..."}
+      breakLabel="..."
       breakClassName={styles["page"]}
       pageCount={pageCount || 0}
       onPageChange={pageCount > 0 ? onPageChange : () => {}}

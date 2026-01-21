@@ -8,7 +8,7 @@ function Logo({ isMinified = false, isTouchable = true }) {
   return (
     <div className={styles.logo}>
       <Link
-        to={"/dashboard"}
+        to="/dashboard"
         className={classNames(styles["logo-link"], {
           [styles["not-touchable"]]: !isTouchable,
         })}>

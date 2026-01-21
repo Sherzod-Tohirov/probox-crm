@@ -169,7 +169,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                       variant={isMobile ? 'body2' : 'body1'}
                       element="span"
                     >
-                      <strong>Qoplandi: {''}</strong>
+                      <strong>Qoplandi: </strong>
                       {isStatisticsLoading ? (
                         <ClipLoader color="grey" size={12} />
                       ) : (
@@ -246,7 +246,7 @@ const ClientsFooter = ({ clientsDetails = {}, selectedRows = [], data }) => {
                         {clientsDetails.total > 0
                           ? currentPage * pageSize + 1
                           : 0}
-                        {'-'}
+                        -
                         {(currentPage + 1) * pageSize > data?.total
                           ? data.total
                           : currentPage * pageSize + pageSize}{' '}

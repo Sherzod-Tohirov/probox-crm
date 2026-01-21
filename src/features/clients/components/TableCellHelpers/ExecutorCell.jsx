@@ -159,7 +159,7 @@ const ExecutorCell = ({ column }) => {
     >
       {hasRole(user, ['Manager', 'Cashier']) ? (
         <ModalCell
-          title={"Ijrochini o'zgartirish"}
+          title="Ijrochini o'zgartirish"
           onClose={() => {
             dispatch(toggleModal(modalId));
             reset();
@@ -170,13 +170,13 @@ const ExecutorCell = ({ column }) => {
             isLoading: mutation.isPending,
           }}
         >
-          <Row direction={'row'} gutter={2} align={'center'}>
+          <Row direction="row" gutter={2} align="center">
             <Col flexGrow>
               <Input
                 inputBoxClassName={styles['modal-input-wrapper']}
                 className={styles['modal-input']}
                 type="select"
-                variant={'outlined'}
+                variant="outlined"
                 options={executorsOptions}
                 canClickIcon={false}
                 control={control}
@@ -185,13 +185,13 @@ const ExecutorCell = ({ column }) => {
             </Col>
             <Col>
               <Button
-                title={'Oxirgi holatga qaytarish'}
+                title="Oxirgi holatga qaytarish"
                 iconSize={16}
                 disabled={isLastActionBtnDisabled}
-                variant={'filled'}
-                iconColor={'secondary'}
+                variant="filled"
+                iconColor="secondary"
                 onClick={handleLastAction}
-                icon={'refresh'}
+                icon="refresh"
               ></Button>
             </Col>
           </Row>

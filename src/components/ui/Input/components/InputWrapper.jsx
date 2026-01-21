@@ -44,7 +44,7 @@ const InputWrapper = ({
         </Col>
       )}
       <Col fullWidth>
-        <Box pos={'relative'} dir="column" gap={1}>
+        <Box pos="relative" dir="column" gap={1}>
           <Box
             pos="relative"
             style={inputBoxStyle}

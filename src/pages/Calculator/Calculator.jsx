@@ -6,8 +6,8 @@ export default function Calculator() {
       <Col flexGrow fullWidth>
         <iframe
           src="https://serene-manatee-3e31cf.netlify.app/"
-          width={'100%'}
-          height={'100%'}
+          width="100%"
+          height="100%"
         ></iframe>
       </Col>
     </Row>

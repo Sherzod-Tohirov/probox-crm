@@ -19,7 +19,7 @@ function Header() {
   return (
     <header className={styles['site-header']}>
       <Row direction="row" justify="space-between">
-        <Col align={'center'} justify={'center'}>
+        <Col align="center" justify="center">
           <Row direction="row" gutter={6} align="center" justify="start">
             <Col align="center" justify="center">
               <Button
@@ -39,16 +39,16 @@ function Header() {
           </Row>
         </Col>
         <Col>
-          <Row direction="row" justify={'center'} align={'center'} gutter={6}>
+          <Row direction="row" justify="center" align="center" gutter={6}>
             <Col>
               <ThemeSelector />
             </Col>
             <Col>
               <Button
                 className={styles['header-btn']}
-                variant={'text'}
-                icon={'expense'}
-                iconColor={'primary'}
+                variant="text"
+                icon="expense"
+                iconColor="primary"
               >
                 {formatterCurrency(currency?.Rate, currency?.Currency)}
               </Button>
@@ -58,9 +58,9 @@ function Header() {
             </Col>
             <Col>
               <Button
-                icon={'avatarFilled'}
-                variant={'text'}
-                iconColor={'primary'}
+                icon="avatarFilled"
+                variant="text"
+                iconColor="primary"
                 className={styles['user-btn']}
                 iconSize={20}
               >
@@ -70,8 +70,8 @@ function Header() {
             {isMessengerRoute(pathname) ? (
               <Col>
                 <Button
-                  icon={'toggleClose'}
-                  variant={'text'}
+                  icon="toggleClose"
+                  variant="text"
                   iconSize={24}
                   onClick={messenger.toggle}
                 />

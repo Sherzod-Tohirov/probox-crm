@@ -17,7 +17,7 @@ function PurchasesWrapper({ children }) {
 
 function NoData({ title }) {
   return (
-    <Row align={'center'} justify={'center'}>
+    <Row align="center" justify="center">
       <Col fullWidth fullHeight>
         <Card>
           <Typography align="center" variant="body1">
@@ -34,13 +34,13 @@ function LoadingSkeleton() {
     <PurchasesWrapper>
       {[...Array(10)].map((_, index) => (
         <PurchasesRow key={index}>
-          <PurchasesCell span={2} title={'Ariza raqami'}>
+          <PurchasesCell span={2} title="Ariza raqami">
             <Skeleton width="80%" height="18px" borderRadius="6px" />
           </PurchasesCell>
-          <PurchasesCell span={4} title={'Yetkazib beruvchi'}>
+          <PurchasesCell span={4} title="Yetkazib beruvchi">
             <Skeleton width="90%" height="18px" borderRadius="6px" />
           </PurchasesCell>
-          <PurchasesCell span={6} title={'Kategoriyalar'}>
+          <PurchasesCell span={6} title="Kategoriyalar">
             <Row direction="row" gutter={2}>
               <Col>
                 <Skeleton width="80px" height="24px" borderRadius="12px" />
@@ -95,7 +95,7 @@ export function PurchasesTable({ data, isLoading = false }) {
     if (!categories?.length)
       return (
         <Col>
-          <Badge color={'warning'}>{"Ma'lum emas"}</Badge>
+          <Badge color="warning">Ma'lum emas</Badge>
         </Col>
       );
     const visibleCategories =
@@ -117,14 +117,14 @@ export function PurchasesTable({ data, isLoading = false }) {
       {data.map((item, index) => {
         return (
           <PurchasesRow key={item.id || index}>
-            <PurchasesCell span={2} title={'Ariza raqami'}>
+            <PurchasesCell span={2} title="Ariza raqami">
               {item.contract_no}
             </PurchasesCell>
-            <PurchasesCell span={4} title={'Yetkazib beruvchi'}>
+            <PurchasesCell span={4} title="Yetkazib beruvchi">
               {item.courier}
             </PurchasesCell>
-            <PurchasesCell span={6} title={'Kategoriyalar'}>
-              <Row direction={'row'} gutter={2} align={'center'}>
+            <PurchasesCell span={6} title="Kategoriyalar">
+              <Row direction="row" gutter={2} align="center">
                 {renderCategories(item.categories)}
               </Row>
             </PurchasesCell>

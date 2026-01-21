@@ -52,7 +52,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         <FieldGroup title="Qo'ng'iroq ma'lumotlari">
           <Row gutter={isMobile ? 2 : 6}>
             <Col>
-              <Row direction={'row'} gutter={isMobile ? 2 : 3} wrap>
+              <Row direction="row" gutter={isMobile ? 2 : 3} wrap>
                 <Col>
                   <FormField
                     name="called"
@@ -83,7 +83,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
               </Row>
             </Col>
             <Col>
-              <Row direction={'row'} gutter={isMobile ? 2 : 3} wrap>
+              <Row direction="row" gutter={isMobile ? 2 : 3} wrap>
                 <Col>
                   <FormField
                     name="callCount"

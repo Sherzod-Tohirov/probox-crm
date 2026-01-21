@@ -107,14 +107,14 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
       transition={{ duration: 0.3 }}
     >
       {isLoading && !data.length ? (
-        <Box height={'100%'} align={'center'} justify={'center'}>
+        <Box height="100%" align="center" justify="center">
           <ClipLoader
             color={currentTheme === 'dark' ? 'white' : 'black'}
             size={20}
           />
         </Box>
       ) : data.length ? (
-        <Box dir="column" pos={'relative'} gap={1}>
+        <Box dir="column" pos="relative" gap={1}>
           <List
             className={styles['search-field-list']}
             items={data}
@@ -128,7 +128,7 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
           </div>
         </Box>
       ) : (
-        <Box height={'100%'} align={'center'} justify={'center'}>
+        <Box height="100%" align="center" justify="center">
           <Typography element="span" className={styles['search-field-empty']}>
             Hech narsa topilmadi.
           </Typography>

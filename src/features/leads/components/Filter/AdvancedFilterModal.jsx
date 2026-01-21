@@ -162,7 +162,7 @@ export default function AdvancedFilterModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={'Qidirish va Ustunlar'}
+      title="Qidirish va Ustunlar"
       size="lg"
       preventScroll
       footer={footer}
@@ -259,7 +259,7 @@ export default function AdvancedFilterModal({
             >
               <Row gutter={2}>
                 <Col>
-                  <Row direction="row" gutter={4} align={'center'}>
+                  <Row direction="row" gutter={4} align="center">
                     <Col>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>
                         Jadval ustunlari

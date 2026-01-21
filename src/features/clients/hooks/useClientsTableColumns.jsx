@@ -354,7 +354,7 @@ const useClientsTableColumns = (props) => {
                   type: isPartial ? 'payment' : 'product',
                 })
               }
-              color={'danger'}
+              color="danger"
             >
               Bekor qilish ({isPartial ? "To'lovni" : 'Mahsulotni'}){' '}
             </Button>

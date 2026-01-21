@@ -36,9 +36,9 @@ export default function Dashboard() {
       <Col fullWidth>
         <Table scrollable columns={tableColumns} data={tableData} />
       </Col>
-      <Col align={'center'} justify={'center'} wrap gutter={3}>
+      <Col align="center" justify="center" wrap gutter={3}>
         <Button
-          variant={'filled'}
+          variant="filled"
           onClick={() => {
             alert('This is success message', {
               type: 'success',
@@ -48,7 +48,7 @@ export default function Dashboard() {
           Alert Success
         </Button>
         <Button
-          variant={'filled'}
+          variant="filled"
           onClick={() => {
             alert('This is a warning message', {
               type: 'info',
@@ -58,7 +58,7 @@ export default function Dashboard() {
           Alert Warning
         </Button>
         <Button
-          variant={'filled'}
+          variant="filled"
           onClick={() => {
             alert('This is an error message', {
               type: 'error',
@@ -68,7 +68,7 @@ export default function Dashboard() {
           Alert Error
         </Button>
         <Button
-          variant={'filled'}
+          variant="filled"
           onClick={() => {
             alert('This is default message', {
               type: 'default',
@@ -78,7 +78,7 @@ export default function Dashboard() {
           Alert Default
         </Button>
         <Button
-          variant={'filled'}
+          variant="filled"
           onClick={() => {
             alert(
               'This is a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet a long toast message lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet',
@@ -90,7 +90,7 @@ export default function Dashboard() {
         >
           Long Toast
         </Button>
-        <Button variant={'filled'} onClick={() => setModal(true)}>
+        <Button variant="filled" onClick={() => setModal(true)}>
           Open Modal
         </Button>
       </Col>

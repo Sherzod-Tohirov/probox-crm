@@ -72,7 +72,7 @@ export default function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Box dir="row" gap={3} justify={"center"}>
+          <Box dir="row" gap={3} justify="center">
             <Button
               icon="home"
               variant="filled"

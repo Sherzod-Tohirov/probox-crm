@@ -21,6 +21,7 @@ import useInvoice from '@/hooks/data/leads/useInvoice';
 import useUploadInvoiceFile from '@/hooks/data/leads/useUploadInvoiceFile';
 import { alert } from '@/utils/globalAlert';
 import { generateInvoicePdf } from '@/utils/invoicePdf';
+import _ from 'lodash';
 
 export default function SellerTab({
   leadId,
@@ -52,7 +53,6 @@ export default function SellerTab({
   const calculationTypeFilter = watch?.('calculationTypeFilter');
   const fieldPurchase = watch('purchase');
   const fieldSellType = watch('saleType');
-
   const { branchCodeToNameMap, activeWhsCode, branchFilterOptions } =
     useBranchFilters({
       branchOptions,
@@ -169,7 +169,7 @@ export default function SellerTab({
     selectedDevices,
     setSelectedDevices,
     selectedDeviceData,
-    totalSelectedPrice,
+    // totalSelectedPrice,
     totalGrandTotal,
     handleImeiSelect,
     handleDeleteDevice,
@@ -262,9 +262,27 @@ export default function SellerTab({
       alert(errorMessage, { type: 'error' });
     },
   });
+  // Majburiy maydonlarni tekshirish
+  const requiredAddressFields = [
+    'region',
+    'district',
+    'neighborhood',
+    'street',
+    'house',
+  ];
+  const isAddressAvailable = _.every(requiredAddressFields, (key) =>
+    _.get(leadData, key)
+  );
 
   // Invoice modalni ochish
   const handleOpenInvoiceModal = useCallback(() => {
+    // Manzilni tekshirish
+    if (!isAddressAvailable) {
+      alert("Invoice yuborishdan oldin manzilni to'liq to'ldirishingiz kerak", {
+        type: 'error',
+      });
+      return;
+    }
     // Imzo qo'yilganligini birinchi navbatda tekshirish
     if (!userSignature) {
       alert("Invoice yuborishdan oldin imzo qo'yishingiz kerak", {
@@ -294,7 +312,7 @@ export default function SellerTab({
     }
 
     setIsInvoiceModalOpen(true);
-  }, [userSignature, leadId, selectedDevices]);
+  }, [userSignature, leadId, selectedDevices, isAddressAvailable]);
 
   // Invoice modal orqali yuborish
   const handleSendInvoice = useCallback(
@@ -356,7 +374,7 @@ export default function SellerTab({
           missingFields.push(`${d.name || 'Qurilma'}: ${missing.join(', ')}`);
         });
         alert(
-          `Ba\'zi qurilmalarda ma\'lumotlar to\'liq emas:\n${missingFields.join('\n')}`,
+          `Ba'zi qurilmalarda ma'lumotlar to'liq emas:\n${missingFields.join('\n')}`,
           { type: 'error' }
         );
         return;

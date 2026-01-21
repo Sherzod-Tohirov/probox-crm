@@ -71,9 +71,9 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
     >
       <button onClick={togglePlay} className={styles.playButton}>
         {isPlaying ? (
-          <Pause color={'#666'} size={18} />
+          <Pause color="#666" size={18} />
         ) : (
-          <Play color={'#666'} size={18} />
+          <Play color="#666" size={18} />
         )}
       </button>
       <div className={styles.waveformWrapper}>
