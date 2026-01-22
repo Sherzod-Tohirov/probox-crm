@@ -113,11 +113,11 @@
         max-height: 50px !important; // Desktop height
         height: 50px !important;
       }
-    }
-  }
 
-  tr:not(.selected-row):hover {
-    background-color: v.$primary-table-hover-bg !important;
+      &.hoverable:not(.selected-row):hover {
+        background-color: v.$primary-table-hover-bg !important;
+      }
+    }
   }
 
   tr:first-child td {

@@ -5,7 +5,9 @@ export type Alignment = 'start' | 'center' | 'end';
 export interface TableColumn<Row = any> {
   key: string;
   title?: string;
-  width?: string | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
+  width?:
+    | string
+    | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
   minWidth?: string | number;
   maxWidth?: string | number;
   icon?: string;
@@ -13,7 +15,7 @@ export interface TableColumn<Row = any> {
   cellStyle?: CSSProperties;
   hideOnMobile?: boolean;
   horizontal?: Alignment; // left/center/right
-  vertical?: Alignment;   // top/middle/bottom
+  vertical?: Alignment; // top/middle/bottom
 }
 
 export interface TableProps<Row = any> {
@@ -29,15 +31,24 @@ export interface TableProps<Row = any> {
   isRowSelectable?: (row: Row) => boolean;
   selectedRows?: Row[];
   onSelectionChange?: (rows: Row[]) => void;
-  containerHeight?: string | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
+  containerHeight?:
+    | string
+    | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
   isLoading?: boolean;
   showPivotColumn?: boolean;
   rowNumberOffset?: number;
-  scrollable?: boolean | { xs?: boolean; sm?: boolean; md?: boolean; lg?: boolean; xl?: boolean };
-  scrollHeight?: string | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
+  scrollable?:
+    | boolean
+    | { xs?: boolean; sm?: boolean; md?: boolean; lg?: boolean; xl?: boolean };
+  scrollHeight?:
+    | string
+    | { xs?: string; sm?: string; md?: string; lg?: string; xl?: string };
   getRowStyles?: (row: Row, rowIndex: number) => CSSProperties;
   onRowClick?: (row: Row) => void;
+  hover?: boolean;
 }
 
-declare const Table: React.ForwardRefExoticComponent<TableProps & React.RefAttributes<HTMLTableElement>>;
+declare const Table: React.ForwardRefExoticComponent<
+  TableProps & React.RefAttributes<HTMLTableElement>
+>;
 export default Table;

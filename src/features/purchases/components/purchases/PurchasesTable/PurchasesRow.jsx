@@ -8,9 +8,9 @@ import styles from './styles.module.scss';
  * @returns {JSX.Element}
  */
 
-export function PurchasesRow({ children }) {
+export function PurchasesRow({ children, ...props }) {
   return (
-    <div className={styles.row}>
+    <div className={styles.row} {...props}>
       <Row direction="row">{children}</Row>
     </div>
   );

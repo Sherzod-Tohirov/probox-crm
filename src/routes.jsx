@@ -32,6 +32,7 @@ const Products = lazy(() => import('./pages/Products/Products'));
 
 // Purchases
 const Purchases = lazy(() => import('./pages/Purchases/Purchases'));
+const Purchase = lazy(() => import('./pages/Purchases/Purchase'));
 
 // Helper pages
 const NotFound = lazy(() => import('./pages/helper/NotFound'));
@@ -148,13 +149,38 @@ const router = createBrowserRouter([
       },
       {
         path: '/purchases',
-        element: (
-          <ProtectedRoute>
-            <Suspense fallback={<PageLoader fullscreen={true} />}>
-              <Purchases />
-            </Suspense>
-          </ProtectedRoute>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<PageLoader fullscreen={true} />}>
+                  <Purchases />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: '/purchases/:id',
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<PageLoader fullscreen={true} />}>
+                  <Purchase />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: '/purchases/new',
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<PageLoader fullscreen={true} />}>
+                  <Purchase />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
       {
         path: '/leads',

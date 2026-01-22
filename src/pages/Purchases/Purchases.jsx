@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Col, Row } from '@/components/ui';
 import { useDispatch, useSelector } from 'react-redux';
-import PurchasesHeader from '@/features/purchases/components/PurchasesHeader';
-import { PurchasesTable } from '@/features/purchases/components/PurchasesTable';
-import PurchasesPageFooter from '@/features/purchases/components/PurchasesPageFooter';
+import PurchasesHeader from '@/features/purchases/components/purchases/PurchasesHeader';
+import { PurchasesTable } from '@/features/purchases/components/purchases/PurchasesTable';
+import PurchasesPageFooter from '@/features/purchases/components/purchases/PurchasesPageFooter';
 import { PurchasesFilterModal } from '@/features/purchases/components/modals/PurchasesFilterModal';
 import { setPurchasesFilter } from '@/store/slices/purchasesPageSlice';
 
