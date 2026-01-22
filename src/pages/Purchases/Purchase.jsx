@@ -1,7 +1,9 @@
 import { Col, Row } from '@/components/ui';
+import { DeletePurchaseItemModal } from '@/features/purchases/components/modals/DeletePurchaseItemModal';
 import PurchaseHeader from '@/features/purchases/components/purchase/PurchaseHeader';
 import PurchasePageFooter from '@/features/purchases/components/purchase/PurchasePageFooter';
 import PurchaseTable from '@/features/purchases/components/purchase/PurchaseTable';
+import { usePurchaseModal } from '@/features/purchases/hooks/usePurchaseModal';
 
 const sampleData = [
   {
@@ -117,6 +119,10 @@ const sampleData = [
 ];
 
 export default function Purchase() {
+  const { modal, openModal, closeModal } = usePurchaseModal();
+  const handleDeletePurchaseItem = () => {
+    closeModal();
+  };
   return (
     <>
       <Row gutter={6}>
@@ -124,9 +130,14 @@ export default function Purchase() {
           <PurchaseHeader />
         </Col>
         <Col fullWidth>
-          <PurchaseTable data={sampleData} />
+          <PurchaseTable data={sampleData} onOpenModal={openModal} />
         </Col>
       </Row>
+      <DeletePurchaseItemModal
+        modal={modal}
+        onApply={handleDeletePurchaseItem}
+        onCancel={closeModal}
+      />
       <PurchasePageFooter />
     </>
   );

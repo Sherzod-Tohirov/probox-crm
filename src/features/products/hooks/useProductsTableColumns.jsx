@@ -4,33 +4,13 @@ import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import formatterCurrency from '@/utils/formatterCurrency';
 import { useMemo } from 'react';
 import calculateProductPrice from '../utils/calculateProductPrice';
+import { getBatteryColor, normalizeBattery } from '@/utils/battery';
 
 export const useProductsTableColumns = (currentProduct) => {
   const { data: branches } = useFetchBranches();
   const { data: rate } = useFetchCurrency();
 
   const isProductNew = currentProduct?.U_PROD_CONDITION === 'Yangi';
-
-  const normalizeBattery = (battery) => {
-    if (isProductNew) return '100%';
-    if (!battery) return '-';
-    return battery.includes('%') ? battery : String(battery) + '%';
-  };
-
-  const getBatteryColor = (battery) => {
-    if (isProductNew) {
-      return 'success';
-    }
-    let normalizedBattery = parseInt(normalizeBattery(battery));
-    if (!normalizedBattery) return 'default';
-    if (normalizedBattery > 85) return 'success';
-    if (normalizedBattery > 80) return 'warning';
-    else return 'danger';
-  };
-
-  const getBatteryText = (battery) => {
-    return normalizeBattery(battery);
-  };
 
   const productsTableColumns = useMemo(() => {
     return [
@@ -74,7 +54,7 @@ export const useProductsTableColumns = (currentProduct) => {
         key: 'actions',
         title: 'Hodisalar',
         icon: 'editFilled',
-        renderCell: (row) => {
+        renderCell: () => {
           return (
             <Row direction="row" gutter={3} align="center">
               <Col>
@@ -119,8 +99,8 @@ export const useProductsTableColumns = (currentProduct) => {
         icon: 'barCodeFilled',
         renderCell: (row) => {
           return (
-            <Badge color={getBatteryColor(row?.Battery)}>
-              {getBatteryText(row?.Battery)}
+            <Badge color={getBatteryColor(row?.Battery, isProductNew)}>
+              {normalizeBattery(row?.Battery, isProductNew)}
             </Badge>
           );
         },
