@@ -12,6 +12,11 @@
   background-color: v.$sixth-bg;
   border: 1px solid v.$fourth-border-color;
   border-radius: 16px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: v.$tertiary-bg;
+  }
 }
 
 .title {

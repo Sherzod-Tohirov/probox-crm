@@ -1,4 +1,5 @@
 import { Button, Col, Divider, Input, Row, Typography } from '@/components/ui';
+import { useNavigate } from 'react-router-dom';
 
 export default function PurchasesHeader({
   pageTitle,
@@ -6,6 +7,7 @@ export default function PurchasesHeader({
   onSearch,
   searchValue,
 }) {
+  const navigate = useNavigate();
   return (
     <Row direction="row" justify="space-between">
       <Col fullWidth flexGrow>
@@ -41,7 +43,11 @@ export default function PurchasesHeader({
             <Divider height="16px" color="primary" orientation="vertical" />
           </Col>
           <Col span={4}>
-            <Button fullWidth variant="filled">
+            <Button
+              fullWidth
+              variant="filled"
+              onClick={() => navigate('/purchases/new')}
+            >
               Yangi qo'shish
             </Button>
           </Col>

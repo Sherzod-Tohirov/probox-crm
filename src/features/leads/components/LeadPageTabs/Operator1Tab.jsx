@@ -15,12 +15,11 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
     onSuccess
   );
 
-  const { control, reset, watch } = form || {};
+  const { control, reset } = form || {};
   const isMobile = useIsMobile();
   const { rejectReasonOptions } = useSelectOptions('common');
   const { passportVisitOptions, callCountOptions } =
     useSelectOptions('operator1');
-  const fieldAnswered = watch('answered');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;

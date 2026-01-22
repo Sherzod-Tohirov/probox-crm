@@ -120,6 +120,7 @@ const TableRow = memo(
     selectionEnabled,
     selected,
     onSelectRow,
+    hover,
   }) => {
     const handleClick = useCallback(() => {
       onRowClick(row);
@@ -137,6 +138,7 @@ const TableRow = memo(
         data-row-key={uniqueKeyValue}
         className={classNames({
           [styles['selected-row']]: !!getRowStyles(row, rowIndex),
+          [styles['hoverable']]: hover,
         })}
         onClick={handleClick}
         onMouseDown={handleMouseDown}
@@ -215,6 +217,7 @@ const Table = forwardRef(function Table(
     scrollHeight = defaultScrollHeight,
     getRowStyles = () => ({}),
     onRowClick = () => {},
+    hover = true,
   },
   ref
 ) {
@@ -533,6 +536,7 @@ const Table = forwardRef(function Table(
                   selectionEnabled={selectionEnabled}
                   selected={isRowSelected(row)}
                   onSelectRow={handleSelectRow}
+                  hover={hover}
                 />
               ))
             ) : (

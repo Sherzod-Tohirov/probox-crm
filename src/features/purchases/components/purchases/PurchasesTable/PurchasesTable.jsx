@@ -3,7 +3,8 @@ import styles from './styles.module.scss';
 import { PurchasesRow } from './PurchasesRow';
 import { PurchasesCell } from './PurchasesCell';
 import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /**
  *
@@ -32,7 +33,7 @@ function NoData({ title }) {
 function LoadingSkeleton() {
   return (
     <PurchasesWrapper>
-      {[...Array(10)].map((_, index) => (
+      {[...Array(1)].map((_, index) => (
         <PurchasesRow key={index}>
           <PurchasesCell span={2} title="Ariza raqami">
             <Skeleton width="80%" height="18px" borderRadius="6px" />
@@ -84,13 +85,6 @@ const categoryColorMap = {
 };
 
 export function PurchasesTable({ data, isLoading = false }) {
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (!data?.length) {
-    return <NoData />;
-  }
   const renderCategories = useCallback((categories) => {
     if (!categories?.length)
       return (
@@ -111,12 +105,32 @@ export function PurchasesTable({ data, isLoading = false }) {
       );
     });
   }, []);
+  const navigate = useNavigate();
+
+  const handleRowClick = useCallback(
+    (contract_no) => {
+      if (!contract_no) return;
+      navigate(`/purchases/${contract_no}`);
+    },
+    [navigate]
+  );
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (!data?.length) {
+    return <NoData />;
+  }
 
   return (
     <PurchasesWrapper>
       {data.map((item, index) => {
         return (
-          <PurchasesRow key={item.id || index}>
+          <PurchasesRow
+            key={item.id || index}
+            onClick={() => handleRowClick(item?.contract_no)}
+          >
             <PurchasesCell span={2} title="Ariza raqami">
               {item.contract_no}
             </PurchasesCell>

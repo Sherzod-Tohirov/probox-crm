@@ -1,11 +1,14 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import Button from "../Button";
-import styles from "./navigation.module.scss";
-import Breadcrumb from "../Breadcrumb";
-import Divider from "../Divider";
-import { useCallback, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+import Button from '../Button';
+import styles from './navigation.module.scss';
+import Breadcrumb from '../Breadcrumb';
+import Divider from '../Divider';
+import { useCallback, useRef } from 'react';
 
-export default function Navigation({ fallbackBackPath = "/", customBreadcrumbs = null }) {
+export default function Navigation({
+  fallbackBackPath = '/',
+  customBreadcrumbs = null,
+}) {
   const navigate = useNavigate();
   const hasNavigated = useRef(null);
 
@@ -16,15 +19,16 @@ export default function Navigation({ fallbackBackPath = "/", customBreadcrumbs =
     } else {
       navigate(fallbackBackPath, { replace: true });
     }
-  }, []);
+  }, [navigate, fallbackBackPath]);
 
   return (
     <nav className={styles.navigation}>
       <Button
-        className={styles["navigation-back-btn"]}
+        className={styles['navigation-back-btn']}
         variant="text"
         onClick={handleBack}
-        icon="arrowLeft">
+        icon="arrowLeft"
+      >
         Ortga
       </Button>
       <Divider color="secondary" height="12px" />

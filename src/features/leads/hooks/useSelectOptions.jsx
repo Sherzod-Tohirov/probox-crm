@@ -1,9 +1,9 @@
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
-import useAuth from '@/hooks/useAuth';
+// import useAuth from '@/hooks/useAuth';
 
 export function useSelectOptions(tab) {
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   const { data: executors } = useFetchExecutors({
     // branch: user?.U_branch,
@@ -31,6 +31,26 @@ export function useSelectOptions(tab) {
         label: "Narxi to'g'ri kelmadi",
       },
       {
+        value: "Bosh to'lov to'g'ri kelmadi",
+        label: "Bosh to'lov to'g'ri kelmadi",
+      },
+      {
+        value: "Oylik to'lov to'g'ri kelmadi",
+        label: "Oylik to'lov to'g'ri kelmadi",
+      },
+      {
+        value: 'Mahsulot narxi qimmat ekan',
+        label: 'Mahsulot narxi qimmat ekan',
+      },
+      {
+        value: '3 shaxsga olib bermoqochi',
+        label: '3 shaxsga olib bermoqochi',
+      },
+      {
+        value: '1-2 kundan keyin kelar ekan',
+        label: '1-2 kundan keyin kelar ekan',
+      },
+      {
         value: 'Iphone kerak emas',
         label: 'Iphone kerak emas',
       },
@@ -53,6 +73,10 @@ export function useSelectOptions(tab) {
       {
         value: 'Boshqa joydan sotib olibdi',
         label: 'Boshqa joydan sotib olibdi',
+      },
+      {
+        value: 'Mashka',
+        label: 'Mashka',
       },
     ];
 
