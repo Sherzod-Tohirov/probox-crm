@@ -48,6 +48,7 @@ ForwardedBadge.propTypes = {
     'danger',
     'extrasuccess',
     'black',
+    'secondary',
   ]),
   variant: PropTypes.oneOf(['soft', 'solid', 'outlined', 'filled']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),

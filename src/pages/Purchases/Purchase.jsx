@@ -4,133 +4,84 @@ import PurchaseHeader from '@/features/purchases/components/purchase/PurchaseHea
 import PurchasePageFooter from '@/features/purchases/components/purchase/PurchasePageFooter';
 import PurchaseTable from '@/features/purchases/components/purchase/PurchaseTable';
 import { usePurchaseModal } from '@/features/purchases/hooks/usePurchaseModal';
+import { usePurchaseForm } from '@/features/purchases/hooks/usePurchaseForm';
+import { getPurchasePermissions } from '@/features/purchases/utils/getPurchasePermissions';
+import {
+  courierOptions,
+  warehouseOptions,
+} from '@/features/purchases/utils/purchaseOptions';
+import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
+import useAuth from '@/hooks/useAuth';
+import { sampleData } from './sampleData';
 
-const sampleData = [
-  {
-    product_name: 'Iphone 16 Pro Max',
-    product_code: 'YT-95267985',
-    category: 'Maishiy texnika',
-    imei: '352099001234567',
-    status: 'Yangi',
-    battery: '100%',
-    count: 1,
-    price: 15000000,
-  },
-  {
-    product_name: 'Samsung Galaxy S24 Ultra',
-    product_code: 'YT-95267986',
-    category: 'Telefonlar',
-    imei: '352099001234568',
-    status: 'Yangi',
-    battery: '100%',
-    count: 1,
-    price: 12000000,
-  },
-  {
-    product_name: 'MacBook Pro 14',
-    product_code: 'YT-95267987',
-    category: 'Kompyuterlar',
-    imei: '352099001234569',
-    status: 'Yangi',
-    battery: '95%',
-    count: 1,
-    price: 25000000,
-  },
-  {
-    product_name: 'iPad Air',
-    product_code: 'YT-95267988',
-    category: 'Planshetlar',
-    imei: '352099001234570',
-    status: 'Yangi',
-    battery: '100%',
-    count: 2,
-    price: 8000000,
-  },
-  {
-    product_name: 'AirPods Pro',
-    product_code: 'YT-95267989',
-    category: 'Aksessuarlar',
-    imei: '352099001234571',
-    status: 'Yangi',
-    battery: '100%',
-    count: 5,
-    price: 2500000,
-  },
-  {
-    product_name: 'Sony WH-1000XM5',
-    product_code: 'YT-95267990',
-    category: 'Aksessuarlar',
-    imei: '352099001234572',
-    status: 'Yangi',
-    battery: '90%',
-    count: 3,
-    price: 3500000,
-  },
-  {
-    product_name: 'Dell XPS 15',
-    product_code: 'YT-95267991',
-    category: 'Kompyuterlar',
-    imei: '352099001234573',
-    status: 'B/U',
-    battery: '85%',
-    count: 1,
-    price: 18000000,
-  },
-  {
-    product_name: 'LG OLED TV 55"',
-    product_code: 'YT-95267992',
-    category: 'Maishiy texnika',
-    imei: '352099001234574',
-    status: 'Yangi',
-    battery: '100%',
-    count: 1,
-    price: 20000000,
-  },
-  {
-    product_name: 'Xiaomi 13 Pro',
-    product_code: 'YT-95267993',
-    category: 'Telefonlar',
-    imei: '352099001234575',
-    status: 'B/U',
-    battery: '100%',
-    count: 4,
-    price: 7000000,
-  },
-  {
-    product_name: 'Apple Watch Series 9',
-    product_code: 'YT-95267994',
-    category: 'Aksessuarlar',
-    imei: '352099001234576',
-    status: 'Yangi',
-    battery: '100%',
-    count: 2,
-    price: 4500000,
-  },
-  {
-    product_name: 'Samsung Galaxy Tab S9',
-    product_code: 'YT-95267995',
-    category: 'Planshetlar',
-    imei: '352099001234577',
-    status: 'Yangi',
-    battery: '98%',
-    count: 1,
-    price: 9000000,
-  },
-];
+const PURCHASE_STATUS = 'approved';
 
 export default function Purchase() {
+  const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
+  const {
+    control,
+    courierValue,
+    warehouseValue,
+    handleCourierChange,
+    handleWarehouseChange,
+  } = usePurchaseForm();
+
+  const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
+
   const handleDeletePurchaseItem = () => {
     closeModal();
+    // Add delete logic here
   };
+
+  const handleDownloadPdf = () => {
+    const purchaseData = {
+      contractNo: '83745',
+      supplier:
+        courierOptions.find((opt) => opt.value === courierValue)?.label ||
+        'Alisher Alisherov',
+      receiver: 'Alisher Alisherov',
+      supplierPhone: '+998 90 000 00 02',
+      receiverPhone: '+998 90 000 00 02',
+      warehouse:
+        warehouseOptions.find((opt) => opt.value === warehouseValue)?.label ||
+        'Malika B-12',
+      branch: 'Bosh office',
+      date: new Date().toLocaleDateString('ru-RU'),
+      items: sampleData,
+    };
+
+    generatePurchasePdf(purchaseData);
+  };
+
   return (
     <>
       <Row gutter={6}>
         <Col fullWidth>
-          <PurchaseHeader />
+          <PurchaseHeader
+            isEditable={permissions.canEditItems}
+            status={PURCHASE_STATUS}
+            courier={
+              courierOptions.find((opt) => opt.value === courierValue)?.label
+            }
+            warehouse={
+              warehouseOptions.find((opt) => opt.value === warehouseValue)
+                ?.label
+            }
+            courierOptions={courierOptions}
+            warehouseOptions={warehouseOptions}
+            control={control}
+            onCourierChange={handleCourierChange}
+            onWarehouseChange={handleWarehouseChange}
+            onDownloadPdf={handleDownloadPdf}
+          />
         </Col>
         <Col fullWidth>
-          <PurchaseTable data={sampleData} onOpenModal={openModal} />
+          <PurchaseTable
+            data={sampleData}
+            onOpenModal={openModal}
+            editable={permissions.canEditItems}
+          />
         </Col>
       </Row>
       <DeletePurchaseItemModal
@@ -138,7 +89,7 @@ export default function Purchase() {
         onApply={handleDeletePurchaseItem}
         onCancel={closeModal}
       />
-      <PurchasePageFooter />
+      <PurchasePageFooter permissions={permissions} status={PURCHASE_STATUS} />
     </>
   );
 }

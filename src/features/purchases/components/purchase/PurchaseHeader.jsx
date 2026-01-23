@@ -5,58 +5,154 @@ import {
   Row,
   Typography,
   Badge,
+  Button,
 } from '@/components/ui';
+import StatusBadge from './StatusBadge';
+import { DownloadIcon } from 'lucide-react';
 
-const courierOptions = [
-  { value: 'courier1', label: 'Alisher Alisherov' },
-  { value: 'courier2', label: 'Bobur Boburov' },
-  { value: 'courier3', label: 'Dilshod Dilshodov' },
-];
+function CourierField({ isEditable, value, control, options, onChange }) {
+  if (isEditable) {
+    return (
+      <Col span={6}>
+        <Input
+          name="courier"
+          variant="outlined"
+          type="select"
+          placeholder="Yetkazib beruvchi"
+          options={options}
+          control={control}
+          onChange={onChange}
+        />
+      </Col>
+    );
+  }
 
-const warehouseOptions = [
-  { value: 'warehouse1', label: 'Parkent' },
-  { value: 'warehouse2', label: 'Toshkent' },
-  { value: 'warehouse3', label: 'Samarqand' },
-];
+  return (
+    <Col>
+      <Row direction="row" gutter={2} align="center">
+        <Col>
+          <Typography color="secondary" variant="body2">
+            Yetkazib beruvchi:
+          </Typography>
+        </Col>
+        <Col>
+          <Badge size="lg" color="secondary">
+            {value || '-'}
+          </Badge>
+        </Col>
+      </Row>
+    </Col>
+  );
+}
 
-export default function PurchaseHeader() {
+function WarehouseField({ isEditable, value, control, options, onChange }) {
+  if (isEditable) {
+    return (
+      <Col span={6}>
+        <Input
+          name="warehouse"
+          variant="outlined"
+          type="select"
+          placeholder="Omborxona"
+          options={options}
+          control={control}
+          onChange={onChange}
+        />
+      </Col>
+    );
+  }
+
+  return (
+    <Col>
+      <Row direction="row" gutter={2} align="center">
+        <Col>
+          <Typography color="secondary" variant="body2">
+            Omborxona:
+          </Typography>
+        </Col>
+        <Col>
+          <Badge size="lg" color="secondary">
+            {value || '-'}
+          </Badge>
+        </Col>
+      </Row>
+    </Col>
+  );
+}
+
+function StatusField({ status }) {
+  return (
+    <Col span={4}>
+      <Row direction="row" gutter={2} align="center">
+        <Col>
+          <Typography color="secondary" variant="body2">
+            Status:
+          </Typography>
+        </Col>
+        <Col>
+          <StatusBadge status={status} />
+        </Col>
+      </Row>
+    </Col>
+  );
+}
+
+function DownloadPDF({ status, isEditable, onDownloadPdf }) {
+  if (isEditable || status !== 'approved') return null;
+  return (
+    <Col span={4}>
+      <Button
+        icon={<DownloadIcon color="#fff" size={16} />}
+        iconSize={16}
+        fullWidth
+        onClick={onDownloadPdf}
+      >
+        Yuklab olish
+      </Button>
+    </Col>
+  );
+}
+
+export default function PurchaseHeader({
+  isEditable = false,
+  status,
+  courier,
+  warehouse,
+  courierOptions = [],
+  warehouseOptions = [],
+  control,
+  onCourierChange,
+  onWarehouseChange,
+  onDownloadPdf,
+  backPath = '/purchases',
+}) {
   return (
     <Row direction="row" justify="space-between">
       <Col fullWidth flexGrow>
-        <Navigation fallbackBackPath="/purchases" />
+        <Navigation fallbackBackPath={backPath} />
       </Col>
       <Col fullWidth>
         <Row direction="row" align="center" justify="end" gutter={4}>
-          <Col span={6}>
-            <Input
-              variant="outlined"
-              type="select"
-              placeholder="Yetkazib beruvchi"
-              options={courierOptions}
-            />
-          </Col>
-          <Col span={6}>
-            <Input
-              variant="outlined"
-              type="select"
-              placeholder="Omborxona"
-              options={warehouseOptions}
-            />
-          </Col>
-          <Col span={4}>
-            <Row direction="row" gutter={2} align="center">
-              <Col>
-                <Typography color="secondary" variant="body2">
-                  Status:
-                </Typography>
-              </Col>
-              <Col>
-                <Badge size="lg" color="warning">
-                  Kutilmoqda
-                </Badge>
-              </Col>
-            </Row>
-          </Col>
+          <CourierField
+            isEditable={isEditable}
+            value={courier}
+            control={control}
+            options={courierOptions}
+            onChange={onCourierChange}
+          />
+          <WarehouseField
+            isEditable={isEditable}
+            value={warehouse}
+            control={control}
+            options={warehouseOptions}
+            onChange={onWarehouseChange}
+          />
+          <StatusField status={status} />
+          <DownloadPDF
+            status={status}
+            isEditable={isEditable}
+            onDownloadPdf={onDownloadPdf}
+          />
         </Row>
       </Col>
     </Row>

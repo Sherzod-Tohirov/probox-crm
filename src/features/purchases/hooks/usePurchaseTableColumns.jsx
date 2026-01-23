@@ -12,7 +12,7 @@ const categoryColorMap = {
 };
 
 export function usePurchaseTableColumns(
-  { onOpenModal } = { onOpenModal: () => {} }
+  { onOpenModal, editable } = { onOpenModal: () => {}, editable: false }
 ) {
   const purchaseTableColumns = useMemo(
     () => [
@@ -21,6 +21,9 @@ export function usePurchaseTableColumns(
         title: 'Mahsulot nomi',
         icon: 'products',
         width: '10%',
+        renderCell: (row) => {
+          if (editable) return <Typography>{row?.product_name}</Typography>;
+        },
       },
       {
         key: 'product_code',
