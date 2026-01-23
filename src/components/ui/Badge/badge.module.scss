@@ -175,4 +175,11 @@
       }
     }
   }
+
+  &.secondary {
+    &.soft {
+      background-color: v.$sixth-bg;
+      color: v.$sixth-color;
+    }
+  }
 }

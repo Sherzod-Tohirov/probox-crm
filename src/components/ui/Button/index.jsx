@@ -1,7 +1,7 @@
+import React from 'react';
 import { OrbitProgress } from 'react-loading-indicators';
 import { motion } from 'framer-motion';
 import { forwardRef, memo, useMemo } from 'react';
-
 import styles from './button.module.scss';
 import iconsMap from '@utils/iconsMap';
 import classNames from 'classnames';
@@ -15,7 +15,7 @@ const buttonPropTypes = {
   className: PropTypes.string,
   variant: PropTypes.oneOf(['filled', 'outlined', 'text']),
   color: PropTypes.oneOf(['primary', 'secondary', 'info', 'danger']),
-  icon: PropTypes.string,
+  icon: PropTypes.string || PropTypes.node,
   iconPosition: PropTypes.oneOf(['left', 'right']),
   iconSize: PropTypes.oneOf([12, 16, 18, 20, 24, 28, 32]),
   iconColor: PropTypes.oneOf(['primary', 'secondary', 'danger']),
@@ -180,7 +180,7 @@ function Button(
               styles[`icon-size-${iconSize}px`]
             )}
           >
-            {iconsMap[icon]}
+            {React.isValidElement(icon) ? icon : iconsMap[icon]}
           </Typography>
         ) : (
           ''
