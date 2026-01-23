@@ -225,6 +225,9 @@ export default function useInvoice(options = {}) {
       if (leadData.region) clientAddressParts.push(leadData.region);
       if (leadData.district) clientAddressParts.push(leadData.district);
       if (leadData.address) clientAddressParts.push(leadData.address);
+      if (leadData.neighborhood) clientAddressParts.push(leadData.neighborhood);
+      if (leadData.street) clientAddressParts.push(leadData.street);
+      if (leadData.house) clientAddressParts.push(leadData.house);
       const clientAddress =
         clientAddressParts.length > 0 ? clientAddressParts.join(', ') : '';
 
