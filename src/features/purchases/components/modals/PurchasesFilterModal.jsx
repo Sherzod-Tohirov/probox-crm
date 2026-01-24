@@ -30,8 +30,10 @@ function ModalFooter({ onClose, formId }) {
 }
 
 const statusOptions = [
-  { value: 'confirmed', label: 'Tasdiqlangan' },
-  { value: 'waiting', label: 'Kutilmoqda' },
+  { value: 'approve', label: 'Tasdiqlangan' },
+  { value: 'pending', label: 'Kutilmoqda' },
+  { value: 'draft', label: 'Qoralama' },
+  { value: 'rejected', label: 'Rad etildi' },
 ];
 
 const categoryOptions = [
@@ -51,8 +53,8 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   const { watch, reset, setValue, control, handleSubmit } = useForm({
     defaultValues: {
       status: filters?.status ?? '',
-      category: filters?.category ?? '',
-      warehouse: filters?.warehouse ?? '',
+      category: filters?.category ?? [],
+      warehouse: filters?.warehouse ?? [],
     },
   });
 
@@ -115,7 +117,30 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
             </Card>
           </Col>
           <Col fullWidth>
+            <Row direction="row" gutter={3}>
+              <Col flexGrow>
+                <Input
+                  name="dateFrom"
+                  label="Boshlanish sanasi"
+                  control={control}
+                  type="date"
+                  variant="outlined"
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  name="dateTo"
+                  label="Tugash sanasi"
+                  control={control}
+                  type="date"
+                  variant="outlined"
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col fullWidth>
             <Input
+              multipleSelect
               name="category"
               label="Kategoriyalar"
               control={control}
@@ -127,6 +152,7 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
           </Col>
           <Col fullWidth>
             <Input
+              multipleSelect
               name="warehouse"
               label="Omborxona"
               control={control}

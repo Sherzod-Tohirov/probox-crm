@@ -7,11 +7,11 @@ export const STATUS_UI = {
     label: 'Kutilmoqda',
     color: 'warning',
   },
-  approved: {
+  approve: {
     label: 'Tasdiqlandi',
     color: 'success',
   },
-  rejected: {
+  reject: {
     label: 'Rad etildi',
     color: 'danger',
   },

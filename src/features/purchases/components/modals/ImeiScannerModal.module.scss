@@ -1,0 +1,30 @@
+.scannerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.scanner {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #000;
+  min-height: 300px;
+}
+
+.error {
+  text-align: center;
+  padding: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  padding: 18px;
+}
+
+.hint {
+  text-align: center;
+  color: #6b7280;
+}

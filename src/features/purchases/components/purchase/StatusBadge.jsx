@@ -2,7 +2,7 @@ import { STATUS_UI } from '../../utils/status';
 import Badge from '@/components/ui/Badge';
 
 export default function StatusBadge({ status }) {
-  const ui = STATUS_UI[status];
+  const ui = STATUS_UI[status] || { label: status || '-', color: 'black' };
   return (
     <Badge size="lg" color={ui.color}>
       {ui.label}

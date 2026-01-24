@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useRef } from 'react';
 import Typography from '../../Typography';
 import { Box, Col, Row } from '@components/ui';
 import iconsMap from '@utils/iconsMap';
@@ -16,7 +17,7 @@ const InputWrapper = ({
   size,
   inputBoxStyle,
   inputBoxClassName,
-  hasIcon,
+  // hasIcon,
   showIcon,
   icon,
   iconText,
@@ -29,6 +30,8 @@ const InputWrapper = ({
   onSearch,
   onSearchSelect,
 }) => {
+  const inputBoxRef = useRef(null);
+
   return (
     <Row className={styles['input-wrapper']} gutter={1.5}>
       {label && (
@@ -46,6 +49,7 @@ const InputWrapper = ({
       <Col fullWidth>
         <Box pos="relative" dir="column" gap={1}>
           <Box
+            ref={inputBoxRef}
             pos="relative"
             style={inputBoxStyle}
             className={classNames(
@@ -83,6 +87,7 @@ const InputWrapper = ({
                 onSearch={onSearch}
                 searchText={searchText}
                 onSelect={onSearchSelect}
+                inputRef={inputBoxRef}
               />
             ) : null}
           </AnimatePresence>

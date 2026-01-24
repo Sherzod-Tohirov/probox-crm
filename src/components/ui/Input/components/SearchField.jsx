@@ -9,7 +9,13 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import useTheme from '@/hooks/useTheme';
 
-const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
+const SearchField = ({
+  renderItem,
+  searchText,
+  onSearch,
+  onSelect,
+  inputRef,
+}) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dataDetails, setDataDetails] = useState({
@@ -21,9 +27,37 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
   const { currentTheme } = useTheme();
   const [hasNextPage, setHasNextPage] = useState(true);
   const { ref, inView } = useInView();
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 
   // Add searchText ref to track latest value
   const searchTextRef = useRef(searchText);
+
+  // Calculate position based on input element
+  useEffect(() => {
+    if (inputRef?.current) {
+      const calculatePosition = () => {
+        requestAnimationFrame(() => {
+          if (inputRef?.current) {
+            const rect = inputRef.current.getBoundingClientRect();
+            setPosition({
+              top: rect.bottom - 105, // 4px gap, no scroll offset for fixed positioning
+              left: rect.left - 90,
+              width: rect.width,
+            });
+          }
+        });
+      };
+
+      calculatePosition();
+      window.addEventListener('scroll', calculatePosition, true);
+      window.addEventListener('resize', calculatePosition);
+
+      return () => {
+        window.removeEventListener('scroll', calculatePosition, true);
+        window.removeEventListener('resize', calculatePosition);
+      };
+    }
+  }, [inputRef, searchText]);
 
   // Update ref when searchText changes
   useEffect(() => {
@@ -101,6 +135,11 @@ const SearchField = ({ renderItem, searchText, onSearch, onSelect }) => {
   return (
     <motion.div
       className={styles['search-field']}
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        width: position.width ? `${position.width}px` : '100%',
+      }}
       initial={{ opacity: 0, height: 0, scale: 0.8 }}
       animate={{ opacity: 1, height: 'auto', scale: 1 }}
       exit={{ opacity: 0, height: 0, scale: 0.8 }}

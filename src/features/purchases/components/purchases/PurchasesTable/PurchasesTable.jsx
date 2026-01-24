@@ -2,9 +2,11 @@ import { Badge, Card, Col, Row, Typography, Skeleton } from '@/components/ui';
 import styles from './styles.module.scss';
 import { PurchasesRow } from './PurchasesRow';
 import { PurchasesCell } from './PurchasesCell';
-import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import formatDate from '@/utils/formatDate';
+import formatterCurrency from '@/utils/formatterCurrency';
+import StatusBadge from '../../purchase/StatusBadge';
 
 /**
  *
@@ -69,14 +71,6 @@ function LoadingSkeleton() {
   );
 }
 
-const statusColorMap = {
-  Tasdiqlangan: 'success',
-  Kutilmoqda: 'warning',
-  'Rad etilgan': 'danger',
-  waiting: 'warning',
-  declined: 'danger',
-};
-
 const categoryColorMap = {
   Telefonlar: 'info',
   'Maishiy texnika': 'warning',
@@ -132,10 +126,10 @@ export function PurchasesTable({ data, isLoading = false }) {
             onClick={() => handleRowClick(item?.contract_no)}
           >
             <PurchasesCell span={2} title="Ariza raqami">
-              {item.contract_no}
+              {item.docNum}
             </PurchasesCell>
             <PurchasesCell span={4} title="Yetkazib beruvchi">
-              {item.courier}
+              {item.cardName}
             </PurchasesCell>
             <PurchasesCell span={6} title="Kategoriyalar">
               <Row direction="row" gutter={2} align="center">
@@ -146,15 +140,13 @@ export function PurchasesTable({ data, isLoading = false }) {
               {item.count ? item?.count + ' dona' : '-'}
             </PurchasesCell>
             <PurchasesCell span={3} title="Yaratilgan sana">
-              {item.created_at}
+              {item?.docDate ? formatDate(item.docDate) : '-'}
             </PurchasesCell>
             <PurchasesCell textColor="info" span={3} title="Umumiy narx">
-              {formatCurrencyUZS(item?.total_cost)}
+              {formatterCurrency(item?.docTotal, item?.docCur)}
             </PurchasesCell>
             <PurchasesCell span={3} title="Status">
-              <Badge color={statusColorMap[item.status] || 'black'}>
-                {item.status}
-              </Badge>
+              <StatusBadge status={item?.status}>{item?.status}</StatusBadge>
             </PurchasesCell>
           </PurchasesRow>
         );

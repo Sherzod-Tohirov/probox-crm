@@ -80,6 +80,7 @@ import {
   Settings,
   History,
 } from '@assets/images/icons/Icons';
+import { CameraIcon } from 'lucide-react';
 
 const iconsMap = {
   dashboard: <Dashboard />,
@@ -163,6 +164,7 @@ const iconsMap = {
   checkList: <CheckList />,
   settings: <Settings />,
   history: <History />,
+  camera: <CameraIcon />,
 };
 
 export default iconsMap;

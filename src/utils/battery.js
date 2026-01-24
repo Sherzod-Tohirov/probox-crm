@@ -1,7 +1,7 @@
-export const normalizeBattery = (isProductNew, battery) => {
+export const normalizeBattery = (battery, isProductNew) => {
   if (isProductNew) return '100%';
   if (!battery) return '-';
-  return battery.includes('%') ? battery : String(battery) + '%';
+  return String(battery)?.includes('%') ? battery : String(battery) + '%';
 };
 
 export const getBatteryColor = (battery, isProductNew) => {

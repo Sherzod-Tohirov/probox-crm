@@ -72,7 +72,7 @@ const PurchasesPageFooter = ({ purchasesDetails = {} }) => {
           </Col>
           <Col>
             <Pagination
-              pageCount={purchasesDetails.totalPages}
+              pageCount={purchasesDetails.totalPage}
               activePage={currentPage}
               onPageChange={(page) =>
                 dispatch(setPurchasesCurrentPage(page.selected))

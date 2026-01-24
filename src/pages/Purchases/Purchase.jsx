@@ -11,12 +11,20 @@ import {
   warehouseOptions,
 } from '@/features/purchases/utils/purchaseOptions';
 import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
+import {
+  useCreatePurchaseItem,
+  useUpdatePurchaseItem,
+  useDeletePurchaseItem,
+} from '@/hooks/data/purchases/usePurchaseItems';
 import useAuth from '@/hooks/useAuth';
-import { sampleData } from './sampleData';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
-const PURCHASE_STATUS = 'approved';
+const DRAFT_STORAGE_KEY = 'purchase_draft_';
+const PURCHASE_STATUS = 'draft';
 
 export default function Purchase() {
+  const { contractNo } = useParams();
   const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
   const {
@@ -27,11 +35,112 @@ export default function Purchase() {
     handleWarehouseChange,
   } = usePurchaseForm();
 
+  const [purchaseItems, setPurchaseItems] = useState([]);
+  const isNewPurchase = !contractNo;
+
   const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
+  const createItemMutation = useCreatePurchaseItem(contractNo);
+  const updateItemMutation = useUpdatePurchaseItem(contractNo);
+  const deleteItemMutation = useDeletePurchaseItem(contractNo);
+
+  // Load from localStorage for new purchases
+  useEffect(() => {
+    if (isNewPurchase) {
+      const draftKey = DRAFT_STORAGE_KEY + 'new';
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          setPurchaseItems(draft.items || []);
+        } catch (e) {
+          console.error('Error loading draft:', e);
+        }
+      }
+    }
+  }, [isNewPurchase]);
+
+  // Save to localStorage when items change (for new purchases)
+  useEffect(() => {
+    if (isNewPurchase && purchaseItems.length > 0) {
+      const draftKey = DRAFT_STORAGE_KEY + 'new';
+      localStorage.setItem(
+        draftKey,
+        JSON.stringify({
+          items: purchaseItems,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    }
+  }, [purchaseItems, isNewPurchase]);
+
+  // Add empty row for new item entry
+  const tableData = useMemo(() => {
+    if (permissions.canEditItems) {
+      return [...purchaseItems, { _isEmptyRow: true }];
+    }
+    return purchaseItems;
+  }, [purchaseItems, permissions.canEditItems]);
+
+  const handleProductSelect = (row, product) => {
+    const newItem = {
+      id: Date.now(),
+      product_id: product.ItemCode,
+      product_name: product.ItemName,
+      product_code: product.ItemCode,
+      category: product.U_Category || '',
+      imei: '',
+      status: '',
+      battery: '',
+      count: 1,
+      price: product.Price || 0,
+    };
+
+    if (isNewPurchase) {
+      // Add to local state for new purchases
+      setPurchaseItems((prev) => [...prev, newItem]);
+    } else {
+      // Create item via API for existing purchases
+      createItemMutation.mutate({
+        product_id: newItem.product_id,
+        product_code: newItem.product_code,
+        category: newItem.category,
+        price: newItem.price,
+      });
+    }
+  };
+
+  const handleFieldUpdate = (itemId, field, value) => {
+    if (field === 'delete') {
+      if (isNewPurchase) {
+        setPurchaseItems((prev) => prev.filter((item) => item.id !== itemId));
+      } else {
+        deleteItemMutation.mutate(itemId);
+      }
+      return;
+    }
+
+    if (isNewPurchase) {
+      // Update local state
+      setPurchaseItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, [field]: value } : item
+        )
+      );
+    } else {
+      // Update via API
+      updateItemMutation.mutate({
+        itemId,
+        data: { [field]: value },
+      });
+    }
+  };
 
   const handleDeletePurchaseItem = () => {
+    const item = modal.data;
+    if (item?.id) {
+      deleteItemMutation.mutate(item.id);
+    }
     closeModal();
-    // Add delete logic here
   };
 
   const handleDownloadPdf = () => {
@@ -48,7 +157,7 @@ export default function Purchase() {
         'Malika B-12',
       branch: 'Bosh office',
       date: new Date().toLocaleDateString('ru-RU'),
-      items: sampleData,
+      items: purchaseItems,
     };
 
     generatePurchasePdf(purchaseData);
@@ -78,9 +187,13 @@ export default function Purchase() {
         </Col>
         <Col fullWidth>
           <PurchaseTable
-            data={sampleData}
+            data={tableData}
             onOpenModal={openModal}
             editable={permissions.canEditItems}
+            contractNo={contractNo}
+            onProductSelect={handleProductSelect}
+            onFieldUpdate={handleFieldUpdate}
+            canConfirm={permissions.canConfirmPurchase}
           />
         </Col>
       </Row>
