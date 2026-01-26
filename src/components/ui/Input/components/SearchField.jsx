@@ -8,6 +8,7 @@ import { ClipLoader } from 'react-spinners';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import useTheme from '@/hooks/useTheme';
+import useIsMobile from '@/hooks/useIsMobile';
 
 const SearchField = ({
   renderItem,
@@ -25,6 +26,7 @@ const SearchField = ({
     text: '',
   });
   const { currentTheme } = useTheme();
+  const { isMobile, isTablet } = useIsMobile({ withDetails: true });
   const [hasNextPage, setHasNextPage] = useState(true);
   const { ref, inView } = useInView();
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -39,10 +41,6 @@ const SearchField = ({
         requestAnimationFrame(() => {
           if (inputRef?.current) {
             const rect = inputRef.current.getBoundingClientRect();
-            const isMobile = window.innerWidth < 768;
-            const isTablet =
-              window.innerWidth >= 768 && window.innerWidth < 1024;
-
             // Calculate responsive offsets
             let leftOffset = -50;
             let topOffset = -50; // Small gap below input

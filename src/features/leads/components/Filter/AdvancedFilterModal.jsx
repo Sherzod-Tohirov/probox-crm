@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Modal, Row, Col, Button, Input, Checkbox } from '@components/ui';
+import { Modal, Row, Col, Button, Checkbox } from '@components/ui';
 import SelectField from './fields/SelectField';
 import MultiSelectField from './fields/MultiSelectField';
 import MeetingAndDateSection from './sections/MeetingAndDateSection';
@@ -31,12 +31,13 @@ export default function AdvancedFilterModal({
   const [dateInputKey, setDateInputKey] = useState(0);
 
   // Fetch options
-  const { data: branches = [], isLoading: isBranchesLoading } =
-    useFetchBranches();
-  const { data: operator1List = [], isLoading: isOperator1Loading } =
-    useFetchExecutors({ include_role: 'Operator1' });
-  const { data: operator2List = [], isLoading: isOperator2Loading } =
-    useFetchExecutors({ include_role: 'Operator2' });
+  const { data: branches = [] } = useFetchBranches();
+  const { data: operator1List = [] } = useFetchExecutors({
+    include_role: 'Operator1',
+  });
+  const { data: operator2List = [] } = useFetchExecutors({
+    include_role: 'Operator2',
+  });
   const shouldLoadSeller = role === 'Seller' || role === 'CEO';
   const shouldLoadScoring = role === 'Scoring';
   const { data: sellerList = [], isLoading: isSellerLoading } =
