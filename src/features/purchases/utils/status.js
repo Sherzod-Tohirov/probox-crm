@@ -7,7 +7,7 @@ export const STATUS_UI = {
     label: 'Kutilmoqda',
     color: 'warning',
   },
-  approved: {
+  approve: {
     label: 'Tasdiqlandi',
     color: 'success',
   },

@@ -111,6 +111,12 @@ export default function useLeadsTableColumns() {
         textColor: '#fff',
         name: 'Community',
       },
+      'Qayta sotuv': {
+        icon: 'products',
+        bgColor: '#F59E0B',
+        textColor: '#fff',
+        name: 'Qayta sotuv',
+      },
     };
 
     return (
@@ -139,9 +145,9 @@ export default function useLeadsTableColumns() {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         <Badge color={getLimitColor(limit)} size="md">
-            {iconsMap.wallet}
-            {formatterCurrency(limit, 'UZS')}
-          </Badge>
+          {iconsMap.wallet}
+          {formatterCurrency(limit, 'UZS')}
+        </Badge>
       </span>
     );
   };

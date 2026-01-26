@@ -4,6 +4,7 @@ export const AVAILABLE_LEAD_SOURCES = [
   'Organika',
   'Kiruvchi qongiroq',
   'Community',
+  'Qayta sotuv',
 ];
 
 export const AVAILABLE_LEAD_STATUSES = [

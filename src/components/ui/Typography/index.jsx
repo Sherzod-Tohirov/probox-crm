@@ -14,6 +14,7 @@ import styles from './typography.module.scss';
  * @property {'initial'|'block'|'inline'|'inline-block'|'none'} [display] - CSS display property
  * @property {boolean} [gutterBottom=false] - Add bottom margin (8px)
  * @property {boolean} [noWrap=false] - Prevent text wrapping with ellipsis
+ * @property {'normal'|'wrap'|'nowrap'|'break-word'} [wrap] - Text wrapping behavior
  * @property {boolean} [paragraph=false] - Apply paragraph spacing (16px bottom margin)
  * @property {Function} [onClick] - Click event handler
  * @property {Function} [onMouseEnter] - Mouse enter event handler
@@ -39,13 +40,65 @@ import styles from './typography.module.scss';
 const typographyPropTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  element: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'div', 'label', 'strong', 'em', 'small', 'mark', 'del', 'ins', 'sub', 'sup']),
-  variant: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2', 'caption', 'overline', 'subtitle1', 'subtitle2', 'button', 'inherit']),
-  color: PropTypes.oneOf(['primary', 'secondary', 'textPrimary', 'textSecondary', 'error', 'warning', 'info', 'success', 'inherit']),
+  element: PropTypes.oneOf([
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'p',
+    'span',
+    'div',
+    'label',
+    'strong',
+    'time',
+    'em',
+    'small',
+    'mark',
+    'del',
+    'ins',
+    'sub',
+    'sup',
+  ]),
+  variant: PropTypes.oneOf([
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'body1',
+    'body2',
+    'caption',
+    'overline',
+    'subtitle1',
+    'subtitle2',
+    'button',
+    'inherit',
+  ]),
+  color: PropTypes.oneOf([
+    'primary',
+    'secondary',
+    'textPrimary',
+    'textSecondary',
+    'error',
+    'warning',
+    'info',
+    'success',
+    'inherit',
+  ]),
   align: PropTypes.oneOf(['left', 'center', 'right', 'justify', 'inherit']),
-  display: PropTypes.oneOf(['initial', 'block', 'inline', 'inline-block', 'none']),
+  display: PropTypes.oneOf([
+    'initial',
+    'block',
+    'inline',
+    'inline-block',
+    'none',
+  ]),
   gutterBottom: PropTypes.bool,
   noWrap: PropTypes.bool,
+  wrap: PropTypes.oneOf(['normal', 'wrap', 'nowrap', 'break-word']),
   paragraph: PropTypes.bool,
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
@@ -70,7 +123,7 @@ const typographyPropTypes = {
 
 /**
  * Typography Component - Flexible text component with multiple variants and styling options
- * 
+ *
  * @param {TypographyProps} props - Component props
  * @param {React.ReactNode} props.children - Text content or elements to display
  * @param {string} [props.className] - Additional CSS classes
@@ -81,6 +134,7 @@ const typographyPropTypes = {
  * @param {'initial'|'block'|'inline'|'inline-block'|'none'} [props.display] - CSS display property
  * @param {boolean} [props.gutterBottom=false] - Add bottom margin (8px)
  * @param {boolean} [props.noWrap=false] - Prevent text wrapping with ellipsis
+ * @param {'normal'|'wrap'|'nowrap'|'break-word'} [props.wrap] - Text wrapping behavior
  * @param {boolean} [props.paragraph=false] - Apply paragraph spacing (16px bottom margin)
  * @param {Function} [props.onClick] - Click event handler
  * @param {Function} [props.onMouseEnter] - Mouse enter event handler
@@ -101,81 +155,90 @@ const typographyPropTypes = {
  * @param {Function} [props.onKeyUp] - Key up event handler
  * @param {Function} [props.onKeyPress] - Key press event handler
  * @param {boolean} [props.disabled=false] - Apply disabled styling (reduced opacity)
- * 
+ *
  * @example
  * // Basic heading
  * <Typography element="h1" variant="h1">
  *   Main Title
  * </Typography>
- * 
+ *
  * @example
  * // Body text with color
  * <Typography variant="body1" color="textSecondary">
  *   This is body text with secondary color
  * </Typography>
- * 
+ *
  * @example
  * // Clickable text with alignment
- * <Typography 
- *   element="span" 
- *   variant="button" 
+ * <Typography
+ *   element="span"
+ *   variant="button"
  *   align="center"
  *   onClick={handleClick}
  * >
  *   Click me
  * </Typography>
- * 
+ *
  * @example
  * // Caption with no wrap
  * <Typography variant="caption" noWrap gutterBottom>
  *   This text will not wrap and has bottom margin
  * </Typography>
  */
-const Typography = forwardRef(({
-  element: Element = 'p',
-  className,
-  children,
-  variant,
-  color,
-  align,
-  display,
-  gutterBottom = false,
-  noWrap = false,
-  paragraph = false,
-  disabled = false,
-  ...props
-}, ref) => {
-  return (
-    <Element
-      ref={ref}
-      className={classNames(
-        styles['base-typography'],
-        styles[variant],
-        styles[`color-${color}`],
-        styles[`align-${align}`],
-        styles[`display-${display}`],
-        {
-          [styles['gutter-bottom']]: gutterBottom,
-          [styles['no-wrap']]: noWrap,
-          [styles['paragraph']]: paragraph,
-          [styles['disabled']]: disabled,
-        },
-        className
-      )}
-      style={{
-        ...props.style,
-        ...(disabled ? {
-          opacity: 0.3,
-          pointerEvents: 'none',
-          cursor: 'not-allowed',
-        } : {}),
-      }}
-      {...props}
-    >
-      {children}
-    </Element>
-  );
-});
+const Typography = forwardRef(
+  (
+    {
+      element: Element = 'p',
+      className,
+      children,
+      variant,
+      color,
+      align,
+      display,
+      gutterBottom = false,
+      noWrap = false,
+      wrap,
+      paragraph = false,
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <Element
+        ref={ref}
+        className={classNames(
+          styles['base-typography'],
+          styles[variant],
+          styles[`color-${color}`],
+          styles[`align-${align}`],
+          styles[`display-${display}`],
+          {
+            [styles['gutter-bottom']]: gutterBottom,
+            [styles['no-wrap']]: noWrap,
+            [styles[`wrap-${wrap}`]]: wrap,
+            [styles['paragraph']]: paragraph,
+            [styles['disabled']]: disabled,
+          },
+          className
+        )}
+        style={{
+          ...props.style,
+          ...(disabled
+            ? {
+                opacity: 0.3,
+                pointerEvents: 'none',
+                cursor: 'not-allowed',
+              }
+            : {}),
+        }}
+        {...props}
+      >
+        {children}
+      </Element>
+    );
+  }
+);
 
 const ForwardedTypography = memo(Typography);
 ForwardedTypography.propTypes = typographyPropTypes;
@@ -187,6 +250,7 @@ ForwardedTypography.defaultProps = {
   display: undefined,
   gutterBottom: false,
   noWrap: false,
+  wrap: undefined,
   paragraph: false,
   disabled: false,
   contentEditable: false,

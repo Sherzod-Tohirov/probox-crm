@@ -8,7 +8,12 @@ import {
   Row,
   Typography,
 } from '@/components/ui';
+import {
+  getMultiSelectOptions,
+  getMultiSelectValue,
+} from '@/utils/multiSelect';
 import { omit } from 'lodash';
+import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
@@ -30,8 +35,10 @@ function ModalFooter({ onClose, formId }) {
 }
 
 const statusOptions = [
-  { value: 'confirmed', label: 'Tasdiqlangan' },
-  { value: 'waiting', label: 'Kutilmoqda' },
+  { value: 'approve', label: 'Tasdiqlangan' },
+  { value: 'pending', label: 'Kutilmoqda' },
+  { value: 'draft', label: 'Qoralama' },
+  { value: 'rejected', label: 'Rad etildi' },
 ];
 
 const categoryOptions = [
@@ -48,14 +55,17 @@ const warehouseOptions = [
 
 export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   const filters = useSelector((state) => state.page.purchases.filter);
+  const startOfTheMonth = moment().startOf('month').format('DD.MM.YYYY');
+  const endOfTheMonth = moment().endOf('month').format('DD.MM.YYYY');
   const { watch, reset, setValue, control, handleSubmit } = useForm({
     defaultValues: {
       status: filters?.status ?? '',
-      category: filters?.category ?? '',
-      warehouse: filters?.warehouse ?? '',
+      category: getMultiSelectOptions(categoryOptions, filters?.category),
+      warehouse: getMultiSelectOptions(warehouseOptions, filters?.warehouse),
+      dateFrom: filters?.dateFrom || startOfTheMonth,
+      dateTo: filters?.dateTo || endOfTheMonth,
     },
   });
-
   const statusField = watch('status');
   const filterFormId = 'purchase-filter-form';
 
@@ -74,7 +84,9 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   };
 
   const handleApplyFilter = (data) => {
-    onApply(data);
+    const category = getMultiSelectValue(data?.category);
+    const warehouse = getMultiSelectValue(data?.warehouse);
+    onApply({ ...data, category, warehouse });
   };
 
   const handleClearFilter = () => {
@@ -98,7 +110,7 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
             >
               <Row gutter={4}>
                 <Col fullWidth>
-                  <Row direction="row" gutter={3} align="center">
+                  <Row direction="row" gutter={3} align="center" wrap>
                     {statusOptions.map((status) => (
                       <Col flexGrow key={status?.value}>
                         <Checkbox
@@ -115,7 +127,30 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
             </Card>
           </Col>
           <Col fullWidth>
+            <Row direction="row" gutter={3}>
+              <Col flexGrow>
+                <Input
+                  name="dateFrom"
+                  label="Boshlanish sanasi"
+                  control={control}
+                  type="date"
+                  variant="outlined"
+                />
+              </Col>
+              <Col flexGrow>
+                <Input
+                  name="dateTo"
+                  label="Tugash sanasi"
+                  control={control}
+                  type="date"
+                  variant="outlined"
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col fullWidth>
             <Input
+              multipleSelect
               name="category"
               label="Kategoriyalar"
               control={control}
@@ -127,6 +162,7 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
           </Col>
           <Col fullWidth>
             <Input
+              multipleSelect
               name="warehouse"
               label="Omborxona"
               control={control}

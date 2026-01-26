@@ -114,12 +114,12 @@ function DownloadPDF({ status, isEditable, onDownloadPdf }) {
 }
 
 export default function PurchaseHeader({
-  isEditable = false,
+  isEditable,
   status,
   courier,
   warehouse,
-  courierOptions = [],
-  warehouseOptions = [],
+  courierOptions,
+  warehouseOptions,
   control,
   onCourierChange,
   onWarehouseChange,
@@ -128,10 +128,10 @@ export default function PurchaseHeader({
 }) {
   return (
     <Row direction="row" justify="space-between">
-      <Col fullWidth flexGrow>
+      <Col flexGrow>
         <Navigation fallbackBackPath={backPath} />
       </Col>
-      <Col fullWidth>
+      <Col span={16}>
         <Row direction="row" align="center" justify="end" gutter={4}>
           <CourierField
             isEditable={isEditable}

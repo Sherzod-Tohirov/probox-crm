@@ -110,3 +110,37 @@ export const sampleData = [
     price: 9000000,
   },
 ];
+
+// Sample data generator
+export const generateSampleData = (total = 47) => {
+  const statuses = ['Tasdiqlangan', 'Kutilmoqda', 'Rad etilgan'];
+  const couriers = [
+    'Alisher Alisherov',
+    'Bobur Boburov',
+    'Sardor Sardorov',
+    'Dilshod Dilshodov',
+  ];
+  const warehouses = ['Parkent', 'Toshkent', 'Samarqand', 'Buxoro'];
+  const categoryGroups = [
+    ['Telefonlar', 'Maishiy texnika'],
+    ['Telefonlar'],
+    ['Maishiy texnika', 'Kompyuterlar'],
+    ['Kompyuterlar'],
+    ['Aksessuarlar'],
+  ];
+
+  return Array.from({ length: total }, (_, i) => ({
+    id: i + 1,
+    contract_no: `YT-${238745 + i}`,
+    courier: couriers[i % couriers.length],
+    categories: categoryGroups[i % categoryGroups.length],
+    warehouse: warehouses[i % warehouses.length],
+    count: Math.floor(Math.random() * 50) + 1,
+    created_at: new Date(2026, 0, Math.floor(Math.random() * 20) + 1)
+      .toLocaleDateString('en-GB')
+      .split('/')
+      .join('.'),
+    total_cost: Math.floor(Math.random() * 200000000) + 50000000,
+    status: statuses[i % statuses.length],
+  }));
+};

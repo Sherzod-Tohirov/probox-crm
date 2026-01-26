@@ -10,21 +10,21 @@ import { getPurchases } from '@/services/purchasesService';
  * @returns {Object} Query result with purchases data
  */
 export default function useFetchPurchases({
-  page = 1,
+  offset = 1,
   limit = 20,
   params = {},
 } = {}) {
   return useQuery({
-    queryKey: ['purchases', page, limit, params],
+    queryKey: ['purchases', offset, limit, params],
     queryFn: async () => {
       const response = await getPurchases({
-        page,
+        offset,
         limit,
         ...params,
       });
       return response;
     },
     keepPreviousData: true,
-    staleTime: 30000, // 30 seconds
+    staleTime: 30_000, // 30 seconds
   });
 }

@@ -44,7 +44,9 @@ export default function Leads() {
       const raw = localStorage.getItem('leadsFilterOpen');
       if (raw === 'true') return true;
       if (raw === 'false') return false;
-    } catch (_) {}
+    } catch (error) {
+      console.log(error);
+    }
     return false;
   });
 
@@ -55,7 +57,8 @@ export default function Leads() {
     try {
       const raw = localStorage.getItem('leadsVisibleColumns');
       return raw ? JSON.parse(raw) : {};
-    } catch (_) {
+    } catch (error) {
+      console.log(error);
       return {};
     }
   });
@@ -65,14 +68,18 @@ export default function Leads() {
         'leadsVisibleColumns',
         JSON.stringify(visibleColumns)
       );
-    } catch (_) {}
+    } catch (error) {
+      console.log(error);
+    }
   }, [visibleColumns]);
 
   // Persist filter open state to its own key
   useEffect(() => {
     try {
       localStorage.setItem('leadsFilterOpen', String(toggleFilter));
-    } catch (_) {}
+    } catch (error) {
+      console.log(error);
+    }
   }, [toggleFilter]);
   const {
     data: { data: leads, ...meta } = {
@@ -114,10 +121,13 @@ export default function Leads() {
     maxTries: 120,
   });
 
-  const handleFilter = useCallback((filterData) => {
-    dispatch(setLeadsFilter(filterData));
-    setToggleFilter(false);
-  }, []);
+  const handleFilter = useCallback(
+    (filterData) => {
+      dispatch(setLeadsFilter(filterData));
+      setToggleFilter(false);
+    },
+    [dispatch]
+  );
 
   const handleRowClick = useCallback(
     (row) => {
@@ -127,7 +137,9 @@ export default function Leads() {
           'scrollPositionLeads__rowKey',
           String(row?.id ?? '')
         );
-      } catch (_) {}
+      } catch (error) {
+        console.log(error);
+      }
       dispatch(setCurrentLead(row));
       navigate(`/leads/${row.id}`);
     },
@@ -165,7 +177,9 @@ export default function Leads() {
       });
       setVisibleColumns(map);
       localStorage.setItem('leadsVisibleColumnsInit', '1');
-    } catch (_) {}
+    } catch (error) {
+      console.log(error);
+    }
   }, [leadsTableColumns]);
 
   // Filter columns based on visibility toggles
@@ -199,7 +213,9 @@ export default function Leads() {
       // Refresh leads list
       try {
         refetch?.();
-      } catch (_) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     window.addEventListener('probox:new-lead', onNew);
@@ -290,7 +306,9 @@ export default function Leads() {
         onCreated={() => {
           try {
             refetch?.();
-          } catch (_) {}
+          } catch (error) {
+            console.log(error);
+          }
           setAddOpen(false);
         }}
       />
