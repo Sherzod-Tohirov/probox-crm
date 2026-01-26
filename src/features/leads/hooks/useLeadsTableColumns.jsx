@@ -112,7 +112,7 @@ export default function useLeadsTableColumns() {
         name: 'Community',
       },
       'Qayta sotuv': {
-        icon: 'products',
+        icon: 'refresh',
         bgColor: '#F59E0B',
         textColor: '#fff',
         name: 'Qayta sotuv',
@@ -296,7 +296,7 @@ export default function useLeadsTableColumns() {
                 color: sourceStyle.textColor,
                 fontSize: '12px',
                 fontWeight: '500',
-                width: '100px',
+                width: '110px',
                 height: '28px',
                 justifyContent: 'center',
                 boxSizing: 'border-box',

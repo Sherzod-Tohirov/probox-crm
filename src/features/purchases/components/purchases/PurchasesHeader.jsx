@@ -14,10 +14,10 @@ export default function PurchasesHeader({
       justify="space-between"
       gutter={3}
     >
-      <Col xs={24} md={8}>
+      <Col xs={24} md={6}>
         <Typography variant="h5">{pageTitle}</Typography>
       </Col>
-      <Col xs={24} md={16}>
+      <Col xs={24} md={18}>
         <Row
           direction="row"
           align="center"
@@ -25,7 +25,7 @@ export default function PurchasesHeader({
           gutter={2}
           wrap
         >
-          <Col xs={24} sm={12} md={10}>
+          <Col xs={24} sm={12} md={12}>
             <Input
               variant="outlined"
               type="search"
@@ -37,7 +37,7 @@ export default function PurchasesHeader({
           <Col xs={0} sm={0} md="auto">
             <Divider height="16px" color="primary" orientation="vertical" />
           </Col>
-          <Col xs={12} sm={6} md={5}>
+          <Col xs={12} sm={6} md={6}>
             <Button
               fullWidth
               variant="outlined"

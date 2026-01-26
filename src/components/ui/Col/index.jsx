@@ -11,6 +11,11 @@ const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
  * @param {React.ReactNode} props.children - Child elements
  * @param {string} props.direction - Direction of the column ('row' or 'column')
  * @param {number|Object} props.span - Column span (1-24) or responsive object { xs: 24, md: 16 }
+ * @param {number} props.xs - Shorthand for span at xs breakpoint (0-24)
+ * @param {number} props.sm - Shorthand for span at sm breakpoint (0-24)
+ * @param {number} props.md - Shorthand for span at md breakpoint (0-24)
+ * @param {number} props.lg - Shorthand for span at lg breakpoint (0-24)
+ * @param {number} props.xl - Shorthand for span at xl breakpoint (0-24)
  * @param {boolean|Object} props.flexGrow - Whether to grow or responsive object { xs: false, md: true }
  * @param {string|Object} props.align - Alignment ('start', 'center', 'end') or responsive object
  * @param {string|Object} props.justify - Justification ('start', 'center', 'end', 'space-between') or responsive object
@@ -23,6 +28,12 @@ const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
  * @param {Object} props.style - Inline styles
  * @param {React.Ref} ref - Forwarded ref
  * @returns {React.Component} Col component
+ * @example
+ * // Object syntax
+ * <Col span={{ xs: 24, md: 12 }}>Content</Col>
+ *
+ * // Shorthand syntax
+ * <Col xs={24} md={12}>Content</Col>
  */
 function Col(
   {
@@ -39,7 +50,7 @@ function Col(
     className,
     wrap = false,
     style,
-    // Strip responsive sizing hints so they don't leak to the DOM
+    // Responsive sizing props (shorthand syntax)
     xs,
     sm,
     md,
@@ -49,13 +60,41 @@ function Col(
   },
   ref
 ) {
+  // Merge shorthand responsive props (xs, sm, md, lg, xl) with span object
+  const getEffectiveSpan = () => {
+    // If span is an object, use it directly
+    if (isResponsiveProp(span)) return span;
+
+    // If shorthand props are provided, build span object from them
+    const hasResponsiveProps =
+      xs !== undefined ||
+      sm !== undefined ||
+      md !== undefined ||
+      lg !== undefined ||
+      xl !== undefined;
+    if (hasResponsiveProps) {
+      const responsiveSpan = {};
+      if (xs !== undefined) responsiveSpan.xs = xs;
+      if (sm !== undefined) responsiveSpan.sm = sm;
+      if (md !== undefined) responsiveSpan.md = md;
+      if (lg !== undefined) responsiveSpan.lg = lg;
+      if (xl !== undefined) responsiveSpan.xl = xl;
+      return responsiveSpan;
+    }
+
+    // Otherwise return the scalar span value
+    return span;
+  };
+
+  const effectiveSpan = getEffectiveSpan();
+
   // Handle responsive span with CSS custom properties
   const getResponsiveSpanStyles = () => {
-    if (!isResponsiveProp(span)) return {};
+    if (!isResponsiveProp(effectiveSpan)) return {};
 
     const responsiveStyles = {};
-    Object.keys(span).forEach((bp) => {
-      const spanValue = span[bp];
+    Object.keys(effectiveSpan).forEach((bp) => {
+      const spanValue = effectiveSpan[bp];
       responsiveStyles[`--span-${bp}`] = `${(spanValue / 24) * 100}%`;
     });
     return responsiveStyles;
@@ -79,8 +118,11 @@ function Col(
     boxSizing: 'border-box',
 
     // Apply default styles for scalar props (using 24-column grid system)
-    ...(typeof span === 'number'
-      ? { flex: `0 0 ${(span / 24) * 100}%`, maxWidth: `${(span / 24) * 100}%` }
+    ...(typeof effectiveSpan === 'number'
+      ? {
+          flex: `0 0 ${(effectiveSpan / 24) * 100}%`,
+          maxWidth: `${(effectiveSpan / 24) * 100}%`,
+        }
       : {}),
     ...(typeof offset === 'number'
       ? { marginLeft: `${(offset / 24) * 100}%` }
@@ -105,7 +147,7 @@ function Col(
       ref={ref}
       className={classNames(
         styles.col,
-        isResponsiveProp(span) ? 'col-responsive-span' : '',
+        isResponsiveProp(effectiveSpan) ? 'col-responsive-span' : '',
         isResponsiveProp(offset) ? 'col-responsive-offset' : '',
         className
       )}
