@@ -113,7 +113,7 @@ export default function useLeadsTableColumns() {
       },
       'Qayta sotuv': {
         icon: 'refresh',
-        bgColor: '#2f9aafff',
+        bgColor: '#de6565ff',
         textColor: '#fff',
         name: 'Qayta sotuv',
       },
