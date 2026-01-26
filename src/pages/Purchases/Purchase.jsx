@@ -12,7 +12,7 @@ import {
 } from '@/features/purchases/utils/purchaseOptions';
 import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
 import {
-  useCreatePurchaseItem,
+  // useCreatePurchaseItem,
   useUpdatePurchaseItem,
   useDeletePurchaseItem,
 } from '@/hooks/data/purchases/usePurchaseItems';
@@ -40,7 +40,7 @@ export default function Purchase() {
   const isNewPurchase = !contractNo;
 
   const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
-  const createItemMutation = useCreatePurchaseItem(contractNo);
+  // const createItemMutation = useCreatePurchaseItem(contractNo);
   const updateItemMutation = useUpdatePurchaseItem(contractNo);
   const deleteItemMutation = useDeletePurchaseItem(contractNo);
 
@@ -102,12 +102,12 @@ export default function Purchase() {
       setPurchaseItems((prev) => [...prev, newItem]);
     } else {
       // Create item via API for existing purchases
-      createItemMutation.mutate({
-        product_id: newItem.product_id,
-        product_code: newItem.product_code,
-        category: newItem.category,
-        price: newItem.price,
-      });
+      // createItemMutation.mutate({
+      //   product_id: newItem.product_id,
+      //   product_code: newItem.product_code,
+      //   category: newItem.category,
+      //   price: newItem.price,
+      // });
     }
   };
 
