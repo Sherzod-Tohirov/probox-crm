@@ -17,7 +17,7 @@ const buttonPropTypes = {
   color: PropTypes.oneOf(['primary', 'secondary', 'info', 'danger']),
   icon: PropTypes.string || PropTypes.node,
   iconPosition: PropTypes.oneOf(['left', 'right']),
-  iconSize: PropTypes.oneOf([12, 16, 18, 20, 24, 28, 32]),
+  iconSize: PropTypes.oneOf([12, 14, 16, 18, 20, 24, 28, 32]),
   iconColor: PropTypes.oneOf(['primary', 'secondary', 'danger']),
   isLoading: PropTypes.bool,
   fullWidth: PropTypes.bool,

@@ -26,9 +26,7 @@ export default function Purchases() {
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const handleApplyFilter = (data) => {
-    console.log(filter, 'filter');
-    console.log(data, 'data');
-    dispatch(setPurchasesFilter({ search: filter.search, ...data }));
+    dispatch(setPurchasesFilter({ ...filter, ...data }));
     setFilterOpen(false);
   };
 

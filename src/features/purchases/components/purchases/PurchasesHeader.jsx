@@ -9,13 +9,23 @@ export default function PurchasesHeader({
 }) {
   const navigate = useNavigate();
   return (
-    <Row direction="row" justify="space-between">
-      <Col fullWidth flexGrow>
+    <Row
+      direction={{ xs: 'column', md: 'row' }}
+      justify="space-between"
+      gutter={3}
+    >
+      <Col xs={24} md={8}>
         <Typography variant="h5">{pageTitle}</Typography>
       </Col>
-      <Col fullWidth>
-        <Row direction="row" align="center" justify="end" gutter={2}>
-          <Col span={8}>
+      <Col xs={24} md={16}>
+        <Row
+          direction="row"
+          align="center"
+          justify={{ xs: 'start', md: 'end' }}
+          gutter={2}
+          wrap
+        >
+          <Col xs={24} sm={12} md={10}>
             <Input
               variant="outlined"
               type="search"
@@ -24,10 +34,10 @@ export default function PurchasesHeader({
               onChange={(e) => onSearch(e.target.value)}
             />
           </Col>
-          <Col>
+          <Col xs={0} sm={0} md="auto">
             <Divider height="16px" color="primary" orientation="vertical" />
           </Col>
-          <Col span={3}>
+          <Col xs={12} sm={6} md={5}>
             <Button
               fullWidth
               variant="outlined"
@@ -39,10 +49,10 @@ export default function PurchasesHeader({
               Filter
             </Button>
           </Col>
-          <Col>
+          <Col xs={0} sm={0} md="auto">
             <Divider height="16px" color="primary" orientation="vertical" />
           </Col>
-          <Col span={4}>
+          <Col xs={12} sm={6} md={6}>
             <Button
               fullWidth
               variant="filled"

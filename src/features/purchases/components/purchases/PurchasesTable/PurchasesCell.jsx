@@ -30,12 +30,12 @@ export function PurchasesCell({
   return (
     <Col fullWidth className={classNames(styles.cell, className)} {...props}>
       <Row gutter={0.5}>
-        <Col>
+        <Col fullWidth>
           <Typography className={styles.title} element="h5">
             {title}
           </Typography>
         </Col>
-        <Col>{renderCell(children, textColor)}</Col>
+        <Col fullWidth>{renderCell(children, textColor)}</Col>
       </Row>
     </Col>
   );

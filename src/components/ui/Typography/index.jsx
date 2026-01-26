@@ -39,7 +39,7 @@ import styles from './typography.module.scss';
 const typographyPropTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  element: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'div', 'label', 'strong', 'em', 'small', 'mark', 'del', 'ins', 'sub', 'sup']),
+  element: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'div', 'label', 'strong', 'time', 'em', 'small', 'mark', 'del', 'ins', 'sub', 'sup']),
   variant: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2', 'caption', 'overline', 'subtitle1', 'subtitle2', 'button', 'inherit']),
   color: PropTypes.oneOf(['primary', 'secondary', 'textPrimary', 'textSecondary', 'error', 'warning', 'info', 'success', 'inherit']),
   align: PropTypes.oneOf(['left', 'center', 'right', 'justify', 'inherit']),
