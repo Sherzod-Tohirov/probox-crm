@@ -242,6 +242,30 @@
 .paragraph {
   margin-bottom: 4rem; /* 16px */
 }
+
+/* Text Wrapping */
+.wrap-normal {
+  white-space: normal;
+  word-wrap: normal;
+  overflow-wrap: normal;
+}
+
+.wrap-wrap {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.wrap-nowrap {
+  white-space: nowrap;
+}
+
+.wrap-break-word {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 .disabled {
   opacity: 0.3;
   pointer-events: none;

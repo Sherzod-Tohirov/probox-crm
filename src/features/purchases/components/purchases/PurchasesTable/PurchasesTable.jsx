@@ -108,9 +108,9 @@ export function PurchasesTable({ data, isLoading = false }) {
   const navigate = useNavigate();
 
   const handleRowClick = useCallback(
-    (contract_no) => {
-      if (!contract_no) return;
-      navigate(`/purchases/${contract_no}`);
+    (docNum) => {
+      if (!docNum) return;
+      navigate(`/purchases/${docNum}`);
     },
     [navigate]
   );
@@ -130,7 +130,7 @@ export function PurchasesTable({ data, isLoading = false }) {
           return (
             <PurchasesRow
               key={item.id || index}
-              onClick={() => handleRowClick(item?.contract_no)}
+              onClick={() => handleRowClick(item?.docNum)}
             >
               <PurchasesCell span={2} title="Ariza raqami">
                 {item.docNum}

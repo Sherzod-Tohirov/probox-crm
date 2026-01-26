@@ -45,6 +45,7 @@ export function usePurchaseTableColumns({
         title: 'Mahsulot nomi',
         icon: 'products',
         width: '15%',
+        minWidth: '200px',
         renderCell: (row) => {
           if (editable && !row.id) {
             return (

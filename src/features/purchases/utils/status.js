@@ -11,7 +11,7 @@ export const STATUS_UI = {
     label: 'Tasdiqlandi',
     color: 'success',
   },
-  reject: {
+  rejected: {
     label: 'Rad etildi',
     color: 'danger',
   },

@@ -39,10 +39,34 @@ const SearchField = ({
         requestAnimationFrame(() => {
           if (inputRef?.current) {
             const rect = inputRef.current.getBoundingClientRect();
+            const isMobile = window.innerWidth < 768;
+            const isTablet =
+              window.innerWidth >= 768 && window.innerWidth < 1024;
+
+            // Calculate responsive offsets
+            let leftOffset = -50;
+            let topOffset = -50; // Small gap below input
+
+            if (!isMobile && !isTablet) {
+              // Desktop: use original offsets
+              leftOffset = -90;
+              topOffset = -105;
+            } else if (isTablet) {
+              // Tablet: smaller offsets
+              leftOffset = -30;
+              topOffset = -70;
+            }
+            // Mobile: no offsets, position directly below
+
             setPosition({
-              top: rect.bottom - 105, // 4px gap, no scroll offset for fixed positioning
-              left: rect.left - 90,
-              width: rect.width,
+              top:
+                isMobile || isTablet
+                  ? rect.bottom + topOffset
+                  : rect.bottom + topOffset,
+              left: isMobile ? rect.left : rect.left + leftOffset,
+              width: isMobile
+                ? rect.width
+                : rect.width + Math.abs(leftOffset) * 2,
             });
           }
         });

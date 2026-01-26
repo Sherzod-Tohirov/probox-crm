@@ -38,7 +38,9 @@ export default function ProductSearchCell({ value, onSelect, disabled }) {
   const renderSearchItem = (product) => {
     return (
       <Box dir="column" gap={0.5}>
-        <Typography>{product.ItemName}</Typography>
+        <Typography wrap="wrap" variant="base">
+          {product.ItemName}
+        </Typography>
         <Typography variant="caption" color="secondary">
           {product.ItemCode}
         </Typography>

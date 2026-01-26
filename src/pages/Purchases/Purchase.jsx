@@ -24,7 +24,8 @@ const DRAFT_STORAGE_KEY = 'purchase_draft_';
 const PURCHASE_STATUS = 'draft';
 
 export default function Purchase() {
-  const { contractNo } = useParams();
+  const { id: contractNo } = useParams();
+  console.log(contractNo, 'xontractno');
   const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
   const {
@@ -82,6 +83,7 @@ export default function Purchase() {
   }, [purchaseItems, permissions.canEditItems]);
 
   const handleProductSelect = (row, product) => {
+    console.log(row, product, 'row, product');
     const newItem = {
       id: Date.now(),
       product_id: product.ItemCode,
@@ -94,7 +96,7 @@ export default function Purchase() {
       count: 1,
       price: product.Price || 0,
     };
-
+    console.log(purchaseItems, 'purchaseItems');
     if (isNewPurchase) {
       // Add to local state for new purchases
       setPurchaseItems((prev) => [...prev, newItem]);
