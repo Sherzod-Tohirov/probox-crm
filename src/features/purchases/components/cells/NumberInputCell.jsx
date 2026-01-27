@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui';
-import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
+import formatterCurrency from '@/utils/formatterCurrency';
 
 export default function NumberInputCell({
   value,
@@ -19,7 +19,7 @@ export default function NumberInputCell({
     const val = value || '';
     setInputValue(val);
     if (isCurrency && val) {
-      setDisplayValue(formatCurrencyUZS(val));
+      setDisplayValue(formatterCurrency(val));
     } else if (isPercentage && val) {
       setDisplayValue(val + '%');
     } else {
@@ -32,7 +32,7 @@ export default function NumberInputCell({
     setInputValue(val);
 
     if (isCurrency && val) {
-      setDisplayValue(formatCurrencyUZS(val));
+      setDisplayValue(formatterCurrency(val));
     } else if (isPercentage && val) {
       setDisplayValue(val + '%');
     } else {

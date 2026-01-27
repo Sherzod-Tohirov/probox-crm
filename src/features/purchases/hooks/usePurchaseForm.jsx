@@ -3,15 +3,15 @@ import { useForm } from 'react-hook-form';
 export function usePurchaseForm() {
   const { control, watch } = useForm({
     defaultValues: {
-      courier: 'courier1',
-      warehouse: 'warehouse1',
+      courier: '',
+      warehouse: '',
     },
   });
 
   const courierValue = watch('courier');
   const warehouseValue = watch('warehouse');
 
-  const handleCourierChange = (value) => {
+  const handleCourierSelect = (value) => {
     console.log('Courier changed:', value);
     // Handle courier change logic here (e.g., API call, state update)
   };
@@ -25,7 +25,7 @@ export function usePurchaseForm() {
     control,
     courierValue,
     warehouseValue,
-    handleCourierChange,
+    handleCourierSelect,
     handleWarehouseChange,
   };
 }

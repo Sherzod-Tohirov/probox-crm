@@ -9,20 +9,13 @@ import {
 } from '@/components/ui';
 import StatusBadge from './StatusBadge';
 import { DownloadIcon } from 'lucide-react';
+import SupplierSelect from './SupplierSelect';
 
-function CourierField({ isEditable, value, control, options, onChange }) {
+function CourierField({ isEditable, value, onSelect }) {
   if (isEditable) {
     return (
       <Col span={6}>
-        <Input
-          name="courier"
-          variant="outlined"
-          type="select"
-          placeholder="Yetkazib beruvchi"
-          options={options}
-          control={control}
-          onChange={onChange}
-        />
+        <SupplierSelect value={value} onSelect={onSelect} />
       </Col>
     );
   }
@@ -121,7 +114,7 @@ export default function PurchaseHeader({
   courierOptions,
   warehouseOptions,
   control,
-  onCourierChange,
+  onCourierSelect,
   onWarehouseChange,
   onDownloadPdf,
   backPath = '/purchases',
@@ -138,7 +131,7 @@ export default function PurchaseHeader({
             value={courier}
             control={control}
             options={courierOptions}
-            onChange={onCourierChange}
+            onSelect={onCourierSelect}
           />
           <WarehouseField
             isEditable={isEditable}

@@ -6,19 +6,14 @@ import PurchaseTable from '@/features/purchases/components/purchase/PurchaseTabl
 import { usePurchaseModal } from '@/features/purchases/hooks/usePurchaseModal';
 import { usePurchaseForm } from '@/features/purchases/hooks/usePurchaseForm';
 import { getPurchasePermissions } from '@/features/purchases/utils/getPurchasePermissions';
-import {
-  courierOptions,
-  warehouseOptions,
-} from '@/features/purchases/utils/purchaseOptions';
+import { courierOptions } from '@/features/purchases/utils/purchaseOptions';
 import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
-import {
-  // useCreatePurchaseItem,
-  useUpdatePurchaseItem,
-  useDeletePurchaseItem,
-} from '@/hooks/data/purchases/usePurchaseItems';
+import { useCreatePurchase } from '@/hooks/data/purchases/usePurchaseItems';
 import useAuth from '@/hooks/useAuth';
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
+import selectOptionsCreator from '@/utils/selectOptionsCreator';
 
 const DRAFT_STORAGE_KEY = 'purchase_draft_';
 const PURCHASE_STATUS = 'draft';
@@ -32,17 +27,20 @@ export default function Purchase() {
     control,
     courierValue,
     warehouseValue,
-    handleCourierChange,
+    handleCourierSelect,
     handleWarehouseChange,
   } = usePurchaseForm();
 
   const [purchaseItems, setPurchaseItems] = useState([]);
+  const { data: branches } = useFetchBranches();
+  const warehouseOptions = selectOptionsCreator(branches, {
+    label: 'name',
+    value: 'code',
+  });
   const isNewPurchase = !contractNo;
 
   const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
-  // const createItemMutation = useCreatePurchaseItem(contractNo);
-  const updateItemMutation = useUpdatePurchaseItem(contractNo);
-  const deleteItemMutation = useDeletePurchaseItem(contractNo);
+  const createPurchaseMutation = useCreatePurchase();
 
   // Load from localStorage for new purchases
   useEffect(() => {
@@ -81,7 +79,7 @@ export default function Purchase() {
     }
     return purchaseItems;
   }, [purchaseItems, permissions.canEditItems]);
-
+  console.log(purchaseItems, 'purchaseItems');
   const handleProductSelect = (row, product) => {
     console.log(row, product, 'row, product');
     const newItem = {
@@ -89,12 +87,13 @@ export default function Purchase() {
       product_id: product.ItemCode,
       product_name: product.ItemName,
       product_code: product.ItemCode,
-      category: product.U_Category || '',
+      category: product.ItemGroupName || '',
       imei: '',
-      status: '',
-      battery: '',
+      currency: 'UZS',
+      status: product?.U_PROD_CONDITION || '',
+      battery: product?.Battery || '',
       count: 1,
-      price: product.Price || 0,
+      price: 0,
     };
     console.log(purchaseItems, 'purchaseItems');
     if (isNewPurchase) {
@@ -115,12 +114,8 @@ export default function Purchase() {
     if (field === 'delete') {
       if (isNewPurchase) {
         setPurchaseItems((prev) => prev.filter((item) => item.id !== itemId));
-      } else {
-        deleteItemMutation.mutate(itemId);
       }
-      return;
     }
-
     if (isNewPurchase) {
       // Update local state
       setPurchaseItems((prev) =>
@@ -128,26 +123,30 @@ export default function Purchase() {
           item.id === itemId ? { ...item, [field]: value } : item
         )
       );
-    } else {
-      // Update via API
-      updateItemMutation.mutate({
-        itemId,
-        data: { [field]: value },
-      });
     }
+  };
+
+  const handleSendToApprovel = () => {
+    const payload = {
+      cardCode: courierValue,
+      whsCode: warehouseValue,
+      rows: [],
+    };
+    createPurchaseMutation.mutate(payload);
+    console.log('Send to approvel');
   };
 
   const handleDeletePurchaseItem = () => {
     const item = modal.data;
     if (item?.id) {
-      deleteItemMutation.mutate(item.id);
+      setPurchaseItems((prev) => prev.filter((item) => item.id !== item.id));
     }
     closeModal();
   };
 
   const handleDownloadPdf = () => {
     const purchaseData = {
-      contractNo: '83745',
+      contractNo,
       supplier:
         courierOptions.find((opt) => opt.value === courierValue)?.label ||
         'Alisher Alisherov',
@@ -182,7 +181,7 @@ export default function Purchase() {
             courierOptions={courierOptions}
             warehouseOptions={warehouseOptions}
             control={control}
-            onCourierChange={handleCourierChange}
+            onCourierSelect={handleCourierSelect}
             onWarehouseChange={handleWarehouseChange}
             onDownloadPdf={handleDownloadPdf}
           />
@@ -204,7 +203,11 @@ export default function Purchase() {
         onApply={handleDeletePurchaseItem}
         onCancel={closeModal}
       />
-      <PurchasePageFooter permissions={permissions} status={PURCHASE_STATUS} />
+      <PurchasePageFooter
+        permissions={permissions}
+        status={PURCHASE_STATUS}
+        onSendToApprovel={handleSendToApprovel}
+      />
     </>
   );
 }

@@ -18,16 +18,18 @@ function ConfirmButton({ canConfirm }) {
   );
 }
 
-function SendToApprovelButton({ canSendForApprovel }) {
+function SendToApprovelButton({ canSendForApprovel, handleSendToApprovel }) {
   if (!canSendForApprovel) return null;
   return (
     <Col>
-      <Button variant="filled">Tasdiqlashga yuborish</Button>
+      <Button variant="filled" onClick={handleSendToApprovel}>
+        Tasdiqlashga yuborish
+      </Button>
     </Col>
   );
 }
 
-const PurchasePageFooter = ({ permissions, status }) => {
+const PurchasePageFooter = ({ permissions, status, onSendToApprovel }) => {
   if (status === 'approved') return null;
   return (
     <StickyFooterPortal>
@@ -42,6 +44,7 @@ const PurchasePageFooter = ({ permissions, status }) => {
           <ConfirmButton canConfirm={permissions?.canApprove} />
           <SendToApprovelButton
             canSendForApprovel={permissions?.canSendForApprovel}
+            handleSendToApprovel={onSendToApprovel}
           />
         </Row>
       </Footer>

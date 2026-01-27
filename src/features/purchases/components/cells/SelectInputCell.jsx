@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui';
 
-const STATUS_OPTIONS = [
-  { value: 'Yangi', label: 'Yangi' },
-  { value: 'B/U', label: 'B/U' },
-];
 
-export default function SelectInputCell({ value, onChange, disabled }) {
+
+export default function SelectInputCell({
+  value,
+  onChange,
+  disabled,
+  options,
+  placeholder,
+}) {
   const [selectedValue, setSelectedValue] = useState(value || '');
 
   useEffect(() => {
@@ -24,8 +27,8 @@ export default function SelectInputCell({ value, onChange, disabled }) {
       variant="outlined"
       value={selectedValue}
       onChange={handleChange}
-      options={STATUS_OPTIONS}
-      placeholder="Holati"
+      options={options}
+      placeholder={placeholder}
       disabled={disabled}
     />
   );
