@@ -1,5 +1,5 @@
 import { Badge, Button, Typography } from '@/components/ui';
-import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
+// import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
 import { getBatteryColor, normalizeBattery } from '@/utils/battery';
 import { useMemo, useState } from 'react';
 import { MODAL_TYPES } from '../utils/constants';
@@ -8,13 +8,24 @@ import TextInputCell from '../components/cells/TextInputCell';
 import NumberInputCell from '../components/cells/NumberInputCell';
 import SelectInputCell from '../components/cells/SelectInputCell';
 import ImeiScannerModal from '../components/modals/ImeiScannerModal';
+import formatterCurrency from '@/utils/formatterCurrency';
 
 const categoryColorMap = {
-  Telefonlar: 'info',
+  iPhone: 'info',
   'Maishiy texnika': 'warning',
   Kompyuterlar: 'success',
   Aksessuarlar: 'black',
 };
+
+const STATUS_OPTIONS = [
+  { value: 'Yangi', label: 'Yangi' },
+  { value: 'B/U', label: 'B/U' },
+];
+
+const CURRENCY_OPTIONS = [
+  { value: 'UZS', label: 'UZS' },
+  { value: 'USD', label: 'USD' },
+];
 
 export function usePurchaseTableColumns({
   onOpenModal,
@@ -74,17 +85,18 @@ export function usePurchaseTableColumns({
         icon: 'products',
         width: '10%',
         renderCell: (row) => {
+          console.log(row, 'row');
           if (!row.id) return null;
           return (
             <Badge color={categoryColorMap[row?.category] || 'black'}>
-              {row?.category}
+              {row?.category || "Ma'lum emas"}
             </Badge>
           );
         },
       },
       {
         key: 'imei',
-        title: 'IMEI',
+        title: 'Seriya kodi',
         icon: 'barCodeFilled',
         width: '12%',
         renderCell: (row) => {
@@ -93,10 +105,10 @@ export function usePurchaseTableColumns({
             return (
               <TextInputCell
                 value={row?.imei}
-                onBlur={(value) => onFieldUpdate(row.id, 'imei', value)}
                 placeholder="IMEI"
                 withScanner
                 onScanClick={() => handleScanClick(row.id)}
+                onBlur={(value) => onFieldUpdate(row.id, 'imei', value)}
               />
             );
           }
@@ -113,6 +125,8 @@ export function usePurchaseTableColumns({
           if (editable) {
             return (
               <SelectInputCell
+                options={STATUS_OPTIONS}
+                placeholder="Holati"
                 value={row?.status}
                 onChange={(value) => onFieldUpdate(row.id, 'status', value)}
               />
@@ -129,14 +143,15 @@ export function usePurchaseTableColumns({
         renderCell: (row) => {
           if (!row.id) return null;
           const isProductNew = row?.status === 'Yangi';
+          console.log(row);
           if (editable) {
             return (
               <NumberInputCell
-                value={row?.battery}
-                onBlur={(value) => onFieldUpdate(row.id, 'battery', value)}
+                value={isProductNew ? '100' : row?.battery}
                 placeholder="Foiz"
                 icon="battery"
                 isPercentage
+                onBlur={(value) => onFieldUpdate(row.id, 'battery', value)}
               />
             );
           }
@@ -154,16 +169,36 @@ export function usePurchaseTableColumns({
         width: '8%',
         renderCell: (row) => {
           if (!row.id) return null;
-          if (editable) {
+          if (editable && !row.imei) {
             return (
               <NumberInputCell
-                value={row?.count}
                 onBlur={(value) => onFieldUpdate(row.id, 'count', value)}
+                value={row?.count}
                 placeholder="0"
               />
             );
           }
           return <Typography>{row?.count || 1}</Typography>;
+        },
+      },
+      {
+        key: 'currency',
+        title: 'Valyuta',
+        icon: 'income',
+        width: '8%',
+        renderCell: (row) => {
+          if (!row.id) return null;
+          if (editable) {
+            return (
+              <SelectInputCell
+                options={CURRENCY_OPTIONS}
+                value={row?.currency}
+                placeholder="UZS"
+                onChange={(value) => onFieldUpdate(row.id, 'currency', value)}
+              />
+            );
+          }
+          return <Typography>{row?.currency || 'UZS'}</Typography>;
         },
       },
       {
@@ -177,16 +212,16 @@ export function usePurchaseTableColumns({
             return (
               <NumberInputCell
                 value={row?.price}
-                onBlur={(value) => onFieldUpdate(row.id, 'price', value)}
                 placeholder="0"
                 isCurrency
-                iconText="UZS"
+                iconText={row.currency}
+                onBlur={(value) => onFieldUpdate(row.id, 'price', value)}
               />
             );
           }
           return (
             <Typography color="info">
-              {formatCurrencyUZS(row?.price)}
+              {formatterCurrency(row?.price)}
             </Typography>
           );
         },

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Input, Typography, Box } from '@/components/ui';
-import { getProducts } from '@/services/productsService';
+import { getSuppliers } from '@/services/purchasesService';
 
-export default function ProductSearchCell({ value, onSelect, disabled }) {
+export default function SupplierSelect({ value, onSelect, disabled }) {
   const [searchValue, setSearchValue] = useState(value || '');
 
   useEffect(() => {
@@ -13,38 +13,34 @@ export default function ProductSearchCell({ value, onSelect, disabled }) {
 
   const handleSearch = async (searchTerm, page = 1) => {
     try {
-      const response = await getProducts({
-        includeZeroOnHand: true,
+      const response = await getSuppliers({
         search: searchTerm,
         limit: 20,
         offset: (page - 1) * 20,
       });
 
       return {
-        data: response.items || [],
+        data: response.suppliers || [],
         totalPages: Math.ceil((response.total || 0) / 20),
         total: response.total || 0,
       };
     } catch (error) {
-      console.error('Product search error:', error);
+      console.error('Supplier search error:', error);
       return { data: [], totalPages: 0, total: 0 };
     }
   };
 
-  const handleSelectProduct = (product) => {
-    console.log(product, 'product');
-    setSearchValue(product.ItemName);
-    onSelect(product);
+  const handleSelectSupplier = (supplier) => {
+    console.log(supplier, 'supplier');
+    setSearchValue(supplier.name);
+    onSelect(supplier);
   };
 
-  const renderSearchItem = (product) => {
+  const renderSearchItem = (supplier) => {
     return (
-      <Box dir="column" gap={0.5}>
+      <Box dir="row">
         <Typography wrap="wrap" variant="base">
-          {product.ItemName}
-        </Typography>
-        <Typography variant="caption" color="secondary">
-          {product.ItemCode}
+          {supplier.name}
         </Typography>
       </Box>
     );
@@ -52,17 +48,18 @@ export default function ProductSearchCell({ value, onSelect, disabled }) {
 
   return (
     <Input
+      name="courier"
       type="search"
       variant="outlined"
       value={searchValue}
       searchText={searchValue}
       onChange={(e) => setSearchValue(e.target.value)}
-      placeholder="Mahsulotni qidiring..."
+      placeholder="Yetkazib beruvchini qidiring..."
       disabled={disabled}
       searchable
       onSearch={handleSearch}
       renderSearchItem={renderSearchItem}
-      onSearchSelect={handleSelectProduct}
+      onSearchSelect={handleSelectSupplier}
     />
   );
 }

@@ -563,7 +563,7 @@ const Input = forwardRef(
                   images.map((image) => {
                     const key = image?.id || image?.image || image;
                     return (
-                      <AnimatePresence>
+                      <AnimatePresence key={key}>
                         <Col key={key} style={{ position: 'relative' }}>
                           {findFileType(image) === 'image' &&
                             !loadedImages[key] && (

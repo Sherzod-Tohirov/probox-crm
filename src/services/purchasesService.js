@@ -33,13 +33,27 @@ export const getPurchaseById = async (id) => {
 };
 
 /**
+ * Get suppliers list
+ * @returns {Promise} API response
+ */
+export const getSuppliers = async (params = {}) => {
+  try {
+    const response = await api.get(`/suppliers`, { params });
+    return response.data;
+  } catch (error) {
+    console.error('Get suppliers error:', error);
+    throw error;
+  }
+};
+
+/**
  * Create new purchase
  * @param {Object} data - Purchase data
  * @returns {Promise} API response
  */
 export const createPurchase = async (data) => {
   try {
-    const response = await api.post('/purchases', data);
+    const response = await api.post('/purchases/drafts', data);
     return response.data;
   } catch (error) {
     console.error('Create purchase error:', error);

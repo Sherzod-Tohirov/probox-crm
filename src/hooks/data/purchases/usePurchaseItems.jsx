@@ -1,24 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  createPurchaseItem,
   updatePurchaseItem,
   deletePurchaseItem,
+  createPurchase,
 } from '@/services/purchasesService';
 import { toast } from 'react-toastify';
 
-export function useCreatePurchaseItem(contractNo) {
+export function useCreatePurchase() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data) => createPurchaseItem(contractNo, data),
+    mutationFn: (data) => createPurchase(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['purchase', contractNo]);
-      toast.success("Mahsulot qo'shildi");
+      queryClient.invalidateQueries(['purchase']);
+      // toast.success("Mahsulot qo'shildi");
     },
     onError: (error) => {
-      toast.error(
-        'Xatolik: ' + (error.message || "Mahsulot qo'shishda xatolik")
-      );
+      // toast.error(
+      //   'Xatolik: ' + (error.message || "Mahsulot qo'shishda xatolik")
+      // );
     },
   });
 }
