@@ -49,7 +49,7 @@ const sidebarLinks = [
     title: 'Sotib olish',
     icon: 'checkList',
     path: '/purchases',
-    // mode: import.meta.env.VITE_APP_ENV !== 'development' ? 'dev' : '',
+    mode: import.meta.env.VITE_APP_ENV !== 'development' ? 'dev' : '',
     ...getRoutePermissions('/purchases'),
   },
   {
