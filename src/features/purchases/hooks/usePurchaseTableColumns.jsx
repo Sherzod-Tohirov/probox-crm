@@ -70,13 +70,13 @@ export function usePurchaseTableColumns({
         },
       },
       {
-        key: 'product_code',
+        key: 'itemCode',
         title: 'Mahsulot kod',
         icon: 'products',
         width: '10%',
         renderCell: (row) => {
           if (!row.id) return null;
-          return <Typography>{row?.product_code}</Typography>;
+          return <Typography>{row?.itemCode}</Typography>;
         },
       },
       {
@@ -116,54 +116,59 @@ export function usePurchaseTableColumns({
         },
       },
       {
-        key: 'status',
+        key: 'prodCondition',
         title: 'Holati',
         icon: 'products',
         width: '10%',
         renderCell: (row) => {
+          console.log(row)
           if (!row.id) return null;
-          if (editable) {
+          if (editable && !row?.prodCondition) {
             return (
               <SelectInputCell
                 options={STATUS_OPTIONS}
                 placeholder="Holati"
-                value={row?.status}
-                onChange={(value) => onFieldUpdate(row.id, 'status', value)}
+                value={row?.prodCondition}
+                onChange={(value) =>
+                  onFieldUpdate(row.id, 'prodCondition', value)
+                }
               />
             );
           }
-          return <Typography>{row?.status}</Typography>;
+          return <Typography>{row?.prodCondition}</Typography>;
         },
       },
       {
-        key: 'battery',
+        key: 'batteryCapacity',
         title: 'Batareya foizi',
         icon: 'battery',
         width: '10%',
         renderCell: (row) => {
           if (!row.id) return null;
-          const isProductNew = row?.status === 'Yangi';
+          const isProductNew = row?.prodCondition === 'Yangi';
           console.log(row);
           if (editable) {
             return (
               <NumberInputCell
-                value={isProductNew ? '100' : row?.battery}
+                value={isProductNew ? '100' : row?.batteryCapacity}
                 placeholder="Foiz"
                 icon="battery"
                 isPercentage
-                onBlur={(value) => onFieldUpdate(row.id, 'battery', value)}
+                onBlur={(value) =>
+                  onFieldUpdate(row.id, 'batteryCapacity', value)
+                }
               />
             );
           }
           return (
-            <Badge color={getBatteryColor(row?.battery, isProductNew)}>
-              {normalizeBattery(row?.battery, isProductNew)}
+            <Badge color={getBatteryColor(row?.batteryCapacity, isProductNew)}>
+              {normalizeBattery(row?.batteryCapacity, isProductNew)}
             </Badge>
           );
         },
       },
       {
-        key: 'count',
+        key: 'quantity',
         title: 'Miqdor',
         icon: 'products',
         width: '8%',
@@ -172,13 +177,13 @@ export function usePurchaseTableColumns({
           if (editable && !row.imei) {
             return (
               <NumberInputCell
-                onBlur={(value) => onFieldUpdate(row.id, 'count', value)}
-                value={row?.count}
+                onBlur={(value) => onFieldUpdate(row.id, 'quantity', value)}
+                value={row?.quantity}
                 placeholder="0"
               />
             );
           }
-          return <Typography>{row?.count || 1}</Typography>;
+          return <Typography>{row?.quantity || 1}</Typography>;
         },
       },
       {

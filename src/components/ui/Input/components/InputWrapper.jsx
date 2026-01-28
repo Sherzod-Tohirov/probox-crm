@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Typography from '../../Typography';
 import { Box, Col, Row } from '@components/ui';
 import iconsMap from '@utils/iconsMap';
@@ -31,6 +31,21 @@ const InputWrapper = ({
   onSearchSelect,
 }) => {
   const inputBoxRef = useRef(null);
+  const [isSearchFieldOpen, setIsSearchFieldOpen] = useState(true);
+  const justSelectedRef = useRef(false);
+
+  // searchText o'zgarganda SearchField ni qayta ochish
+  useEffect(() => {
+    // Agar element tanlandi va searchText bo'shasa, ochilmasin
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false;
+      return;
+    }
+
+    if (searchText?.length > 0) {
+      setIsSearchFieldOpen(true);
+    }
+  }, [searchText]);
 
   return (
     <Row className={styles['input-wrapper']} gutter={1.5}>
@@ -81,12 +96,17 @@ const InputWrapper = ({
           <AnimatePresence mode="popLayout">
             {searchable &&
             searchText?.length > 0 &&
-            !(type === 'tel' && searchText === '998') ? (
+            !(type === 'tel' && searchText === '998') &&
+            isSearchFieldOpen ? (
               <SearchField
                 renderItem={renderSearchItem}
                 onSearch={onSearch}
                 searchText={searchText}
-                onSelect={onSearchSelect}
+                onSelect={(item) => {
+                  justSelectedRef.current = true;
+                  setIsSearchFieldOpen(false);
+                  return onSearchSelect(item);
+                }}
                 inputRef={inputBoxRef}
               />
             ) : null}

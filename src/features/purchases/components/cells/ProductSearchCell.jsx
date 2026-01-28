@@ -32,7 +32,6 @@ export default function ProductSearchCell({ value, onSelect, disabled }) {
   };
 
   const handleSelectProduct = (product) => {
-    console.log(product, 'product');
     setSearchValue(product.ItemName);
     onSelect(product);
   };

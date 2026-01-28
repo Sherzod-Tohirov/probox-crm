@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import formatDate from '@/utils/formatDate';
 import formatterCurrency from '@/utils/formatterCurrency';
 import StatusBadge from '../../purchase/StatusBadge';
+import { useSelector } from 'react-redux';
 
 /**
  *
@@ -36,11 +37,11 @@ function NoData({ title }) {
   );
 }
 
-function LoadingSkeleton() {
+function LoadingSkeleton({ pageSize }) {
   return (
     <PurchasesWrapper>
       <PurchaseTableWrapper>
-        {[...Array(4)].map((_, index) => (
+        {[...Array(pageSize)].map((_, index) => (
           <PurchasesRow key={index}>
             <PurchasesCell span={2} title="Ariza raqami">
               <Skeleton width="85%" height="24px" borderRadius="6px" />
@@ -85,6 +86,7 @@ const categoryColorMap = {
 };
 
 export function PurchasesTable({ data, isLoading = false }) {
+  const { pageSize } = useSelector((state) => state.page.purchases);
   const renderCategories = useCallback((categories) => {
     if (!categories?.length)
       return (
@@ -116,7 +118,7 @@ export function PurchasesTable({ data, isLoading = false }) {
   );
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <LoadingSkeleton pageSize={pageSize} />;
   }
 
   if (!data?.length) {

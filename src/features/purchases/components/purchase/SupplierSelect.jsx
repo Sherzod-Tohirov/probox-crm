@@ -1,16 +1,7 @@
-import { useState, useEffect } from 'react';
 import { Input, Typography, Box } from '@/components/ui';
 import { getSuppliers } from '@/services/purchasesService';
 
-export default function SupplierSelect({ value, onSelect, disabled }) {
-  const [searchValue, setSearchValue] = useState(value || '');
-
-  useEffect(() => {
-    if (value) {
-      setSearchValue(value);
-    }
-  }, [value]);
-
+export default function SupplierSelect({ value, control, onSelect, disabled }) {
   const handleSearch = async (searchTerm, page = 1) => {
     try {
       const response = await getSuppliers({
@@ -31,8 +22,6 @@ export default function SupplierSelect({ value, onSelect, disabled }) {
   };
 
   const handleSelectSupplier = (supplier) => {
-    console.log(supplier, 'supplier');
-    setSearchValue(supplier.name);
     onSelect(supplier);
   };
 
@@ -51,9 +40,8 @@ export default function SupplierSelect({ value, onSelect, disabled }) {
       name="courier"
       type="search"
       variant="outlined"
-      value={searchValue}
-      searchText={searchValue}
-      onChange={(e) => setSearchValue(e.target.value)}
+      control={control}
+      searchText={value}
       placeholder="Yetkazib beruvchini qidiring..."
       disabled={disabled}
       searchable
