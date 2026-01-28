@@ -14,10 +14,17 @@ export default function ImeiScannerModal({ isOpen, onClose, onScan }) {
     }
 
     return () => {
+      // Scanner ishlab turganini tekshirish va to'xtatish
       if (html5QrCodeRef.current && isScanning) {
-        html5QrCodeRef.current
-          .stop()
-          .catch((err) => console.error('Error stopping scanner:', err));
+        const state = html5QrCodeRef.current.getState();
+        // Faqat SCANNING yoki PAUSED holatida to'xtatish
+        if (state === 2 || state === 3) {
+          html5QrCodeRef.current
+            .stop()
+            .catch((err) =>
+              console.error("Scanner to'xtatishda xatolik:", err)
+            );
+        }
       }
     };
   }, [isOpen, isScanning]);
@@ -27,14 +34,20 @@ export default function ImeiScannerModal({ isOpen, onClose, onScan }) {
     setIsScanning(true);
 
     try {
+      // Mobil qurilmalar uchun kamera sozlamalari
+      const cameraConfig = {
+        facingMode: { exact: 'environment' },
+      };
+
       await html5QrCodeRef.current.start(
-        { facingMode: 'environment' },
+        cameraConfig,
         {
           fps: 10,
           qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0,
         },
         (decodedText) => {
-          // Extract IMEI from decoded text
+          // IMEI kodini ajratib olish
           const imeiMatch = decodedText.match(/IMEI[1-2]?[:\s]*(\d{15})/i);
           const imei = imeiMatch ? imeiMatch[1] : decodedText;
 
@@ -43,11 +56,29 @@ export default function ImeiScannerModal({ isOpen, onClose, onScan }) {
           onClose();
         },
         () => {
-          // Scanning error - ignore
+          // Skanerlash xatoliklarini e'tiborsiz qoldirish
         }
       );
     } catch (err) {
-      setError('Kamerani ishga tushirishda xatolik: ' + err.message);
+      console.error('Kamera xatoligi:', err);
+
+      // Xatolik xabarini aniqlash
+      let errorMessage = 'Kameraga kirishda xatolik';
+
+      if (err?.name === 'NotAllowedError') {
+        errorMessage =
+          'Kamera ruxsati berilmagan. Sozlamalardan kamera ruxsatini yoqing.';
+      } else if (err?.name === 'NotFoundError') {
+        errorMessage =
+          'Kamera topilmadi. Qurilmangizda kamera mavjudligini tekshiring.';
+      } else if (err?.name === 'NotReadableError') {
+        errorMessage =
+          'Kamera band. Boshqa ilovalar kamerani ishlatayotganini tekshiring.';
+      } else if (err?.message) {
+        errorMessage = 'Kamera xatoligi: ' + err.message;
+      }
+
+      setError(errorMessage);
       setIsScanning(false);
     }
   };
@@ -55,10 +86,15 @@ export default function ImeiScannerModal({ isOpen, onClose, onScan }) {
   const stopScanning = async () => {
     if (html5QrCodeRef.current && isScanning) {
       try {
-        await html5QrCodeRef.current.stop();
+        const state = html5QrCodeRef.current.getState();
+        // Faqat SCANNING (2) yoki PAUSED (3) holatida to'xtatish
+        if (state === 2 || state === 3) {
+          await html5QrCodeRef.current.stop();
+        }
         setIsScanning(false);
       } catch (err) {
-        console.error('Error stopping scanner:', err);
+        console.error("Scanner to'xtatishda xatolik:", err);
+        setIsScanning(false);
       }
     }
   };
@@ -74,7 +110,7 @@ export default function ImeiScannerModal({ isOpen, onClose, onScan }) {
         <div id="imei-scanner" className={styles.scanner} />
 
         {error && (
-          <Typography color="error" className={styles.error}>
+          <Typography variant="caption" color="error" className={styles.error}>
             {error}
           </Typography>
         )}

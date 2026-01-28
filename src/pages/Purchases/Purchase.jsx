@@ -17,14 +17,15 @@ import selectOptionsCreator from '@/utils/selectOptionsCreator';
 
 const DRAFT_STORAGE_KEY = 'purchase_draft_';
 const PURCHASE_STATUS = 'draft';
+const NEW_PURCHASE_STORAGE_KEY = DRAFT_STORAGE_KEY + 'new';
 
 export default function Purchase() {
   const { id: contractNo } = useParams();
-  console.log(contractNo, 'xontractno');
   const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
   const {
     control,
+    supplier,
     courierValue,
     warehouseValue,
     handleCourierSelect,
@@ -40,7 +41,7 @@ export default function Purchase() {
   const isNewPurchase = !contractNo;
 
   const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
-  const createPurchaseMutation = useCreatePurchase();
+  const createPurchaseMutation = useCreatePurchase(NEW_PURCHASE_STORAGE_KEY);
 
   // Load from localStorage for new purchases
   useEffect(() => {
@@ -61,9 +62,8 @@ export default function Purchase() {
   // Save to localStorage when items change (for new purchases)
   useEffect(() => {
     if (isNewPurchase && purchaseItems.length > 0) {
-      const draftKey = DRAFT_STORAGE_KEY + 'new';
       localStorage.setItem(
-        draftKey,
+        NEW_PURCHASE_STORAGE_KEY,
         JSON.stringify({
           items: purchaseItems,
           timestamp: new Date().toISOString(),
@@ -86,27 +86,18 @@ export default function Purchase() {
       id: Date.now(),
       product_id: product.ItemCode,
       product_name: product.ItemName,
-      product_code: product.ItemCode,
+      itemCode: product.ItemCode,
       category: product.ItemGroupName || '',
       imei: '',
       currency: 'UZS',
-      status: product?.U_PROD_CONDITION || '',
-      battery: product?.Battery || '',
-      count: 1,
+      prodCondition: product?.U_PROD_CONDITION || '',
+      batteryCapacity: product?.Battery || '',
+      quantity: 1,
       price: 0,
     };
-    console.log(purchaseItems, 'purchaseItems');
     if (isNewPurchase) {
       // Add to local state for new purchases
       setPurchaseItems((prev) => [...prev, newItem]);
-    } else {
-      // Create item via API for existing purchases
-      // createItemMutation.mutate({
-      //   product_id: newItem.product_id,
-      //   product_code: newItem.product_code,
-      //   category: newItem.category,
-      //   price: newItem.price,
-      // });
     }
   };
 
@@ -125,15 +116,22 @@ export default function Purchase() {
       );
     }
   };
-
+  console.log(purchaseItems, 'purchase items');
   const handleSendToApprovel = () => {
     const payload = {
-      cardCode: courierValue,
+      cardCode: supplier?.code,
       whsCode: warehouseValue,
-      rows: [],
+      rows: purchaseItems.map((item) => ({
+        itemCode: item?.itemCode,
+        quantity: item?.quantity,
+        price: item?.price,
+        currency: item?.currency,
+        batteryCapacity: item?.batteryCapacity,
+        prodCondition: item?.prodCondition,
+        imei: item?.imei,
+      })),
     };
     createPurchaseMutation.mutate(payload);
-    console.log('Send to approvel');
   };
 
   const handleDeletePurchaseItem = () => {
@@ -163,7 +161,7 @@ export default function Purchase() {
 
     generatePurchasePdf(purchaseData);
   };
-
+  console.log(courierValue, 'value');
   return (
     <>
       <Row gutter={6}>
@@ -171,14 +169,11 @@ export default function Purchase() {
           <PurchaseHeader
             isEditable={permissions.canEditItems}
             status={PURCHASE_STATUS}
-            courier={
-              courierOptions.find((opt) => opt.value === courierValue)?.label
-            }
+            courier={courierValue?.name ?? courierValue ?? ''}
             warehouse={
               warehouseOptions.find((opt) => opt.value === warehouseValue)
                 ?.label
             }
-            courierOptions={courierOptions}
             warehouseOptions={warehouseOptions}
             control={control}
             onCourierSelect={handleCourierSelect}
@@ -206,6 +201,7 @@ export default function Purchase() {
       <PurchasePageFooter
         permissions={permissions}
         status={PURCHASE_STATUS}
+        isSendApprovalLoading={createPurchaseMutation.isPending}
         onSendToApprovel={handleSendToApprovel}
       />
     </>

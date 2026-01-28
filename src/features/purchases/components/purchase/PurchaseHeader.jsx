@@ -11,11 +11,11 @@ import StatusBadge from './StatusBadge';
 import { DownloadIcon } from 'lucide-react';
 import SupplierSelect from './SupplierSelect';
 
-function CourierField({ isEditable, value, onSelect }) {
+function CourierField({ isEditable, value, onSelect, control }) {
   if (isEditable) {
     return (
       <Col span={6}>
-        <SupplierSelect value={value} onSelect={onSelect} />
+        <SupplierSelect control={control} value={value} onSelect={onSelect} />
       </Col>
     );
   }
@@ -111,7 +111,6 @@ export default function PurchaseHeader({
   status,
   courier,
   warehouse,
-  courierOptions,
   warehouseOptions,
   control,
   onCourierSelect,
@@ -130,7 +129,6 @@ export default function PurchaseHeader({
             isEditable={isEditable}
             value={courier}
             control={control}
-            options={courierOptions}
             onSelect={onCourierSelect}
           />
           <WarehouseField

@@ -50,11 +50,11 @@ const SearchField = ({
 
     calculatePosition();
     window.addEventListener('scroll', calculatePosition, true);
-    window.addEventListener('resize', calculatePosition);
+    window.addEventListener('resize', calculatePosition, true);
 
     return () => {
       window.removeEventListener('scroll', calculatePosition, true);
-      window.removeEventListener('resize', calculatePosition);
+      window.removeEventListener('resize', calculatePosition, true);
     };
   }, [inputRef, searchText]);
 

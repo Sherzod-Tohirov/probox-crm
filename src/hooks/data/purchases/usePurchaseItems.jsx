@@ -1,54 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  updatePurchaseItem,
-  deletePurchaseItem,
-  createPurchase,
-} from '@/services/purchasesService';
-import { toast } from 'react-toastify';
+import { createPurchase } from '@/services/purchasesService';
+import useAlert from '@/hooks/useAlert';
+import { useNavigate } from 'react-router-dom';
 
-export function useCreatePurchase() {
+export function useCreatePurchase(NEW_PURCHASE_STORAGE_KEY) {
+  const { alert } = useAlert();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data) => createPurchase(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['purchase']);
-      // toast.success("Mahsulot qo'shildi");
+      alert('Xarid qo`shildi', { type: 'success' });
+      setTimeout(() => {
+        localStorage.removeItem(NEW_PURCHASE_STORAGE_KEY);
+        navigate('/purchases');
+      }, 1200);
     },
     onError: (error) => {
-      // toast.error(
-      //   'Xatolik: ' + (error.message || "Mahsulot qo'shishda xatolik")
-      // );
-    },
-  });
-}
-
-export function useUpdatePurchaseItem(contractNo) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ itemId, data }) =>
-      updatePurchaseItem(contractNo, itemId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['purchase', contractNo]);
-    },
-    onError: (error) => {
-      toast.error('Xatolik: ' + (error.message || 'Yangilashda xatolik'));
-    },
-  });
-}
-
-export function useDeletePurchaseItem(contractNo) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (itemId) => deletePurchaseItem(contractNo, itemId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['purchase', contractNo]);
-      toast.success("Mahsulot o'chirildi");
-    },
-    onError: (error) => {
-      toast.error('Xatolik: ' + (error.message || "O'chirishda xatolik"));
+      console.log(error);
+      alert('Xarid qo`shishda xatolik', { type: 'error' });
     },
   });
 }
