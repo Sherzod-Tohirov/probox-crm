@@ -22,7 +22,8 @@ export const useDeviceSearch = ({
         return { data: [], total: 0, totalPages: 0 };
       }
 
-      const effectiveSearchBranchFilter = searchBranchFilter || (!activeWhsCode ? 'all' : null);
+      const effectiveSearchBranchFilter =
+        searchBranchFilter || (!activeWhsCode ? 'all' : null);
 
       if (!effectiveSearchBranchFilter) {
         return { data: [], total: 0, totalPages: 0 };
@@ -64,13 +65,19 @@ export const useDeviceSearch = ({
           total: normalizedItems.length,
           totalPages: 1,
         };
-      } catch (err) {
+      } catch {
         return { data: [], total: 0, totalPages: 0 };
       }
     },
-    [activeWhsCode, searchBranchFilter, conditionFilter, mutateContractTerms, branchCodeToNameMap, currencyRate]
+    [
+      activeWhsCode,
+      searchBranchFilter,
+      conditionFilter,
+      mutateContractTerms,
+      branchCodeToNameMap,
+      currencyRate,
+    ]
   );
 
   return { handleDeviceSearch };
 };
-

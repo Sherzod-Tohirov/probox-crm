@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Col, Input, Row } from '@components/ui';
 import FormField from '../../LeadPageForm/FormField';
-import SearchField from '@components/ui/Input/components/SearchField';
 import styles from '../leadPageTabs.module.scss';
 import {
   formatCurrencyUZS,
@@ -22,20 +21,16 @@ export default function DeviceSearchField({
   onSelect,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const isMobile = useIsMobile();
   const handleSearchInput = useCallback((event) => {
     const value = event?.target?.value ?? '';
     setSearchTerm(value);
-    const hasValue = Boolean(value.trim());
-    setIsSuggestionsOpen(hasValue);
   }, []);
 
   const handleSelectDevice = useCallback(
     (item) => {
       onSelect(item);
       setSearchTerm('');
-      setIsSuggestionsOpen(false);
     },
     [onSelect]
   );
@@ -91,7 +86,7 @@ export default function DeviceSearchField({
       wrap
       gutter={4}
     >
-      <Col align="end" flexGrow>
+      <Col  align="end" flexGrow>
         <Input
           size={isMobile ? 'full-grow' : 'longer'}
           variant="outlined"
@@ -104,14 +99,13 @@ export default function DeviceSearchField({
               ? `${selectedDevicesCount} ta qurilma tanlangan`
               : 'iPhone modelini qidirish'
           }
-          icon="search"
           value={searchTerm}
           onChange={handleSearchInput}
-          onFocus={() => {
-            if (searchTerm.trim()) {
-              setIsSuggestionsOpen(true);
-            }
-          }}
+          searchable
+          searchText={searchTerm}
+          onSearch={onSearch}
+          renderSearchItem={renderIphoneItem}
+          onSearchSelect={handleSelectDevice}
         />
       </Col>
       <Col flexGrow>
@@ -166,14 +160,6 @@ export default function DeviceSearchField({
           </Col>
         </Row>
       </Col>
-      {isSuggestionsOpen && searchTerm.trim() && canEdit && (
-        <SearchField
-          renderItem={renderIphoneItem}
-          searchText={searchTerm}
-          onSearch={onSearch}
-          onSelect={handleSelectDevice}
-        />
-      )}
     </Row>
   );
 }

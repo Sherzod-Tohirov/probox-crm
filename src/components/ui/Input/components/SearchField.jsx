@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import styles from '../input.module.scss';
 import Typography from '../../Typography';
 import { Box, List } from '@components/ui';
@@ -8,8 +9,6 @@ import { ClipLoader } from 'react-spinners';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import useTheme from '@/hooks/useTheme';
-import useIsMobile from '@/hooks/useIsMobile';
-import useToggle from '@/hooks/useToggle';
 
 const SearchField = ({
   renderItem,
@@ -27,64 +26,37 @@ const SearchField = ({
     text: '',
   });
   const { currentTheme } = useTheme();
-  const { isMobile, isTablet } = useIsMobile({ withDetails: true });
-  const { isOpen: isSidebarOpen } = useToggle('sidebar');
   const [hasNextPage, setHasNextPage] = useState(true);
   const { ref, inView } = useInView();
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 
   // Add searchText ref to track latest value
   const searchTextRef = useRef(searchText);
-  console.log(isSidebarOpen, 'isSidebar open');
+
   // Calculate position based on input element
   useEffect(() => {
-    if (inputRef?.current) {
-      const calculatePosition = () => {
-        requestAnimationFrame(() => {
-          if (inputRef?.current) {
-            const rect = inputRef.current.getBoundingClientRect();
-            // Calculate responsive offsets
-            let leftOffset = -50;
-            let topOffset = -50; // Small gap below input
+    if (!inputRef?.current) return;
 
-            if (!isMobile && !isTablet) {
-              // Desktop: use original offsets
-              leftOffset = -90;
-              topOffset = -105;
-            } else if (isTablet) {
-              // Tablet: smaller offsets
-              leftOffset = -30;
-              topOffset = -70;
-            }
-            if (isSidebarOpen) {
-              leftOffset -= 130;
-            }
-            // Mobile: no offsets, position directly below
+    const calculatePosition = () => {
+      const rect = inputRef.current.getBoundingClientRect();
+      const gap = 4;
 
-            setPosition({
-              top:
-                isMobile || isTablet
-                  ? rect.bottom + topOffset
-                  : rect.bottom + topOffset,
-              left: isMobile ? rect.left : rect.left + leftOffset,
-              width: isMobile
-                ? rect.width
-                : rect.width + Math.abs(leftOffset) * 2,
-            });
-          }
-        });
-      };
+      setPosition({
+        top: rect.bottom + gap,
+        left: rect.left,
+        width: rect.width,
+      });
+    };
 
-      calculatePosition();
-      window.addEventListener('scroll', calculatePosition, true);
-      window.addEventListener('resize', calculatePosition);
+    calculatePosition();
+    window.addEventListener('scroll', calculatePosition, true);
+    window.addEventListener('resize', calculatePosition);
 
-      return () => {
-        window.removeEventListener('scroll', calculatePosition, true);
-        window.removeEventListener('resize', calculatePosition);
-      };
-    }
-  }, [inputRef, searchText, isSidebarOpen, isMobile, isTablet]);
+    return () => {
+      window.removeEventListener('scroll', calculatePosition, true);
+      window.removeEventListener('resize', calculatePosition);
+    };
+  }, [inputRef, searchText]);
 
   // Update ref when searchText changes
   useEffect(() => {
@@ -159,18 +131,18 @@ const SearchField = ({
     }
   }, [inView, hasNextPage, isLoading, dataDetails.page, onSearch]);
 
-  return (
+  const dropdownContent = (
     <motion.div
       className={styles['search-field']}
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
-        width: position.width ? `${position.width}px` : '100%',
+        width: `${position.width}px`,
       }}
-      initial={{ opacity: 0, height: 0, scale: 0.8 }}
-      animate={{ opacity: 1, height: 'auto', scale: 1 }}
-      exit={{ opacity: 0, height: 0, scale: 0.8 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
     >
       {isLoading && !data.length ? (
         <Box height="100%" align="center" justify="center">
@@ -202,6 +174,8 @@ const SearchField = ({
       )}
     </motion.div>
   );
+
+  return createPortal(dropdownContent, document.body);
 };
 
 export default SearchField;
