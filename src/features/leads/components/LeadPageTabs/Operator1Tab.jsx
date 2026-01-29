@@ -7,6 +7,7 @@ import useOperator1Form from '../../hooks/useOperator1Form.jsx';
 import styles from './leadPageTabs.module.scss';
 import useIsMobile from '@/hooks/useIsMobile';
 import { useSelectOptions } from '../../hooks/useSelectOptions';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
 
 export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useOperator1Form(
@@ -14,6 +15,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
     leadData,
     onSuccess
   );
+  const { data: branches } = useFetchBranches();
 
   const { control, reset } = form || {};
   const isMobile = useIsMobile();
@@ -36,7 +38,16 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         passportId: leadData.passportId,
       });
     }
-  }, [leadData, reset]);
+  }, [leadData, reset, form]);
+
+  const branchOptions = branches?.length
+    ? [
+        ...(branches?.map((branch) => ({
+          value: branch?._id || branch.id,
+          label: branch.name,
+        })) || []),
+      ]
+    : [];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -139,6 +150,31 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
             label="Passport ID"
             control={control}
             type="passportId"
+            disabled={!canEdit}
+          />
+        </FieldGroup>
+        <FieldGroup title="Uchrashuv ma'lumotlari">
+          <FormField
+            name="meetingDate"
+            label="Uchrashuv sanasi"
+            control={control}
+            type="datetime"
+            disabled={!canEdit}
+          />
+          <FormField
+            name="branch"
+            label="Filial"
+            type="select"
+            options={branchOptions}
+            control={control}
+            placeholderOption={true}
+            disabled={!canEdit}
+          />
+          <FormField
+            name="meetingHappened"
+            label="Uchrashuv bo'ldimi?"
+            control={control}
+            type="boolean"
             disabled={!canEdit}
           />
         </FieldGroup>
