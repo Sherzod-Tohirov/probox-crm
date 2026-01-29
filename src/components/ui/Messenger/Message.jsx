@@ -1,6 +1,6 @@
 import moment from 'moment';
 import classNames from 'classnames';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useFloating, shift, offset, autoUpdate } from '@floating-ui/react-dom';
 
@@ -11,7 +11,7 @@ import useTheme from '@hooks/useTheme';
 import iconsMap from '@utils/iconsMap';
 import getMessageColorForUser from '@utils/getMessageColorForUser';
 import styles from './styles/messenger.module.scss';
-import { API_CLIENT_IMAGES } from '@utils/apiUtils';
+import { API_CLIENT_AUDIOS, API_CLIENT_IMAGES } from '@utils/apiUtils';
 import AudioPlayer from './AudioPlayer';
 
 // Helper: ensure colored bubbles look good in dark/light themes
@@ -267,7 +267,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             return (
               <AudioPlayer
                 className={size}
-                src={msg?.['Audio']?.['url']}
+                src={API_CLIENT_AUDIOS + msg?.['Audio']?.['url']}
                 externalDuration={msg?.['Audio']?.['duration']}
                 color={msgColor}
               />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import styles from './styles/audioPlayer.module.scss';
 import { Play, Pause } from 'lucide-react'; // Optional: for nice icons
@@ -16,7 +16,6 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(externalDuration || 0);
   const [currentTime, setCurrentTime] = useState(0);
-
   useEffect(() => {
     if (!waveformRef.current) return;
 
@@ -56,7 +55,7 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
     return () => {
       wavesurfer.current.destroy();
     };
-  }, [src]);
+  }, [src, externalDuration, color.text]);
 
   const togglePlay = () => {
     if (!wavesurfer.current) return;
