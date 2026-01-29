@@ -6,7 +6,6 @@ import FieldGroup from '../LeadPageForm/FieldGroup';
 import TabHeader from './TabHeader';
 import useOperator2Form from '../../hooks/useOperator2Form.jsx';
 import styles from './leadPageTabs.module.scss';
-import useFetchBranches from '@/hooks/data/useFetchBranches';
 import { useSelectOptions } from '../../hooks/useSelectOptions';
 
 export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
@@ -17,7 +16,6 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
   );
 
   const { control, reset } = form || {};
-  const { data: branches } = useFetchBranches();
   const { rejectReasonOptions } = useSelectOptions('common');
   const { callCountOptions } = useSelectOptions('operator2');
 
@@ -47,20 +45,13 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
         meetingHappened: leadData.meetingHappened,
       });
     }
-  }, [leadData, reset]);
+  }, [leadData, reset, form]);
 
   const paymentInterestOptions = [
     { value: 'trade', label: 'Trade-in' },
     { value: 'nasiya', label: 'Nasiya' },
     { value: 'naqd', label: 'Naqd' },
   ];
-  const branchOptions =
-    [
-      ...(branches?.map((branch) => ({
-        value: branch?._id || branch.id,
-        label: branch.name,
-      })) || []),
-    ] || [];
 
   return (
     <Row direction="column" className={styles['tab-content']}>
@@ -102,32 +93,6 @@ export default function Operator2Tab({ leadId, leadData, canEdit, onSuccess }) {
             type="select"
             options={rejectReasonOptions}
             placeholderOption={true}
-            disabled={!canEdit}
-          />
-        </FieldGroup>
-
-        <FieldGroup title="Uchrashuv ma'lumotlari">
-          <FormField
-            name="meetingDate"
-            label="Uchrashuv sanasi"
-            control={control}
-            type="datetime"
-            disabled={!canEdit}
-          />
-          <FormField
-            name="branch"
-            label="Filial"
-            type="select"
-            options={branchOptions}
-            control={control}
-            placeholderOption={true}
-            disabled={!canEdit}
-          />
-          <FormField
-            name="meetingHappened"
-            label="Uchrashuv bo'ldimi?"
-            control={control}
-            type="boolean"
             disabled={!canEdit}
           />
         </FieldGroup>

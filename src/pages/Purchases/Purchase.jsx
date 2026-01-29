@@ -14,6 +14,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import selectOptionsCreator from '@/utils/selectOptionsCreator';
+import useFetchPurchase from '@/hooks/data/purchases/useFetchPurchase';
 
 const DRAFT_STORAGE_KEY = 'purchase_draft_';
 const PURCHASE_STATUS = 'draft';
@@ -23,6 +24,10 @@ export default function Purchase() {
   const { id: contractNo } = useParams();
   const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
+  const { data: purchase } = useFetchPurchase({
+    id: contractNo,
+    enabled: !!contractNo,
+  });
   const {
     control,
     supplier,
@@ -79,7 +84,7 @@ export default function Purchase() {
     }
     return purchaseItems;
   }, [purchaseItems, permissions.canEditItems]);
-  console.log(purchaseItems, 'purchaseItems');
+  console.log(purchase, 'purchase');
   const handleProductSelect = (row, product) => {
     console.log(row, product, 'row, product');
     const newItem = {

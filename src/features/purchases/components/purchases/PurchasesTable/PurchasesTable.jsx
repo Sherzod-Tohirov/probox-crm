@@ -79,7 +79,7 @@ function LoadingSkeleton({ pageSize }) {
 }
 
 const categoryColorMap = {
-  Telefonlar: 'info',
+  iPhone: 'info',
   'Maishiy texnika': 'warning',
   Kompyuterlar: 'success',
   Aksessuarlar: 'black',
@@ -87,13 +87,14 @@ const categoryColorMap = {
 
 export function PurchasesTable({ data, isLoading = false }) {
   const { pageSize } = useSelector((state) => state.page.purchases);
-  const renderCategories = useCallback((categories) => {
-    if (!categories?.length)
+  const renderCategories = useCallback((groups) => {
+    if (!groups?.length)
       return (
         <Col>
           <Badge color="warning">Ma'lum emas</Badge>
         </Col>
       );
+    const categories = groups.map((category) => category.name);
     const visibleCategories =
       categories.length <= 2 ? categories : [...categories.slice(0, 2), '...'];
 
@@ -142,7 +143,7 @@ export function PurchasesTable({ data, isLoading = false }) {
               </PurchasesCell>
               <PurchasesCell span={6} title="Kategoriyalar">
                 <Row direction="row" gutter={2} align="center">
-                  {renderCategories(item.categories)}
+                  {renderCategories(item?.groups)}
                 </Row>
               </PurchasesCell>
               <PurchasesCell span={3} title="Mahsulot soni">
