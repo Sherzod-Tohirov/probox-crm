@@ -1,8 +1,10 @@
 export function getPurchasePermissions(role, status) {
   return {
-    canEditItems: role === 'Seller' && status === 'draft',
-    canSendForApprovel: role === 'Seller' && status === 'draft',
-    canApprove: role === 'CEO' && status === 'pending',
-    canDownload: role === 'CEO' && status === 'approved',
+    canEditItems:
+      ['Seller', 'CEO'].includes(role) && ['draft', 'pending'].includes(status),
+    canSendForApprovel:
+      ['Seller', 'CEO'].includes(role) && ['draft', 'pending'].includes(status),
+    canApprove: ['CEO'].includes(role) && ['pending'].includes(status),
+    canDownload: ['CEO'].includes(role) && ['approved'].includes(status),
   };
 }

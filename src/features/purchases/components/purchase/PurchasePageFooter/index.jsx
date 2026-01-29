@@ -4,17 +4,31 @@ import Footer from '@components/Footer';
 import StickyFooterPortal from '@components/Footer/StickyFooterPortal';
 import styles from './style.module.scss';
 
-function ConfirmButton({ canConfirm }) {
+function ConfirmButton({ canConfirm, confirm, cancel }) {
   if (!canConfirm) return null;
   return (
-    <Row gutter={2}>
-      <Col>
-        <Button variant="outlined">Bekor qilish</Button>
-      </Col>
-      <Col>
-        <Button variant="filled">Tasdiqlash</Button>
-      </Col>
-    </Row>
+    <Col flexGrow>
+      <Row gutter={2} direction="row" justify='end'>
+        <Col>
+          <Button
+            variant="outlined"
+            isLoading={cancel.loading}
+            onClick={cancel.run}
+          >
+            Bekor qilish
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            variant="filled"
+            isLoading={confirm.loading}
+            onClick={confirm.run}
+          >
+            Tasdiqlash
+          </Button>
+        </Col>
+      </Row>
+    </Col>
   );
 }
 
@@ -37,12 +51,7 @@ function SendToApprovelButton({
   );
 }
 
-const PurchasePageFooter = ({
-  permissions,
-  status,
-  onSendToApprovel,
-  isSendApprovalLoading,
-}) => {
+const PurchasePageFooter = ({ permissions, status, actions }) => {
   if (status === 'approved') return null;
   return (
     <StickyFooterPortal>
@@ -50,15 +59,19 @@ const PurchasePageFooter = ({
         <Row
           direction="row"
           align="center"
-          justify={{ xs: 'start', md: 'end' }}
+          justify={{ xs: 'start', md: 'space-between' }}
           wrap
           gutter={4}
         >
-          <ConfirmButton canConfirm={permissions?.canApprove} />
+          <ConfirmButton
+            canConfirm={permissions?.canApprove}
+            confirm={actions.confirm}
+            cancel={actions.cancel}
+          />
           <SendToApprovelButton
             canSendForApprovel={permissions?.canSendForApprovel}
-            handleSendToApprovel={onSendToApprovel}
-            isLoading={isSendApprovalLoading}
+            handleSendToApprovel={actions.approval.run}
+            isLoading={actions.approval.loading}
           />
         </Row>
       </Footer>

@@ -217,7 +217,7 @@ export default function FormField({
       case 'boolean':
         return (
           <Row>
-            {info ? <Col span={span}>{info}</Col> : null}
+            {/* {info ? <Col span={span}>{info}</Col> : null} */}
             <Col>
               <Input
                 {...directProps}

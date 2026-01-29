@@ -111,9 +111,15 @@ export function PurchasesTable({ data, isLoading = false }) {
   const navigate = useNavigate();
 
   const handleRowClick = useCallback(
-    (docNum) => {
-      if (!docNum) return;
-      navigate(`/purchases/${docNum}`);
+    (item) => {
+      if (!item?.docNum || !item?.docEntry || !item?.source) return;
+      navigate(`/purchases/${item.docNum}`, {
+        state: {
+          docEntry: item.docEntry,
+          source: item.source,
+          status: item?.status,
+        },
+      });
     },
     [navigate]
   );
@@ -133,7 +139,7 @@ export function PurchasesTable({ data, isLoading = false }) {
           return (
             <PurchasesRow
               key={item.id || index}
-              onClick={() => handleRowClick(item?.docNum)}
+              onClick={() => handleRowClick(item)}
             >
               <PurchasesCell span={2} title="Ariza raqami">
                 {item.docNum}

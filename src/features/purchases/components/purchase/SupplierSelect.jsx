@@ -45,6 +45,7 @@ export default function SupplierSelect({ value, control, onSelect, disabled }) {
       placeholder="Yetkazib beruvchini qidiring..."
       disabled={disabled}
       searchable
+      disableAutoOpenSearch={true} // Default qiymat bilan SearchField ochilmasligi
       onSearch={handleSearch}
       renderSearchItem={renderSearchItem}
       onSearchSelect={handleSelectSupplier}

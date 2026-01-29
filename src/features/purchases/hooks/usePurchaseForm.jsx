@@ -1,17 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import useFetchSuppliers from '@/hooks/data/purchases/useFetchSuppliers';
 
-export function usePurchaseForm() {
+export function usePurchaseForm({ supplier: courier, warehouse }) {
+  const { data: suppliers } = useFetchSuppliers({
+    params: {
+      search: courier,
+    },
+    enabled: !!courier,
+  });
+  const foundSupplier =
+    suppliers?.suppliers?.length > 0 ? suppliers.suppliers[0] : null;
   const { control, watch, setValue } = useForm({
     defaultValues: {
-      courier: '',
-      warehouse: '',
+      courier: foundSupplier?.name,
+      warehouse: warehouse,
     },
   });
+
+  useEffect(() => {
+    setValue('courier', foundSupplier?.name);
+    setValue('warehouse', warehouse);
+  }, [warehouse, setValue, foundSupplier]);
+
   const [supplier, setSupplier] = useState(false);
   const courierValue = watch('courier');
   const warehouseValue = watch('warehouse');
-
+  console.log(courierValue, 'courier value');
   const handleCourierSelect = (value) => {
     setSupplier(value);
     setValue('courier', value?.name ?? value?.code, { shouldValidate: true });

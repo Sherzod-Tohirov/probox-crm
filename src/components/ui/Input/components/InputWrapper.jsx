@@ -29,23 +29,30 @@ const InputWrapper = ({
   renderSearchItem,
   onSearch,
   onSearchSelect,
+  disableAutoOpenSearch = false, // Default qiymat uchun SearchField ochilmasligi
 }) => {
   const inputBoxRef = useRef(null);
-  const [isSearchFieldOpen, setIsSearchFieldOpen] = useState(true);
+  const [isSearchFieldOpen, setIsSearchFieldOpen] = useState(false);
   const justSelectedRef = useRef(false);
+  const userInteractedRef = useRef(false); // Foydalanuvchi yozganini kuzatish
 
   // searchText o'zgarganda SearchField ni qayta ochish
   useEffect(() => {
-    // Agar element tanlandi va searchText bo'shasa, ochilmasin
+    // Agar element tanlandi, ochilmasin
     if (justSelectedRef.current) {
       justSelectedRef.current = false;
+      return;
+    }
+
+    // Agar disableAutoOpenSearch true bo'lsa va foydalanuvchi yozmagan bo'lsa, ochilmasin
+    if (disableAutoOpenSearch && !userInteractedRef.current) {
       return;
     }
 
     if (searchText?.length > 0) {
       setIsSearchFieldOpen(true);
     }
-  }, [searchText]);
+  }, [searchText, disableAutoOpenSearch]);
 
   return (
     <Row className={styles['input-wrapper']} gutter={1.5}>
@@ -74,6 +81,12 @@ const InputWrapper = ({
               styles[size],
               inputBoxClassName
             )}
+            onInput={() => {
+              // Foydalanuvchi yozganda belgilash
+              if (searchable && disableAutoOpenSearch) {
+                userInteractedRef.current = true;
+              }
+            }}
           >
             {children}
             {showIcon ? (
