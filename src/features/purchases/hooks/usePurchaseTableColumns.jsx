@@ -85,7 +85,6 @@ export function usePurchaseTableColumns({
         icon: 'products',
         width: '10%',
         renderCell: (row) => {
-          console.log(row, 'row');
           if (!row.id) return null;
           return (
             <Badge color={categoryColorMap[row?.category] || 'black'}>
@@ -121,7 +120,6 @@ export function usePurchaseTableColumns({
         icon: 'products',
         width: '10%',
         renderCell: (row) => {
-          console.log(row)
           if (!row.id) return null;
           if (editable && !row?.prodCondition) {
             return (
@@ -146,7 +144,6 @@ export function usePurchaseTableColumns({
         renderCell: (row) => {
           if (!row.id) return null;
           const isProductNew = row?.prodCondition === 'Yangi';
-          console.log(row);
           if (editable) {
             return (
               <NumberInputCell

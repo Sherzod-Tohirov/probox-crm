@@ -22,9 +22,11 @@ export const getPurchases = async (params = {}) => {
  * @param {string|number} id - Purchase ID
  * @returns {Promise} API response
  */
-export const getPurchaseById = async (id) => {
+export const getPurchaseById = async (params = {}) => {
   try {
-    const response = await api.get(`/purchases/${id}`);
+    const response = await api.get(
+      `/purchases/${params.source}/${params.docEntry}`
+    );
     return response.data;
   } catch (error) {
     console.error('Get purchase by ID error:', error);
@@ -57,6 +59,42 @@ export const createPurchase = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Create purchase error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Confirm purchase
+ * @param {Object} params - Purchase params
+ * @returns {Promise} API response
+ */
+export const confirmPurchase = async (params) => {
+  if (!params.docEntry) return;
+  try {
+    const response = await api.post(
+      `/purchases/drafts/${params.docEntry}/approve`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Confirm purchase error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel purchase
+ * @param {Object} params - Purchase params
+ * @returns {Promise} API response
+ */
+export const cancelPurchase = async (params) => {
+  if (!params.docEntry) return;
+  try {
+    const response = await api.post(
+      `/purchases/drafts/${params.docEntry}/cancel`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Cancel purchase error:', error);
     throw error;
   }
 };

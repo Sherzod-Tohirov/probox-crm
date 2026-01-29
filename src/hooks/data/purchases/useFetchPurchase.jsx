@@ -7,11 +7,11 @@ import { getPurchaseById } from '@/services/purchasesService';
  * @param {number} options.id - Purchase id
  * @returns {Object} Query result with purchase data
  */
-export default function useFetchPurchase({ id, enabled = true }) {
+export default function useFetchPurchase({ docEntry, source, enabled = true }) {
   return useQuery({
-    queryKey: ['purchase', id],
+    queryKey: ['purchase', docEntry],
     queryFn: async () => {
-      const response = await getPurchaseById(id);
+      const response = await getPurchaseById({ docEntry, source });
       return response;
     },
     keepPreviousData: true,

@@ -8,26 +8,32 @@ import { usePurchaseForm } from '@/features/purchases/hooks/usePurchaseForm';
 import { getPurchasePermissions } from '@/features/purchases/utils/getPurchasePermissions';
 import { courierOptions } from '@/features/purchases/utils/purchaseOptions';
 import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
-import { useCreatePurchase } from '@/hooks/data/purchases/usePurchaseItems';
+import {
+  useCancelPurchase,
+  useConfirmPurchase,
+  useCreatePurchase,
+} from '@/hooks/data/purchases/usePurchaseMutations';
 import useAuth from '@/hooks/useAuth';
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import selectOptionsCreator from '@/utils/selectOptionsCreator';
 import useFetchPurchase from '@/hooks/data/purchases/useFetchPurchase';
 
 const DRAFT_STORAGE_KEY = 'purchase_draft_';
-const PURCHASE_STATUS = 'draft';
 const NEW_PURCHASE_STORAGE_KEY = DRAFT_STORAGE_KEY + 'new';
 
 export default function Purchase() {
   const { id: contractNo } = useParams();
+  const { docEntry, source, statusState = 'draft' } = useLocation().state || {};
   const { user } = useAuth();
   const { modal, openModal, closeModal } = usePurchaseModal();
   const { data: purchase } = useFetchPurchase({
-    id: contractNo,
-    enabled: !!contractNo,
+    docEntry,
+    source,
+    enabled: !!docEntry && !!source,
   });
+  const status = purchase?.status ?? statusState;
   const {
     control,
     supplier,
@@ -35,7 +41,10 @@ export default function Purchase() {
     warehouseValue,
     handleCourierSelect,
     handleWarehouseChange,
-  } = usePurchaseForm();
+  } = usePurchaseForm({
+    supplier: purchase?.cardCode,
+    warehouse: purchase?.whsCode,
+  });
 
   const [purchaseItems, setPurchaseItems] = useState([]);
   const { data: branches } = useFetchBranches();
@@ -45,8 +54,10 @@ export default function Purchase() {
   });
   const isNewPurchase = !contractNo;
 
-  const permissions = getPurchasePermissions(user?.U_role, PURCHASE_STATUS);
+  const permissions = getPurchasePermissions(user?.U_role, status);
   const createPurchaseMutation = useCreatePurchase(NEW_PURCHASE_STORAGE_KEY);
+  const approvePurchaseMutation = useConfirmPurchase();
+  const cancelPurchaseMutation = useCancelPurchase();
 
   // Load from localStorage for new purchases
   useEffect(() => {
@@ -76,6 +87,12 @@ export default function Purchase() {
       );
     }
   }, [purchaseItems, isNewPurchase]);
+
+  useEffect(() => {
+    if (contractNo && purchase) {
+      setPurchaseItems(purchase?.items || []);
+    }
+  }, [purchase, contractNo]);
 
   // Add empty row for new item entry
   const tableData = useMemo(() => {
@@ -121,7 +138,6 @@ export default function Purchase() {
       );
     }
   };
-  console.log(purchaseItems, 'purchase items');
   const handleSendToApprovel = () => {
     const payload = {
       cardCode: supplier?.code,
@@ -139,6 +155,14 @@ export default function Purchase() {
     createPurchaseMutation.mutate(payload);
   };
 
+  const handleConfirmPurchase = () => {
+    approvePurchaseMutation.mutate({ docEntry });
+  };
+
+  const handleCancelPurchase = () => {
+    cancelPurchaseMutation.mutate({ docEntry });
+  };
+
   const handleDeletePurchaseItem = () => {
     const item = modal.data;
     if (item?.id) {
@@ -146,7 +170,7 @@ export default function Purchase() {
     }
     closeModal();
   };
-
+  console.log(purchaseItems, 'purchase items');
   const handleDownloadPdf = () => {
     const purchaseData = {
       contractNo,
@@ -166,14 +190,13 @@ export default function Purchase() {
 
     generatePurchasePdf(purchaseData);
   };
-  console.log(courierValue, 'value');
   return (
     <>
       <Row gutter={6}>
         <Col fullWidth>
           <PurchaseHeader
             isEditable={permissions.canEditItems}
-            status={PURCHASE_STATUS}
+            status={status}
             courier={courierValue?.name ?? courierValue ?? ''}
             warehouse={
               warehouseOptions.find((opt) => opt.value === warehouseValue)
@@ -205,9 +228,21 @@ export default function Purchase() {
       />
       <PurchasePageFooter
         permissions={permissions}
-        status={PURCHASE_STATUS}
-        isSendApprovalLoading={createPurchaseMutation.isPending}
-        onSendToApprovel={handleSendToApprovel}
+        status={status}
+        actions={{
+          approval: {
+            run: handleSendToApprovel,
+            loading: createPurchaseMutation.isPending,
+          },
+          confirm: {
+            run: handleConfirmPurchase,
+            loading: approvePurchaseMutation.isPending,
+          },
+          cancel: {
+            run: handleCancelPurchase,
+            loading: cancelPurchaseMutation.isPending,
+          },
+        }}
       />
     </>
   );

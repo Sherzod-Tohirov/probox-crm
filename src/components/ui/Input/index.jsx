@@ -50,6 +50,7 @@ const Input = forwardRef(
       searchText,
       searchable = false,
       multipleSelect = false,
+      disableAutoOpenSearch = false, // Default qiymat bilan SearchField ochilmasligi
       onSearch = () => {},
       onSearchSelect = () => {},
       onIconClick,
@@ -783,6 +784,7 @@ const Input = forwardRef(
         renderSearchItem={renderSearchItem}
         onSearch={onSearch}
         onSearchSelect={onSearchSelect}
+        disableAutoOpenSearch={disableAutoOpenSearch}
       >
         {inputTypeMatcher[type] || inputTypeMatcher.default}
       </InputWrapper>

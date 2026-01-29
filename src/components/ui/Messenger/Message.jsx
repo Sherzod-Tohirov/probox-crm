@@ -149,9 +149,9 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
   );
 
   const messageType = useMemo(() => {
-    if (msg?.['Comments'] !== null) return 'text';
-    if (msg?.['Image'] !== null) return 'image';
     if (msg?.['Audio'] !== null) return 'audio';
+    if (msg?.['Image'] !== null) return 'image';
+    if (msg?.['Comments'] !== null) return 'text';
     return null;
   }, [msg]);
 
@@ -267,7 +267,7 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
             return (
               <AudioPlayer
                 className={size}
-                src={API_CLIENT_IMAGES + msg?.['Audio']?.['url']}
+                src={msg?.['Audio']?.['url']}
                 externalDuration={msg?.['Audio']?.['duration']}
                 color={msgColor}
               />
