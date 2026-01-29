@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import moment from 'moment';
 import Message from './Message';
 import { groupBy } from 'ramda';
