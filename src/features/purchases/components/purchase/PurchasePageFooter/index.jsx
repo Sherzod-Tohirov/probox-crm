@@ -8,7 +8,7 @@ function ConfirmButton({ canConfirm, confirm, cancel }) {
   if (!canConfirm) return null;
   return (
     <Col flexGrow>
-      <Row gutter={2} direction="row" justify='end'>
+      <Row gutter={2} direction="row" justify="end">
         <Col>
           <Button
             variant="outlined"
@@ -59,7 +59,7 @@ const PurchasePageFooter = ({ permissions, status, actions }) => {
         <Row
           direction="row"
           align="center"
-          justify={{ xs: 'start', md: 'space-between' }}
+          justify={{ xs: 'start', md: 'end' }}
           wrap
           gutter={4}
         >

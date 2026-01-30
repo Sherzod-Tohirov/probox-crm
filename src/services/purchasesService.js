@@ -101,13 +101,13 @@ export const cancelPurchase = async (params) => {
 
 /**
  * Update purchase
- * @param {string|number} id - Purchase ID
+ * @param {string|number} id - Purchase ID => doc entry
  * @param {Object} data - Updated purchase data
  * @returns {Promise} API response
  */
 export const updatePurchase = async (id, data) => {
   try {
-    const response = await api.put(`/purchases/${id}`, data);
+    const response = await api.patch(`/purchases/drafts/${id}`, data);
     return response.data;
   } catch (error) {
     console.error('Update purchase error:', error);
@@ -117,12 +117,12 @@ export const updatePurchase = async (id, data) => {
 
 /**
  * Delete purchase
- * @param {string|number} id - Purchase ID
+ * @param {string|number} id - Purchase ID => doc entry
  * @returns {Promise} API response
  */
 export const deletePurchase = async (id) => {
   try {
-    const response = await api.delete(`/purchases/${id}`);
+    const response = await api.delete(`/purchases/drafts/${id}`);
     return response.data;
   } catch (error) {
     console.error('Delete purchase error:', error);

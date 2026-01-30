@@ -33,6 +33,7 @@ export function usePurchaseTableColumns({
   onProductSelect,
   onFieldUpdate,
   canConfirm,
+  warehouseOptions = [],
 } = {}) {
   const [scanningItemId, setScanningItemId] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -94,6 +95,31 @@ export function usePurchaseTableColumns({
         },
       },
       {
+        key: 'whsCode',
+        title: 'Omborxona',
+        icon: 'warehouse',
+        width: '10%',
+        renderCell: (row) => {
+          if (!row.id) return null;
+          if (editable && warehouseOptions.length > 0) {
+            return (
+              <SelectInputCell
+                options={warehouseOptions}
+                value={row?.whsCode}
+                placeholder="Omborxona"
+                onChange={(value) => onFieldUpdate(row.id, 'whsCode', value)}
+              />
+            );
+          }
+          const warehouseLabel = warehouseOptions.find(
+            (opt) => opt.value === row?.whsCode
+          )?.label;
+          return (
+            <Typography>{warehouseLabel || row?.whsCode || 'N/A'}</Typography>
+          );
+        },
+      },
+      {
         key: 'imei',
         title: 'Seriya kodi',
         icon: 'barCodeFilled',
@@ -118,7 +144,7 @@ export function usePurchaseTableColumns({
         key: 'prodCondition',
         title: 'Holati',
         icon: 'products',
-        width: '10%',
+        width: '5%',
         renderCell: (row) => {
           if (!row.id) return null;
           if (editable && !row?.prodCondition) {
@@ -140,7 +166,7 @@ export function usePurchaseTableColumns({
         key: 'batteryCapacity',
         title: 'Batareya foizi',
         icon: 'battery',
-        width: '10%',
+        width: '6%',
         renderCell: (row) => {
           if (!row.id) return null;
           const isProductNew = row?.prodCondition === 'Yangi';
@@ -168,7 +194,7 @@ export function usePurchaseTableColumns({
         key: 'quantity',
         title: 'Miqdor',
         icon: 'products',
-        width: '8%',
+        width: '6%',
         renderCell: (row) => {
           if (!row.id) return null;
           if (editable && !row.imei) {
@@ -187,7 +213,7 @@ export function usePurchaseTableColumns({
         key: 'currency',
         title: 'Valyuta',
         icon: 'income',
-        width: '8%',
+        width: '5%',
         renderCell: (row) => {
           if (!row.id) return null;
           if (editable) {
@@ -236,6 +262,7 @@ export function usePurchaseTableColumns({
         renderCell: (row) => {
           if (!row.id) return null;
           const shouldShowModal = canConfirm;
+          if (!editable) return '-';
           return (
             <Button
               icon="delete"
@@ -252,7 +279,14 @@ export function usePurchaseTableColumns({
         },
       },
     ],
-    [onOpenModal, editable, onProductSelect, onFieldUpdate, canConfirm]
+    [
+      onOpenModal,
+      editable,
+      onProductSelect,
+      onFieldUpdate,
+      canConfirm,
+      warehouseOptions,
+    ]
   );
 
   return {

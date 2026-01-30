@@ -404,9 +404,13 @@ const MultipleSelect = ({
         onChange={(selected, actionMeta) =>
           handleChange(selected, actionMeta, field)
         }
-        value={options.filter((opt) =>
-          field.value?.some((val) => val.value === opt.value)
-        )} // Ensure controlled value
+        value={
+          field?.value?.length > 0 && Array.isArray(field?.value)
+            ? options.filter((opt) =>
+                field?.value?.some((val) => val.value === opt.value)
+              )
+            : []
+        } // Ensure controlled value
       />
     </div>
   );

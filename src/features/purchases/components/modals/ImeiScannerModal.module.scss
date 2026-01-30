@@ -5,6 +5,12 @@
   padding: 16px 0;
 }
 
+.modeSelector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
 .scanner {
   width: 100%;
   border-radius: 8px;
