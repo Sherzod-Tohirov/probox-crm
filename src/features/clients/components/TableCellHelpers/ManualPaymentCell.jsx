@@ -78,7 +78,7 @@ const useManualPaymentCell = (column) => {
 };
 
 const ManualPaymentCell = ({ column }) => {
-  const modalId = `${column?.['DocEntry']}-manual-payment-modal`;
+  const modalId = `${column?.['DocEntry']}-${column?.InstlmntID}-manual-payment-modal`;
   const {
     reset,
     handleSubmit,
@@ -110,7 +110,7 @@ const ManualPaymentCell = ({ column }) => {
         shouldTouch: false,
       });
     }
-  }, [column?.['partial'], setValue]);
+  }, [column, setValue]);
 
   // Reset form when modal closes
   useEffect(() => {

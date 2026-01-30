@@ -1,8 +1,10 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
+import formatterCurrency from '@/utils/formatterCurrency';
 
 pdfMake.vfs = pdfFonts.vfs;
+
 export function generatePurchasePdf(purchaseData) {
   //   console.log('generatePurchasePdf called with:', purchaseData);
 
@@ -73,7 +75,7 @@ export function generatePurchasePdf(purchaseData) {
         },
         { text: item.count || 1, alignment: 'center', fontSize: 8 },
         {
-          text: formatCurrencyUZS(item.price),
+          text: formatterCurrency(item.price, item?.currency),
           alignment: 'right',
           color: '#3B82F6',
           fontSize: 8,
@@ -89,7 +91,6 @@ export function generatePurchasePdf(purchaseData) {
           columns: [
             { width: '*', text: '' },
             {
-              width: 'auto',
               text: 'PROBOX',
               style: 'logo',
               alignment: 'center',

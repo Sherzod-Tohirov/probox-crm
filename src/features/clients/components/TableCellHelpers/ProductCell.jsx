@@ -45,7 +45,7 @@ const useProductCell = (column) => {
   return { productOptions, canUserModify };
 };
 const ProductCell = ({ column }) => {
-  const modalId = `${column?.['DocEntry']}-product-modal`;
+  const modalId = `${column?.['DocEntry']}-${column?.InstlmntID}-product-modal`;
   const {
     reset,
     handleSubmit,
@@ -88,7 +88,7 @@ const ProductCell = ({ column }) => {
         dispatch(toggleModal(modalId));
       }
     },
-    [currentClient]
+    [currentClient, dispatch, modalId, mutation, queryClient]
   );
 
   // Sync form with column changes
@@ -99,7 +99,7 @@ const ProductCell = ({ column }) => {
         shouldTouch: false,
       });
     }
-  }, [column?.['phoneConfiscated'], setValue]);
+  }, [column, setValue]);
   return (
     <ModalWrapper
       allowClick={!canUserModify}

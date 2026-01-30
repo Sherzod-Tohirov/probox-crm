@@ -2,7 +2,6 @@ import moment from 'moment';
 import { useCallback } from 'react';
 import { Box, Button } from '@components/ui';
 
-import useAuth from '@hooks/useAuth';
 import useFetchCurrency from '@hooks/data/useFetchCurrency';
 import useMutatePartialPayment from '@hooks/data/clients/useMutatePartialPayment';
 import useMutatePhoneConfiscated from '@hooks/data/clients/useMutatePhoneConfiscated';
@@ -28,32 +27,34 @@ const useClientsTableColumns = (props) => {
   const paymentMutation = useMutatePartialPayment();
   const phoneConfiscatedMutation = useMutatePhoneConfiscated();
 
-  const { user } = useAuth();
-  const handleCancelPayment = useCallback(async ({ column, type }) => {
-    const formattedDueDate = moment(column.DueDate).format('YYYY.MM.DD');
-    try {
-      const commonPayload = {
-        docEntry: currentClient?.['DocEntry'],
-        installmentId: column?.['InstlmntID'],
-      };
-      if (type === 'payment') {
-        const payload = {
-          ...commonPayload,
-          data: { DueDate: formattedDueDate, partial: false },
+  const handleCancelPayment = useCallback(
+    async ({ column, type }) => {
+      const formattedDueDate = moment(column.DueDate).format('YYYY.MM.DD');
+      try {
+        const commonPayload = {
+          docEntry: currentClient?.['DocEntry'],
+          installmentId: column?.['InstlmntID'],
         };
-        await paymentMutation.mutate(payload);
+        if (type === 'payment') {
+          const payload = {
+            ...commonPayload,
+            data: { DueDate: formattedDueDate, partial: false },
+          };
+          await paymentMutation.mutate(payload);
+        }
+        if (type === 'product') {
+          const payload = {
+            ...commonPayload,
+            data: { DueDate: formattedDueDate, phoneConfiscated: false },
+          };
+          await phoneConfiscatedMutation.mutate(payload);
+        }
+      } catch (error) {
+        console.log(error);
       }
-      if (type === 'product') {
-        const payload = {
-          ...commonPayload,
-          data: { DueDate: formattedDueDate, phoneConfiscated: false },
-        };
-        await phoneConfiscatedMutation.mutate(payload);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+    },
+    [currentClient, paymentMutation, phoneConfiscatedMutation]
+  );
 
   const clientsTableColumns = [
     {
