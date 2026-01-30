@@ -14,7 +14,7 @@ import SupplierSelect from './SupplierSelect';
 function CourierField({ isEditable, value, onSelect, control }) {
   if (isEditable) {
     return (
-      <Col span={6}>
+      <Col xs={24} sm={12} md={6}>
         <SupplierSelect control={control} value={value} onSelect={onSelect} />
       </Col>
     );
@@ -41,7 +41,7 @@ function CourierField({ isEditable, value, onSelect, control }) {
 function WarehouseField({ isEditable, value, control, options, onChange }) {
   if (isEditable) {
     return (
-      <Col span={6}>
+      <Col xs={24} sm={12} md={6}>
         <Input
           name="warehouse"
           variant="outlined"
@@ -75,7 +75,7 @@ function WarehouseField({ isEditable, value, control, options, onChange }) {
 
 function StatusField({ status }) {
   return (
-    <Col span={4}>
+    <Col xs={12} sm={6} md={4}>
       <Row direction="row" gutter={2} align="center">
         <Col>
           <Typography color="secondary" variant="body2">
@@ -91,9 +91,9 @@ function StatusField({ status }) {
 }
 
 function DownloadPDF({ status, isEditable, onDownloadPdf }) {
-  if (isEditable || status !== 'approved') return null;
+  if (isEditable || status !== 'approve') return null;
   return (
-    <Col span={4}>
+    <Col xs={12} sm={6} md={4}>
       <Button
         icon={<DownloadIcon color="#fff" size={16} />}
         iconSize={16}
@@ -119,12 +119,22 @@ export default function PurchaseHeader({
   backPath = '/purchases',
 }) {
   return (
-    <Row direction="row" justify="space-between">
-      <Col flexGrow>
+    <Row
+      direction={{ xs: 'column', md: 'row' }}
+      justify="space-between"
+      gutter={4}
+    >
+      <Col xs={24} md="auto">
         <Navigation fallbackBackPath={backPath} />
       </Col>
-      <Col span={16}>
-        <Row direction="row" align="center" justify="end" gutter={4}>
+      <Col xs={24} md={16}>
+        <Row
+          direction="row"
+          align="center"
+          justify={{ xs: 'start', md: 'end' }}
+          gutter={4}
+          wrap
+        >
           <CourierField
             isEditable={isEditable}
             value={courier}

@@ -5,16 +5,20 @@ import PurchasePageFooter from '@/features/purchases/components/purchase/Purchas
 import PurchaseTable from '@/features/purchases/components/purchase/PurchaseTable';
 import { usePurchaseModal } from '@/features/purchases/hooks/usePurchaseModal';
 import { usePurchaseForm } from '@/features/purchases/hooks/usePurchaseForm';
+import { usePurchaseData } from '@/features/purchases/hooks/usePurchaseData';
+import { usePurchaseActions } from '@/features/purchases/hooks/usePurchaseActions';
+import { usePurchaseMutationsHandlers } from '@/features/purchases/hooks/usePurchaseMutationsHandlers';
 import { getPurchasePermissions } from '@/features/purchases/utils/getPurchasePermissions';
-import { courierOptions } from '@/features/purchases/utils/purchaseOptions';
 import { generatePurchasePdf } from '@/features/purchases/utils/generatePurchasePdf';
+import { generatePurchasePayload } from '@/features/purchases/utils/generatePurchasePayload';
 import {
   useCancelPurchase,
   useConfirmPurchase,
   useCreatePurchase,
+  useUpdatePurchase,
 } from '@/hooks/data/purchases/usePurchaseMutations';
 import useAuth from '@/hooks/useAuth';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import selectOptionsCreator from '@/utils/selectOptionsCreator';
@@ -46,7 +50,6 @@ export default function Purchase() {
     warehouse: purchase?.whsCode,
   });
 
-  const [purchaseItems, setPurchaseItems] = useState([]);
   const { data: branches } = useFetchBranches();
   const warehouseOptions = selectOptionsCreator(branches, {
     label: 'name',
@@ -54,140 +57,74 @@ export default function Purchase() {
   });
   const isNewPurchase = !contractNo;
 
+  // Permissions
   const permissions = getPurchasePermissions(user?.U_role, status);
+
+  // Mutations
   const createPurchaseMutation = useCreatePurchase(NEW_PURCHASE_STORAGE_KEY);
   const approvePurchaseMutation = useConfirmPurchase();
   const cancelPurchaseMutation = useCancelPurchase();
+  const updatePurchaseMutation = useUpdatePurchase(
+    contractNo ? DRAFT_STORAGE_KEY + contractNo : null
+  );
 
-  // Load from localStorage for new purchases
-  useEffect(() => {
-    if (isNewPurchase) {
-      const draftKey = DRAFT_STORAGE_KEY + 'new';
-      const savedDraft = localStorage.getItem(draftKey);
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft);
-          setPurchaseItems(draft.items || []);
-        } catch (e) {
-          console.error('Error loading draft:', e);
-        }
-      }
-    }
-  }, [isNewPurchase]);
+  // Purchase ma'lumotlarini yuklash va boshqarish
+  const { purchaseItems, setPurchaseItems } = usePurchaseData({
+    purchase,
+    contractNo,
+    isNewPurchase,
+  });
 
-  // Save to localStorage when items change (for new purchases)
-  useEffect(() => {
-    if (isNewPurchase && purchaseItems.length > 0) {
-      localStorage.setItem(
-        NEW_PURCHASE_STORAGE_KEY,
-        JSON.stringify({
-          items: purchaseItems,
-          timestamp: new Date().toISOString(),
-        })
-      );
-    }
-  }, [purchaseItems, isNewPurchase]);
+  // Purchase harakatlari
+  const { handleProductSelect, handleFieldUpdate, handleDeleteItem } =
+    usePurchaseActions({
+      setPurchaseItems,
+      warehouseValue,
+    });
 
-  useEffect(() => {
-    if (contractNo && purchase) {
-      setPurchaseItems(purchase?.items || []);
-    }
-  }, [purchase, contractNo]);
+  // Mutation handlerlar
+  const { handleSendToApprovel, handleConfirmPurchase, handleCancelPurchase } =
+    usePurchaseMutationsHandlers({
+      purchaseItems,
+      supplier,
+      warehouseValue,
+      isNewPurchase,
+      docEntry,
+      createPurchaseMutation,
+      updatePurchaseMutation,
+      approvePurchaseMutation,
+      cancelPurchaseMutation,
+    });
 
-  // Add empty row for new item entry
+  // Bo'sh qator qo'shish uchun table data
   const tableData = useMemo(() => {
     if (permissions.canEditItems) {
       return [...purchaseItems, { _isEmptyRow: true }];
     }
     return purchaseItems;
   }, [purchaseItems, permissions.canEditItems]);
-  console.log(purchase, 'purchase');
-  const handleProductSelect = (row, product) => {
-    console.log(row, product, 'row, product');
-    const newItem = {
-      id: Date.now(),
-      product_id: product.ItemCode,
-      product_name: product.ItemName,
-      itemCode: product.ItemCode,
-      category: product.ItemGroupName || '',
-      imei: '',
-      currency: 'UZS',
-      prodCondition: product?.U_PROD_CONDITION || '',
-      batteryCapacity: product?.Battery || '',
-      quantity: 1,
-      price: 0,
-    };
-    if (isNewPurchase) {
-      // Add to local state for new purchases
-      setPurchaseItems((prev) => [...prev, newItem]);
-    }
-  };
 
-  const handleFieldUpdate = (itemId, field, value) => {
-    if (field === 'delete') {
-      if (isNewPurchase) {
-        setPurchaseItems((prev) => prev.filter((item) => item.id !== itemId));
-      }
-    }
-    if (isNewPurchase) {
-      // Update local state
-      setPurchaseItems((prev) =>
-        prev.map((item) =>
-          item.id === itemId ? { ...item, [field]: value } : item
-        )
-      );
-    }
-  };
-  const handleSendToApprovel = () => {
-    const payload = {
-      cardCode: supplier?.code,
-      whsCode: warehouseValue,
-      rows: purchaseItems.map((item) => ({
-        itemCode: item?.itemCode,
-        quantity: item?.quantity,
-        price: item?.price,
-        currency: item?.currency,
-        batteryCapacity: item?.batteryCapacity,
-        prodCondition: item?.prodCondition,
-        imei: item?.imei,
-      })),
-    };
-    createPurchaseMutation.mutate(payload);
-  };
-
-  const handleConfirmPurchase = () => {
-    approvePurchaseMutation.mutate({ docEntry });
-  };
-
-  const handleCancelPurchase = () => {
-    cancelPurchaseMutation.mutate({ docEntry });
-  };
-
+  // Modal orqali item o'chirish
   const handleDeletePurchaseItem = () => {
     const item = modal.data;
-    if (item?.id) {
-      setPurchaseItems((prev) => prev.filter((item) => item.id !== item.id));
-    }
+    handleDeleteItem(item?.id);
     closeModal();
   };
-  console.log(purchaseItems, 'purchase items');
-  const handleDownloadPdf = () => {
-    const purchaseData = {
-      contractNo,
-      supplier:
-        courierOptions.find((opt) => opt.value === courierValue)?.label ||
-        'Alisher Alisherov',
-      receiver: 'Alisher Alisherov',
-      supplierPhone: '+998 90 000 00 02',
-      receiverPhone: '+998 90 000 00 02',
-      warehouse:
-        warehouseOptions.find((opt) => opt.value === warehouseValue)?.label ||
-        'Malika B-12',
-      branch: 'Bosh office',
-      date: new Date().toLocaleDateString('ru-RU'),
-      items: purchaseItems,
-    };
 
+  // PDF yuklab olish
+  const handleDownloadPdf = () => {
+    const purchaseData = generatePurchasePayload({
+      contractNo,
+      purchase,
+      supplier,
+      courierValue,
+      warehouseValue,
+      warehouseOptions,
+      branches,
+      user,
+      purchaseItems,
+      status,
+    });
     generatePurchasePdf(purchaseData);
   };
   return (
@@ -218,6 +155,7 @@ export default function Purchase() {
             onProductSelect={handleProductSelect}
             onFieldUpdate={handleFieldUpdate}
             canConfirm={permissions.canConfirmPurchase}
+            warehouseOptions={warehouseOptions}
           />
         </Col>
       </Row>

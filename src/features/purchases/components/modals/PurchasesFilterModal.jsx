@@ -16,6 +16,7 @@ import { omit } from 'lodash';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { useEffect, useRef } from 'react';
 
 function ModalFooter({ onClose, formId }) {
   return (
@@ -57,6 +58,8 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   const filters = useSelector((state) => state.page.purchases.filter);
   const startOfTheMonth = moment().startOf('month').format('DD.MM.YYYY');
   const endOfTheMonth = moment().endOf('month').format('DD.MM.YYYY');
+  const isMountedRef = useRef(true); // Component mounted holatini kuzatish
+
   const { watch, reset, setValue, control, handleSubmit } = useForm({
     defaultValues: {
       status: filters?.status ?? '',
@@ -69,7 +72,22 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   const statusField = watch('status');
   const filterFormId = 'purchase-filter-form';
 
+  // Modal ochilganda va yopilganda mounted holatini boshqarish
+  useEffect(() => {
+    if (isOpen) {
+      isMountedRef.current = true;
+    }
+
+    return () => {
+      // Modal yopilganda yoki component unmount bo'lganda
+      isMountedRef.current = false;
+    };
+  }, [isOpen]);
+
   const handleStatusChange = (e) => {
+    // Faqat component mounted bo'lsa state ni yangilash
+    if (!isMountedRef.current) return;
+
     const { checked, value } = e.target ?? {};
     const parsedStatus = statusField
       .split(',')
@@ -84,12 +102,18 @@ export function PurchasesFilterModal({ isOpen, onClose, onApply, title }) {
   };
 
   const handleApplyFilter = (data) => {
+    // Faqat component mounted bo'lsa davom etish
+    if (!isMountedRef.current) return;
+
     const category = getMultiSelectValue(data?.category);
     const warehouse = getMultiSelectValue(data?.warehouse);
     onApply({ ...data, category, warehouse });
   };
 
   const handleClearFilter = () => {
+    // Faqat component mounted bo'lsa davom etish
+    if (!isMountedRef.current) return;
+
     reset({ ...omit(filters, ['search']) });
     onClose();
   };

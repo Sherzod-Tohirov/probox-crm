@@ -9,6 +9,7 @@ export default function PurchaseTable({
   onProductSelect,
   onFieldUpdate,
   canConfirm = false,
+  warehouseOptions = [],
 }) {
   const { purchaseTableColumns, scannerModal } = usePurchaseTableColumns({
     onOpenModal,
@@ -17,6 +18,7 @@ export default function PurchaseTable({
     onProductSelect,
     onFieldUpdate,
     canConfirm,
+    warehouseOptions,
   });
 
   return (
