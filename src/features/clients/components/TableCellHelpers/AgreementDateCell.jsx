@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Input } from '@components/ui';
 import { useForm } from 'react-hook-form';
 import ModalCell from './helper/ModalCell';
@@ -18,7 +18,7 @@ const Title = ({ date }) => {
   return formatDateWithHour(date);
 };
 const AgreementDateCell = ({ column }) => {
-  const modalId = `${column?.['DocEntry']}-agreement-date-modal`;
+  const modalId = `${column?.['DocEntry']}-${column?.['InstlmntID']}-agreement-date-modal`;
   const {
     reset,
     control,
@@ -67,7 +67,7 @@ const AgreementDateCell = ({ column }) => {
         dispatch(toggleModal(modalId));
       }
     },
-    [currentClient]
+    [currentClient, column, dispatch, modalId, mutation, queryClient]
   );
   return (
     <ModalWrapper

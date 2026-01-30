@@ -7,7 +7,7 @@ import useMessengerActions from '@hooks/useMessengerActions';
 import ModalWrapper from './helper/ModalWrapper';
 
 const MessengerCell = ({ column }) => {
-  const modalId = `${column?.['DocEntry']}-messenger-modal`;
+  const modalId = `${column?.['DocEntry']}-${column?.InstlmntID}-messenger-modal`;
   const isModalOpen = useSelector((state) => state.toggle.modals[modalId]);
   const docEntry = column?.['DocEntry'];
   const installmentId = column?.['InstlmntID'];

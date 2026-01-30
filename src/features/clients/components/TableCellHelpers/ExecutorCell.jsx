@@ -26,7 +26,7 @@ const ExecutorCell = ({ column }) => {
   const { data: executors } = useFetchExecutors({
     include_role: ['Manager', 'Assistant'],
   });
-  const modalId = `${column?.['DocEntry']}-executor-modal`;
+  const modalId = `${column?.['DocEntry']}-${column?.InstlmntID}-executor-modal`;
   const queryClient = useQueryClient();
 
   const executor = useMemo(() => {
@@ -36,7 +36,7 @@ const ExecutorCell = ({ column }) => {
     return foundExecutor;
   }, [column, executors]);
 
-  const { reset, register, setValue, handleSubmit, control, watch } = useForm({
+  const { reset, setValue, handleSubmit, control, watch } = useForm({
     defaultValues: { slpCode: executor?.SlpCode ?? '' },
   });
 
@@ -57,7 +57,7 @@ const ExecutorCell = ({ column }) => {
           action.id === currentClient?.['DocEntry'] &&
           action.type === 'slpCode_update'
       ),
-    [lastAction, currentClient, dispatch]
+    [lastAction, currentClient]
   );
 
   const executorsOptions = useMemo(
@@ -88,13 +88,13 @@ const ExecutorCell = ({ column }) => {
         shouldDirty: true,
       });
     }
-  }, [hasLastAction]);
+  }, [hasLastAction, setValue]);
 
   useEffect(() => {
     if (executor) {
       reset({ slpCode: executor?.SlpCode ?? '' });
     }
-  }, [executor?.SlpCode, reset]);
+  }, [executor, reset]);
 
   const handleApply = useCallback(
     async (data) => {
@@ -148,7 +148,15 @@ const ExecutorCell = ({ column }) => {
         dispatch(toggleModal(modalId));
       }
     },
-    [currentClient]
+    [
+      currentClient,
+      dispatch,
+      modalId,
+      mutation,
+      queryClient,
+      hasLastAction,
+      lastAction,
+    ]
   );
 
   return (
