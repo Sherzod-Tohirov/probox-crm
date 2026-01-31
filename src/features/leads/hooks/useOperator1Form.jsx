@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
 import useAlert from '@/hooks/useAlert';
+import { normalizeDate } from '../utils/date';
 
 const OPERATOR1_FIELDS = [
   'called',
@@ -12,6 +13,9 @@ const OPERATOR1_FIELDS = [
   'passportVisit',
   'jshshir',
   'passportId',
+  'meetingHappened',
+  'meetingDate',
+  'branch',
 ];
 
 export default function useOperator1Form(leadId, leadData, onSuccess) {
@@ -27,6 +31,9 @@ export default function useOperator1Form(leadId, leadData, onSuccess) {
       passportVisit: leadData?.passportVisit || '',
       jshshir: leadData?.jshshir || '',
       passportId: leadData?.passportId || '',
+      meetingHappened: leadData?.meetingHappened || false,
+      meetingDate: normalizeDate(leadData?.meetingDate),
+      branch: leadData?.branch,
     },
   });
 
@@ -37,7 +44,9 @@ export default function useOperator1Form(leadId, leadData, onSuccess) {
     },
     onError: (error) => {
       console.error('Error updating lead:', error);
-      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", { type: 'error' });
+      alert("Lead ma'lumotlarini yangilashda xatolik yuz berdi", {
+        type: 'error',
+      });
     },
   });
 

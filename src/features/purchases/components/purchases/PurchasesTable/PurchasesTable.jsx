@@ -159,7 +159,7 @@ export function PurchasesTable({ data, isLoading = false }) {
                 {item?.docDate ? formatDate(item.docDate) : '-'}
               </PurchasesCell>
               <PurchasesCell textColor="info" span={3} title="Umumiy narx">
-                {formatterCurrency(item?.docTotal, item?.docCur)}
+                {formatterCurrency(item?.docTotal, 'USD')}
               </PurchasesCell>
               <PurchasesCell span={3} title="Status">
                 <StatusBadge status={item?.status}>{item?.status}</StatusBadge>
