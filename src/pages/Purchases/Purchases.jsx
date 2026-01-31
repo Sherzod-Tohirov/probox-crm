@@ -7,11 +7,15 @@ import PurchasesPageFooter from '@/features/purchases/components/purchases/Purch
 import { PurchasesFilterModal } from '@/features/purchases/components/modals/PurchasesFilterModal';
 import { setPurchasesFilter } from '@/store/slices/purchasesPageSlice';
 import useFetchPurchases from '@/hooks/data/purchases/useFetchPurchases';
+import { getPurchasePermissions } from '@/features/purchases/utils/getPurchasePermissions';
+import useAuth from '@/hooks/useAuth';
 
 export default function Purchases() {
+  const { user } = useAuth();
   const { currentPage, pageSize, filter } = useSelector(
     (state) => state.page.purchases
   );
+  const { canAdd } = getPurchasePermissions(user?.U_role);
   const { data: purchases, isLoading } = useFetchPurchases({
     offset: currentPage,
     limit: pageSize,
@@ -21,7 +25,7 @@ export default function Purchases() {
     total: purchases?.total,
     totalPage: purchases?.totalPage,
   };
-
+  
   const dispatch = useDispatch();
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -47,6 +51,7 @@ export default function Purchases() {
             onOpenFilter={() => setFilterOpen(true)}
             onSearch={handleSearch}
             searchValue={filter.search}
+            canAdd={canAdd}
           />
         </Col>
         <Col fullWidth>
