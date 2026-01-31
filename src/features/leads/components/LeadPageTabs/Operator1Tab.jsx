@@ -8,6 +8,7 @@ import styles from './leadPageTabs.module.scss';
 import useIsMobile from '@/hooks/useIsMobile';
 import { useSelectOptions } from '../../hooks/useSelectOptions';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
+import { normalizeDate } from '../../utils/date';
 
 export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { form, handleSubmit, isSubmitting, error } = useOperator1Form(
@@ -36,6 +37,9 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         passportVisit: leadData.passportVisit,
         jshshir: leadData.jshshir,
         passportId: leadData.passportId,
+        meetingDate: normalizeDate(leadData.meetingDate),
+        branch: leadData.branch,
+        meetingHappened: leadData.meetingHappened,
       });
     }
   }, [leadData, reset, form]);

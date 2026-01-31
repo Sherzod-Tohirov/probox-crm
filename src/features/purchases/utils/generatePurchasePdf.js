@@ -1,6 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
 import formatterCurrency from '@/utils/formatterCurrency';
 
 pdfMake.vfs = pdfFonts.vfs;
@@ -27,6 +26,34 @@ export function generatePurchasePdf(purchaseData) {
       (sum, item) => sum + item.price * item.count,
       0
     );
+
+    // Kategoriya uchun badge rang
+    const getCategoryColor = (category) => {
+      const colors = {
+        iPhone: '#0EA5E9',
+        'Maishiy texnika': '#F59E0B',
+        Noutbuklar: '#8B5CF6',
+        Planshetlar: '#EC4899',
+      };
+      return colors[category] || '#0EA5E9';
+    };
+
+    // Holat uchun badge rang
+    const getStatusColor = (status) => {
+      const colors = {
+        Yangi: '#10B981',
+        'B/U': '#EF4444',
+      };
+      return colors[status] || '#6B7280';
+    };
+
+    // Foiz uchun badge rang
+    const getBatteryColor = (battery) => {
+      const percent = parseInt(battery);
+      if (percent >= 95) return '#10B981'; // Yashil
+      if (percent >= 85) return '#F59E0B'; // Sariq
+      return '#EF4444'; // Qizil
+    };
 
     const tableBody = [
       [
@@ -62,23 +89,36 @@ export function generatePurchasePdf(purchaseData) {
       ],
       ...items.map((item, index) => [
         { text: index + 1, alignment: 'center', fontSize: 8 },
-        { text: item.product_name || '-', fontSize: 8 },
-        { text: item.product_code || '-', fontSize: 8 },
-        { text: item.category || '-', color: '#3B82F6', fontSize: 8 },
-        { text: item.imei || '-', fontSize: 8 },
-        { text: item.status || '-', alignment: 'center', fontSize: 8 },
+        { text: item.product_name || '-', fontSize: 8, bold: false },
+        { text: item.product_code || '-', fontSize: 8, color: '#6B7280' },
         {
-          text: item.battery || '-',
-          color: '#10B981',
+          text: item.category || '-',
+          color: getCategoryColor(item.category),
+          fontSize: 8,
+          bold: true,
+        },
+        { text: item.imei || '-', fontSize: 8, color: '#374151' },
+        {
+          text: item.status || '-',
           alignment: 'center',
           fontSize: 8,
+          color: getStatusColor(item.status),
+          bold: true,
+        },
+        {
+          text: item.battery ? `${item.battery}%` : '-',
+          color: getBatteryColor(item.battery),
+          alignment: 'center',
+          fontSize: 8,
+          bold: true,
         },
         { text: item.count || 1, alignment: 'center', fontSize: 8 },
         {
           text: formatterCurrency(item.price, item?.currency),
           alignment: 'right',
-          color: '#3B82F6',
+          color: '#0EA5E9',
           fontSize: 8,
+          bold: true,
         },
       ]),
     ];
@@ -89,24 +129,39 @@ export function generatePurchasePdf(purchaseData) {
       content: [
         {
           columns: [
-            { width: '*', text: '' },
             {
-              text: 'PROBOX',
-              style: 'logo',
-              alignment: 'center',
+              width: '*',
+              stack: [
+                {
+                  text: 'Probox',
+                  fontSize: 18,
+                  bold: true,
+                  color: '#1E293B',
+                  margin: [0, 0, 0, 2],
+                },
+                {
+                  text: 'Where Experts Meet',
+                  fontSize: 8,
+                  color: '#64748B',
+                  italics: true,
+                },
+              ],
             },
             {
               width: '*',
               text: `Sana: ${date}`,
               alignment: 'right',
               fontSize: 10,
+              color: '#1E293B',
             },
           ],
           margin: [0, 0, 0, 20],
         },
         {
           text: `Yuk xati - N° ${contractNo}`,
-          style: 'header',
+          fontSize: 16,
+          bold: true,
+          color: '#1E293B',
           alignment: 'center',
           margin: [0, 0, 0, 20],
         },
@@ -115,52 +170,112 @@ export function generatePurchasePdf(purchaseData) {
             {
               width: '33%',
               stack: [
-                { text: 'Yetkazib beruvchi', style: 'label' },
-                { text: supplier, style: 'value' },
+                {
+                  text: 'Yetkazib beruvchi',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: supplier,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
             {
               width: '33%',
               stack: [
-                { text: 'Telefon raqami', style: 'label' },
-                { text: supplierPhone, style: 'value' },
+                {
+                  text: 'Telefon raqami',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: supplierPhone,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
             {
               width: '33%',
               stack: [
-                { text: 'Qabul qiluvchi', style: 'label' },
-                { text: receiver, style: 'value' },
+                {
+                  text: 'Qabul qiluvchi',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: receiver,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
           ],
-          margin: [0, 0, 0, 8],
+          margin: [0, 0, 0, 10],
         },
         {
           columns: [
             {
               width: '33%',
               stack: [
-                { text: 'Telefon raqami', style: 'label' },
-                { text: receiverPhone, style: 'value' },
+                {
+                  text: 'Telefon raqami',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: receiverPhone,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
             {
               width: '33%',
               stack: [
-                { text: 'Ombor', style: 'label' },
-                { text: warehouse, style: 'value' },
+                {
+                  text: 'Ombor',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: warehouse,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
             {
               width: '33%',
               stack: [
-                { text: 'Filial', style: 'label' },
-                { text: branch, style: 'value' },
+                {
+                  text: 'Filial',
+                  fontSize: 8,
+                  color: '#94A3B8',
+                  margin: [0, 0, 0, 3],
+                },
+                {
+                  text: branch,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
               ],
             },
           ],
-          margin: [0, 0, 0, 15],
+          margin: [0, 0, 0, 20],
         },
         {
           table: {
@@ -169,16 +284,22 @@ export function generatePurchasePdf(purchaseData) {
             body: tableBody,
           },
           layout: {
-            fillColor: (rowIndex) => (rowIndex === 0 ? '#f3f4f6' : null),
+            fillColor: (rowIndex) => (rowIndex === 0 ? '#F8FAFC' : null),
             hLineWidth: () => 0.5,
             vLineWidth: () => 0.5,
-            hLineColor: () => '#e5e7eb',
-            vLineColor: () => '#e5e7eb',
+            hLineColor: () => '#E2E8F0',
+            vLineColor: () => '#E2E8F0',
+            paddingLeft: () => 4,
+            paddingRight: () => 4,
+            paddingTop: () => 6,
+            paddingBottom: () => 6,
           },
         },
         {
-          text: `${items.length} ta mahsulot - ${formatCurrencyUZS(totalAmount)}`,
-          style: 'total',
+          text: `${items.length} ta mahsulot - ${formatterCurrency(totalAmount, 'UZS')}`,
+          fontSize: 12,
+          bold: true,
+          color: '#0EA5E9',
           alignment: 'center',
           margin: [0, 15, 0, 30],
         },

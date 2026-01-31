@@ -170,7 +170,10 @@ export default function Purchase() {
         actions={{
           approval: {
             run: handleSendToApprovel,
-            loading: createPurchaseMutation.isPending,
+            loading: !!(
+              createPurchaseMutation.isPending ||
+              updatePurchaseMutation.isPending
+            ),
           },
           confirm: {
             run: handleConfirmPurchase,

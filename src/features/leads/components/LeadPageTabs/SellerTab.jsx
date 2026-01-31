@@ -396,6 +396,9 @@ export default function SellerTab({
           calculationTypeFilter,
           internalLimit: invoiceScoreData?.limit,
           payments,
+          maximumLimit,
+          monthlyLimit,
+          finalPercentage,
         });
         setIsInvoiceModalOpen(false);
       } catch (error) {
@@ -410,6 +413,9 @@ export default function SellerTab({
       calculationTypeFilter,
       invoiceScoreData,
       leadData,
+      maximumLimit,
+      monthlyLimit,
+      finalPercentage,
     ]
   );
   useEffect(() => {

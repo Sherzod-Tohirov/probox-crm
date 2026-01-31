@@ -16,16 +16,18 @@ export default function Purchases() {
     (state) => state.page.purchases
   );
   const { canAdd } = getPurchasePermissions(user?.U_role);
+  
   const { data: purchases, isLoading } = useFetchPurchases({
     offset: currentPage,
     limit: pageSize,
     params: filter,
   });
+
   const meta = {
     total: purchases?.total,
     totalPage: purchases?.totalPage,
   };
-  
+
   const dispatch = useDispatch();
   const [isFilterOpen, setFilterOpen] = useState(false);
 

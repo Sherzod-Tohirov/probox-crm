@@ -98,6 +98,7 @@ export function usePurchaseTableColumns({
         key: 'whsCode',
         title: 'Omborxona',
         icon: 'warehouse',
+        minWidth: '110px',
         width: '10%',
         renderCell: (row) => {
           if (!row.id) return null;
@@ -123,6 +124,7 @@ export function usePurchaseTableColumns({
         key: 'imei',
         title: 'Seriya kodi',
         icon: 'barCodeFilled',
+        minWidth: '170px',
         width: '12%',
         renderCell: (row) => {
           if (!row.id) return null;
@@ -233,6 +235,7 @@ export function usePurchaseTableColumns({
         key: 'price',
         title: 'Narxi',
         icon: 'products',
+        minWidth: '150px',
         width: '12%',
         renderCell: (row) => {
           if (!row.id) return null;
@@ -249,7 +252,7 @@ export function usePurchaseTableColumns({
           }
           return (
             <Typography color="info">
-              {formatterCurrency(row?.price)}
+              {formatterCurrency(row?.price, row?.currency)}
             </Typography>
           );
         },
