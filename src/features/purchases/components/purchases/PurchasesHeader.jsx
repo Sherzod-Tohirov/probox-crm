@@ -6,6 +6,7 @@ export default function PurchasesHeader({
   onOpenFilter,
   onSearch,
   searchValue,
+  canAdd,
 }) {
   const navigate = useNavigate();
   return (
@@ -52,15 +53,17 @@ export default function PurchasesHeader({
           <Col xs={0} sm={0} md="auto">
             <Divider height="16px" color="primary" orientation="vertical" />
           </Col>
-          <Col xs={12} sm={6} md={6}>
-            <Button
-              fullWidth
-              variant="filled"
-              onClick={() => navigate('/purchases/new')}
-            >
-              Yangi qo'shish
-            </Button>
-          </Col>
+          {!!canAdd && (
+            <Col xs={12} sm={6} md={6}>
+              <Button
+                fullWidth
+                variant="filled"
+                onClick={() => navigate('/purchases/new')}
+              >
+                Yangi qo'shish
+              </Button>
+            </Col>
+          )}
         </Row>
       </Col>
     </Row>

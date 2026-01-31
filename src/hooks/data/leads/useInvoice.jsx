@@ -211,7 +211,7 @@ export default function useInvoice(options = {}) {
             Price: totalPrice, // Jami narx (ustama bilan)
             Currency: 'UZS',
             DiscountPercent: 0,
-            UnitPrice: totalPrice, // Jami narx (ustama bilan)
+            UnitPrice: price, // Qurilmaning haqiqiy narxi (ustama siz)
             SerialNumbers: serialNumbers,
             U_FirstPayment: firstPayment,
             U_QP: period, // Ijara oyi (har bir device uchun o'zining period)

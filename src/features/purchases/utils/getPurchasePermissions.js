@@ -1,5 +1,6 @@
 export function getPurchasePermissions(role, status) {
   return {
+    canAdd: ['Seller', 'CEO'].includes(role),
     canEditItems:
       ['Seller', 'CEO'].includes(role) && ['draft', 'pending'].includes(status),
     canSendForApprovel:

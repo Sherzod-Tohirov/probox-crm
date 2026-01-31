@@ -165,7 +165,7 @@ export function generatePurchasePdf(purchaseData) {
         {
           table: {
             headerRows: 1,
-            widths: [25, '*', 60, 70, 70, 30, 30, 30, 90],
+            widths: [15, 120, 40, 50, 70, 30, 25, 30, 60],
             body: tableBody,
           },
           layout: {
