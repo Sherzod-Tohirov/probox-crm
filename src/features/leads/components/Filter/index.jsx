@@ -86,7 +86,7 @@ export default function LeadsFilter({
       branchOptions,
       operator1Options,
       operator2Options,
-      leadSourceOptions,
+      // leadSourceOptions,
     ]
   );
 
@@ -107,7 +107,9 @@ export default function LeadsFilter({
     let same = false;
     try {
       same = JSON.stringify(current) === JSON.stringify(normalizedFilterState);
-    } catch (_) {}
+    } catch (err) {
+      console.log(err);
+    }
     if (!same) {
       reset(normalizedFilterState);
     }
@@ -135,7 +137,7 @@ export default function LeadsFilter({
       setValue('meetingDateStart', start);
       setValue('meetingDateEnd', end);
     }
-  }, [meeting, setValue]);
+  }, [meeting, setValue, watchedMeetingDateStart, watchedMeetingDateEnd]);
 
   // Update end date if it's before start date
   useEffect(() => {
@@ -168,7 +170,7 @@ export default function LeadsFilter({
       onFilter(payload);
     }, 400);
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, getValues, onFilter, dispatch]);
 
   const onSubmit = useCallback(
     (data) => {
