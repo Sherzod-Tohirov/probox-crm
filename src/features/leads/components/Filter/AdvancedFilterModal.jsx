@@ -15,6 +15,7 @@ import {
   statusFilterOptions,
 } from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
+import { REJECTION_REASON_OPTIONS } from '../../utils/constants';
 
 export default function AdvancedFilterModal({
   isOpen,
@@ -231,6 +232,15 @@ export default function AdvancedFilterModal({
                     name="purchase"
                     label="Xarid amalga oshdimi"
                     options={booleanOptionsAll}
+                    control={control}
+                  />
+                </Col>
+
+                <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
+                  <MultiSelectField
+                    name="rejectionReason"
+                    label="Rad etish sababi"
+                    options={REJECTION_REASON_OPTIONS}
                     control={control}
                   />
                 </Col>

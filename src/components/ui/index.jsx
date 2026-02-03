@@ -30,6 +30,7 @@ import Avatar from './Avatar';
 import ContextMenu from './ContextMenu';
 import Clipboard from './Clipboard';
 import Checkbox from './Checkbox';
+import DatePicker from './DatePicker';
 export {
   Row,
   Col,
@@ -62,4 +63,5 @@ export {
   ContextMenu,
   Clipboard,
   Checkbox,
+  DatePicker,
 };

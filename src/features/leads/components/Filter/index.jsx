@@ -20,6 +20,7 @@ import {
   sourceOptions as leadSourceOptions,
 } from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
+import { REJECTION_REASON_OPTIONS } from '../../utils/constants';
 
 export default function LeadsFilter({
   onFilter = () => {},
@@ -79,15 +80,10 @@ export default function LeadsFilter({
         branchOptions,
         operator1Options,
         operator2Options,
-        leadSourceOptions
+        leadSourceOptions,
+        REJECTION_REASON_OPTIONS
       ),
-    [
-      filterState,
-      branchOptions,
-      operator1Options,
-      operator2Options,
-      leadSourceOptions,
-    ]
+    [filterState, branchOptions, operator1Options, operator2Options]
   );
 
   const { register, handleSubmit, reset, control, watch, setValue, getValues } =
@@ -107,7 +103,9 @@ export default function LeadsFilter({
     let same = false;
     try {
       same = JSON.stringify(current) === JSON.stringify(normalizedFilterState);
-    } catch (_) {}
+    } catch (err) {
+      console.log(err);
+    }
     if (!same) {
       reset(normalizedFilterState);
     }
@@ -135,7 +133,7 @@ export default function LeadsFilter({
       setValue('meetingDateStart', start);
       setValue('meetingDateEnd', end);
     }
-  }, [meeting, setValue]);
+  }, [meeting, setValue, watchedMeetingDateStart, watchedMeetingDateEnd]);
 
   // Update end date if it's before start date
   useEffect(() => {
@@ -168,7 +166,7 @@ export default function LeadsFilter({
       onFilter(payload);
     }, 400);
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, getValues, onFilter, dispatch]);
 
   const onSubmit = useCallback(
     (data) => {
@@ -216,6 +214,7 @@ export default function LeadsFilter({
     normalizedInitialState.answered2 = { value: '', label: 'Barchasi' };
     normalizedInitialState.meetingHappened = { value: '', label: 'Barchasi' };
     normalizedInitialState.callCount2 = { value: '', label: '-' };
+    normalizedInitialState.rejectionReason = [];
 
     // Clear text input fields
     normalizedInitialState.passportId = '';

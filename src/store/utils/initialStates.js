@@ -45,6 +45,7 @@ export const initialLeadsFilterState = {
   passportId: '',
   jshshir2: '',
   finalLimit: '',
+  rejectionReason: [],
 };
 
 export const initialProductsFilterState = {

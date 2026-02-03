@@ -26,7 +26,6 @@ export function usePurchaseForm({ supplier: courier, warehouse }) {
   const [supplier, setSupplier] = useState(false);
   const courierValue = watch('courier');
   const warehouseValue = watch('warehouse');
-  console.log(courierValue, 'courier value');
   const handleCourierSelect = (value) => {
     setSupplier(value);
     setValue('courier', value?.name ?? value?.code, { shouldValidate: true });

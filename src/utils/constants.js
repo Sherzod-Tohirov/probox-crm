@@ -20,7 +20,7 @@ export const URL_PATH_LANG_MAP = {
   statistics: 'Statistika',
   leads: 'Leadlar',
   purchases: 'Sotib olish',
-  new: "Yangi qo'shish",
+  new: 'Yangi',
 };
 
 export const CLIENT_PAYMENT_ERROR_MESSAGES = {

@@ -5,7 +5,8 @@ export function normalizeFilterState(
   operator2Options = [],
   sourceOptions = [],
   sellerOptions = [],
-  scoringOptions = []
+  scoringOptions = [],
+  rejectionReasonOptions = []
 ) {
   const normalized = { ...filterState };
 
@@ -35,11 +36,18 @@ export function normalizeFilterState(
       operator2Options
     );
   }
+
   if (!Array.isArray(normalized.seller)) {
     normalized.seller = toArrayFromCSV(normalized.seller, sellerOptions);
   }
   if (!Array.isArray(normalized.scoring)) {
     normalized.scoring = toArrayFromCSV(normalized.scoring, scoringOptions);
+  }
+  if (!Array.isArray(normalized.rejectionReason)) {
+    normalized.rejectionReason = toArrayFromCSV(
+      normalized.rejectionReason,
+      rejectionReasonOptions
+    );
   }
 
   return normalized;
@@ -88,18 +96,23 @@ export function serializeFilter(values) {
           .map((item) => (typeof item === 'object' ? item.value : item))
           .join(',')
       : arr;
-
+  console.log(payload, 'before');
   if (payload.source) payload.source = serializeMulti(payload.source);
   if (payload.branch) payload.branch = serializeMulti(payload.branch);
   if (payload.operator) payload.operator = serializeMulti(payload.operator);
   if (payload.operator2) payload.operator2 = serializeMulti(payload.operator2);
   if (payload.seller) payload.seller = serializeMulti(payload.seller);
   if (payload.scoring) payload.scoring = serializeMulti(payload.scoring);
+  if (payload.rejectionReason)
+    payload.rejectionReason = serializeMulti(payload.rejectionReason);
 
   // Preserve meetingDateStart and meetingDateEnd if meeting is selected
   const meetingValue = payload.meeting;
-  const hasMeeting = meetingValue !== '' && meetingValue !== undefined && meetingValue !== null;
-  const preserveDateFields = hasMeeting ? ['meetingDateStart', 'meetingDateEnd'] : [];
+  const hasMeeting =
+    meetingValue !== '' && meetingValue !== undefined && meetingValue !== null;
+  const preserveDateFields = hasMeeting
+    ? ['meetingDateStart', 'meetingDateEnd']
+    : [];
 
   // Remove empty-like values except valid booleans/numbers and preserved date fields
   Object.keys(payload).forEach((key) => {
@@ -107,7 +120,7 @@ export function serializeFilter(values) {
     if (preserveDateFields.includes(key)) {
       return;
     }
-    
+
     const val = payload[key];
     if (Array.isArray(val) && val.length === 0) {
       delete payload[key];
@@ -123,7 +136,7 @@ export function serializeFilter(values) {
     }
     // keep booleans (including false) and numbers as-is
   });
-
+  console.log(payload, 'payload');
   return payload;
 }
 
@@ -138,7 +151,8 @@ export function persistFilterToStorage(filter) {
         filterDraft: filter,
       })
     );
-  } catch (_) {
+  } catch (error) {
+    console.log(error);
     // ignore
   }
 }

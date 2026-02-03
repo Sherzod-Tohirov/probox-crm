@@ -1,5 +1,5 @@
 import { Col, Input, Row } from '@components/ui';
-import SelectField from '../fields/SelectField';
+// import SelectField from '../fields/SelectField';
 import MultiSelectField from '../fields/MultiSelectField';
 import { sourceOptions } from '../../../utils/options';
 import styles from '../style.module.scss';
@@ -14,7 +14,7 @@ export default function HeaderFilters({
   isBranchesLoading,
   isOperator1Loading,
   isOperator2Loading,
-  minimal = false,
+  // minimal = false,
   onSearchSubmit,
 }) {
   return (

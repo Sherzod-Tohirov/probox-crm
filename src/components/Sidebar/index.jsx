@@ -33,7 +33,7 @@ export default function Sidebar() {
     if (isMobile && isOpen) {
       toggle();
     }
-  }, [location.pathname, isMobile]);
+  }, [location.pathname, isMobile, isOpen, toggle]);
 
   const renderNavItem = useCallback(
     (link, depth = 0) => {
@@ -41,7 +41,9 @@ export default function Sidebar() {
         Array.isArray(link.children) && link.children.length > 0;
       const hasEnabledChildren =
         hasChildren && link.children.some((child) => !child.disabled);
-      const isActive = pathname.startsWith(link.path);
+      const isActive = hasChildren
+        ? pathname.startsWith(link.path)
+        : pathname === link.path;
       const isSectionOpen = isOpen ? (openMap[link.path] ?? isActive) : false;
 
       return (
