@@ -4,6 +4,8 @@ export const AVAILABLE_LEAD_SOURCES = [
   'Organika',
   'Kiruvchi qongiroq',
   'Community',
+  'Kiruvchi',
+  'Chiquvchi',
   'Qayta sotuv',
 ];
 
@@ -14,6 +16,7 @@ export const AVAILABLE_LEAD_STATUSES = [
   'Closed',
   'Purchased',
   'Returned',
+  'Missed',
 ];
 
 export const ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS = [

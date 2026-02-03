@@ -23,10 +23,9 @@ export function generatePurchasePdf(purchaseData) {
     // console.log('Items count:', items.length);
 
     const totalAmount = items.reduce(
-      (sum, item) => sum + item.price * item.count,
+      (sum, item) => sum + item.price * (item.quantity || 1),
       0
     );
-
     // Kategoriya uchun badge rang
     const getCategoryColor = (category) => {
       const colors = {
@@ -106,8 +105,8 @@ export function generatePurchasePdf(purchaseData) {
           bold: true,
         },
         {
-          text: item.battery ? `${item.battery}%` : '-',
-          color: getBatteryColor(item.battery),
+          text: item.batteryCapacity ? `${item.batteryCapacity}` : '-',
+          color: getBatteryColor(item.batteryCapacity),
           alignment: 'center',
           fontSize: 8,
           bold: true,
@@ -168,15 +167,18 @@ export function generatePurchasePdf(purchaseData) {
         {
           columns: [
             {
-              width: '33%',
-              stack: [
+              width: '50%',
+              alignment: 'center',
+              columns: [
                 {
+                  width: 'auto',
                   text: 'Yetkazib beruvchi',
-                  fontSize: 8,
+                  fontSize: 9,
                   color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
+                  margin: [0, 0, 15, 0],
                 },
                 {
+                  width: 'auto',
                   text: supplier,
                   fontSize: 10,
                   bold: true,
@@ -185,32 +187,18 @@ export function generatePurchasePdf(purchaseData) {
               ],
             },
             {
-              width: '33%',
-              stack: [
+              width: '50%',
+              alignment: 'center',
+              columns: [
                 {
-                  text: 'Telefon raqami',
-                  fontSize: 8,
-                  color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
-                },
-                {
-                  text: supplierPhone,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-            {
-              width: '33%',
-              stack: [
-                {
+                  width: 'auto',
                   text: 'Qabul qiluvchi',
-                  fontSize: 8,
+                  fontSize: 9,
                   color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
+                  margin: [0, 0, 15, 0],
                 },
                 {
+                  width: 'auto',
                   text: receiver,
                   fontSize: 10,
                   bold: true,
@@ -219,21 +207,24 @@ export function generatePurchasePdf(purchaseData) {
               ],
             },
           ],
-          margin: [0, 0, 0, 10],
+          margin: [0, 0, 0, 8],
         },
         {
           columns: [
             {
-              width: '33%',
-              stack: [
+              width: '50%',
+              alignment: 'center',
+              columns: [
                 {
+                  width: 'auto',
                   text: 'Telefon raqami',
-                  fontSize: 8,
+                  fontSize: 9,
                   color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
+                  margin: [0, 0, 15, 0],
                 },
                 {
-                  text: receiverPhone,
+                  width: 'auto',
+                  text: supplierPhone,
                   fontSize: 10,
                   bold: true,
                   color: '#1E293B',
@@ -241,15 +232,43 @@ export function generatePurchasePdf(purchaseData) {
               ],
             },
             {
-              width: '33%',
-              stack: [
+              width: '50%',
+              alignment: 'center',
+              columns: [
                 {
-                  text: 'Ombor',
-                  fontSize: 8,
+                  width: 'auto',
+                  text: 'Telefon raqami',
+                  fontSize: 9,
                   color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
+                  margin: [0, 0, 15, 0],
                 },
                 {
+                  width: 'auto',
+                  text: receiverPhone,
+                  fontSize: 10,
+                  bold: true,
+                  color: '#1E293B',
+                },
+              ],
+            },
+          ],
+          margin: [0, 0, 0, 8],
+        },
+        {
+          columns: [
+            {
+              width: '50%',
+              alignment: 'center',
+              columns: [
+                {
+                  width: 'auto',
+                  text: 'Ombor',
+                  fontSize: 9,
+                  color: '#94A3B8',
+                  margin: [0, 0, 15, 0],
+                },
+                {
+                  width: 'auto',
                   text: warehouse,
                   fontSize: 10,
                   bold: true,
@@ -258,15 +277,18 @@ export function generatePurchasePdf(purchaseData) {
               ],
             },
             {
-              width: '33%',
-              stack: [
+              width: '50%',
+              alignment: 'center',
+              columns: [
                 {
+                  width: 'auto',
                   text: 'Filial',
-                  fontSize: 8,
+                  fontSize: 9,
                   color: '#94A3B8',
-                  margin: [0, 0, 0, 3],
+                  margin: [0, 0, 15, 0],
                 },
                 {
+                  width: 'auto',
                   text: branch,
                   fontSize: 10,
                   bold: true,
@@ -284,11 +306,10 @@ export function generatePurchasePdf(purchaseData) {
             body: tableBody,
           },
           layout: {
-            fillColor: (rowIndex) => (rowIndex === 0 ? '#F8FAFC' : null),
             hLineWidth: () => 0.5,
             vLineWidth: () => 0.5,
-            hLineColor: () => '#E2E8F0',
-            vLineColor: () => '#E2E8F0',
+            hLineColor: () => '#F1F5F9',
+            vLineColor: () => '#F1F5F9',
             paddingLeft: () => 4,
             paddingRight: () => 4,
             paddingTop: () => 6,
@@ -296,19 +317,38 @@ export function generatePurchasePdf(purchaseData) {
           },
         },
         {
-          text: `${items.length} ta mahsulot - ${formatterCurrency(totalAmount, 'UZS')}`,
-          fontSize: 12,
-          bold: true,
-          color: '#0EA5E9',
-          alignment: 'center',
+          text: [
+            {
+              text: `${items.length}`,
+              fontSize: 12,
+              bold: true,
+              color: '#1E293B',
+              alignment: 'center',
+            },
+            {
+              text: ' ta mahsulot - ',
+              fontSize: 12,
+              bold: true,
+              color: '#1E293B',
+              alignment: 'center',
+            },
+            {
+              text: `${formatterCurrency(totalAmount, 'USD')}`,
+              fontSize: 12,
+              bold: true,
+              color: '#0EA5E9',
+              alignment: 'center',
+            },
+          ],
           margin: [0, 15, 0, 30],
         },
         {
           stack: [
             {
               qr: `https://probox.uz/purchase/${contractNo}`,
-              fit: 75,
+              fit: 79,
               alignment: 'center',
+              margin: [],
             },
           ],
           margin: [0, 0, 0, 8],
@@ -343,13 +383,13 @@ export function generatePurchasePdf(purchaseData) {
           color: '#1f2937',
         },
         tableHeader: {
-          fontSize: 7,
+          fontSize: 10,
           bold: true,
-          color: '#374151',
+          color: '#1E293B',
           margin: [0, 4, 0, 4],
         },
         total: {
-          fontSize: 11,
+          fontSize: 10,
           bold: true,
           color: '#3B82F6',
         },

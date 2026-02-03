@@ -23,14 +23,16 @@ const StatusBadge = ({ status }) => {
       Closed: 'black',
       Purchased: 'extrasuccess',
       Returned: 'danger',
+      Missed: 'danger',
     };
     const translationMap = {
-      Active: 'Active',
+      Active: 'Yangi',
       Archived: 'Arxivlangan',
       Processing: 'Jarayonda',
       Closed: 'Yopilgan',
       Purchased: 'Sotilgan',
       Returned: 'Qaytarilgan',
+      Missed: "O'tkazib yuborilgan",
     };
     return (
       <Badge color={colorMap[status]} variant="soft" size="md">
@@ -116,6 +118,18 @@ export default function useLeadsTableColumns() {
         bgColor: '#de6565ff',
         textColor: '#fff',
         name: 'Qayta sotuv',
+      },
+      Kiruvchi: {
+        icon: 'telephone',
+        bgColor: '#16c822ff',
+        textColor: '#fff',
+        name: 'Kiruvchi',
+      },
+      Chiquvchi: {
+        icon: 'telephone',
+        bgColor: '#1f7fbcff',
+        textColor: '#fff',
+        name: 'Chiquvchi',
       },
     };
 
