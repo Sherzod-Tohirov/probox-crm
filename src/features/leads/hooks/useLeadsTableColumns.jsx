@@ -289,6 +289,13 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'rejectionReason',
+        title: 'Rad etish sababi',
+        icon: 'comment',
+        width: { xs: '20%', md: '20%', xl: '25%' },
+        minWidth: '150px',
+      },
+      {
         key: 'source',
         title: 'Manba',
         icon: 'globeFilled',

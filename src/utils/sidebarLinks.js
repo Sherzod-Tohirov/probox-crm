@@ -64,6 +64,12 @@ const sidebarLinks = [
         path: '/leads/statistics',
         ...getRoutePermissions('/leads/statistics'),
       },
+      {
+        title: 'Yangi statistika',
+        icon: 'presentationChart',
+        path: '/leads/statistics/new',
+        ...getRoutePermissions('/leads/statistics/new'),
+      },
     ],
   },
   {
