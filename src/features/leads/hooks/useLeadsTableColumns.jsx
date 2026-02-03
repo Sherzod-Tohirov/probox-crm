@@ -105,7 +105,7 @@ export default function useLeadsTableColumns() {
         icon: 'telephone',
         bgColor: '#F59E0B',
         textColor: '#fff',
-        name: "Qo'ng'iroq",
+        name: "Eski qo'ng'iroq",
       },
       Community: {
         icon: 'users',
