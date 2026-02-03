@@ -1,14 +1,14 @@
 import styles from './skeleton.module.scss';
 
-export default function Skeleton({ 
-  width = '100%', 
-  height = '20px', 
+export default function Skeleton({
+  width = '100%',
+  height = '20px',
   borderRadius = '4px',
   className = '',
-  ...props 
+  ...props
 }) {
   return (
-    <div 
+    <div
       className={`${styles.skeleton} ${className}`}
       style={{ width, height, borderRadius }}
       {...props}
@@ -21,7 +21,7 @@ export function SkeletonText({ lines = 1, className = '', ...props }) {
   return (
     <div className={`${styles['skeleton-text']} ${className}`} {...props}>
       {Array.from({ length: lines }, (_, index) => (
-        <Skeleton 
+        <Skeleton
           key={index}
           height="16px"
           width={index === lines - 1 ? '70%' : '100%'}

@@ -1,7 +1,10 @@
 import { AVAILABLE_LEAD_SOURCES } from '@features/leads/utils/constants';
 
 export const sourceOptions = [
-  ...AVAILABLE_LEAD_SOURCES.map((source) => ({ value: source, label: source })),
+  ...AVAILABLE_LEAD_SOURCES.map((source) => ({
+    value: source,
+    label: source === 'Kiruvchi qongiroq' ? 'Eski qongiroq' : source,
+  })),
 ];
 
 export const booleanOptionsAll = [
@@ -22,7 +25,7 @@ export const meetingOptions = [
 ];
 
 export const statusOptions = [
-  { value: 'Active', label: 'Active' },
+  { value: 'Active', label: 'Yangi' },
   { value: 'Archived', label: 'Arxivlangan' },
   // { value: 'Closed', label: 'Yopilgan' },
   // { value: 'Blocked', label: 'Bloklangan' },
@@ -40,11 +43,12 @@ export const passportVisitOptions = [
 
 export const statusFilterOptions = [
   { value: 'unmarked', label: 'Barchasi' },
-  { value: 'Active', label: 'Active' },
+  { value: 'Active', label: 'Yangi' },
   { value: 'Archived', label: 'Arxivlangan' },
   { value: 'Processing', label: 'Jarayonda' },
   { value: 'Closed', label: 'Yopilgan' },
   { value: 'Returned', label: 'Qaytarilgan' },
+  { value: 'Missed', label: "O'tkazib yuborilgan" },
 ];
 
 export const callCountOptions = [
