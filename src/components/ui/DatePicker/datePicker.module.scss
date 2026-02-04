@@ -3,8 +3,6 @@
 .datePickerWrapper {
   position: relative;
   width: 100%;
-  min-height: 400px;
-
   &.disabled {
     opacity: 0.6;
     pointer-events: none;
@@ -15,8 +13,6 @@
       display: none;
     }
 
-    // Inline rejimda kalendar to'liq ko'rinishi uchun
-    min-height: 450px;
   }
 }
 

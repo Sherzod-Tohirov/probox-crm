@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 
 import useFetchExecutors from '@hooks/data/useFetchExecutors';
 import selectOptionsCreator from '@utils/selectOptionsCreator';
@@ -7,9 +6,8 @@ const useFilter = () => {
   const { data: executors, isPending: isExecutorsLoading } = useFetchExecutors({
     include_role: ['Manager', 'Assistant'],
   });
-
   const executorsOptions = useMemo(() => {
-    return executors.length > 0
+    return executors?.length > 0
       ? selectOptionsCreator(executors, {
           label: 'SlpName',
           value: 'SlpCode',

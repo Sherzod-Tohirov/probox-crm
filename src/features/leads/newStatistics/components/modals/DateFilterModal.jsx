@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Button, Col, Modal, Row, DatePicker } from '@/components/ui';
+import {
+  Button,
+  Col,
+  Modal,
+  Row,
+  DatePicker,
+  Checkbox,
+  Box,
+} from '@/components/ui';
+import { DATE_FILTER_OPTIONS } from '../../constants/date';
 
 function Footer({ onApply, onClose }) {
   return (
@@ -18,6 +27,25 @@ function Footer({ onApply, onClose }) {
   );
 }
 
+function DateOptions({ selectedOption, onChange }) {
+  return (
+    <Box paddingTop={4}>
+      <Row gutter={4}>
+        {DATE_FILTER_OPTIONS.map((opt) => (
+          <Col key={opt.value}>
+            <Checkbox
+              color="info"
+              checked={selectedOption === opt.value}
+              label={opt.label}
+              onChange={() => onChange(opt.value)}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Box>
+  );
+}
+
 export default function DateFilterModal({
   onApply,
   onClose,
@@ -25,7 +53,7 @@ export default function DateFilterModal({
   isLoading,
 }) {
   const [dateRange, setDateRange] = useState([]);
-
+  const [selectedOption, setSelectedOption] = useState('week');
   const handleApply = () => {
     onApply(dateRange);
   };
@@ -37,18 +65,27 @@ export default function DateFilterModal({
       footer={<Footer onApply={handleApply} onClose={onClose} />}
       onClose={onClose}
       isLoading={isLoading}
-      size="lg"
+      size="md"
     >
-      <div style={{ minHeight: '450px', padding: '1rem 0' }}>
-        <DatePicker
-          mode="range"
-          value={dateRange}
-          onChange={setDateRange}
-          showMonths={2}
-          inline
-          dateFormat="d.m.Y"
-        />
-      </div>
+      <Row direction="row" gutter={5}>
+        <Col>
+          <DateOptions
+            selectedOption={selectedOption}
+            onChange={(opt) => setSelectedOption(opt)}
+          />
+        </Col>
+        <Col>
+          {' '}
+          <DatePicker
+            mode="range"
+            value={dateRange}
+            onChange={setDateRange}
+            showMonths={2}
+            inline
+            dateFormat="d.m.Y"
+          />
+        </Col>
+      </Row>
     </Modal>
   );
 }
