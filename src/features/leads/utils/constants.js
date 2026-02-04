@@ -26,70 +26,72 @@ export const ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS = [
 ];
 
 export const REJECTION_REASON_OPTIONS = [
-  {
-    value: 'Dubl lead',
-    label: 'Dubl lead',
-  },
-  {
-    value: "Yosh to'g'ri kelmaydi",
-    label: "Yosh to'g'ri kelmaydi",
-  },
-  {
-    value: 'Toshkentga kela olmaydi',
-    label: 'Toshkentga kela olmaydi',
-  },
-  {
-    value: "Narxi to'g'ri kelmadi",
-    label: "Narxi to'g'ri kelmadi",
-  },
-  {
-    value: "Bosh to'lov to'g'ri kelmadi",
-    label: "Bosh to'lov to'g'ri kelmadi",
-  },
-  {
-    value: "Oylik to'lov to'g'ri kelmadi",
-    label: "Oylik to'lov to'g'ri kelmadi",
-  },
-  {
-    value: 'Mahsulot narxi qimmat ekan',
-    label: 'Mahsulot narxi qimmat ekan',
-  },
-  {
-    value: '3 shaxsga olib bermoqochi',
-    label: '3 shaxsga olib bermoqochi',
-  },
-  {
-    value: '1-2 kundan keyin kelar ekan',
-    label: '1-2 kundan keyin kelar ekan',
-  },
-  {
-    value: 'Iphone kerak emas',
-    label: 'Iphone kerak emas',
-  },
-  {
-    value: 'iCloud / Karobka olib qolinishi',
-    label: 'iCloud / Karobka olib qolinishi',
-  },
-  {
-    value: 'Mijoz filialga kela olmaydi',
-    label: 'Mijoz filialga kela olmaydi',
-  },
-  {
-    value: 'Skoringdan bekor qilindi',
-    label: 'Skoringdan bekor qilindi',
-  },
-  {
-    value: 'Umuman aloqaga chiqib bo`lmadi',
-    label: 'Umuman aloqaga chiqib bo`lmadi',
-  },
-  {
-    value: 'Boshqa joydan sotib olibdi',
-    label: 'Boshqa joydan sotib olibdi',
-  },
-  {
-    value: 'Mashka',
-    label: 'Mashka',
-  },
+  [
+    {
+      value: 'Dubl lead',
+      label: 'Dubl lead',
+    },
+    {
+      value: "Yosh to'g'ri kelmaydi",
+      label: "Yosh to'g'ri kelmaydi",
+    },
+    {
+      value: 'Toshkentga kela olmaydi',
+      label: 'Toshkentga kela olmaydi',
+    },
+    {
+      value: "Narxi to'g'ri kelmadi",
+      label: "Narxi to'g'ri kelmadi",
+    },
+    {
+      value: "Bosh to'lov to'g'ri kelmadi",
+      label: "Bosh to'lov to'g'ri kelmadi",
+    },
+    {
+      value: "Oylik to'lov to'g'ri kelmadi",
+      label: "Oylik to'lov to'g'ri kelmadi",
+    },
+    {
+      value: 'Mahsulot narxi qimmat ekan',
+      label: 'Mahsulot narxi qimmat ekan',
+    },
+    {
+      value: '3 shaxsga olib bermoqochi',
+      label: '3 shaxsga olib bermoqochi',
+    },
+    {
+      value: '1-2 kundan keyin kelar ekan',
+      label: '1-2 kundan keyin kelar ekan',
+    },
+    {
+      value: 'Iphone kerak emas',
+      label: 'Iphone kerak emas',
+    },
+    {
+      value: 'iCloud / Karobka olib qolinishi',
+      label: 'iCloud / Karobka olib qolinishi',
+    },
+    {
+      value: 'Mijoz filialga kela olmaydi',
+      label: 'Mijoz filialga kela olmaydi',
+    },
+    {
+      value: 'Skoringdan bekor qilindi',
+      label: 'Skoringdan bekor qilindi',
+    },
+    {
+      value: 'Umuman aloqaga chiqib bo`lmadi',
+      label: 'Umuman aloqaga chiqib bo`lmadi',
+    },
+    {
+      value: 'Boshqa joydan sotib olibdi',
+      label: 'Boshqa joydan sotib olibdi',
+    },
+    {
+      value: 'Mashka',
+      label: 'Mashka',
+    },
+  ],
 ];
 
 export const PULT = {

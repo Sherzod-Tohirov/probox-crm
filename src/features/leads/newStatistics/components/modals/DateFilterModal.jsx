@@ -37,15 +37,18 @@ export default function DateFilterModal({
       footer={<Footer onApply={handleApply} onClose={onClose} />}
       onClose={onClose}
       isLoading={isLoading}
+      size="lg"
     >
-      <DatePicker
-        mode="range"
-        value={dateRange}
-        onChange={setDateRange}
-        showMonths={2}
-        inline
-        dateFormat="d.m.Y"
-      />
+      <div style={{ minHeight: '450px', padding: '1rem 0' }}>
+        <DatePicker
+          mode="range"
+          value={dateRange}
+          onChange={setDateRange}
+          showMonths={2}
+          inline
+          dateFormat="d.m.Y"
+        />
+      </div>
     </Modal>
   );
 }
