@@ -3,6 +3,7 @@
 .datePickerWrapper {
   position: relative;
   width: 100%;
+  min-height: 400px;
 
   &.disabled {
     opacity: 0.6;
@@ -13,13 +14,16 @@
     .datePickerInput {
       display: none;
     }
+
+    // Inline rejimda kalendar to'liq ko'rinishi uchun
+    min-height: 450px;
   }
 }
 
 .datePickerInput {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   color: #374151;
@@ -28,22 +32,47 @@
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    border-color: #D1D5DB;
+    border-color: #d1d5db;
   }
 
   &:focus {
     outline: none;
-    border-color: #3B82F6;
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   &:disabled {
-    background-color: #F9FAFB;
+    background-color: #f9fafb;
     cursor: not-allowed;
   }
 
   &::placeholder {
-    color: #9CA3AF;
+    color: #9ca3af;
+  }
+
+  // Dark mode
+  [data-theme='dark'] & {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+
+    &:hover:not(:disabled) {
+      border-color: #6b7280;
+    }
+
+    &:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    &:disabled {
+      background-color: #1f2937;
+      color: #6b7280;
+    }
+
+    &::placeholder {
+      color: #6b7280;
+    }
   }
 }
 
@@ -51,11 +80,32 @@
 :global {
   .flatpickr-calendar {
     background: #fff;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     font-family: inherit;
-    padding: 1rem;
+    padding: 1.5rem;
+    width: auto !important;
+
+    // Dark mode
+    [data-theme='dark'] & {
+      background: #1f2937;
+      border-color: #374151;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    &.inline {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      display: block !important;
+      box-shadow: none;
+      border: none;
+
+      [data-theme='dark'] & {
+        box-shadow: none;
+      }
+    }
 
     &.arrowTop:before,
     &.arrowTop:after {
@@ -78,34 +128,75 @@
 
   // Oy sarlavhasi
   .flatpickr-month {
-    color: #111827;
-    fill: #111827;
+    color: #111827 !important;
+    fill: #111827 !important;
     height: 40px;
     line-height: 1;
     margin-bottom: 0.75rem;
+
+    [data-theme='dark'] & {
+      color: #f9fafb !important;
+      fill: #f9fafb !important;
+    }
   }
 
   .flatpickr-current-month {
-    font-size: 1rem;
+    font-size: 16px !important;
     font-weight: 600;
-    color: #111827;
+    color: #111827 !important;
     padding: 0;
+
+    [data-theme='dark'] & {
+      color: #f9fafb !important;
+    }
 
     .flatpickr-monthDropdown-months {
       font-weight: 600;
+      font-size: 16px !important;
+
+      [data-theme='dark'] & {
+        background: #374151;
+        color: #f9fafb;
+        border-color: #4b5563;
+      }
+    }
+
+    .numInputWrapper {
+      font-size: 16px !important;
+
+      [data-theme='dark'] & {
+        input {
+          background: #374151;
+          color: #f9fafb;
+          border-color: #4b5563;
+        }
+      }
+
+      input {
+        font-size: 16px !important;
+      }
     }
   }
 
   // Navigation arrows
   .flatpickr-prev-month,
   .flatpickr-next-month {
-    fill: #6B7280;
+    fill: #6b7280;
     padding: 0.5rem;
-    
+
     &:hover {
       fill: #111827;
-      background: #F3F4F6;
+      background: #f3f4f6;
       border-radius: 0.375rem;
+
+      [data-theme='dark'] & {
+        fill: #f9fafb;
+        background: #374151;
+      }
+    }
+
+    [data-theme='dark'] & {
+      fill: #9ca3af;
     }
 
     svg {
@@ -120,10 +211,14 @@
   }
 
   .flatpickr-weekday {
-    color: #6B7280;
-    font-size: 0.875rem;
+    color: #6b7280 !important;
+    font-size: 14px !important;
     font-weight: 500;
     line-height: 1;
+
+    [data-theme='dark'] & {
+      color: #9ca3af !important;
+    }
   }
 
   // Kunlar
@@ -132,10 +227,10 @@
   }
 
   .flatpickr-day {
-    color: #374151;
+    color: #374151 !important;
     border: none;
     border-radius: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 14px !important;
     font-weight: 500;
     height: 40px;
     line-height: 40px;
@@ -143,72 +238,122 @@
     max-width: 40px;
     width: 40px;
 
+    [data-theme='dark'] & {
+      color: #d1d5db !important;
+    }
+
     &:hover:not(.flatpickr-disabled):not(.selected) {
-      background: #F3F4F6;
+      background: #f3f4f6;
       border-color: transparent;
+
+      [data-theme='dark'] & {
+        background: #374151;
+      }
     }
 
     // Tanlangan kun (rasmga mos - dark blue)
     &.selected,
     &.startRange,
     &.endRange {
-      background: #1E293B !important;
+      background: #1e293b !important;
       color: #fff !important;
-      border-color: #1E293B !important;
+      border-color: #1e293b !important;
       font-weight: 600;
+
+      [data-theme='dark'] & {
+        background: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+      }
     }
 
     // Range oralig'i
     &.inRange {
-      background: #EFF6FF;
-      color: #1E40AF;
+      background: #eff6ff;
+      color: #1e40af;
       border-color: transparent;
       box-shadow: none;
+
+      [data-theme='dark'] & {
+        background: #1e3a5f;
+        color: #93c5fd;
+      }
     }
 
     // Bugungi kun
     &.today {
-      border: 1px solid #3B82F6;
+      border: 1px solid #3b82f6;
       background: transparent;
-      color: #3B82F6;
+      color: #3b82f6;
 
       &:hover {
-        background: #EFF6FF;
+        background: #eff6ff;
+
+        [data-theme='dark'] & {
+          background: #1e3a5f;
+        }
       }
 
       &.selected {
-        background: #1E293B !important;
+        background: #1e293b !important;
         color: #fff !important;
-        border-color: #1E293B !important;
+        border-color: #1e293b !important;
+
+        [data-theme='dark'] & {
+          background: #3b82f6 !important;
+          border-color: #3b82f6 !important;
+        }
+      }
+
+      [data-theme='dark'] & {
+        border-color: #60a5fa;
+        color: #60a5fa;
       }
     }
 
     // Boshqa oyning kunlari
     &.prevMonthDay,
     &.nextMonthDay {
-      color: #D1D5DB;
+      color: #d1d5db;
+
+      [data-theme='dark'] & {
+        color: #4b5563;
+      }
     }
 
     // Disabled kunlar
     &.flatpickr-disabled {
-      color: #E5E7EB;
+      color: #e5e7eb;
       cursor: not-allowed;
 
       &:hover {
         background: transparent;
+      }
+
+      [data-theme='dark'] & {
+        color: #374151;
       }
     }
   }
 
   // Time picker
   .flatpickr-time {
-    border-top: 1px solid #E5E7EB;
+    border-top: 1px solid #e5e7eb;
     margin-top: 0.75rem;
     padding-top: 0.75rem;
+
+    [data-theme='dark'] & {
+      border-top-color: #374151;
+    }
 
     input {
       font-weight: 600;
       color: #111827;
+
+      [data-theme='dark'] & {
+        background: #374151;
+        color: #f9fafb;
+        border-color: #4b5563;
+      }
     }
   }
 }
