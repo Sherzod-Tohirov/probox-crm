@@ -82,13 +82,13 @@ const saveState = (state) => {
   }
 };
 
-const clearPersistedState = () => {
-  try {
-    localStorage.removeItem('leadsPageState');
-  } catch (error) {
-    console.log('Error clearing leads page state', error);
-  }
-};
+// const clearPersistedState = () => {
+//   try {
+//     localStorage.removeItem('leadsPageState');
+//   } catch (error) {
+//     console.log('Error clearing leads page state', error);
+//   }
+// };
 
 const initialState = loadState();
 // Save initial state
