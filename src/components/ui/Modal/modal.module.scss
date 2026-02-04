@@ -6,7 +6,7 @@
   @include m.flex-center;
   padding: 0; // Remove default padding
   overflow-y: auto; // Allow scrolling if modal exceeds viewport
-  overflow-x: hidden; // Prevent horizontal overflow
+  overflow-x: auto; // Prevent horizontal overflow
 
   // Improve mobile scrolling behavior
   -webkit-overflow-scrolling: touch;
@@ -42,7 +42,7 @@
   margin: 15px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; // Prevent content overflow
+  overflow: auto;
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2);
@@ -241,7 +241,7 @@
     padding: 16px;
     flex: 1; // Allow body to grow and take available space
     overflow-y: auto; // Enable scrolling if content exceeds height
-    overflow-x: hidden; // Prevent horizontal overflow
+    overflow-x: auto; // Prevent horizontal overflow
 
     // Responsive body adjustments
     @include m.media-max(1199px) {

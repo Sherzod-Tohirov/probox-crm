@@ -53,6 +53,9 @@ const routePermissions = {
   '/leads/statistics': {
     allowedRoles: ['OperatorM', 'CEO', 'Manager'],
   },
+  '/leads/statistics/new': {
+    allowedRoles: ['OperatorM', 'CEO', 'Manager'],
+  },
 };
 
 /**

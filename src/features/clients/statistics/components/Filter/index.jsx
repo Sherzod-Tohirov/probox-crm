@@ -9,7 +9,6 @@ import useWatchedFields from '@/features/clients/statistics/hooks/useWatchedFiel
 import { initialStatisticsFilterState } from '@/store/utils/initialStates';
 import { setClientsStatisticsFilter } from '@store/slices/clientsPageSlice';
 import styles from './style.module.scss';
-import _ from 'lodash';
 import moment from 'moment';
 import useIsMobile from '@/hooks/useIsMobile';
 
@@ -55,11 +54,10 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
         initialStatisticsFilterState.slpCode
       ),
     });
-    setFilterToggle(false);
     setParams({
       ...initialStatisticsFilterState,
     });
-  }, [initialStatisticsFilterState, executors.options]);
+  }, [executors.options, dispatch, reset, setParams]);
 
   useEffect(() => {
     if (!watchedFields.startDate || !watchedFields.endDate) return;
@@ -98,7 +96,7 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
         })
       );
     }
-  }, [watchedFields.startDate, filterState.startDate, dispatch]);
+  }, [watchedFields.startDate, filterState.startDate, dispatch, filterState]);
 
   useEffect(() => {
     if (watchedFields.endDate !== filterState.endDate) {
@@ -109,7 +107,7 @@ const Filter = ({ onFilter, setParams, isExpanded = false }) => {
         })
       );
     }
-  }, [watchedFields.endDate, filterState.endDate, dispatch]);
+  }, [watchedFields.endDate, filterState.endDate, dispatch, filterState]);
 
   return (
     <Accordion isEnabled={isMobile} isOpen={isExpanded}>
