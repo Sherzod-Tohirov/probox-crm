@@ -33,6 +33,7 @@
   will-change: width;
   border-right: 1px solid v.$secondary-border-color;
   transition: all v.$transition-time v.$transition-type;
+  flex-shrink: 0; // Sidebar o'lchamini saqlab qolish
 
   &.open {
     width: clamp(200px, 220px, 220px) !important;
@@ -49,10 +50,15 @@
     height: 100%;
     z-index: 1005;
     transform: translateX(-100%);
+
+    &.open {
+      transform: translateX(0);
+    }
   }
 
   &.mobile:not(.open) {
     opacity: 0;
+    pointer-events: none; // Mobile da yopiq bo'lganda click qabul qilmaslik
   }
 }
 
@@ -77,6 +83,9 @@
   flex: 1;
   padding: 6rem;
   padding-bottom: 68px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 
   @include m.media-max(v.$breakpoint-lg) {
     padding: 4rem;
@@ -101,6 +110,8 @@
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
+  // flex: 1;
+  // min-width: 0; // Flexbox fix - allows shrinking below content size
 }
 
 .client-page-layout {

@@ -5,7 +5,7 @@ import useToggle from '@hooks/useToggle';
 import sidebarLinks from '@utils/sidebarLinks';
 import filterSidebarLinks from '@utils/filterSidebarLinks';
 import iconsMap from '@utils/iconsMap';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import useIsMobile from '@hooks/useIsMobile';
@@ -15,7 +15,6 @@ export default function Sidebar() {
   const { pathname } = useLocation();
   const { isOpen, toggle } = useToggle('sidebar');
   const isMobile = useIsMobile();
-  const location = useLocation();
   const { user } = useAuth();
 
   // Filter sidebar links based on user role
@@ -29,11 +28,16 @@ export default function Sidebar() {
     setOpenMap((prev) => ({ ...prev, [path]: !prev[path] }));
   }, []);
 
+  const prevPathnameRef = useRef(pathname);
+
   useLayoutEffect(() => {
-    if (isMobile && isOpen) {
+    const hasRouteChanged = prevPathnameRef.current !== pathname;
+    prevPathnameRef.current = pathname;
+
+    if (hasRouteChanged && isMobile && isOpen) {
       toggle();
     }
-  }, [location.pathname, isMobile, isOpen, toggle]);
+  }, [pathname, isMobile, isOpen, toggle]);
 
   const renderNavItem = useCallback(
     (link, depth = 0) => {
