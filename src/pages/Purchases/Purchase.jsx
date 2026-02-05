@@ -127,7 +127,6 @@ export default function Purchase() {
         return;
       }
       const blob = await fetchFile(pdfItem.pdfUrl);
-      console.log(blob, 'blob');
       downloadFile(blob, `Yuk_xati_${contractNo}.pdf`);
       alert('PDF yuklab olish muvaffaqiyatli');
       return;

@@ -122,7 +122,7 @@ const DatePicker = forwardRef(
       onClose = () => {},
       enableTime = false,
       noCalendar = false,
-      locale = 'default',
+      locale = 'uz',
       disable,
       enable,
       position = 'auto',
@@ -148,11 +148,12 @@ const DatePicker = forwardRef(
           : enable;
 
       const resolvedLocale =
-        locale === 'default' || locale === undefined || locale === null
-          ? undefined
-          : locale === 'uz'
-            ? uzLocale
-            : locale;
+        locale === 'uz' ||
+        locale === 'default' ||
+        locale === undefined ||
+        locale === null
+          ? uzLocale
+          : locale;
 
       const baseOptions = {
         mode,

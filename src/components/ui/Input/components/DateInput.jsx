@@ -1,9 +1,22 @@
 import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+import '@/components/ui/DatePicker/datePicker.module.scss';
 import { buildDateOptions } from '../utils/flatpickrOptions';
 import { formatDateUI } from '../utils/formatters';
-import { isHourOnly as calcHourOnly, normalizeToTopOfHour, applyHourOnlyGuards } from '../utils/flatpickrHourOnly';
+import {
+  isHourOnly as calcHourOnly,
+  normalizeToTopOfHour,
+  applyHourOnlyGuards,
+} from '../utils/flatpickrHourOnly';
 
-const DateInput = ({ includeTime, datePickerOptions = {}, value, defaultValue, onChange, commonProps }) => {
+const DateInput = ({
+  includeTime,
+  datePickerOptions = {},
+  value,
+  defaultValue,
+  onChange,
+  commonProps,
+}) => {
   const hourOnly = calcHourOnly(datePickerOptions);
   const options = buildDateOptions({
     includeTime,

@@ -84,17 +84,14 @@ export function useUploadPurchasePdf() {
     mutationFn: (params) => uploadPurchasePdf(params),
     onSuccess: (response) => {
       console.log(response, 'response');
-      alert('Xarid muvaffaqiyatli yuklandi', { type: 'success' });
+      alert('PDF yuklab olish muvaffaqiyatli', { type: 'success' });
     },
     onError: (error) => {
       console.log(error);
-      alert('Xaridni yuklashda xatolik', { type: 'error' });
+      alert('PDF yuklab olishda xatolik', { type: 'error' });
     },
   });
 }
-
-
-
 
 export function useCancelPurchase() {
   const { alert } = useAlert();

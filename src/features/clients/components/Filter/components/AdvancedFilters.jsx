@@ -8,7 +8,7 @@ export default function AdvancedFilters({
 }) {
   return (
     <>
-      <Col xs={12} sm={6} md={3} lg={2}>
+      <Col xs={12} sm={6} md={3} lg={2} fullWidth>
         <Input
           name="startDate"
           size="full-grow"
@@ -19,7 +19,7 @@ export default function AdvancedFilters({
           control={control}
         />
       </Col>
-      <Col xs={12} sm={6} md={3} lg={2}>
+      <Col xs={12} sm={6} md={3} lg={2} fullWidth>
         <Input
           name="endDate"
           size="full-grow"
@@ -30,7 +30,7 @@ export default function AdvancedFilters({
           control={control}
         />
       </Col>
-      <Col xs={12} sm={6} md={3} lg={2}>
+      <Col xs={12} sm={6} md={3} lg={2} fullWidth>
         <Input
           size="full-grow"
           canClickIcon={false}
@@ -43,7 +43,7 @@ export default function AdvancedFilters({
           name="paymentStatus"
         />
       </Col>
-      <Col xs={12} sm={6} md={3} lg={2}>
+      <Col xs={12} sm={6} md={3} lg={2} fullWidth>
         <Input
           type="select"
           size="full-grow"
@@ -59,7 +59,7 @@ export default function AdvancedFilters({
           name="slpCode"
         />
       </Col>
-      <Col xs={12} sm={6} md={3} lg={2}>
+      <Col xs={12} sm={6} md={3} lg={2} fullWidth>
         <Input
           type="select"
           size="full-grow"
