@@ -13,6 +13,7 @@ export function generatePurchasePayload({
   user,
   purchaseItems,
   status,
+  docEntry,
 }) {
   return {
     contractNo: contractNo || purchase?.docNum || 'N/A',
@@ -42,5 +43,6 @@ export function generatePurchasePayload({
       (sum, item) => sum + (item.price * item.quantity || 0),
       0
     ),
+    docEntry,
   };
 }

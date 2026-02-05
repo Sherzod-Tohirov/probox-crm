@@ -5,8 +5,11 @@ import formatterCurrency from '@/utils/formatterCurrency';
 pdfMake.vfs = pdfFonts.vfs;
 
 export function generatePurchasePdf(purchaseData) {
-  //   console.log('generatePurchasePdf called with:', purchaseData);
-
+    console.log('generatePurchasePdf called with:', purchaseData);
+  const qrCodeUrl =
+    import.meta.env.VITE_API_URL +
+    `/public/purchases/pdfs/${purchaseData?.docEntry}`;
+  console.log(qrCodeUrl);
   try {
     const {
       contractNo = '83745',
@@ -345,7 +348,7 @@ export function generatePurchasePdf(purchaseData) {
         {
           stack: [
             {
-              qr: `https://probox.uz/purchase/${contractNo}`,
+              qr: qrCodeUrl,
               fit: 79,
               alignment: 'center',
               margin: [],
@@ -401,7 +404,12 @@ export function generatePurchasePdf(purchaseData) {
     };
 
     // console.log('Creating PDF with docDefinition');
-    pdfMake.createPdf(docDefinition).download(`Yuk_xati_${contractNo}.pdf`);
+    const fileName = `Yuk_xati_${contractNo}.pdf`;
+    const pdfDoc = pdfMake.createPdf(docDefinition);
+    pdfDoc.download(fileName);
+    return new Promise((resolve) => {
+      pdfDoc.getBlob((blob) => resolve(blob));
+    });
     // console.log('PDF download initiated');
   } catch (error) {
     console.error('Error generating PDF:', error);

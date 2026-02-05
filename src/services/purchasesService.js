@@ -49,6 +49,21 @@ export const getSuppliers = async (params = {}) => {
 };
 
 /**
+ * Get purchase pdfs list
+ * @param {string|number} id - Purchase's DocEntry
+ * @returns {Promise} API response
+ */
+export const getPurchasePdfs = async (id) => {
+  try {
+    const response = await api.get(`/purchase/pdf/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Get purchase pdfs error:', error);
+    throw error;
+  }
+};
+
+/**
  * Create new purchase
  * @param {Object} data - Purchase data
  * @returns {Promise} API response
@@ -131,17 +146,16 @@ export const deletePurchase = async (id) => {
 };
 
 /**
- * Create purchase item
- * @param {string|number} contractNo - Purchase contract number
- * @param {Object} data - Item data (product_id, product_code, category, imei, status, battery, count, price)
+ * Upload purchase pdf
+ * @param {Object} data - Purchase data {file: File, docEntry: number}
  * @returns {Promise} API response
  */
-export const createPurchaseItem = async (contractNo, data) => {
+export const uploadPurchasePdf = async (data) => {
   try {
-    const response = await api.post(`/purchase/${contractNo}/items`, data);
+    const response = await api.post(`/purchases/pdfs`, data);
     return response.data;
   } catch (error) {
-    console.error('Create purchase item error:', error);
+    console.error('Delete purchase error:', error);
     throw error;
   }
 };

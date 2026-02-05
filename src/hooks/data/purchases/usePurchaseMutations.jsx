@@ -4,6 +4,7 @@ import {
   confirmPurchase,
   createPurchase,
   updatePurchase,
+  uploadPurchasePdf,
 } from '@/services/purchasesService';
 import useAlert from '@/hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
@@ -75,6 +76,25 @@ export function useConfirmPurchase() {
     },
   });
 }
+
+export function useUploadPurchasePdf() {
+  const { alert } = useAlert();
+
+  return useMutation({
+    mutationFn: (params) => uploadPurchasePdf(params),
+    onSuccess: (response) => {
+      console.log(response, 'response');
+      alert('Xarid muvaffaqiyatli yuklandi', { type: 'success' });
+    },
+    onError: (error) => {
+      console.log(error);
+      alert('Xaridni yuklashda xatolik', { type: 'error' });
+    },
+  });
+}
+
+
+
 
 export function useCancelPurchase() {
   const { alert } = useAlert();
