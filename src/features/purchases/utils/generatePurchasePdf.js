@@ -1,15 +1,23 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import formatterCurrency from '@/utils/formatterCurrency';
+import { imageToBase64 } from '@/utils/pdfHelpers';
+import logoImage from '@/assets/images/new_logo.png';
 
 pdfMake.vfs = pdfFonts.vfs;
 
-export function generatePurchasePdf(purchaseData) {
-    console.log('generatePurchasePdf called with:', purchaseData);
+export async function generatePurchasePdf(purchaseData) {
   const qrCodeUrl =
     import.meta.env.VITE_API_URL +
     `/public/purchases/pdfs/${purchaseData?.docEntry}`;
-  console.log(qrCodeUrl);
+
+  let logoBase64 = null;
+  try {
+    logoBase64 = await imageToBase64(logoImage);
+  } catch (e) {
+    console.error('Logo yuklashda xatolik:', e);
+  }
+
   try {
     const {
       contractNo = '83745',
@@ -23,394 +31,358 @@ export function generatePurchasePdf(purchaseData) {
       items = [],
     } = purchaseData;
 
-    // console.log('Items count:', items.length);
-
     const totalAmount = items.reduce(
       (sum, item) => sum + item.price * (item.quantity || 1),
       0
     );
-    // Kategoriya uchun badge rang
-    const getCategoryColor = (category) => {
-      const colors = {
-        iPhone: '#0EA5E9',
-        'Maishiy texnika': '#F59E0B',
-        Noutbuklar: '#8B5CF6',
-        Planshetlar: '#EC4899',
+
+    // Helper functions for badge colors
+    const getCategoryColors = (category) => {
+      const map = {
+        iPhone: { fill: '#E0F2FE', text: '#0284C7' },
+        'Maishiy texnika': { fill: '#FEF3C7', text: '#D97706' },
+        Noutbuklar: { fill: '#EDE9FE', text: '#7C3AED' },
+        Planshetlar: { fill: '#FCE7F3', text: '#DB2777' },
+        Telefonlar: { fill: '#E0F2FE', text: '#0284C7' },
       };
-      return colors[category] || '#0EA5E9';
+      return map[category] || { fill: '#E0F2FE', text: '#0284C7' };
     };
 
-    // Holat uchun badge rang
-    const getStatusColor = (status) => {
-      const colors = {
-        Yangi: '#10B981',
-        'B/U': '#EF4444',
+    const getStatusColors = (status) => {
+      const map = {
+        Yangi: { fill: '#D1FAE5', text: '#059669' },
+        'B/U': { fill: '#FEE2E2', text: '#DC2626' },
       };
-      return colors[status] || '#6B7280';
+      return map[status] || { fill: '#F3F4F6', text: '#4B5563' };
     };
 
-    // Foiz uchun badge rang
-    const getBatteryColor = (battery) => {
+    const getBatteryColors = (battery) => {
+      if (!battery) return { fill: '#F3F4F6', text: '#4B5563' };
       const percent = parseInt(battery);
-      if (percent >= 95) return '#10B981'; // Yashil
-      if (percent >= 85) return '#F59E0B'; // Sariq
-      return '#EF4444'; // Qizil
+      if (percent >= 95) return { fill: '#D1FAE5', text: '#059669' };
+      if (percent >= 80) return { fill: '#FEE2E2', text: '#DC2626' };
+      return { fill: '#FEE2E2', text: '#DC2626' };
     };
 
     const tableBody = [
+      // Header Row
       [
-        { text: '№', style: 'tableHeader', alignment: 'center', fontSize: 8 },
-        { text: 'Mahsulot nomi', style: 'tableHeader', fontSize: 8 },
-        { text: 'Kodi', style: 'tableHeader', fontSize: 8 },
-        { text: 'Kategoriyalar', style: 'tableHeader', fontSize: 8 },
-        { text: 'IMEI raqami', style: 'tableHeader', fontSize: 8 },
-        {
-          text: 'Holati',
-          style: 'tableHeader',
-          alignment: 'center',
-          fontSize: 8,
-        },
-        {
-          text: 'Foizi',
-          style: 'tableHeader',
-          alignment: 'center',
-          fontSize: 8,
-        },
-        {
-          text: 'Miqdor',
-          style: 'tableHeader',
-          alignment: 'center',
-          fontSize: 8,
-        },
-        {
-          text: 'Narxi',
-          style: 'tableHeader',
-          alignment: 'right',
-          fontSize: 8,
-        },
+        { text: '№', style: 'tableHeader', alignment: 'center' },
+        { text: 'Mahsulot nomi', style: 'tableHeader' },
+        { text: 'Kodi', style: 'tableHeader' },
+        { text: 'Kategoriyalar', style: 'tableHeader' },
+        { text: 'IMEI raqami', style: 'tableHeader' },
+        { text: 'Holati', style: 'tableHeader', alignment: 'center' },
+        { text: 'Foizi', style: 'tableHeader', alignment: 'center' },
+        { text: 'Miqdor', style: 'tableHeader', alignment: 'center' },
+        { text: 'Narxi', style: 'tableHeader', alignment: 'right' },
       ],
-      ...items.map((item, index) => [
-        { text: index + 1, alignment: 'center', fontSize: 8 },
-        { text: item.product_name || '-', fontSize: 8, bold: false },
-        { text: item.product_code || '-', fontSize: 8, color: '#6B7280' },
-        {
-          text: item.category || '-',
-          color: getCategoryColor(item.category),
-          fontSize: 8,
-          bold: true,
-        },
-        { text: item.imei || '-', fontSize: 8, color: '#374151' },
-        {
-          text: item.status || '-',
-          alignment: 'center',
-          fontSize: 8,
-          color: getStatusColor(item.status),
-          bold: true,
-        },
-        {
-          text: item.batteryCapacity ? `${item.batteryCapacity}` : '-',
-          color: getBatteryColor(item.batteryCapacity),
-          alignment: 'center',
-          fontSize: 8,
-          bold: true,
-        },
-        { text: item.count || 1, alignment: 'center', fontSize: 8 },
-        {
-          text: formatterCurrency(item.price, item?.currency),
-          alignment: 'right',
-          color: '#0EA5E9',
-          fontSize: 8,
-          bold: true,
-        },
-      ]),
+      // Data Rows
+      ...items.map((item, index) => {
+        const catColors = getCategoryColors(item.category);
+        const statusColors = getStatusColors(item.status);
+        const batteryColors = getBatteryColors(item.batteryCapacity);
+
+        return [
+          { text: index + 1, style: 'tableCell', alignment: 'center' },
+          { text: item.product_name || '-', style: 'tableCell', bold: true },
+          {
+            text: item.product_code || '-',
+            style: 'tableCell',
+            color: '#6B7280',
+          },
+          {
+            text: item.category || '-',
+            style: 'badge',
+            fillColor: catColors.fill,
+            color: catColors.text,
+            alignment: 'center',
+          },
+          { text: item.imei || '-', style: 'tableCell', color: '#6B7280' },
+          {
+            text: item.status || '-',
+            style: 'badge',
+            fillColor: statusColors.fill,
+            color: statusColors.text,
+            alignment: 'center',
+          },
+          {
+            text: item.batteryCapacity ? `${item.batteryCapacity}%` : '',
+            style: 'badge',
+            fillColor: item.batteryCapacity ? batteryColors.fill : undefined,
+            color: item.batteryCapacity ? batteryColors.text : undefined,
+            alignment: 'center',
+          },
+          { text: item.count || 1, style: 'tableCell', alignment: 'center' },
+          {
+            text: formatterCurrency(item.price, item?.currency),
+            style: 'tableCell',
+            alignment: 'right',
+            color: '#0EA5E9',
+            bold: true,
+          },
+        ];
+      }),
     ];
 
     const docDefinition = {
       pageSize: 'A4',
-      pageMargins: [40, 60, 40, 80],
+      pageMargins: [30, 40, 30, 40],
       content: [
+        // Header Logo & Date
         {
           columns: [
+            { width: '*', text: '' },
+            {
+              width: 'auto',
+              stack: [
+                logoBase64
+                  ? {
+                      image: logoBase64,
+                      width: 80,
+                      alignment: 'center',
+                    }
+                  : {
+                      text: 'Probox',
+                      fontSize: 22,
+                      bold: true,
+                      color: '#1E293B',
+                      alignment: 'center',
+                    },
+              ],
+              alignment: 'center',
+            },
             {
               width: '*',
               stack: [
                 {
-                  text: 'Probox',
-                  fontSize: 18,
-                  bold: true,
-                  color: '#1E293B',
-                  margin: [0, 0, 0, 2],
-                },
-                {
-                  text: 'Where Experts Meet',
-                  fontSize: 8,
-                  color: '#64748B',
-                  italics: true,
+                  text: [
+                    { text: 'Sana: ', color: '#64748B', fontSize: 8 },
+                    { text: date, bold: true, color: '#1E293B', fontSize: 8 },
+                  ],
+                  alignment: 'right',
                 },
               ],
             },
-            {
-              width: '*',
-              text: `Sana: ${date}`,
-              alignment: 'right',
-              fontSize: 10,
-              color: '#1E293B',
-            },
           ],
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 30],
         },
+
+        // Title
         {
           text: `Yuk xati - N° ${contractNo}`,
-          fontSize: 16,
+          fontSize: 12,
           bold: true,
           color: '#1E293B',
           alignment: 'center',
+          margin: [0, 0, 0, 15],
+        },
+
+        // Info Grid (Supplier/Receiver details)
+        {
+          table: {
+            widths: ['*', 'auto', '*'],
+            body: [
+              [
+                // Left Column
+                {
+                  stack: [
+                    {
+                      columns: [
+                        {
+                          text: 'Yetkazib beruvchi',
+                          width: 80,
+                          style: 'label',
+                        },
+                        { text: supplier, width: '*', style: 'value' },
+                      ],
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      columns: [
+                        { text: 'Telefon raqami', width: 80, style: 'label' },
+                        { text: supplierPhone, width: '*', style: 'value' },
+                      ],
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      columns: [
+                        { text: 'Ombor', width: 80, style: 'label' },
+                        { text: warehouse, width: '*', style: 'value' },
+                      ],
+                    },
+                  ],
+                },
+                // Spacer
+                { text: '', width: 20 },
+                // Right Column
+                {
+                  stack: [
+                    {
+                      columns: [
+                        { text: 'Qabul qiluvchi', width: 80, style: 'label' },
+                        { text: receiver, width: '*', style: 'value' },
+                      ],
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      columns: [
+                        { text: 'Telefon raqami', width: 80, style: 'label' },
+                        { text: receiverPhone, width: '*', style: 'value' },
+                      ],
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      columns: [
+                        { text: 'Filial', width: 80, style: 'label' },
+                        { text: branch, width: '*', style: 'value' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
           margin: [0, 0, 0, 20],
         },
-        {
-          columns: [
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Yetkazib beruvchi',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: supplier,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Qabul qiluvchi',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: receiver,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 8],
-        },
-        {
-          columns: [
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Telefon raqami',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: supplierPhone,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Telefon raqami',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: receiverPhone,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 8],
-        },
-        {
-          columns: [
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Ombor',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: warehouse,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-            {
-              width: '50%',
-              alignment: 'center',
-              columns: [
-                {
-                  width: 'auto',
-                  text: 'Filial',
-                  fontSize: 9,
-                  color: '#94A3B8',
-                  margin: [0, 0, 15, 0],
-                },
-                {
-                  width: 'auto',
-                  text: branch,
-                  fontSize: 10,
-                  bold: true,
-                  color: '#1E293B',
-                },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 20],
-        },
+
+        // Product Table
         {
           table: {
             headerRows: 1,
-            widths: [15, 120, 40, 50, 70, 30, 25, 30, 60],
+            widths: [15, '*', 45, 55, 70, 35, 30, 25, 60],
             body: tableBody,
           },
           layout: {
             hLineWidth: () => 0.5,
-            vLineWidth: () => 0.5,
-            hLineColor: () => '#F1F5F9',
-            vLineColor: () => '#F1F5F9',
-            paddingLeft: () => 4,
-            paddingRight: () => 4,
-            paddingTop: () => 6,
-            paddingBottom: () => 6,
+            vLineWidth: () => 0,
+            hLineColor: '#E2E8F0',
+            paddingLeft: (i) => (i === 3 || i === 5 || i === 6 ? 0 : 4),
+            paddingRight: (i) => (i === 3 || i === 5 || i === 6 ? 0 : 4),
+            paddingTop: (i) => (i === 3 || i === 5 || i === 6 ? 0 : 2),
+            paddingBottom: (i) => (i === 3 || i === 5 || i === 6 ? 0 : 2),
           },
         },
+
+        // Total Footer
         {
-          text: [
+          columns: [
+            { width: '*', text: '' },
             {
-              text: `${items.length}`,
-              fontSize: 12,
-              bold: true,
-              color: '#1E293B',
-              alignment: 'center',
+              width: 'auto',
+              text: [
+                { text: `${items.length}`, bold: true, fontSize: 9 },
+                { text: ' ta mahsulot - ', fontSize: 9, color: '#1E293B' },
+                {
+                  text: formatterCurrency(
+                    totalAmount,
+                    items[0]?.currency || 'UZS'
+                  ),
+                  bold: true,
+                  fontSize: 10,
+                  color: '#0EA5E9',
+                  alignment: 'center',
+                },
+              ],
+              margin: [0, 10, 0, 0],
             },
-            {
-              text: ' ta mahsulot - ',
-              fontSize: 12,
-              bold: true,
-              color: '#1E293B',
-              alignment: 'center',
-            },
-            {
-              text: `${formatterCurrency(totalAmount, 'USD')}`,
-              fontSize: 12,
-              bold: true,
-              color: '#0EA5E9',
-              alignment: 'center',
-            },
+            { width: '*', text: '' },
           ],
-          margin: [0, 15, 0, 30],
         },
+
+        // QR Code Section
         {
-          stack: [
+          columns: [
+            { width: '*', text: '' },
             {
-              qr: qrCodeUrl,
-              fit: 79,
+              width: 'auto',
               alignment: 'center',
-              margin: [],
+              stack: [
+                {
+                  table: {
+                    widths: ['auto'],
+                    body: [
+                      [
+                        {
+                          qr: qrCodeUrl,
+                          fit: 70,
+                          alignment: 'center',
+                          margin: [4, 4, 4, 4],
+                        },
+                      ],
+                    ],
+                  },
+                  layout: {
+                    hLineWidth: () => 1,
+                    vLineWidth: () => 1,
+                    hLineColor: '#E2E8F0',
+                    vLineColor: '#E2E8F0',
+                    paddingLeft: () => 0,
+                    paddingRight: () => 0,
+                    paddingTop: () => 0,
+                    paddingBottom: () => 0,
+                  },
+                },
+                {
+                  text: '*siz bu QR kod orqali hujjatni elektron nusxasini\nyuklab olishingiz mumkin!',
+                  style: 'footerNote',
+                  margin: [0, 6, 0, 0],
+                },
+              ],
             },
+            { width: '*', text: '' },
           ],
-          margin: [0, 0, 0, 8],
-          alignment: 'center',
-        },
-        {
-          text: '*siz bu QR kod orqali hujjatni elektron nusxasini\nyuklab olishingiz mumkin!',
-          fontSize: 7,
-          alignment: 'center',
-          color: '#6b7280',
+          margin: [0, 30, 0, 0],
         },
       ],
       styles: {
-        logo: {
-          fontSize: 14,
-          bold: true,
-          color: '#1f2937',
-        },
-        header: {
-          fontSize: 14,
-          bold: true,
-          color: '#1f2937',
-        },
         label: {
           fontSize: 7,
-          color: '#6b7280',
-          margin: [0, 0, 0, 2],
+          color: '#94A3B8',
+          bold: true,
         },
         value: {
-          fontSize: 9,
+          fontSize: 8,
+          color: '#1E293B',
           bold: true,
-          color: '#1f2937',
+          alignment: 'right',
         },
         tableHeader: {
-          fontSize: 10,
+          fontSize: 7,
           bold: true,
           color: '#1E293B',
-          margin: [0, 4, 0, 4],
+          fillColor: '#F8FAFC',
+          margin: [0, 2, 0, 2],
         },
-        total: {
-          fontSize: 10,
+        tableCell: {
+          fontSize: 7,
+          color: '#1E293B',
+        },
+        badge: {
+          fontSize: 7,
           bold: true,
-          color: '#3B82F6',
+          margin: [0, 4, 0, 4], // Add padding INSIDE the cell for text, while cell has 0 padding
+          alignment: 'center',
+        },
+        footerNote: {
+          fontSize: 6,
+          color: '#94A3B8',
+          alignment: 'center',
+          lineHeight: 1.3,
         },
       },
       defaultStyle: {
-        fontSize: 8,
-        color: '#1f2937',
+        font: 'Roboto',
       },
     };
 
-    // console.log('Creating PDF with docDefinition');
     const fileName = `Yuk_xati_${contractNo}.pdf`;
     const pdfDoc = pdfMake.createPdf(docDefinition);
     pdfDoc.download(fileName);
     return new Promise((resolve) => {
       pdfDoc.getBlob((blob) => resolve(blob));
     });
-    // console.log('PDF download initiated');
   } catch (error) {
     console.error('Error generating PDF:', error);
     alert('PDF yaratishda xatolik yuz berdi: ' + error.message);

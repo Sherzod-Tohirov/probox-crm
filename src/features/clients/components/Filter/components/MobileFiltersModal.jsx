@@ -1,4 +1,4 @@
-import { Button, Col, Row, Modal } from '@components/ui';
+import { Button, Row, Modal } from '@components/ui';
 import AdvancedFilters from './AdvancedFilters';
 
 export default function MobileFiltersModal({
@@ -35,16 +35,14 @@ export default function MobileFiltersModal({
         </div>
       }
     >
-      <Row direction="column" gutter={6}>
-        <Col fullWidth>
-          <AdvancedFilters
-            control={control}
-            executorsOptions={executorsOptions}
-            isExecutorsLoading={isExecutorsLoading}
-            watchedStartDate={watchedStartDate}
-            watchedEndDate={watchedEndDate}
-          />
-        </Col>
+      <Row direction="column" gutter={6} wrap>
+        <AdvancedFilters
+          control={control}
+          executorsOptions={executorsOptions}
+          isExecutorsLoading={isExecutorsLoading}
+          watchedStartDate={watchedStartDate}
+          watchedEndDate={watchedEndDate}
+        />
       </Row>
     </Modal>
   );

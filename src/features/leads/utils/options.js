@@ -56,8 +56,8 @@ export const callCountOptions = [
     value: '',
     label: '-',
   },
-  ...Array.from({ length: 10 }).map((_, i) => ({
-    value: i + 1,
-    label: `${i + 1}`,
+  ...Array.from({ length: 11 }).map((_, i) => ({
+    value: i,
+    label: `${i}`,
   })),
 ];

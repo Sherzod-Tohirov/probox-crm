@@ -98,9 +98,9 @@ export function useSelectOptions(tab) {
       { value: 'Processing', label: 'Jarayonda' },
     ];
 
-    const callCountOptions = [...Array(10).keys()].map((i) => ({
-      value: i + 1,
-      label: i + 1,
+    const callCountOptions = [...Array(11).keys()].map((i) => ({
+      value: i,
+      label: i,
     }));
 
     return { passportVisitOptions, callCountOptions };

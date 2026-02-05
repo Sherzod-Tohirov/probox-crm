@@ -12,7 +12,6 @@ export default function usePurchasePdfs(docEntry) {
   const checkPdfExists = useCallback(async () => {
     if (!docEntry) return;
     const result = await refetchPdfs();
-    console.log(result, 'pdfs');
     return { exists: !!(result?.data?.items?.length > 0), data: result.data };
   }, [docEntry, refetchPdfs]);
 

@@ -14,10 +14,17 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [duration, setDuration] = useState(externalDuration || 0);
   const [currentTime, setCurrentTime] = useState(0);
   useEffect(() => {
     if (!waveformRef.current) return;
+
+    setIsLoading(true);
+    setHasError(false);
+    setIsPlaying(false);
+    setCurrentTime(0);
 
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current,
@@ -34,9 +41,15 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
     wavesurfer.current.load(src);
 
     wavesurfer.current.on('ready', () => {
+      setIsLoading(false);
       if (!externalDuration) {
         setDuration(wavesurfer.current.getDuration());
       }
+    });
+
+    wavesurfer.current.on('error', () => {
+      setHasError(true);
+      setIsLoading(false);
     });
 
     wavesurfer.current.on('audioprocess', () => {
@@ -53,12 +66,15 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
     });
 
     return () => {
-      wavesurfer.current.destroy();
+      if (wavesurfer.current) {
+        wavesurfer.current.destroy();
+        wavesurfer.current = null;
+      }
     };
   }, [src, externalDuration, color.text]);
 
   const togglePlay = () => {
-    if (!wavesurfer.current) return;
+    if (!wavesurfer.current || isLoading || hasError) return;
     wavesurfer.current.playPause();
     setIsPlaying(wavesurfer.current.isPlaying());
   };
@@ -68,8 +84,17 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
       className={classNames(styles.audioPlayer, styles[className])}
       style={{ color: color.text, backgroundColor: color.bg }}
     >
-      <button onClick={togglePlay} className={styles.playButton}>
-        {isPlaying ? (
+      <button
+        onClick={togglePlay}
+        className={classNames(styles.playButton, {
+          [styles.disabled]: isLoading || hasError,
+        })}
+        disabled={isLoading || hasError}
+        type="button"
+      >
+        {isLoading ? (
+          <span className={styles.loader} />
+        ) : isPlaying ? (
           <Pause color="#666" size={18} />
         ) : (
           <Play color="#666" size={18} />
@@ -79,7 +104,11 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
         <div ref={waveformRef} className={styles.waveform} />
       </div>
       <div className={styles.timer}>
-        {formatTime(currentTime)} / {formatTime(duration)}
+        {hasError
+          ? 'Xatolik'
+          : isLoading
+            ? 'Yuklanmoqda...'
+            : `${formatTime(currentTime)} / ${formatTime(duration)}`}
       </div>
     </div>
   );

@@ -119,7 +119,6 @@ export default function Purchase() {
   const handleDownloadPdf = async () => {
     // Filelarni yuklash
     const { exists, data } = await checkPdfExists();
-    console.log(exists, 'pdf file bormi');
     if (exists) {
       const pdfItem = data?.items[0];
       if (!(pdfItem && _.has(pdfItem, 'pdfUrl'))) {
@@ -127,7 +126,6 @@ export default function Purchase() {
         return;
       }
       const blob = await fetchFile(pdfItem.pdfUrl);
-      console.log(blob, 'blob');
       downloadFile(blob, `Yuk_xati_${contractNo}.pdf`);
       alert('PDF yuklab olish muvaffaqiyatli');
       return;

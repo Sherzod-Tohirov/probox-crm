@@ -82,19 +82,15 @@ export function useUploadPurchasePdf() {
 
   return useMutation({
     mutationFn: (params) => uploadPurchasePdf(params),
-    onSuccess: (response) => {
-      console.log(response, 'response');
-      alert('Xarid muvaffaqiyatli yuklandi', { type: 'success' });
+    onSuccess: () => {
+      alert('PDF yuklab olish muvaffaqiyatli', { type: 'success' });
     },
     onError: (error) => {
       console.log(error);
-      alert('Xaridni yuklashda xatolik', { type: 'error' });
+      alert('PDF yuklab olishda xatolik', { type: 'error' });
     },
   });
 }
-
-
-
 
 export function useCancelPurchase() {
   const { alert } = useAlert();
