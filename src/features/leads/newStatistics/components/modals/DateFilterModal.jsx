@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Col,
@@ -9,6 +9,7 @@ import {
   Box,
 } from '@/components/ui';
 import { DATE_FILTER_OPTIONS } from '../../constants/date';
+import moment from 'moment';
 
 function Footer({ onApply, onClose }) {
   return (
@@ -53,10 +54,44 @@ export default function DateFilterModal({
   isLoading,
 }) {
   const [dateRange, setDateRange] = useState([]);
-  const [selectedOption, setSelectedOption] = useState('week');
+  const [selectedOption, setSelectedOption] = useState('today');
   const handleApply = () => {
     onApply(dateRange);
   };
+  console.log(dateRange, 'date range');
+  useEffect(() => {
+    const today = moment();
+    const startOfDay = today.startOf('day').format('DD.MM.YYYY');
+    const endOfDay = today.endOf('day').format('DD.MM.YYYY');
+    const startOfWeek = today.startOf('week').format('DD.MM.YYYY');
+    const endOfWeek = today.endOf('week').format('DD.MM.YYYY');
+    const startOfMonth = today.startOf('month').format('DD.MM.YYYY');
+    const endOfMonth = today.endOf('month').format('DD.MM.YYYY');
+    switch (selectedOption) {
+      case 'week': {
+        setDateRange([startOfWeek, endOfWeek]);
+        return;
+      }
+      case 'today': {
+        setDateRange([startOfDay, endOfDay]);
+        return;
+      }
+      case 'month': {
+        setDateRange([startOfMonth, endOfMonth]);
+        return;
+      }
+
+      case 'calendar': {
+        setDateRange([]);
+        return;
+      }
+
+      default: {
+        setDateRange([startOfWeek, endOfWeek]);
+        return;
+      }
+    }
+  }, [selectedOption]);
 
   return (
     <Modal
@@ -71,11 +106,10 @@ export default function DateFilterModal({
         <Col>
           <DateOptions
             selectedOption={selectedOption}
-            onChange={(opt) => setSelectedOption(opt)}
+            onChange={setSelectedOption}
           />
         </Col>
         <Col>
-          {' '}
           <DatePicker
             mode="range"
             value={dateRange}
@@ -83,6 +117,7 @@ export default function DateFilterModal({
             showMonths={2}
             inline
             dateFormat="d.m.Y"
+            locale="uz"
           />
         </Col>
       </Row>

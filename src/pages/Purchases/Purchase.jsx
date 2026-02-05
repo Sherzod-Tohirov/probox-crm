@@ -23,6 +23,10 @@ import { useLocation, useParams } from 'react-router-dom';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import selectOptionsCreator from '@/utils/selectOptionsCreator';
 import useFetchPurchase from '@/hooks/data/purchases/useFetchPurchase';
+import usePurchasePdfs from '@/features/purchases/hooks/usePurchasePdfs';
+import _ from 'lodash';
+import { downloadFile, fetchFile } from '@/utils/downloadFile';
+import useAlert from '@/hooks/useAlert';
 
 const DRAFT_STORAGE_KEY = 'purchase_draft_';
 const NEW_PURCHASE_STORAGE_KEY = DRAFT_STORAGE_KEY + 'new';
@@ -30,7 +34,9 @@ const NEW_PURCHASE_STORAGE_KEY = DRAFT_STORAGE_KEY + 'new';
 export default function Purchase() {
   const { id: contractNo } = useParams();
   const { docEntry, source, statusState = 'draft' } = useLocation().state || {};
+  const { checkPdfExists, uploadPdfsMutation } = usePurchasePdfs(docEntry);
   const { user } = useAuth();
+  const { alert } = useAlert();
   const { modal, openModal, closeModal } = usePurchaseModal();
   const { data: purchase } = useFetchPurchase({
     docEntry,
@@ -49,7 +55,6 @@ export default function Purchase() {
     supplier: purchase?.cardCode,
     warehouse: purchase?.whsCode,
   });
-
   const { data: branches } = useFetchBranches();
   const warehouseOptions = selectOptionsCreator(branches, {
     label: 'name',
@@ -110,9 +115,24 @@ export default function Purchase() {
     handleDeleteItem(item?.id);
     closeModal();
   };
-
   // PDF yuklab olish
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
+    // Filelarni yuklash
+    const { exists, data } = await checkPdfExists();
+    console.log(exists, 'pdf file bormi');
+    if (exists) {
+      const pdfItem = data?.items[0];
+      if (!(pdfItem && _.has(pdfItem, 'pdfUrl'))) {
+        alert('PDF yuklashda xatolik yuz berdi', { type: 'error' });
+        return;
+      }
+      const blob = await fetchFile(pdfItem.pdfUrl);
+      console.log(blob, 'blob');
+      downloadFile(blob, `Yuk_xati_${contractNo}.pdf`);
+      alert('PDF yuklab olish muvaffaqiyatli');
+      return;
+    }
+
     const purchaseData = generatePurchasePayload({
       contractNo,
       purchase,
@@ -124,8 +144,18 @@ export default function Purchase() {
       user,
       purchaseItems,
       status,
+      docEntry,
     });
-    generatePurchasePdf(purchaseData);
+    const blob = await generatePurchasePdf(purchaseData);
+    if (!docEntry) return;
+    const fileName = `Yuk_xati_${docEntry}.pdf`;
+    const file = new File([blob], fileName, {
+      type: 'application/pdf',
+    });
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('docEntry', String(docEntry));
+    uploadPdfsMutation.mutate(formData);
   };
   return (
     <>

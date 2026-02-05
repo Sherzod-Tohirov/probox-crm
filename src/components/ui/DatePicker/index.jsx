@@ -5,9 +5,55 @@ import classNames from 'classnames';
 import 'flatpickr/dist/flatpickr.css';
 import styles from './datePicker.module.scss';
 
+const uzLocale = {
+  firstDayOfWeek: 1,
+  weekdays: {
+    shorthand: ['Ya', 'Du', 'Se', 'Chor', 'Pay', 'Ju', 'Sha'],
+    longhand: [
+      'Yakshanba',
+      'Dushanba',
+      'Seshanba',
+      'Chorshanba',
+      'Payshanba',
+      'Juma',
+      'Shanba',
+    ],
+  },
+  months: {
+    shorthand: [
+      'Yan',
+      'Fev',
+      'Mar',
+      'Apr',
+      'May',
+      'Iyun',
+      'Iyul',
+      'Avg',
+      'Sen',
+      'Okt',
+      'Noy',
+      'Dek',
+    ],
+    longhand: [
+      'Yanvar',
+      'Fevral',
+      'Mart',
+      'Aprel',
+      'May',
+      'Iyun',
+      'Iyul',
+      'Avgust',
+      'Sentyabr',
+      'Oktyabr',
+      'Noyabr',
+      'Dekabr',
+    ],
+  },
+};
+
 /**
  * DatePicker - Global sana tanlash komponenti
- * 
+ *
  * @component
  * @example
  * // Oddiy sana tanlash
@@ -16,7 +62,7 @@ import styles from './datePicker.module.scss';
  *   onChange={(dates) => setDate(dates[0])}
  *   placeholder="Sanani tanlang"
  * />
- * 
+ *
  * @example
  * // Sana oralig'ini tanlash (range mode)
  * <DatePicker
@@ -25,7 +71,7 @@ import styles from './datePicker.module.scss';
  *   onChange={(dates) => setDateRange(dates)}
  *   showMonths={2}
  * />
- * 
+ *
  * @example
  * // Ko'p sana tanlash
  * <DatePicker
@@ -33,7 +79,7 @@ import styles from './datePicker.module.scss';
  *   value={dates}
  *   onChange={(dates) => setDates(dates)}
  * />
- * 
+ *
  * @param {Object} props - Komponent parametrlari
  * @param {Date|Date[]|string|string[]} props.value - Tanlangan sana(lar)
  * @param {Function} props.onChange - Sana o'zgarganda chaqiriladigan funksiya
@@ -77,8 +123,8 @@ const DatePicker = forwardRef(
       enableTime = false,
       noCalendar = false,
       locale = 'default',
-      disable = [],
-      enable = [],
+      disable,
+      enable,
       position = 'auto',
       allowInput = false,
       clickOpens = true,
@@ -87,8 +133,28 @@ const DatePicker = forwardRef(
     ref
   ) => {
     // Flatpickr sozlamalari
-    const flatpickrOptions = useMemo(
-      () => ({
+    const flatpickrOptions = useMemo(() => {
+      const resolvedDisable =
+        disable && Array.isArray(disable)
+          ? disable.length
+            ? disable
+            : undefined
+          : disable;
+      const resolvedEnable =
+        enable && Array.isArray(enable)
+          ? enable.length
+            ? enable
+            : undefined
+          : enable;
+
+      const resolvedLocale =
+        locale === 'default' || locale === undefined || locale === null
+          ? undefined
+          : locale === 'uz'
+            ? uzLocale
+            : locale;
+
+      const baseOptions = {
         mode,
         dateFormat,
         showMonths: mode === 'range' ? showMonths : 1,
@@ -97,9 +163,6 @@ const DatePicker = forwardRef(
         maxDate,
         enableTime,
         noCalendar,
-        locale,
-        disable,
-        enable,
         position,
         allowInput,
         clickOpens,
@@ -107,29 +170,36 @@ const DatePicker = forwardRef(
         prevArrow: '‹',
         onOpen,
         onClose,
+      };
+
+      if (resolvedDisable !== undefined) baseOptions.disable = resolvedDisable;
+      if (resolvedEnable !== undefined) baseOptions.enable = resolvedEnable;
+      if (resolvedLocale !== undefined) baseOptions.locale = resolvedLocale;
+
+      return {
+        ...baseOptions,
         // Qo'shimcha sozlamalarni qo'shish
         ...options,
-      }),
-      [
-        mode,
-        dateFormat,
-        showMonths,
-        inline,
-        minDate,
-        maxDate,
-        enableTime,
-        noCalendar,
-        locale,
-        disable,
-        enable,
-        position,
-        allowInput,
-        clickOpens,
-        onOpen,
-        onClose,
-        options,
-      ]
-    );
+      };
+    }, [
+      mode,
+      dateFormat,
+      showMonths,
+      inline,
+      minDate,
+      maxDate,
+      enableTime,
+      noCalendar,
+      locale,
+      disable,
+      enable,
+      position,
+      allowInput,
+      clickOpens,
+      onOpen,
+      onClose,
+      options,
+    ]);
 
     return (
       <div
@@ -181,7 +251,13 @@ DatePicker.propTypes = {
   locale: PropTypes.string,
   disable: PropTypes.array,
   enable: PropTypes.array,
-  position: PropTypes.oneOf(['auto', 'above', 'below', 'auto left', 'auto right']),
+  position: PropTypes.oneOf([
+    'auto',
+    'above',
+    'below',
+    'auto left',
+    'auto right',
+  ]),
   allowInput: PropTypes.bool,
   clickOpens: PropTypes.bool,
   options: PropTypes.object,

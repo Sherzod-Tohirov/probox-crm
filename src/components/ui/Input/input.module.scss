@@ -399,11 +399,11 @@
   display: flex !important;
   align-items: center !important;
   flex: 1 1 auto !important;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  touch-action: pan-x !important;
+  flex-wrap: wrap !important;
+  white-space: normal !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  touch-action: auto !important;
   -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
@@ -468,10 +468,17 @@
 :global(.react-select__multi-value) {
   background-color: transparent;
   border-radius: 4px !important;
+  max-width: 140px;
+  overflow: hidden;
 }
 
 :global(.react-select__multi-value__label) {
   color: v.$primary-color !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+  display: block;
 }
 
 :global(.react-select__multi-value__remove) {

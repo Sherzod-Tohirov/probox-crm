@@ -38,7 +38,6 @@ function ModalFooter({ onClose, formId }) {
 const statusOptions = [
   { value: 'approve', label: 'Tasdiqlangan' },
   { value: 'pending', label: 'Kutilmoqda' },
-  { value: 'draft', label: 'Qoralama' },
   { value: 'rejected', label: 'Rad etildi' },
 ];
 
