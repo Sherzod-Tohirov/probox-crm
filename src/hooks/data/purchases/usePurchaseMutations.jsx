@@ -82,8 +82,7 @@ export function useUploadPurchasePdf() {
 
   return useMutation({
     mutationFn: (params) => uploadPurchasePdf(params),
-    onSuccess: (response) => {
-      console.log(response, 'response');
+    onSuccess: () => {
       alert('PDF yuklab olish muvaffaqiyatli', { type: 'success' });
     },
     onError: (error) => {

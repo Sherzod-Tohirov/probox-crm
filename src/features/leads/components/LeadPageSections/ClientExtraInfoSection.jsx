@@ -27,6 +27,7 @@ export default function ClientExtraInfoSection({ lead, onSave }) {
     resetClientInfoExtra({
       clientPhone: formatUZPhone(lead?.clientPhone || ''),
       clientPhone2: formatUZPhone(lead?.clientPhone2 || ''),
+      clientFullName: lead?.clientFullName || '',
     });
   }, [lead, resetClientInfoExtra]);
 
