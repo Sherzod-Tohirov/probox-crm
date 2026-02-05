@@ -67,6 +67,14 @@ export function useSelectOptions(tab) {
         label: 'Skoringdan bekor qilindi',
       },
       {
+        value: "To'lov bo'yicha, Procare",
+        label: "To'lov bo'yicha, Procare",
+      },
+      {
+        value: "Muammo bo'yicha, Procare",
+        label: "Muammo bo'yicha, Procare",
+      },
+      {
         value: 'Umuman aloqaga chiqib bo`lmadi',
         label: 'Umuman aloqaga chiqib bo`lmadi',
       },
@@ -90,7 +98,7 @@ export function useSelectOptions(tab) {
       { value: 'Processing', label: 'Jarayonda' },
     ];
 
-    const callCountOptions = [...Array(5).keys()].map((i) => ({
+    const callCountOptions = [...Array(10).keys()].map((i) => ({
       value: i + 1,
       label: i + 1,
     }));
