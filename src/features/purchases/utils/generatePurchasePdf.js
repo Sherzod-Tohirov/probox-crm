@@ -323,7 +323,6 @@ export async function generatePurchasePdf(purchaseData) {
                     paddingTop: () => 0,
                     paddingBottom: () => 0,
                   },
-                  alignment: 'center',
                 },
                 {
                   text: '*siz bu QR kod orqali hujjatni elektron nusxasini\nyuklab olishingiz mumkin!',
@@ -331,7 +330,6 @@ export async function generatePurchasePdf(purchaseData) {
                   margin: [0, 6, 0, 0],
                 },
               ],
-              alignment: 'center',
             },
             { width: '*', text: '' },
           ],
