@@ -1,4 +1,4 @@
-import { Button, Col, Row, Modal } from '@components/ui';
+import { Button, Row, Modal } from '@components/ui';
 import AdvancedFilters from './AdvancedFilters';
 
 export default function MobileFiltersModal({
