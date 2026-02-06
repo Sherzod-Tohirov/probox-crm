@@ -416,54 +416,7 @@
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
-  :global {
-    .flatpickr-calendar {
-      padding: 0.75rem;
-      width: 100% !important;
-      max-width: calc(100vw - 24px) !important;
-
-      &.multiMonth {
-        .flatpickr-weekdays,
-        .flatpickr-months,
-        .flatpickr-days {
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .flatpickr-weekdaycontainer {
-          width: 100% !important;
-          min-width: 100% !important;
-          max-width: 100% !important;
-        }
-
-        .dayContainer {
-          width: 100% !important;
-          min-width: 100% !important;
-          max-width: 100% !important;
-        }
-      }
-    }
-
-    .flatpickr-day {
-      height: 40px;
-      line-height: 40px;
-      font-size: 0.8125rem;
-    }
-
-    .flatpickr-prev-month,
-    .flatpickr-next-month {
-      padding: 0.75rem;
-
-      svg {
-        width: 16px;
-        height: 16px;
-      }
-    }
-  }
-}
-
+// Responsive - faqat mobil (<=576px), tabletda o'zgarmaydi
 @media (max-width: 576px) {
   :global {
     .flatpickr-calendar {
@@ -488,8 +441,8 @@
     }
 
     .flatpickr-day {
-      height: 44px;
-      line-height: 44px;
+      height: 40px;
+      line-height: 40px;
       flex: 0 0 calc(100% / 7);
       max-width: calc(100% / 7);
       width: calc(100% / 7);
@@ -499,11 +452,11 @@
 
     .flatpickr-prev-month,
     .flatpickr-next-month {
-      padding: 0.85rem;
+      padding: 0.75rem;
 
       svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
       }
     }
   }

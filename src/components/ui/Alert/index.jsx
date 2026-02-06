@@ -3,7 +3,7 @@ import styles from './alert.module.scss';
 import { Row, Col, Button, Box } from '@components/ui';
 import Typography from '../Typography';
 import iconsMap from '@utils/iconsMap';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export default function Alert({
   message,
@@ -12,9 +12,7 @@ export default function Alert({
   persistant = false,
   onClose = () => {},
 }) {
-  const [show, setShow] = useState(true);
   const handleClose = useCallback(() => {
-    setShow(false);
     if (typeof onClose === 'function') {
       onClose();
     }
@@ -33,7 +31,6 @@ export default function Alert({
     if (persistant) return;
 
     const timerId = setTimeout(() => {
-      setShow(false);
       if (onClose) onClose();
     }, timer);
 
@@ -66,7 +63,12 @@ export default function Alert({
         </Row>
       </Col>
       <Col style={{ marginLeft: 'auto' }}>
-        <Button icon="close" variant="text" onClick={handleClose}></Button>
+        <Button
+          icon="close"
+          variant="text"
+          iconSize={16}
+          onClick={handleClose}
+        ></Button>
       </Col>
     </Row>
   );

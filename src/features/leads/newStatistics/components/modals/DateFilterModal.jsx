@@ -11,6 +11,7 @@ import {
 } from '@/components/ui';
 import { DATE_FILTER_OPTIONS } from '../../constants/date';
 import moment from 'moment';
+import useIsMobile from '@/hooks/useIsMobile';
 
 function Footer({ onApply, onClose }) {
   return (
@@ -57,6 +58,7 @@ export default function DateFilterModal({
   const persistedFilter = useSelector((state) => state.page?.newStatistics);
   const [dateRange, setDateRange] = useState([]);
   const [selectedOption, setSelectedOption] = useState('today');
+  const isMobile = useIsMobile();
   const handleApply = () => {
     onApply({
       selectedOption,
@@ -115,9 +117,13 @@ export default function DateFilterModal({
       footer={<Footer onApply={handleApply} onClose={onClose} />}
       onClose={onClose}
       isLoading={isLoading}
-      size="md"
+      size={isMobile ? 'sm' : 'md'}
     >
-      <Row direction="row" justify="space-between" gutter={5}>
+      <Row
+        direction={isMobile ? 'column' : 'row'}
+        justify="space-between"
+        gutter={5}
+      >
         <Col>
           <DateOptions
             selectedOption={selectedOption}
