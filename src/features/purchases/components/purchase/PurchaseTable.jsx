@@ -3,6 +3,7 @@ import { usePurchaseTableColumns } from '../../hooks/usePurchaseTableColumns';
 
 export default function PurchaseTable({
   data,
+  isLoading = false,
   onOpenModal,
   editable = false,
   contractNo,
@@ -26,6 +27,7 @@ export default function PurchaseTable({
       <Table
         showPivotColumn
         scrollable
+        isLoading={isLoading}
         data={data}
         columns={purchaseTableColumns}
         getRowStyles={() => {}}

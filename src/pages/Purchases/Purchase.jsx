@@ -38,7 +38,11 @@ export default function Purchase() {
   const { user } = useAuth();
   const { alert } = useAlert();
   const { modal, openModal, closeModal } = usePurchaseModal();
-  const { data: purchase } = useFetchPurchase({
+  const {
+    data: purchase,
+    isLoading: isPurchaseLoading,
+    isFetching: isPurchaseFetching,
+  } = useFetchPurchase({
     docEntry,
     source,
     enabled: !!docEntry && !!source,
@@ -55,12 +59,16 @@ export default function Purchase() {
     supplier: purchase?.cardCode,
     warehouse: purchase?.whsCode,
   });
-  const { data: branches } = useFetchBranches();
+  const { data: branches, isLoading: isBranchesLoading } = useFetchBranches();
   const warehouseOptions = selectOptionsCreator(branches, {
     label: 'name',
     value: 'code',
   });
   const isNewPurchase = !contractNo;
+
+  const isHeaderLoading =
+    !!isPurchaseLoading || !!isPurchaseFetching || !!isBranchesLoading;
+  const isTableLoading = !!isPurchaseLoading || !!isPurchaseFetching;
 
   // Permissions
   const permissions = getPurchasePermissions(user?.U_role, status);
@@ -161,6 +169,7 @@ export default function Purchase() {
         <Col fullWidth>
           <PurchaseHeader
             isEditable={permissions.canEditItems}
+            isLoading={isHeaderLoading}
             status={status}
             courier={courierValue?.name ?? courierValue ?? ''}
             warehouse={
@@ -177,6 +186,7 @@ export default function Purchase() {
         <Col fullWidth>
           <PurchaseTable
             data={tableData}
+            isLoading={isTableLoading}
             onOpenModal={openModal}
             editable={permissions.canEditItems}
             contractNo={contractNo}

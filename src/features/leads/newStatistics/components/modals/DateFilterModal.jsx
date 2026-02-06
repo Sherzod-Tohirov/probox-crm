@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Button,
   Col,
@@ -53,12 +54,26 @@ export default function DateFilterModal({
   isOpen,
   isLoading,
 }) {
+  const persistedFilter = useSelector((state) => state.page?.newStatistics);
   const [dateRange, setDateRange] = useState([]);
   const [selectedOption, setSelectedOption] = useState('today');
   const handleApply = () => {
-    onApply(dateRange);
+    onApply({
+      selectedOption,
+      dateRange,
+    });
   };
-  console.log(dateRange, 'date range');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (persistedFilter?.selectedOption) {
+      setSelectedOption(persistedFilter.selectedOption);
+    }
+    if (Array.isArray(persistedFilter?.dateRange)) {
+      setDateRange(persistedFilter.dateRange);
+    }
+  }, [isOpen, persistedFilter?.selectedOption, persistedFilter?.dateRange]);
+
   useEffect(() => {
     const today = moment();
     const startOfDay = today.startOf('day').format('DD.MM.YYYY');
@@ -82,7 +97,7 @@ export default function DateFilterModal({
       }
 
       case 'calendar': {
-        setDateRange([]);
+        setDateRange(null);
         return;
       }
 
@@ -102,7 +117,7 @@ export default function DateFilterModal({
       isLoading={isLoading}
       size="md"
     >
-      <Row direction="row" gutter={5}>
+      <Row direction="row" justify="space-between" gutter={5}>
         <Col>
           <DateOptions
             selectedOption={selectedOption}
@@ -113,7 +128,16 @@ export default function DateFilterModal({
           <DatePicker
             mode="range"
             value={dateRange}
-            onChange={setDateRange}
+            onChange={(value) => {
+              if (!value) {
+                setDateRange([]);
+                return;
+              }
+              const formattedValue = value.map((date) =>
+                moment(date).format('DD.MM.YYYY')
+              );
+              setDateRange(formattedValue);
+            }}
             showMonths={2}
             inline
             dateFormat="d.m.Y"
