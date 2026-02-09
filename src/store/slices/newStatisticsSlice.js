@@ -12,6 +12,9 @@ const buildDefaultFilter = () => {
     dateRange: [startOfDay, endOfDay],
     sectionFilters: {
       overviewDate: '',
+      bySourceDate: '',
+      byBranchDate: '',
+      byCallCenterDate: '',
     },
   };
 };
@@ -72,6 +75,18 @@ const newStatisticsSlice = createSlice({
       state.sectionFilters = next.sectionFilters ?? state.sectionFilters;
       saveState(state);
     },
+    setNewStatisticsSectionFilter(state, action) {
+      const next = action.payload || {};
+      state.sectionFilters.overviewDate =
+        next.overviewDate ?? state.sectionFilters.overviewDate;
+      state.sectionFilters.bySourceDate =
+        next.bySourceDate ?? state.sectionFilters.bySourceDate;
+      state.sectionFilters.byBranchDate =
+        next.byBranchDate ?? state.sectionFilters.byBranchDate;
+      state.sectionFilters.byCallCenterDate =
+        next.byCallCenterDate ?? state.sectionFilters.byCallCenterDate;
+      saveState(state);
+    },
     resetNewStatisticsFilter(state) {
       const fallback = buildDefaultFilter();
       state.selectedOption = fallback.selectedOption;
@@ -82,7 +97,10 @@ const newStatisticsSlice = createSlice({
   },
 });
 
-export const { setNewStatisticsFilter, resetNewStatisticsFilter } =
-  newStatisticsSlice.actions;
+export const {
+  setNewStatisticsFilter,
+  setNewStatisticsSectionFilter,
+  resetNewStatisticsFilter,
+} = newStatisticsSlice.actions;
 
 export default newStatisticsSlice.reducer;

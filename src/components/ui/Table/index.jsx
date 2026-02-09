@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { breakpoints, getBreakpointValue } from '@config/breakpoints';
 import styles from './table.module.scss';
 import PropTypes from 'prop-types';
-import useIsMobile from '@hooks/useIsMobile';
+// import useIsMobile from '@hooks/useIsMobile';
 // Utility to check if a prop is an object for responsive values
 const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
 
@@ -29,11 +29,73 @@ const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
  * @property {string|number} [maxWidth]
  * @property {string} [icon]
  * @property {(row: any, rowIndex: number) => any} [renderCell]
+ * @property {(rows: any[], summaryData?: any) => any} [renderSummary]
+ * @property {any} [summaryValue]
  * @property {Record<string, any>} [cellStyle]
+ * @property {Record<string, any>} [summaryCellStyle]
  * @property {boolean} [hideOnMobile]
  * @property {Alignment} [horizontal] Horizontal alignment: start | center | end
  * @property {Alignment} [vertical] Vertical alignment: start | center | end
+ * @property {TableColumn[]} [children]
  */
+
+// Helpers for grouped headers
+const countLeafColumns = (cols = []) =>
+  cols.reduce(
+    (acc, col) =>
+      acc + (col.children?.length ? countLeafColumns(col.children) : 1),
+    0
+  );
+
+const filterColumnsByVisibility = (cols = [], isMobile = false) =>
+  cols
+    .filter((col) => !col.hideOnMobile)
+    .map((col) =>
+      col.children?.length
+        ? {
+            ...col,
+            children: filterColumnsByVisibility(col.children, isMobile),
+          }
+        : col
+    )
+    .filter((col) => !(col.children && col.children.length === 0));
+
+const flattenColumns = (cols = []) =>
+  cols.flatMap((col) =>
+    col.children?.length ? flattenColumns(col.children) : col
+  );
+
+const buildHeaderRows = (cols = []) => {
+  const rows = [];
+
+  const traverse = (columns, depth = 0) => {
+    rows[depth] = rows[depth] || [];
+
+    columns.forEach((col) => {
+      const hasChildren = col.children?.length;
+      const cell = {
+        column: col,
+        hasChildren,
+        colSpan: hasChildren ? countLeafColumns(col.children) : 1,
+        rowSpan: 1,
+      };
+      rows[depth].push(cell);
+      if (hasChildren) traverse(col.children, depth + 1);
+    });
+  };
+
+  traverse(cols, 0);
+  const maxDepth = rows.length;
+  rows.forEach((row, depth) => {
+    row.forEach((cell) => {
+      if (!cell.hasChildren) {
+        cell.rowSpan = maxDepth - depth;
+      }
+    });
+  });
+
+  return rows;
+};
 
 // Memoized table cell component
 const TableCell = memo(({ column, row, rowIndex }) => {
@@ -218,6 +280,9 @@ const Table = forwardRef(function Table(
     getRowStyles = () => ({}),
     onRowClick = () => {},
     hover = true,
+    showSummary = false,
+    summaryData = null,
+    summarySticky = false,
   },
   ref
 ) {
@@ -301,23 +366,28 @@ const Table = forwardRef(function Table(
     };
   }, [computeAutoHeight, shouldUseAutoHeight]);
 
-  const isMobile = useIsMobile();
-  // Responsive column filtering
-  const finalColumns = useMemo(() => {
-    const filteredColumns = columns.filter((col) => !col.hideOnMobile);
-    if (!showPivotColumn) return filteredColumns;
-    return [
-      {
-        key: 'pivotId',
-        icon: 'barCodeFilled',
-        title: 'ID',
-        width: { xs: '10%', md: '2%', xl: '2%' }, // Added xl breakpoint
-        cellStyle: { textAlign: 'center' },
-        renderCell: (_, rowIndex) =>
-          rowIndex + 1 + (Number(rowNumberOffset) || 0),
-      },
-      ...filteredColumns,
-    ];
+  // const isMobile = useIsMobile();
+  // Responsive column filtering with grouping support
+  const { headerRows, leafColumns } = useMemo(() => {
+    const filtered = filterColumnsByVisibility(columns);
+    const maybeWithPivot = showPivotColumn
+      ? [
+          {
+            key: 'pivotId',
+            icon: 'barCodeFilled',
+            title: 'ID',
+            width: { xs: '10%', md: '2%', xl: '2%' },
+            cellStyle: { textAlign: 'center' },
+            renderCell: (_, rowIndex) =>
+              rowIndex + 1 + (Number(rowNumberOffset) || 0),
+          },
+          ...filtered,
+        ]
+      : filtered;
+
+    const rows = buildHeaderRows(maybeWithPivot);
+    const leaves = flattenColumns(maybeWithPivot);
+    return { headerRows: rows, leafColumns: leaves };
   }, [columns, showPivotColumn, rowNumberOffset]);
 
   const handleMouseDown = useCallback(() => {
@@ -341,15 +411,15 @@ const Table = forwardRef(function Table(
 
   // Selection logic
   const rows = useMemo(() => (Array.isArray(data) ? data : []), [data]);
-  const getRowKey = useCallback(
-    (row) => {
-      if (Array.isArray(uniqueKey)) {
-        return uniqueKey.map((key) => row[key]).join('-');
-      }
-      return uniqueKey ? row[uniqueKey] : uuidv4();
-    },
-    [uniqueKey]
-  );
+  // const getRowKey = useCallback(
+  //   (row) => {
+  //     if (Array.isArray(uniqueKey)) {
+  //       return uniqueKey.map((key) => row[key]).join('-');
+  //     }
+  //     return uniqueKey ? row[uniqueKey] : uuidv4();
+  //   },
+  //   [uniqueKey]
+  // );
 
   const isRowSelected = useCallback(
     (row) => {
@@ -374,7 +444,7 @@ const Table = forwardRef(function Table(
     const selectableRowsLength = rows.filter(isRowSelectable).length;
     if (!selectableRowsLength) return false;
     return selectedRows.length === selectableRowsLength;
-  }, [rows, isRowSelected]);
+  }, [rows, selectedRows.length, isRowSelectable]);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
@@ -383,7 +453,7 @@ const Table = forwardRef(function Table(
       const filteredRows = rows.filter((row) => isRowSelectable(row));
       onSelectionChange([...filteredRows]);
     }
-  }, [allSelected, rows, onSelectionChange]);
+  }, [allSelected, rows, onSelectionChange, isRowSelectable]);
 
   const handleSelectRow = useCallback(
     (row) => {
@@ -468,53 +538,58 @@ const Table = forwardRef(function Table(
       <div className={styles['table-container']}>
         <table id={id} ref={ref} className={tableClassName} style={style}>
           <thead>
-            <tr>
-              {selectionEnabled && (
-                <SelectionHeaderCell
-                  disabled={rows.filter(isRowSelectable).length === 0}
-                  checked={allSelected}
-                  onChange={handleSelectAll}
-                />
-              )}
-              {finalColumns.map((column, colIndex) => (
-                <th
-                  key={`header-${column.key}-${colIndex}`}
-                  style={{
-                    width: isResponsiveProp(column.width)
-                      ? column.width.xl || column.width.md || 'auto'
-                      : column.width || 'auto',
-                    minWidth: column.minWidth || 'initial',
-                    maxWidth: column.maxWidth || 'initial',
-                    textAlign:
-                      column?.horizontal === 'start'
-                        ? 'left'
-                        : column?.horizontal === 'end'
-                          ? 'right'
-                          : column?.horizontal === 'center'
-                            ? 'center'
-                            : undefined,
-                    verticalAlign:
-                      column?.vertical === 'start'
-                        ? 'top'
-                        : column?.vertical === 'end'
-                          ? 'bottom'
-                          : column?.vertical === 'center'
-                            ? 'middle'
-                            : undefined,
-                  }}
-                >
-                  <div className={styles['table-header-cell']}>
-                    {column.icon && iconsMap[column.icon]} {column.title}
-                  </div>
-                </th>
-              ))}
-            </tr>
+            {headerRows.map((row, rowIdx) => (
+              <tr key={`header-row-${rowIdx}`}>
+                {rowIdx === 0 && selectionEnabled && (
+                  <SelectionHeaderCell
+                    rowSpan={headerRows.length}
+                    disabled={rows.filter(isRowSelectable).length === 0}
+                    checked={allSelected}
+                    onChange={handleSelectAll}
+                  />
+                )}
+                {row.map(({ column, colSpan, rowSpan }, colIndex) => (
+                  <th
+                    key={`header-${column.key}-${rowIdx}-${colIndex}`}
+                    colSpan={colSpan}
+                    rowSpan={rowSpan}
+                    style={{
+                      width: isResponsiveProp(column.width)
+                        ? column.width.xl || column.width.md || 'auto'
+                        : column.width || 'auto',
+                      minWidth: column.minWidth || 'initial',
+                      maxWidth: column.maxWidth || 'initial',
+                      textAlign:
+                        column?.horizontal === 'start'
+                          ? 'left'
+                          : column?.horizontal === 'end'
+                            ? 'right'
+                            : column?.horizontal === 'center'
+                              ? 'center'
+                              : undefined,
+                      verticalAlign:
+                        column?.vertical === 'start'
+                          ? 'top'
+                          : column?.vertical === 'end'
+                            ? 'bottom'
+                            : column?.vertical === 'center'
+                              ? 'middle'
+                              : undefined,
+                    }}
+                  >
+                    <div className={styles['table-header-cell']}>
+                      {column.icon && iconsMap[column.icon]} {column.title}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody>
             {isLoading ? (
               <tr className={styles['loading-row']}>
                 <td
-                  colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
+                  colSpan={leafColumns.length + (selectionEnabled ? 1 : 0)}
                   className={styles['empty-table']}
                 >
                   <ClipLoader color="#94A3B8" size={26} />
@@ -525,7 +600,7 @@ const Table = forwardRef(function Table(
                 <TableRow
                   key={`row-${rowIndex}`}
                   row={row}
-                  columns={finalColumns}
+                  columns={leafColumns}
                   rowIndex={rowIndex}
                   uniqueKey={uniqueKey}
                   isRowSelectable={isRowSelectable}
@@ -542,7 +617,7 @@ const Table = forwardRef(function Table(
             ) : (
               <tr>
                 <td
-                  colSpan={finalColumns.length + (selectionEnabled ? 1 : 0)}
+                  colSpan={leafColumns.length + (selectionEnabled ? 1 : 0)}
                   className={styles['empty-table']}
                 >
                   Ma'lumot mavjud emas.
@@ -550,6 +625,29 @@ const Table = forwardRef(function Table(
               </tr>
             )}
           </tbody>
+          {showSummary && (
+            <tfoot
+              className={classNames(styles['table-summary'], {
+                [styles['table-summary-sticky']]: summarySticky,
+              })}
+            >
+              <tr>
+                {selectionEnabled && <td />}
+                {leafColumns.map((column, colIndex) => (
+                  <td
+                    key={`summary-${column.key}-${colIndex}`}
+                    style={column.summaryCellStyle}
+                  >
+                    {column.renderSummary
+                      ? column.renderSummary(rows, summaryData)
+                      : (column.summaryValue ??
+                        summaryData?.[column.key] ??
+                        '')}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
     </div>
@@ -562,6 +660,9 @@ Table.propTypes = {
   scrollable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   scrollHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   rowNumberOffset: PropTypes.number,
+  showSummary: PropTypes.bool,
+  summaryData: PropTypes.object,
+  summarySticky: PropTypes.bool,
   // ...other prop types...
 };
 
