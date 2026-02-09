@@ -3,6 +3,8 @@ import moment from 'moment';
 import { useState } from 'react';
 import useLeadsOverviewTableColumns from '@/features/leads/newStatistics/hooks/useLeadsOverviewTableColumns';
 import Table from '@/components/ui/Table';
+import { setNewStatisticsFilter } from '@/store/slices/newStatisticsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const mockData = [
   { levels: 'Yangi lead', leads: 8941, cr: 100 },
@@ -45,7 +47,7 @@ function TableOverview({ title, date, onSelect }) {
           type="date"
           value={date}
           variant="outlined"
-          onChange={(e) => onSelect(e.target.value)}
+          onChange={(value) => onSelect(value)}
         />
       }
     >
@@ -55,6 +57,7 @@ function TableOverview({ title, date, onSelect }) {
             showPivotColumn
             columns={leadsOverviewTableColumns}
             data={mockData}
+            scrollHeight="450px"
             getRowStyles={() => {}}
           />
         </Col>
@@ -65,7 +68,7 @@ function TableOverview({ title, date, onSelect }) {
 
 function GaugeOverview({ data }) {
   return (
-    <Card>
+    <Card bodyPadding="16px">
       <Row direction="column" gutter={4} align="center">
         <Col>
           <Gauge
@@ -78,12 +81,12 @@ function GaugeOverview({ data }) {
         <Col fullWidth>
           <Row
             direction={{ xs: 'column', sm: 'row' }}
-            gutter={3}
+            gutter={1}
             justify="center"
             wrap
           >
             {data.items.map((item, index) => (
-              <Col key={index} span={5}>
+              <Col flexShrink={false} key={index}>
                 <Gauge
                   value={item.value}
                   total={item.total}
@@ -105,14 +108,27 @@ function GaugeOverview({ data }) {
 const today = moment().format('DD.MM.YYYY');
 
 export default function LeadsOverviewSection() {
-  const [date, setDate] = useState(today);
+  const { overviewDate } = useSelector(
+    (state) => state.page.newStatistics.sectionFilters
+  );
+  const [date, setDate] = useState(overviewDate || today);
+  const dispatch = useDispatch();
   return (
-    <Row direction={{ xs: 'column', md: 'row' }} gutter={4}>
+    <Row direction={{ xs: 'column', lg: 'row' }} gutter={4}>
       <Col flexGrow fullWidth>
         <TableOverview
           title="Oy bo'yicha leadlarning taqsimlanishi"
           date={date}
-          onSelect={setDate}
+          onSelect={(value) => {
+            setDate(value);
+            dispatch(
+              setNewStatisticsFilter({
+                sectionFilters: {
+                  overviewDate: value,
+                },
+              })
+            );
+          }}
         />
       </Col>
       <Col flexGrow fullHeight fullWidth>

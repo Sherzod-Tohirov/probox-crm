@@ -133,7 +133,14 @@ export default function Gauge({
   );
 
   if (withCard) {
-    return <Card className={styles.gauge__card}>{content}</Card>;
+    return (
+      <Card
+        className={styles.gauge__card}
+        bodyClassName={styles['gauge__card-body']}
+      >
+        {content}
+      </Card>
+    );
   }
 
   return content;

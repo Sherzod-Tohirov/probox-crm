@@ -17,6 +17,7 @@ const isResponsiveProp = (prop) => typeof prop === 'object' && prop !== null;
  * @param {number} props.lg - Shorthand for span at lg breakpoint (0-24)
  * @param {number} props.xl - Shorthand for span at xl breakpoint (0-24)
  * @param {boolean|Object} props.flexGrow - Whether to grow or responsive object { xs: false, md: true }
+ * @param {boolean|number} props.flexShrink - Whether to shrink (boolean or number value)
  * @param {string|Object} props.align - Alignment ('start', 'center', 'end') or responsive object
  * @param {string|Object} props.justify - Justification ('start', 'center', 'end', 'space-between') or responsive object
  * @param {boolean|Object} props.fullWidth - Full width or responsive object { xs: true, md: false }
@@ -40,6 +41,7 @@ function Col(
     children,
     span,
     flexGrow = false,
+    flexShrink,
     align = '',
     justify = '',
     direction = 'row',
@@ -112,6 +114,13 @@ function Col(
     return responsiveStyles;
   };
 
+  // Calculate flexShrink value
+  const getFlexShrinkValue = () => {
+    if (flexShrink === undefined) return undefined;
+    if (typeof flexShrink === 'boolean') return flexShrink ? 1 : 0;
+    return flexShrink;
+  };
+
   // Build responsive styles
   const colStyle = {
     display: 'flex',
@@ -131,6 +140,7 @@ function Col(
     flexWrap: wrap ? 'wrap' : 'nowrap',
     flexDirection: direction || 'row',
     flexGrow: typeof flexGrow === 'boolean' ? (flexGrow ? 1 : 0) : undefined,
+    flexShrink: getFlexShrinkValue(),
     alignSelf: typeof align === 'string' && align ? align : undefined,
     justifySelf: typeof justify === 'string' && justify ? justify : undefined,
     width: typeof fullWidth === 'boolean' && fullWidth ? '100%' : 'auto',

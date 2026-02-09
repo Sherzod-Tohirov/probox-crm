@@ -10,6 +10,9 @@ const buildDefaultFilter = () => {
   return {
     selectedOption: 'today',
     dateRange: [startOfDay, endOfDay],
+    sectionFilters: {
+      overviewDate: '',
+    },
   };
 };
 
@@ -19,14 +22,17 @@ const loadState = () => {
     const parsedState = serializedState ? JSON.parse(serializedState) : {};
     const fallback = buildDefaultFilter();
 
-    const selectedOption = parsedState?.selectedOption ?? fallback.selectedOption;
+    const selectedOption =
+      parsedState?.selectedOption ?? fallback.selectedOption;
     const dateRange = Array.isArray(parsedState?.dateRange)
       ? parsedState.dateRange
       : fallback.dateRange;
-
+    const sectionFilters =
+      parsedState?.sectionFilters ?? fallback.sectionFilters;
     return {
       selectedOption,
       dateRange,
+      sectionFilters,
     };
   } catch (error) {
     console.log('Error loading new statistics state', error);
@@ -39,6 +45,7 @@ const saveState = (state) => {
     const serializedState = JSON.stringify({
       selectedOption: state.selectedOption,
       dateRange: state.dateRange,
+      sectionFilters: state.sectionFilters,
     });
     localStorage.setItem(STORAGE_KEY, serializedState);
   } catch (error) {
@@ -56,14 +63,20 @@ const newStatisticsSlice = createSlice({
     setNewStatisticsFilter(state, action) {
       const next = action.payload || {};
       state.selectedOption =
-        next.selectedOption !== undefined ? next.selectedOption : state.selectedOption;
-      state.dateRange = Array.isArray(next.dateRange) ? next.dateRange : state.dateRange;
+        next.selectedOption !== undefined
+          ? next.selectedOption
+          : state.selectedOption;
+      state.dateRange = Array.isArray(next.dateRange)
+        ? next.dateRange
+        : state.dateRange;
+      state.sectionFilters = next.sectionFilters ?? state.sectionFilters;
       saveState(state);
     },
     resetNewStatisticsFilter(state) {
       const fallback = buildDefaultFilter();
       state.selectedOption = fallback.selectedOption;
       state.dateRange = fallback.dateRange;
+      state.sectionFilters = fallback.sectionFilters;
       saveState(state);
     },
   },
