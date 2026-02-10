@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import { deleteData, fetchData, postData, putData } from './utilities';
+import { deleteData, fetchData, putData } from './utilities';
 
 export const getMessages = async (options = {}) => {
   try {

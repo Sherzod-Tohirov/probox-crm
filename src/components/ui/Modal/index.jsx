@@ -20,6 +20,10 @@ const Modal = forwardRef(function (
     onClose = () => '',
     title,
     footer,
+    className = '',
+    headerClassName = '',
+    bodyClassName = '',
+    footerClassName = '',
     preventScroll = false,
     children,
     size = 'md',
@@ -82,7 +86,11 @@ const Modal = forwardRef(function (
         >
           <motion.div
             ref={ref}
-            className={classNames(styles['modal'], styles[`modal-${size}`])}
+            className={classNames(
+              styles['modal'],
+              styles[`modal-${size}`],
+              className
+            )}
             initial={{ opacity: 0, y: -50, scale: 0.95 }}
             animate={{
               opacity: 1,
@@ -104,7 +112,7 @@ const Modal = forwardRef(function (
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={styles['modal-header']}>
+            <div className={classNames(styles['modal-header'], headerClassName)}>
               {title ? (
                 <Typography className={styles['modal-title']} element="h3">
                   {title}
@@ -119,9 +127,13 @@ const Modal = forwardRef(function (
                 onClick={onClose}
               ></Button>
             </div>
-            <div className={styles['modal-body']}>{getMainText()}</div>
+            <div className={classNames(styles['modal-body'], bodyClassName)}>
+              {getMainText()}
+            </div>
             {footer ? (
-              <div className={styles['modal-footer']}>{footer}</div>
+              <div className={classNames(styles['modal-footer'], footerClassName)}>
+                {footer}
+              </div>
             ) : (
               ''
             )}

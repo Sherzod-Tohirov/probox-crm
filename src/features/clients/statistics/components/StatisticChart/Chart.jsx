@@ -56,32 +56,41 @@ export default function Chart({ data, keys = {}, isCompact = false }) {
             bottom: 20,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 26, 0.15)" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="var(--chart-grid-color)"
+          />
           <XAxis
             dataKey={keys.name || 'name'}
-            tick={{ fill: '#666' }}
-            axisLine={{ stroke: '#eee' }}
+            tick={{ fill: 'var(--chart-axis-label-color)' }}
+            axisLine={{ stroke: 'var(--chart-grid-color)' }}
+            tickLine={{ stroke: 'var(--chart-grid-color)' }}
             interval={0} // show all ticks
           />
           <YAxis
-            tick={{ fill: '#666' }}
-            axisLine={{ stroke: '#eee' }}
+            tick={{ fill: 'var(--chart-axis-label-color)' }}
+            axisLine={{ stroke: 'var(--chart-grid-color)' }}
+            tickLine={{ stroke: 'var(--chart-grid-color)' }}
             domain={['auto', 'auto']} // or [0, 'dataMax + 1000']
             tickFormatter={formatValue} // Add formatter to Y axis
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: 'var(--primary-bg)',
               borderRadius: '8px',
-              border: 'none',
+              border: '1px solid var(--primary-border-color)',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              color: 'var(--chart-text-color)',
             }}
+            labelStyle={{ color: 'var(--chart-text-color)' }}
+            itemStyle={{ color: 'var(--chart-text-color)' }}
             formatter={formatValue} // Add formatter to tooltip
           />
           <Legend
             verticalAlign="top"
             height={36}
             iconType="circle"
+            wrapperStyle={{ color: 'var(--chart-legend-color)' }}
             formatter={(value) => `${value}`} // Optional: customize legend labels
           />
           <Line

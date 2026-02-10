@@ -146,13 +146,13 @@ button {
 .flatpickr-day.startRange,
 .flatpickr-day.endRange {
   background-color: v.$fourth-color !important; /* Custom selection color */
-  color: #fff; /* Text color for selected date */
+  color: var(--button-color); /* Text color for selected date */
   border-color: v.$fourth-color !important; /* Border color for selected date */
 }
 
 /* Ensure in-range text remains visible (keep background as provided by theme) */
 .flatpickr-day.inRange {
-  color: #fff !important;
+  color: var(--button-color) !important;
 }
 
 .flatpickr-day.today {

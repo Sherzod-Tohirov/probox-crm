@@ -14,14 +14,14 @@ $bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   // Theme-aware custom properties
   --cb-check: #fff;
-  --cb-bg: v.$primary-table-bg;
+  --cb-bg: #{v.$primary-table-bg};
   --cb-border: #94a3b8;
   --cb-hover-bg: rgba(148, 163, 184, 0.12);
-  --cb-hover-border: v.$button-bg;
+  --cb-hover-border: #{v.$button-bg};
   --cb-disabled-bg: #f1f5f9;
   --cb-disabled-border: #cbd5e1;
   --cb-focus-shadow: 0 0 0 3px rgba(10, 77, 104, 0.2);
-  --cb-active-bg: v.$button-bg;
+  --cb-active-bg: #{v.$button-bg};
 
   &.disabled {
     cursor: not-allowed;
@@ -169,35 +169,35 @@ $bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
 
 // Color variants
 .checkbox.color-info {
-  --cb-active-bg: v.$info-color;
-  --cb-hover-border: v.$info-color;
+  --cb-active-bg: #{v.$info-color};
+  --cb-hover-border: #{v.$info-color};
   --cb-check: #1a1a1a;
 }
 
 .checkbox.color-danger {
-  --cb-active-bg: v.$danger-color;
-  --cb-hover-border: v.$danger-color;
+  --cb-active-bg: #{v.$danger-color};
+  --cb-hover-border: #{v.$danger-color};
 }
 
 .checkbox.color-success {
-  --cb-active-bg: v.$success-color;
-  --cb-hover-border: v.$success-color;
+  --cb-active-bg: #{v.$success-color};
+  --cb-hover-border: #{v.$success-color};
 }
 
 .checkbox.color-primary {
-  --cb-active-bg: v.$button-bg;
-  --cb-hover-border: v.$button-bg;
+  --cb-active-bg: #{v.$button-bg};
+  --cb-hover-border: #{v.$button-bg};
 }
 
 .checkbox.color-secondary {
-  --cb-active-bg: v.$secondary-color;
-  --cb-hover-border: v.$secondary-color;
+  --cb-active-bg: #{v.$secondary-color};
+  --cb-hover-border: #{v.$secondary-color};
 }
 
 .checkbox.color-dark {
-  --cb-active-bg: v.$primary-color;
-  --cb-hover-border: v.$primary-color;
-  --cb-check: v.$primary-bg;
+  --cb-active-bg: #{v.$primary-color};
+  --cb-hover-border: #{v.$primary-color};
+  --cb-check: #{v.$primary-bg};
 }
 
 // Light theme
@@ -207,11 +207,11 @@ $bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
     --cb-bg: #f8fafc;
     --cb-border: #64748b;
     --cb-hover-bg: #f1f5f9;
-    --cb-hover-border: #3b82f6;
+    --cb-hover-border: #{v.$button-bg};
     --cb-disabled-bg: #e2e8f0;
     --cb-disabled-border: #cbd5e1;
-    --cb-focus-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-    --cb-active-bg: #3b82f6;
+    --cb-focus-shadow: 0 0 0 3px color-mix(in srgb, #{v.$button-bg} 30%, transparent);
+    --cb-active-bg: #{v.$button-bg};
   }
 }
 
@@ -222,16 +222,16 @@ $bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
     --cb-bg: #1e293b;
     --cb-border: #475569;
     --cb-hover-bg: rgba(255, 255, 255, 0.08);
-    --cb-hover-border: #60a5fa;
+    --cb-hover-border: #{v.$button-bg};
     --cb-disabled-bg: #334155;
     --cb-disabled-border: #475569;
-    --cb-focus-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
-    --cb-active-bg: #3b82f6;
+    --cb-focus-shadow: 0 0 0 3px color-mix(in srgb, #{v.$button-bg} 35%, transparent);
+    --cb-active-bg: #{v.$button-bg};
   }
 
   .checkbox.color-primary {
-    --cb-active-bg: #3b82f6;
-    --cb-hover-border: #3b82f6;
+    --cb-active-bg: #{v.$button-bg};
+    --cb-hover-border: #{v.$button-bg};
   }
 }
 

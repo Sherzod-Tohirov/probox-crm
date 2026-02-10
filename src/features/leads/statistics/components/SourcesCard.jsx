@@ -127,7 +127,14 @@ export default function SourcesCard({ data = [] }) {
               </Pie>
               <Tooltip
                 formatter={(value) => value.toLocaleString()}
-                contentStyle={{ fontSize: '14px' }}
+                contentStyle={{
+                  fontSize: '14px',
+                  backgroundColor: 'var(--primary-bg)',
+                  border: '1px solid var(--primary-border-color)',
+                  color: 'var(--chart-text-color)',
+                }}
+                labelStyle={{ color: 'var(--chart-text-color)' }}
+                itemStyle={{ color: 'var(--chart-text-color)' }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -156,11 +163,24 @@ export default function SourcesCard({ data = [] }) {
                         const [year, month, day] = value.split('.');
                         return `${day}.${month}`;
                       }}
-                      tick={{ fontSize: 13 }}
+                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      axisLine={{ stroke: 'var(--chart-grid-color)' }}
+                      tickLine={{ stroke: 'var(--chart-grid-color)' }}
                     />
-                    <YAxis tick={{ fontSize: 13 }} />
+                    <YAxis
+                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      axisLine={{ stroke: 'var(--chart-grid-color)' }}
+                      tickLine={{ stroke: 'var(--chart-grid-color)' }}
+                    />
                     <Tooltip
-                      contentStyle={{ fontSize: '14px' }}
+                      contentStyle={{
+                        fontSize: '14px',
+                        backgroundColor: 'var(--primary-bg)',
+                        border: '1px solid var(--primary-border-color)',
+                        color: 'var(--chart-text-color)',
+                      }}
+                      labelStyle={{ color: 'var(--chart-text-color)' }}
+                      itemStyle={{ color: 'var(--chart-text-color)' }}
                       formatter={(value, name) => [`${value} ta lead`, name]}
                     />
                     {sortedData.map((item, index) => (

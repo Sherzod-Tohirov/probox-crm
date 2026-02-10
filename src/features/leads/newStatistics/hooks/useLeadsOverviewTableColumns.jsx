@@ -33,7 +33,18 @@ export default function useLeadsOverviewTableColumns() {
         minWidth: '40px',
         icon: 'presentationFilled',
         renderCell: (column) => (
-          <Badge style={{ minWidth: '60px' }} color={getBadgeColor(column.cr)}>
+          <Badge
+            style={{
+              minWidth: '96px',
+              padding: '8px 16px',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: 600,
+              lineHeight: 1,
+              justifyContent: 'center',
+            }}
+            color={getBadgeColor(column.cr)}
+          >
             {column.cr + '%'}
           </Badge>
         ),
