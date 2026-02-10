@@ -374,6 +374,26 @@ export default function useLeadsTableColumns() {
         },
       },
       {
+        key: 'newTime',
+        title: 'Yangi vaqti',
+        icon: 'clockFilled',
+        width: { xs: '25%', md: '14%', xl: '8%' },
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (column) => {
+          const { newTime } = column;
+          if(!newTime) return "-"
+          return (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              {newTime ? iconsMap.clock : null}
+              {formatDate(newTime, 'YYYY.MM.DD hh:mm', 'DD.MM.YYYY HH:mm')}
+            </span>
+          );
+        },
+      },
+      {
         key: 'operator',
         title: 'Operator 1',
         icon: 'users',
