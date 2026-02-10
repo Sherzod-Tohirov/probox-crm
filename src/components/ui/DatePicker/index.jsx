@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from 'react';
+import { forwardRef, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Flatpickr from 'react-flatpickr';
 import classNames from 'classnames';
@@ -132,6 +132,21 @@ const DatePicker = forwardRef(
     },
     ref
   ) => {
+    // Faqat mobil qurilmalarda showMonths=1 ga o'tkazish (tabletda emas)
+    const [isMobileOnly, setIsMobileOnly] = useState(
+      typeof window !== 'undefined' && window.innerWidth <= 576
+    );
+    useEffect(() => {
+      const check = () => setIsMobileOnly(window.innerWidth <= 576);
+      window.addEventListener('resize', check);
+      return () => window.removeEventListener('resize', check);
+    }, []);
+    const resolvedShowMonths = isMobileOnly
+      ? 1
+      : mode === 'range'
+        ? showMonths
+        : 1;
+
     // Flatpickr sozlamalari
     const flatpickrOptions = useMemo(() => {
       const resolvedDisable =
@@ -158,7 +173,7 @@ const DatePicker = forwardRef(
       const baseOptions = {
         mode,
         dateFormat,
-        showMonths: mode === 'range' ? showMonths : 1,
+        showMonths: resolvedShowMonths,
         inline,
         minDate,
         maxDate,
@@ -185,7 +200,7 @@ const DatePicker = forwardRef(
     }, [
       mode,
       dateFormat,
-      showMonths,
+      resolvedShowMonths,
       inline,
       minDate,
       maxDate,

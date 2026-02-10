@@ -115,6 +115,27 @@ button {
   }
 }
 
+@media (max-width: 576px) {
+  .alert {
+    width: calc(100vw - 32px) !important;
+    min-width: unset !important;
+    max-width: calc(100vw - 32px) !important;
+    padding: 3rem !important;
+
+    &-title {
+      font-size: 3.5rem;
+    }
+
+    &-desc {
+      font-size: 3rem;
+    }
+
+    &-content {
+      width: 100% !important;
+    }
+  }
+}
+
 // Custom styles for flatpickr
 
 .flatpickr-calendar {
@@ -125,13 +146,13 @@ button {
 .flatpickr-day.startRange,
 .flatpickr-day.endRange {
   background-color: v.$fourth-color !important; /* Custom selection color */
-  color: #fff; /* Text color for selected date */
+  color: var(--button-color); /* Text color for selected date */
   border-color: v.$fourth-color !important; /* Border color for selected date */
 }
 
 /* Ensure in-range text remains visible (keep background as provided by theme) */
 .flatpickr-day.inRange {
-  color: #fff !important;
+  color: var(--button-color) !important;
 }
 
 .flatpickr-day.today {
@@ -153,6 +174,20 @@ button {
 
 .Toastify__toast {
   margin-bottom: 12px !important;
+}
+
+@media (max-width: 576px) {
+  .Toastify__toast-container {
+    width: calc(100vw - 16px) !important;
+    max-width: 100vw !important;
+    left: 8px !important;
+    right: 8px !important;
+    padding: 0 !important;
+  }
+
+  .Toastify__toast {
+    margin-bottom: 8px !important;
+  }
 }
 
 // Infinite scroll styles

@@ -31,6 +31,7 @@ import ContextMenu from './ContextMenu';
 import Clipboard from './Clipboard';
 import Checkbox from './Checkbox';
 import DatePicker from './DatePicker';
+import Gauge from './Gauge';
 export {
   Row,
   Col,
@@ -64,4 +65,5 @@ export {
   Clipboard,
   Checkbox,
   DatePicker,
+  Gauge,
 };

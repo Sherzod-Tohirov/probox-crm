@@ -13,7 +13,7 @@ const Checkbox = forwardRef(function Checkbox(
     disabled,
     indeterminate = false,
     size = 'md',
-    color = 'success',
+    color = 'primary',
     onChange,
     name,
     value,
@@ -37,7 +37,7 @@ const Checkbox = forwardRef(function Checkbox(
     'secondary',
     'dark',
   ]);
-  const resolvedColor = supportedColors.has(color) ? color : 'info';
+  const resolvedColor = supportedColors.has(color) ? color : 'primary';
 
   return (
     <label

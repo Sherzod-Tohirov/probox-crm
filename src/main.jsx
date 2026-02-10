@@ -1,3 +1,4 @@
+import './tailwind.css';
 import '@assets/styles/globals.scss';
 import './index.scss';
 import router from './routes.jsx';

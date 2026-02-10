@@ -1,0 +1,161 @@
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  &__svg {
+    position: relative;
+    width: 100%;
+    min-width: 100px;
+    max-width: 180px;
+    aspect-ratio: 2 / 1.3;
+    margin-bottom: 12px;
+    svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+
+  &__arc {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__percentage {
+    font-size: 3rem;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    line-height: 1;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+
+    &--top-right {
+      position: absolute;
+      top: -2px;
+      right: -4px;
+    }
+
+    &--top-left {
+      position: absolute;
+      top: -2px;
+      left: -4px;
+    }
+
+    &--bottom-center {
+      margin-top: 1.5rem;
+      display: inline-block;
+    }
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &-body {
+      padding: 15px 19px;
+    }
+  }
+
+  &__value {
+    font-size: 5.5rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  // Size variants
+  &--sm {
+    .gauge__svg {
+      min-width: 100px;
+      max-width: 112px;
+    }
+
+    .gauge__percentage {
+      font-size: 3rem;
+      padding: 1rem 1.5rem;
+    }
+
+    .gauge__value {
+      font-size: 5rem;
+    }
+
+    .gauge__label {
+      font-size: 12px;
+    }
+  }
+
+  &--lg {
+    .gauge__svg {
+      min-width: 140px;
+      max-width: 240px;
+    }
+
+    .gauge__percentage {
+      font-size: 3.25rem;
+      padding: 1rem 2rem;
+    }
+
+    .gauge__value {
+      font-size: 6rem;
+    }
+
+    .gauge__label {
+      font-size: 12px;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 1200px) {
+  .gauge {
+    &__svg {
+      min-width: 90px;
+      max-width: 160px;
+    }
+
+    &__percentage {
+      font-size: 2.5rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .gauge {
+    &__svg {
+      min-width: 80px;
+      max-width: 120px;
+    }
+
+    &__percentage {
+      font-size: 2.25rem;
+      padding: 0.5rem 1rem;
+      top: -4px;
+      right: -2px;
+    }
+
+    &--sm {
+      .gauge__svg {
+        min-width: 60px;
+        max-width: 90px;
+      }
+    }
+
+    &--lg {
+      .gauge__svg {
+        min-width: 100px;
+        max-width: 150px;
+      }
+    }
+  }
+}

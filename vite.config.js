@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-
+import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,8 +12,7 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 export default defineConfig({
-  plugins: [react()],
-
+  plugins: [react(), tailwindcss()],
   base: '/',
   server: {
     port: process.env.PORT || 3000,

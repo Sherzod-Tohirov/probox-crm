@@ -109,7 +109,14 @@ export default function FunnelCard({ data = [] }) {
               </Pie>
               <Tooltip
                 formatter={(value) => Number(value ?? 0).toLocaleString()}
-                contentStyle={{ fontSize: '14px' }}
+                contentStyle={{
+                  fontSize: '14px',
+                  backgroundColor: 'var(--primary-bg)',
+                  border: '1px solid var(--primary-border-color)',
+                  color: 'var(--chart-text-color)',
+                }}
+                labelStyle={{ color: 'var(--chart-text-color)' }}
+                itemStyle={{ color: 'var(--chart-text-color)' }}
               />
             </PieChart>
           </ResponsiveContainer>

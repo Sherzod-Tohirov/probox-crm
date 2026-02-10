@@ -4,4 +4,10 @@
   border: none !important;
   border-radius: 4rem !important;
   padding: 0 !important;
+
+  @media (max-width: 576px) {
+    width: calc(100vw - 32px) !important;
+    min-width: unset !important;
+    max-width: calc(100vw - 32px) !important;
+  }
 }

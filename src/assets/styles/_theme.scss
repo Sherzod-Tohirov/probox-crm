@@ -64,6 +64,31 @@
   --filter-input-placeholder-color: #0f172a;
   --filter-input-placeholder-color-secondary: #94a3b8;
   --filter-input-border-color: #cbd5e1;
+
+  // Chart and component accent tokens
+  --chart-accent-primary: #17aee5;
+  --chart-accent-primary-strong: rgba(23, 174, 229, 0.35);
+  --chart-accent-primary-soft: rgba(23, 174, 229, 0.05);
+  --chart-accent-success: #16a34a;
+  --chart-accent-success-strong: rgba(34, 197, 94, 0.45);
+  --chart-accent-success-soft: rgba(34, 197, 94, 0.05);
+  --calendar-weekday-color: #61708a;
+  --calendar-outside-color: #7d8aa1;
+  --calendar-range-bg: #e6eaf0;
+  --calendar-selected-bg: #1f2a44;
+  --calendar-selected-color: #ffffff;
+  --metric-divider-color: #cfd5dd;
+  --metric-pill-overlay-bg: #ffffff66;
+  --success-chip-bg: #dff4e7;
+  --success-chip-color: #1e9f56;
+  --segmented-bg: #eef2f7;
+  --segmented-active-bg: #ffffff;
+  --segmented-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --segmented-text-color: #627188;
+  --chart-text-color: #000000;
+  --chart-axis-label-color: #000000;
+  --chart-grid-color: #d9e1ec;
+  --chart-legend-color: #000000;
 }
 
 // Dark theme - High contrast and visibility
@@ -131,6 +156,31 @@
   --filter-input-placeholder-color: #f3f4f6;
   --filter-input-placeholder-color-secondary: #b4b9c5;
   --filter-input-border-color: #525866;
+
+  // Chart and component accent tokens
+  --chart-accent-primary: #38bdf8;
+  --chart-accent-primary-strong: rgba(56, 189, 248, 0.35);
+  --chart-accent-primary-soft: rgba(56, 189, 248, 0.08);
+  --chart-accent-success: #22c55e;
+  --chart-accent-success-strong: rgba(34, 197, 94, 0.35);
+  --chart-accent-success-soft: rgba(34, 197, 94, 0.08);
+  --calendar-weekday-color: #b4c0d4;
+  --calendar-outside-color: #7f8ca5;
+  --calendar-range-bg: #2f3b4e;
+  --calendar-selected-bg: #60a5fa;
+  --calendar-selected-color: #0f172a;
+  --metric-divider-color: #59657a;
+  --metric-pill-overlay-bg: #1f293799;
+  --success-chip-bg: #173827;
+  --success-chip-color: #65d59a;
+  --segmented-bg: #2a313d;
+  --segmented-active-bg: #374254;
+  --segmented-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --segmented-text-color: #d0daea;
+  --chart-text-color: #ffffff;
+  --chart-axis-label-color: #ffffff;
+  --chart-grid-color: #435066;
+  --chart-legend-color: #ffffff;
 }
 
 // Apply smooth transitions for theme changes

@@ -15,11 +15,15 @@
 }
 
 .ui-scale-inner {
+  width: 100%;
+  min-height: 100%;
+}
+
+.ui-scale-inner--scaled {
   transform-origin: 0 0;
   transform: scale(var(--ui-scale, 1));
   -webkit-transform: scale(var(--ui-scale, 1));
   width: calc(100% / var(--ui-scale, 1));
-  /* Ensure content height scales to fill */
   min-height: calc(100% / var(--ui-scale, 1));
 }
 

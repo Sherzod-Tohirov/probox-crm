@@ -1,10 +1,10 @@
-@use "@styles/mixins" as m;
-@use "@styles/variables" as v;
+@use '@styles/mixins' as m;
+@use '@styles/variables' as v;
 
 .alert {
   width: clamp(100rem, 100%, 160rem);
   padding: 4rem;
-  font-family: "Inter";
+  font-family: 'Inter';
   border: v.$primary-border-width v.$primary-border-type v.$primary-border-color;
   border-radius: 4rem;
   transition: all v.$transition-time v.$transition-type;
@@ -66,7 +66,9 @@
   &-enter-active {
     transform: translateX(0);
     opacity: 1;
-    transition: transform 300ms ease, opacity 300ms ease;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
   }
   &-exit {
     transform: translateX(0);
@@ -75,6 +77,27 @@
   &-exit-active {
     transform: translateX(100%);
     opacity: 0;
-    transition: transform 300ms ease, opacity 300ms ease;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
+  }
+
+  @media (max-width: 576px) {
+    width: calc(100vw - 32px) !important;
+    min-width: unset !important;
+    max-width: calc(100vw - 32px) !important;
+    padding: 3rem;
+
+    &-content {
+      width: 100% !important;
+    }
+
+    &-title {
+      font-size: 3.5rem;
+    }
+
+    &-desc {
+      font-size: 3rem;
+    }
   }
 }

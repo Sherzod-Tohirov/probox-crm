@@ -1,9 +1,9 @@
-import "react-toastify/dist/ReactToastify.css";
-import styles from "@styles/modules/hook.module.scss";
-import { Slide, toast, ToastContainer } from "react-toastify";
-import { useCallback } from "react";
-import { Alert } from "@components/ui";
-import AlertManager from "@components/ui/Alert/AlertManager";
+import 'react-toastify/dist/ReactToastify.css';
+import styles from '@styles/modules/hook.module.scss';
+import { Slide, ToastContainer } from 'react-toastify';
+import { useCallback } from 'react';
+import { Alert } from '@components/ui';
+import AlertManager from '@components/ui/Alert/AlertManager';
 
 export default function useAlert() {
   const alert = useCallback((message, options = {}, onClose = () => {}) => {
@@ -11,16 +11,16 @@ export default function useAlert() {
       <Alert
         message={message}
         onClose={() => {
-          typeof options.onClose === "function" && options.onClose();
+          typeof options.onClose === 'function' && options.onClose();
           onClose();
         }}
         {...options}
       />,
       {
-        type: "default",
+        type: 'default',
         autoClose: options.autoClose || 3000,
-        className: styles["alert-container"],
-        progressClassName: styles["alert-progress"],
+        className: styles['alert-container'],
+        progressClassName: styles['alert-progress'],
       }
     );
   }, []);
@@ -28,8 +28,8 @@ export default function useAlert() {
   const AlertContainer = () => {
     return (
       <ToastContainer
-        toastClassName={styles["alert-container"]}
-        progressClassName={styles["alert-progress"]}
+        toastClassName={styles['alert-container']}
+        progressClassName={styles['alert-progress']}
         position="top-right"
         autoClose={3000}
         hideProgressBar={true}
@@ -49,5 +49,3 @@ export default function useAlert() {
 
   return { alert, AlertContainer };
 }
-
-

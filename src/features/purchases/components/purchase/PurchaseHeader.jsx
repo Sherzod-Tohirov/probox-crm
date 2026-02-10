@@ -10,12 +10,18 @@ import {
 import StatusBadge from './StatusBadge';
 import { DownloadIcon } from 'lucide-react';
 import SupplierSelect from './SupplierSelect';
+import { ClipLoader } from 'react-spinners';
 
-function CourierField({ isEditable, value, onSelect, control }) {
+function CourierField({ isEditable, isLoading, value, onSelect, control }) {
   if (isEditable) {
     return (
       <Col xs={24} sm={12} md={6}>
-        <SupplierSelect control={control} value={value} onSelect={onSelect} />
+        <SupplierSelect
+          control={control}
+          value={value}
+          onSelect={onSelect}
+          disabled={isLoading}
+        />
       </Col>
     );
   }
@@ -30,7 +36,20 @@ function CourierField({ isEditable, value, onSelect, control }) {
         </Col>
         <Col>
           <Badge size="lg" color="secondary">
-            {value || '-'}
+            {isLoading ? (
+              <Row direction="row" gutter={1} align="center">
+                <Col>
+                  <ClipLoader size={12} color="#64748B" />
+                </Col>
+                <Col>
+                  <Typography color="secondary" variant="body2">
+                    Yuklanmoqda...
+                  </Typography>
+                </Col>
+              </Row>
+            ) : (
+              value || '-'
+            )}
           </Badge>
         </Col>
       </Row>
@@ -38,7 +57,14 @@ function CourierField({ isEditable, value, onSelect, control }) {
   );
 }
 
-function WarehouseField({ isEditable, value, control, options, onChange }) {
+function WarehouseField({
+  isEditable,
+  isLoading,
+  value,
+  control,
+  options,
+  onChange,
+}) {
   if (isEditable) {
     return (
       <Col xs={24} sm={12} md={6}>
@@ -50,6 +76,7 @@ function WarehouseField({ isEditable, value, control, options, onChange }) {
           options={options}
           control={control}
           onChange={onChange}
+          disabled={isLoading}
         />
       </Col>
     );
@@ -65,7 +92,20 @@ function WarehouseField({ isEditable, value, control, options, onChange }) {
         </Col>
         <Col>
           <Badge size="lg" color="secondary">
-            {value || '-'}
+            {isLoading ? (
+              <Row direction="row" gutter={1} align="center">
+                <Col>
+                  <ClipLoader size={12} color="#64748B" />
+                </Col>
+                <Col>
+                  <Typography color="secondary" variant="body2">
+                    Yuklanmoqda...
+                  </Typography>
+                </Col>
+              </Row>
+            ) : (
+              value || '-'
+            )}
           </Badge>
         </Col>
       </Row>
@@ -73,7 +113,7 @@ function WarehouseField({ isEditable, value, control, options, onChange }) {
   );
 }
 
-function StatusField({ status }) {
+function StatusField({ isLoading, status }) {
   return (
     <Col xs={12} sm={6} md={4}>
       <Row direction="row" gutter={2} align="center">
@@ -83,14 +123,29 @@ function StatusField({ status }) {
           </Typography>
         </Col>
         <Col>
-          <StatusBadge status={status} />
+          {isLoading ? (
+            <Badge size="lg" color="secondary">
+              <Row direction="row" gutter={1} align="center">
+                <Col>
+                  <ClipLoader size={12} color="#64748B" />
+                </Col>
+                <Col>
+                  <Typography color="secondary" variant="body2">
+                    Yuklanmoqda...
+                  </Typography>
+                </Col>
+              </Row>
+            </Badge>
+          ) : (
+            <StatusBadge status={status} />
+          )}
         </Col>
       </Row>
     </Col>
   );
 }
 
-function DownloadPDF({ status, isEditable, onDownloadPdf }) {
+function DownloadPDF({ isLoading, status, isEditable, onDownloadPdf }) {
   if (isEditable || status !== 'approve') return null;
   return (
     <Col xs={12} sm={6} md={4}>
@@ -99,6 +154,7 @@ function DownloadPDF({ status, isEditable, onDownloadPdf }) {
         iconSize={16}
         fullWidth
         onClick={onDownloadPdf}
+        isLoading={isLoading}
       >
         Yuklab olish
       </Button>
@@ -108,6 +164,7 @@ function DownloadPDF({ status, isEditable, onDownloadPdf }) {
 
 export default function PurchaseHeader({
   isEditable,
+  isLoading = false,
   status,
   courier,
   warehouse,
@@ -137,20 +194,23 @@ export default function PurchaseHeader({
         >
           <CourierField
             isEditable={isEditable}
+            isLoading={isLoading}
             value={courier}
             control={control}
             onSelect={onCourierSelect}
           />
           <WarehouseField
             isEditable={isEditable}
+            isLoading={isLoading}
             value={warehouse}
             control={control}
             options={warehouseOptions}
             onChange={onWarehouseChange}
           />
-          <StatusField status={status} />
+          <StatusField isLoading={isLoading} status={status} />
           <DownloadPDF
             status={status}
+            isLoading={isLoading}
             isEditable={isEditable}
             onDownloadPdf={onDownloadPdf}
           />

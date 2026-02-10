@@ -107,7 +107,7 @@ export async function generatePurchasePdf(purchaseData) {
             alignment: 'center',
           },
           {
-            text: item.batteryCapacity ? `${item.batteryCapacity}%` : '',
+            text: item.batteryCapacity ? `${item.batteryCapacity}` : '',
             style: 'badge',
             fillColor: item.batteryCapacity ? batteryColors.fill : undefined,
             color: item.batteryCapacity ? batteryColors.text : undefined,
@@ -297,43 +297,35 @@ export async function generatePurchasePdf(purchaseData) {
             { width: '*', text: '' },
             {
               width: 'auto',
-              alignment: 'center',
-              stack: [
-                {
-                  table: {
-                    widths: ['auto'],
-                    body: [
-                      [
-                        {
-                          qr: qrCodeUrl,
-                          fit: 70,
-                          alignment: 'center',
-                          margin: [4, 4, 4, 4],
-                        },
-                      ],
-                    ],
-                  },
-                  layout: {
-                    hLineWidth: () => 1,
-                    vLineWidth: () => 1,
-                    hLineColor: '#E2E8F0',
-                    vLineColor: '#E2E8F0',
-                    paddingLeft: () => 0,
-                    paddingRight: () => 0,
-                    paddingTop: () => 0,
-                    paddingBottom: () => 0,
-                  },
-                },
-                {
-                  text: '*siz bu QR kod orqali hujjatni elektron nusxasini\nyuklab olishingiz mumkin!',
-                  style: 'footerNote',
-                  margin: [0, 6, 0, 0],
-                },
-              ],
+              table: {
+                body: [
+                  [
+                    {
+                      qr: qrCodeUrl,
+                      fit: 66,
+                      alignment: 'center',
+                    },
+                  ],
+                ],
+              },
+              layout: {
+                hLineWidth: () => 0.8,
+                vLineWidth: () => 0.8,
+                hLineColor: '#CBD5E1',
+                vLineColor: '#CBD5E1',
+                paddingLeft: () => 5,
+                paddingRight: () => 5,
+                paddingTop: () => 5,
+                paddingBottom: () => 5,
+              },
             },
             { width: '*', text: '' },
           ],
-          margin: [0, 30, 0, 0],
+          margin: [0, 30, 0, 6],
+        },
+        {
+          text: '*siz bu QR kod orqali hujjatni elektron nusxasini\nyuklab olishingiz mumkin!',
+          style: 'footerNote',
         },
       ],
       styles: {
@@ -352,7 +344,6 @@ export async function generatePurchasePdf(purchaseData) {
           fontSize: 7,
           bold: true,
           color: '#1E293B',
-          fillColor: '#F8FAFC',
           margin: [0, 2, 0, 2],
         },
         tableCell: {

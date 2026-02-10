@@ -73,13 +73,21 @@ export default function DashboardChart({ width }) {
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: 'var(--primary-bg)',
               borderRadius: '8px',
-              border: 'none',
+              border: '1px solid var(--primary-border-color)',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              color: 'var(--chart-text-color)',
             }}
+            labelStyle={{ color: 'var(--chart-text-color)' }}
+            itemStyle={{ color: 'var(--chart-text-color)' }}
           />
-          <Legend verticalAlign="bottom" height={36} iconType="circle" />
+          <Legend
+            verticalAlign="bottom"
+            height={36}
+            iconType="circle"
+            wrapperStyle={{ color: 'var(--chart-legend-color)' }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

@@ -3,7 +3,6 @@ import { useCallback, useRef, forwardRef, memo, useMemo } from "react";
 import iconsMap from "@utils/iconsMap";
 import classNames from "classnames";
 import { FixedSizeList as List } from "react-window";
-import { v4 as uuidv4 } from "uuid";
 import styles from "./table.module.scss";
 
 function Table(

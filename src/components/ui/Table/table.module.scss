@@ -13,6 +13,31 @@
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   background: v.$primary-table-bg;
+  
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  // Firefox scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  
   &.loading {
     pointer-events: none;
   }
@@ -32,6 +57,31 @@
       position: sticky;
       top: 0;
       z-index: 99;
+    }
+  }
+
+  tfoot.table-summary {
+    tr {
+      background: v.$primary-table-header-bg;
+    }
+
+    td {
+      font-weight: 600;
+      color: v.$primary-color;
+      border-top: v.$secondary-border-width v.$primary-border-type
+        v.$primary-border-color;
+      padding: 2rem;
+      white-space: nowrap;
+      @media (max-width: (v.$breakpoint-md - 1)) {
+        padding: 1.6rem;
+      }
+    }
+
+    &.table-summary-sticky {
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
     }
   }
 }

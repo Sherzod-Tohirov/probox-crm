@@ -17,7 +17,7 @@ function Header() {
   const { pathname } = useLocation();
   const { data: currency } = useFetchCurrency();
   return (
-    <header className={styles['site-header']}>
+    <header id="app-header" className={styles['site-header']}>
       <Row direction="row" justify="space-between">
         <Col align="center" justify="center">
           <Row direction="row" gutter={6} align="center" justify="start">
