@@ -25,13 +25,25 @@ export const meetingOptions = [
 ];
 
 export const statusOptions = [
-  { value: 'Active', label: 'Yangi' },
+  { value: 'Active', label: 'Faol' },
+  { value: 'Blocked', label: 'Bloklangan' },
+  { value: 'Purchased', label: 'Xarid qildi' },
+  { value: 'Returned', label: 'Qaytarildi' },
+  { value: 'Missed', label: "O'tkazib yuborildi" },
+  { value: 'Ignored', label: "E'tiborsiz" },
+  { value: 'NoAnswer', label: 'Javob bermadi' },
+  { value: 'FollowUp', label: "Qayta a'loqa" },
+  { value: 'Considering', label: "O'ylab ko'radi" },
+  { value: 'WillVisitStore', label: "Do'konga boradi" },
+  { value: 'WillSendPassport', label: 'Passport yuboradi' },
+  { value: 'Scoring', label: 'Skoring' },
+  { value: 'ScoringResult', label: 'Skoring natija' },
+  { value: 'VisitedStore', label: "Do'konga keldi" },
+  { value: 'NoPurchase', label: "Xarid bo'lmadi" },
+  { value: 'Closed', label: 'Sifatsiz' },
+  // Legacy statuses
   { value: 'Archived', label: 'Arxivlangan' },
-  // { value: 'Closed', label: 'Yopilgan' },
-  // { value: 'Blocked', label: 'Bloklangan' },
   { value: 'Processing', label: 'Jarayonda' },
-  { value: 'Closed', label: 'Yopilgan' },
-  { value: 'Returned', label: 'Qaytarilgan' },
 ];
 
 export const passportVisitOptions = [
@@ -43,12 +55,25 @@ export const passportVisitOptions = [
 
 export const statusFilterOptions = [
   { value: 'unmarked', label: 'Barchasi' },
-  { value: 'Active', label: 'Yangi' },
+  { value: 'Active', label: 'Faol' },
+  { value: 'Blocked', label: 'Bloklangan' },
+  { value: 'Purchased', label: 'Xarid qildi' },
+  { value: 'Returned', label: 'Qaytarildi' },
+  { value: 'Missed', label: "O'tkazib yuborildi" },
+  { value: 'Ignored', label: "E'tiborsiz" },
+  { value: 'NoAnswer', label: 'Javob bermadi' },
+  { value: 'FollowUp', label: "Qayta a'loqa" },
+  { value: 'Considering', label: "O'ylab ko'radi" },
+  { value: 'WillVisitStore', label: "Do'konga boradi" },
+  { value: 'WillSendPassport', label: 'Passport yuboradi' },
+  { value: 'Scoring', label: 'Skoring' },
+  { value: 'ScoringResult', label: 'Skoring natija' },
+  { value: 'VisitedStore', label: "Do'konga keldi" },
+  { value: 'NoPurchase', label: "Xarid bo'lmadi" },
+  { value: 'Closed', label: 'Sifatsiz' },
+  // Legacy statuses
   { value: 'Archived', label: 'Arxivlangan' },
   { value: 'Processing', label: 'Jarayonda' },
-  { value: 'Closed', label: 'Yopilgan' },
-  { value: 'Returned', label: 'Qaytarilgan' },
-  { value: 'Missed', label: "O'tkazib yuborilgan" },
 ];
 
 export const callCountOptions = [

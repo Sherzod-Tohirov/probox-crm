@@ -1,5 +1,25 @@
 import formatDate from '@/utils/formatDate';
 import { useMemo, useCallback, cloneElement } from 'react';
+import {
+  Archive,
+  Ban,
+  Calculator,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock3,
+  EyeOff,
+  IdCard,
+  LoaderCircle,
+  MapPin,
+  PhoneMissed,
+  PhoneOff,
+  RefreshCcw,
+  RotateCcw,
+  ShieldX,
+  ShoppingCart,
+  Store,
+  XCircle,
+} from 'lucide-react';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import useFetchBranches from '@/hooks/data/useFetchBranches';
 import iconsMap from '@utils/iconsMap';
@@ -12,31 +32,54 @@ import { AVAILABLE_LEAD_STATUSES } from '../utils/constants';
  * @typedef {import('../../../components/ui/Table').TableColumn} TableColumn
  */
 
+const STATUS_META = {
+  Active: { label: 'Faol', textColor: '#15803d', bgColor: '#dcfce7', borderColor: '#86efac', icon: CheckCircle2 },
+  Blocked: { label: 'Bloklangan', textColor: '#b91c1c', bgColor: '#fee2e2', borderColor: '#fca5a5', icon: ShieldX },
+  Purchased: { label: 'Xarid qildi', textColor: '#047857', bgColor: '#d1fae5', borderColor: '#6ee7b7', icon: ShoppingCart },
+  Returned: { label: 'Qaytarildi', textColor: '#be123c', bgColor: '#ffe4e6', borderColor: '#fda4af', icon: RotateCcw },
+  Missed: { label: "O'tkazib yuborildi", textColor: '#c2410c', bgColor: '#ffedd5', borderColor: '#fdba74', icon: PhoneMissed },
+  Ignored: { label: "E'tiborsiz", textColor: '#475569', bgColor: '#f1f5f9', borderColor: '#cbd5e1', icon: EyeOff },
+  NoAnswer: { label: 'Javob bermadi', textColor: '#9a3412', bgColor: '#ffedd5', borderColor: '#fdba74', icon: PhoneOff },
+  FollowUp: { label: "Qayta a'loqa", textColor: '#0369a1', bgColor: '#e0f2fe', borderColor: '#7dd3fc', icon: RefreshCcw },
+  Considering: { label: "O'ylab ko'radi", textColor: '#854d0e', bgColor: '#fef9c3', borderColor: '#fde047', icon: Clock3 },
+  WillVisitStore: { label: "Do'konga boradi", textColor: '#1d4ed8', bgColor: '#dbeafe', borderColor: '#93c5fd', icon: Store },
+  WillSendPassport: { label: 'Passport yuboradi', textColor: '#6d28d9', bgColor: '#ede9fe', borderColor: '#c4b5fd', icon: IdCard },
+  Scoring: { label: 'Skoring', textColor: '#b45309', bgColor: '#fef3c7', borderColor: '#fcd34d', icon: Calculator },
+  ScoringResult: { label: 'Skoring natija', textColor: '#0f766e', bgColor: '#ccfbf1', borderColor: '#5eead4', icon: ClipboardCheck },
+  VisitedStore: { label: "Do'konga keldi", textColor: '#0c4a6e', bgColor: '#e0f2fe', borderColor: '#7dd3fc', icon: MapPin },
+  NoPurchase: { label: "Xarid bo'lmadi", textColor: '#7f1d1d', bgColor: '#fee2e2', borderColor: '#fca5a5', icon: Ban },
+  Closed: { label: 'Sifatsiz', textColor: '#111827', bgColor: '#e5e7eb', borderColor: '#9ca3af', icon: XCircle },
+  Archived: { label: 'Arxivlangan', textColor: '#374151', bgColor: '#f3f4f6', borderColor: '#d1d5db', icon: Archive },
+  Processing: { label: 'Jarayonda', textColor: '#a16207', bgColor: '#fef3c7', borderColor: '#fcd34d', icon: LoaderCircle },
+};
+
 const StatusBadge = ({ status }) => {
   if (status === null) return '-';
 
   if (AVAILABLE_LEAD_STATUSES.includes(status)) {
-    const colorMap = {
-      Active: 'success',
-      Archived: 'danger',
-      Processing: 'warning',
-      Closed: 'black',
-      Purchased: 'extrasuccess',
-      Returned: 'danger',
-      Missed: 'danger',
+    const meta = STATUS_META[status] || {
+      label: status,
+      textColor: '#334155',
+      bgColor: '#f1f5f9',
+      borderColor: '#cbd5e1',
+      icon: LoaderCircle,
     };
-    const translationMap = {
-      Active: 'Yangi',
-      Archived: 'Arxivlangan',
-      Processing: 'Jarayonda',
-      Closed: 'Yopilgan',
-      Purchased: 'Sotilgan',
-      Returned: 'Qaytarilgan',
-      Missed: "O'tkazib yuborilgan",
-    };
+    const Icon = meta.icon;
     return (
-      <Badge color={colorMap[status]} variant="soft" size="md">
-        {translationMap[status]}
+      <Badge
+        color="secondary"
+        variant="soft"
+        size="md"
+        style={{
+          color: meta.textColor,
+          backgroundColor: meta.bgColor,
+          border: `1px solid ${meta.borderColor}`,
+        }}
+      >
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Icon size={12} style={{ color: meta.textColor }} />
+          {meta.label}
+        </span>
       </Badge>
     );
   } else {
@@ -375,14 +418,14 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'newTime',
-        title: 'Yangi vaqti',
+        title: "So'ngi o'zgarish vaqti",
         icon: 'clockFilled',
         width: { xs: '25%', md: '14%', xl: '8%' },
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (column) => {
           const { newTime } = column;
-          if(!newTime) return "-"
+          if (!newTime) return '-';
           return (
             <span
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}

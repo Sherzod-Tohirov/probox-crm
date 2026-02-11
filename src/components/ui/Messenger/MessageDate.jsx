@@ -7,11 +7,15 @@ export default function MessageDate({
   format = true,
   size = "",
 }) {
+  const parsed = moment(date);
+  const normalizedDate = parsed.isValid()
+    ? parsed.format("YYYY-MM-DD")
+    : String(date);
   return (
     <time
-      dateTime={format ? moment(date).format("YYYY-MM-DD") : date}
+      dateTime={format ? normalizedDate : normalizedDate}
       className={classNames(styles["message-date"], styles[size])}>
-      {format ? moment(date).format("DD-MM-YYYY") : date}
+      {format ? moment(date).format("DD.MM.YYYY") : date}
     </time>
   );
 }

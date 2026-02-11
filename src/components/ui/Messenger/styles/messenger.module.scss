@@ -335,6 +335,77 @@
       height: 14px;
     }
   }
+
+  &-action-wrapper {
+    width: 100%;
+    min-width: 180px;
+    padding: 10px 12px 8px;
+    border-radius: 14px 16px 16px 0;
+    border: 1px solid;
+    @include m.flex(start, start, 6px, column);
+  }
+
+  &-action-icon {
+    @include m.flex-center;
+  }
+
+  &-action-title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  &-action-subtitle {
+    @include m.flex(start, center, 6px);
+    font-size: 2.8rem;
+    line-height: 1.3;
+    color: v.$primary-color;
+    opacity: 0.85;
+  }
+
+  &-action-direction-icon {
+    @include m.flex-center;
+    opacity: 0.9;
+    transform: translateY(0.5px);
+  }
+
+  &-change-log {
+    width: 100%;
+    margin-top: 2px;
+    border-top: 1px dashed rgba(148, 163, 184, 0.35);
+    padding-top: 6px;
+    @include m.flex(start, start, 4px, column);
+  }
+
+  &-change-row {
+    width: 100%;
+    @include m.flex(start, start, 6px, row);
+    flex-wrap: wrap;
+    font-size: 2.7rem;
+    line-height: 1.25;
+    color: v.$primary-color;
+  }
+
+  &-change-field {
+    font-weight: 700;
+  }
+
+  &-change-arrow {
+    opacity: 0.75;
+  }
+
+  &-change-from {
+    color: v.$secondary-color;
+  }
+
+  &-change-to {
+    color: v.$success-color;
+    font-weight: 700;
+  }
+
+  &-audio-body {
+    width: 100%;
+  }
 }
 
 .message.small {

@@ -32,7 +32,7 @@ import {
   AddressSection,
   SourceInfoSection,
   AssignmentsSection,
-  CommentSection,
+  // CommentSection,
   PassportSection,
   BlockedStatusSection,
   BlockedWarningCard,
@@ -190,7 +190,7 @@ export default function LeadPage() {
         isOperatorManager={isOperatorManager}
         onSave={handleSave}
       />
-      <CommentSection lead={lead} onSave={handleSave} />
+      {/* <CommentSection lead={lead} onSave={handleSave} /> */}
       <PassportSection
         canEdit={canEditTab('all')}
         uploadValue={uploadValue}

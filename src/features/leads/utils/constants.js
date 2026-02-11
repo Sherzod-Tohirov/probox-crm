@@ -11,12 +11,24 @@ export const AVAILABLE_LEAD_SOURCES = [
 
 export const AVAILABLE_LEAD_STATUSES = [
   'Active',
-  'Archived',
-  'Processing',
+  'Blocked',
   'Closed',
   'Purchased',
   'Returned',
   'Missed',
+  'Ignored',
+  'NoAnswer',
+  'FollowUp',
+  'Considering',
+  'WillVisitStore',
+  'WillSendPassport',
+  'Scoring',
+  'ScoringResult',
+  'VisitedStore',
+  'NoPurchase',
+  // Legacy statuses (keep for backward compatibility)
+  'Archived',
+  'Processing',
 ];
 
 export const ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS = [
