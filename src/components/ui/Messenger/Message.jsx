@@ -152,6 +152,7 @@ const FIELD_LABELS = {
   comments: 'Izoh',
   seen: "Ko'rildimi",
   closed: 'Sifatsiz',
+  clientFullName: 'Mijoz F.I.O',
 };
 
 const STATUS_LABELS = {
@@ -271,12 +272,6 @@ const formatChangeValue = (field, value) => {
     if (formatted) return formatted;
   }
 
-  // Fallback: if value itself looks like date/time, still format it.
-  const fallbackDateTime = formatUnknownDateTime(value);
-  if (fallbackDateTime) {
-    return fallbackDateTime;
-  }
-
   if (
     normalizedFieldKey === 'accountcode' ||
     normalizedFieldKey === 'direction'
@@ -341,7 +336,40 @@ const toRgba = (color, alpha = 1) => {
   return color;
 };
 
-export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
+const MESSAGE_VARIANTS = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+    scale: 0.98,
+  },
+  visible: (index = 0) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'tween',
+      duration: 0.28,
+      delay: Math.min(Math.max(index, 0), 10) * 0.07,
+    },
+  }),
+  exit: {
+    opacity: 0,
+    y: -12,
+    scale: 0.98,
+    transition: {
+      type: 'tween',
+      duration: 0.18,
+    },
+  },
+};
+
+export default function Message({
+  msg,
+  onEditMessage,
+  onDeleteMessage,
+  size,
+  animationIndex = 0,
+}) {
   const { data: executors } = useFetchExecutors();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -561,10 +589,11 @@ export default function Message({ msg, onEditMessage, onDeleteMessage, size }) {
       ref={refs.setReference}
       onContextMenu={handleContextMenu}
       className={classNames(styles.message, styles[size])}
-      initial={{ scale: 0, y: 20 }}
-      animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0, y: -20 }}
-      transition={{ damping: 10, type: 'tween', duration: 0.2 }}
+      custom={animationIndex}
+      variants={MESSAGE_VARIANTS}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
     >
       <Col>
         {headerInfo && (
