@@ -1,24 +1,21 @@
-import { ClipLoader } from "react-spinners";
 import styles from "./loader.module.scss";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import Skeleton from "@/components/ui/Skeleton";
 
 export default function PageLoader({ fullscreen = false }) {
-  const [loaderColor, setLoaderColor] = useState("#3b82f6");
-
-  useEffect(() => {
-    // Get current theme
-    const theme = document.documentElement.getAttribute("data-theme");
-    setLoaderColor(theme === "dark" ? "#60a5fa" : "#3b82f6");
-  }, []);
-
   return (
     <div className={styles["page-overlay"]}>
       <div
         className={classNames(styles["page-loader"], {
           [styles.fullscreen]: fullscreen,
         })}>
-        <ClipLoader color={loaderColor} loading={true} size={70} />
+        <div className={styles["skeleton-wrapper"]}>
+          <Skeleton height="30px" width="220px" borderRadius="10px" />
+          <Skeleton height="14px" width="420px" />
+          <Skeleton height="14px" width="360px" />
+          <Skeleton height="140px" width="100%" borderRadius="12px" />
+          <Skeleton height="140px" width="100%" borderRadius="12px" />
+        </div>
       </div>
     </div>
   );

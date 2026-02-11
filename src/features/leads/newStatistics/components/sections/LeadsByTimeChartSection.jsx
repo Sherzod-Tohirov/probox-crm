@@ -13,6 +13,7 @@ function resolveCssVar(name, fallback) {
 export default function LeadsByTimeChartSection() {
     const title = "Lead tuzilgan vaqt bo'yicha ko'rsatkichlar";
     const primarySeries = mockLeadsByTimeData.series[0];
+    const chartWidth = Math.max(780, mockLeadsByTimeData.hours.length * 58);
     const axisLabelColor = resolveCssVar('--chart-axis-label-color', '#5e6d86');
     const gridColor = resolveCssVar('--chart-grid-color', '#d9e1ec');
     const accent = resolveCssVar('--chart-accent-success', '#16a34a') || '#16a34a';
@@ -42,7 +43,12 @@ export default function LeadsByTimeChartSection() {
             data: mockLeadsByTimeData.hours,
             boundaryGap: false,
             axisLine: { lineStyle: { color: gridColor } },
-            axisLabel: { color: axisLabelColor, fontSize: 12 },
+            axisLabel: {
+                color: axisLabelColor,
+                fontSize: 12,
+                interval: 0,
+                hideOverlap: false,
+            },
         },
         yAxis: {
             type: 'value',
@@ -80,7 +86,9 @@ export default function LeadsByTimeChartSection() {
         <Card title={title}>
             <Row align="stretch">
                 <Col fullWidth style={{ minWidth: 0 }}>
-                    <EChart option={option} height={350} />
+                    <div className="w-full overflow-x-auto">
+                        <EChart option={option} height={350} style={{ width: `${chartWidth}px` }} />
+                    </div>
                 </Col>
             </Row>
         </Card>

@@ -29,13 +29,17 @@ export default function LeadsByDateChartSection() {
   const yAxisMax = Math.ceil((yMax + 20) / 50) * 50;
   const axisLabelColor = resolveCssVar('--chart-axis-label-color', '#5e6d86');
   const gridColor = resolveCssVar('--chart-grid-color', '#d9e1ec');
-  const accent = resolveCssVar('--chart-accent-primary', '#17aee5') || '#17aee5';
+  const accent =
+    resolveCssVar('--chart-accent-primary', '#17aee5') || '#17aee5';
   const accentStrong =
-    resolveCssVar('--chart-accent-primary-strong', 'rgba(23, 174, 229, 0.35)') ||
-    'rgba(23, 174, 229, 0.35)';
+    resolveCssVar(
+      '--chart-accent-primary-strong',
+      'rgba(23, 174, 229, 0.35)'
+    ) || 'rgba(23, 174, 229, 0.35)';
   const accentSoft =
     resolveCssVar('--chart-accent-primary-soft', 'rgba(23, 174, 229, 0.05)') ||
     'rgba(23, 174, 229, 0.05)';
+  const chartWidth = Math.max(780, mockLeadsByDateData.dates.length * 72);
 
   const option = {
     tooltip: {
@@ -43,18 +47,18 @@ export default function LeadsByDateChartSection() {
       backgroundColor: 'var(--primary-bg)',
       borderColor: 'var(--primary-border-color)',
       textStyle: { color: 'var(--chart-text-color)', fontSize: 14 },
-            axisPointer: {
-                type: 'line',
-                lineStyle: {
-                    color: accentStrong,
-                },
-            },
+      axisPointer: {
+        type: 'line',
+        lineStyle: {
+          color: accentStrong,
+        },
+      },
     },
     grid: {
-      left: '2.5%',
-      right: '1.5%',
-      top: '4%',
-      bottom: '17%',
+      left: '0%',
+      right: '0.5%',
+      top: '2%',
+      bottom: '10%',
       containLabel: true,
     },
     xAxis: {
@@ -67,7 +71,13 @@ export default function LeadsByDateChartSection() {
         show: true,
         lineStyle: { color: gridColor, type: 'dashed' },
       },
-      axisLabel: { color: axisLabelColor, fontSize: 14, margin: 14 },
+      axisLabel: {
+        color: axisLabelColor,
+        fontSize: 14,
+        margin: 14,
+        interval: 0,
+        hideOverlap: false,
+      },
     },
     yAxis: {
       type: 'value',
@@ -96,19 +106,19 @@ export default function LeadsByDateChartSection() {
           width: 4,
           opacity: 1,
         },
-                areaStyle: {
-                    color: {
-                        type: 'linear',
+        areaStyle: {
+          color: {
+            type: 'linear',
             x: 0,
             y: 0,
             x2: 0,
-                        y2: 1,
-                        colorStops: [
-                            { offset: 0, color: accentStrong },
-                            { offset: 1, color: accentSoft },
-                        ],
-                    },
-                },
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: accentStrong },
+              { offset: 1, color: accentSoft },
+            ],
+          },
+        },
         itemStyle: {
           color: accent,
           borderColor: accent,
@@ -125,11 +135,11 @@ export default function LeadsByDateChartSection() {
     <Card
       title={title}
       rightTitle={
-        <div className="flex items-center gap-8">
+        <div className="flex w-full flex-wrap items-center gap-3 md:w-auto md:flex-nowrap md:gap-8">
           <Select
             value={selectedBranch}
             onChange={setSelectedBranch}
-            className="w-[170px]"
+            className="w-full md:w-[170px]"
           >
             <SelectOption value="parkent">Parkent</SelectOption>
             <SelectOption value="sagbon">Sag&apos;bon</SelectOption>
@@ -138,7 +148,7 @@ export default function LeadsByDateChartSection() {
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            className="w-[170px]"
+            className="w-full md:w-[170px]"
           >
             <SelectOption value="yanvar">Yanvar</SelectOption>
             <SelectOption value="fevral">Fevral</SelectOption>
@@ -156,7 +166,7 @@ export default function LeadsByDateChartSection() {
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
-            className="w-[130px]"
+            className="w-full md:w-[130px]"
           >
             <SelectOption value="2024">2024</SelectOption>
             <SelectOption value="2025">2025</SelectOption>
@@ -167,11 +177,17 @@ export default function LeadsByDateChartSection() {
     >
       <Row align="stretch">
         <Col fullWidth style={{ minWidth: 0 }}>
-          <EChart option={option} height={420} />
+          <div className="w-full overflow-x-auto">
+            <EChart
+              option={option}
+              height={420}
+              style={{ width: `${chartWidth}px` }}
+            />
+          </div>
         </Col>
         <Col fullWidth style={{ minWidth: 0 }}>
-          <div className="w-full mt-8 flex justify-center">
-            <ButtonGroup className="w-full max-w-[980px]">
+          <div className="mt-8 w-full flex sm:justify-start md:justify-center overflow-x-auto">
+            <ButtonGroup className="w-full  min-w-[720px] max-w-[980px]">
               {mockLeadsByDateData.tabs.map((tab) => (
                 <ButtonGroupItem
                   key={tab.key}
