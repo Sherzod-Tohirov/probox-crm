@@ -156,7 +156,7 @@ const FIELD_LABELS = {
 };
 
 const STATUS_LABELS = {
-  Active: 'Faol',
+  Active: 'Yangi lead',
   Blocked: 'Bloklangan',
   Purchased: 'Xarid qildi',
   Returned: 'Qaytarildi',

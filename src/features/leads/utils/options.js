@@ -25,7 +25,7 @@ export const meetingOptions = [
 ];
 
 export const statusOptions = [
-  { value: 'Active', label: 'Faol' },
+  { value: 'Active', label: 'Yangi lead' },
   { value: 'Blocked', label: 'Bloklangan' },
   { value: 'Purchased', label: 'Xarid qildi' },
   { value: 'Returned', label: 'Qaytarildi' },
@@ -55,7 +55,7 @@ export const passportVisitOptions = [
 
 export const statusFilterOptions = [
   { value: 'unmarked', label: 'Barchasi' },
-  { value: 'Active', label: 'Faol' },
+  { value: 'Active', label: 'Yang lead' },
   { value: 'Blocked', label: 'Bloklangan' },
   { value: 'Purchased', label: 'Xarid qildi' },
   { value: 'Returned', label: 'Qaytarildi' },
