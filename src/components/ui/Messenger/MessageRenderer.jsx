@@ -17,6 +17,8 @@ const MessageRenderer = ({
   isLoadingMore = false,
 }) => {
   const scrollRef = useRef(null);
+  const wasNearBottomRef = useRef(true);
+  const previousMessageCountRef = useRef(0);
   const [formattedMessages, setFormattedMessages] = useState([]);
   const [lastMonthMessages, setLastMonthMessages] = useState([]);
   const [isToggleOpen, setIsToggleOpen] = useState(false);
@@ -27,10 +29,61 @@ const MessageRenderer = ({
     return Array.isArray(messages) ? messages : [];
   }, [messages]);
 
-  // Scroll to bottom when new message is added
+  const scrollToBottom = (behavior = 'auto') => {
+    const node = scrollRef.current;
+    if (!node) return;
+    node.scrollTo({
+      top: node.scrollHeight,
+      behavior,
+    });
+  };
+
   useEffect(() => {
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [safeMessages]);
+    const node = scrollRef.current;
+    if (!node) return;
+
+    const handleScroll = () => {
+      const threshold = 80;
+      const distanceToBottom =
+        node.scrollHeight - node.scrollTop - node.clientHeight;
+      wasNearBottomRef.current = distanceToBottom <= threshold;
+    };
+
+    handleScroll();
+    node.addEventListener('scroll', handleScroll, { passive: true });
+    return () => node.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useLayoutEffect(() => {
+    const currentCount = formattedMessages.length;
+    const isFirstPaint = previousMessageCountRef.current === 0;
+    const isNewMessageAppended = currentCount >= previousMessageCountRef.current;
+    const shouldAutoScroll =
+      !isLoadingMore &&
+      (isFirstPaint || isNewMessageAppended || wasNearBottomRef.current);
+
+    if (shouldAutoScroll) {
+      requestAnimationFrame(() => {
+        scrollToBottom(isFirstPaint ? 'auto' : 'smooth');
+      });
+    }
+
+    previousMessageCountRef.current = currentCount;
+  }, [formattedMessages, isLoadingMore]);
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node || typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => {
+      if (wasNearBottomRef.current) {
+        scrollToBottom('auto');
+      }
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
     const now = moment();
@@ -57,6 +110,21 @@ const MessageRenderer = ({
       setFormattedMessages(safeMessages);
     }
   }, [safeMessages, hasToggleControl, isToggleOpen]);
+
+  const groupedMessages = useMemo(() => {
+    if (formattedMessages.length === 0) return [];
+    return Object.entries(
+      groupBy((msg) => {
+        const formattedDate = moment(msg?.created_at ?? msg?.createdAt).format(
+          'DD.MM.YYYY'
+        );
+        return formattedDate;
+      }, formattedMessages)
+    );
+  }, [formattedMessages]);
+
+  const totalMessageCount = formattedMessages.length;
+
   return (
     <div className={styles['messenger-messages']} ref={scrollRef}>
       {/* Load More Button for infinite scroll */}
@@ -96,30 +164,32 @@ const MessageRenderer = ({
           </Button>
         </Box>
       ) : null}
-      <AnimatePresence mode="sync">
-        {(formattedMessages.length > 0
-          ? Object.entries(
-              groupBy((msg) => {
-                const formattedDate = moment(
-                  msg?.created_at ?? msg?.createdAt
-                ).format('DD.MM.YYYY');
-                return formattedDate;
-              }, formattedMessages)
-            )
-          : []
-        ).map(([date, messages], index) => {
+      <AnimatePresence initial={false} mode="sync">
+        {groupedMessages.map(([date, messages]) => {
           return (
-            <Box dir="column" gap={2} key={index}>
+            <Box dir="column" gap={2} key={date}>
               <MessageDate date={date} format={false} size={size} />
-              {messages.map((message) => (
-                <Message
-                  msg={message}
-                  key={message?.['_id']}
-                  onEditMessage={onEditMessage}
-                  onDeleteMessage={onDeleteMessage}
-                  size={size}
-                />
-              ))}
+              <AnimatePresence initial={false} mode="sync">
+                {messages.map((message) => {
+                  const animationIndex = formattedMessages.findIndex(
+                    (m) => m?._id === message?._id
+                  );
+                  const staggerIndex =
+                    animationIndex >= 0
+                      ? Math.max(0, totalMessageCount - animationIndex - 1)
+                      : 0;
+                  return (
+                  <Message
+                    msg={message}
+                    key={message?.['_id']}
+                    onEditMessage={onEditMessage}
+                    onDeleteMessage={onDeleteMessage}
+                    size={size}
+                    animationIndex={staggerIndex}
+                  />
+                  );
+                })}
+              </AnimatePresence>
             </Box>
           );
         })}
