@@ -1,4 +1,4 @@
-import { Card, Col, Row, Spinner } from '@/components/ui';
+import { Card, Col, Row, Skeleton } from '@/components/ui';
 import useFetchExecutors from '@/hooks/data/useFetchExecutors';
 import { useMemo } from 'react';
 import EChart from '@/components/shared/EChart';
@@ -73,10 +73,10 @@ export default function StaffPerformanceChartSection({
       textStyle: { color: 'var(--chart-legend-color)', fontSize: 13 },
     },
     grid: {
-      left: '3%',
+      left: '0%',
       right: '3%',
-      top: '8%',
-      bottom: '15%',
+      top: '0%',
+      bottom: '10%',
       containLabel: true,
     },
     xAxis: {
@@ -85,7 +85,7 @@ export default function StaffPerformanceChartSection({
       axisLine: { lineStyle: { color: 'var(--primary-border-color)' } },
       axisLabel: {
         color: 'var(--chart-axis-label-color)',
-        fontSize: 12,
+        fontSize: 13.5,
         interval: 0,
         rotate: operatorRows.length > 10 ? 22 : 0,
       },
@@ -105,8 +105,9 @@ export default function StaffPerformanceChartSection({
         color: s.color,
         borderRadius: [4, 4, 0, 0],
       },
-      barMaxWidth: 14,
-      barGap: '20%',
+      barMaxWidth: 28,
+      barWidth: '15px',
+      barGap: '8%',
     })),
   };
 
@@ -134,8 +135,28 @@ export default function StaffPerformanceChartSection({
       <Row>
         <Col fullWidth>
           {isLoading || isExecutorsLoading ? (
-            <div className="h-[350px] flex items-center justify-center">
-              <Spinner />
+            <div className="w-full rounded-xl border border-[var(--chart-grid-color)] p-4">
+              <div className="mb-4 flex gap-3">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Skeleton
+                    key={`chart-legend-${index}`}
+                    height="12px"
+                    width="90px"
+                    borderRadius="9999px"
+                  />
+                ))}
+              </div>
+              <div className="h-[300px] w-full flex items-end gap-3">
+                {Array.from({ length: 18 }).map((_, index) => (
+                  <Skeleton
+                    key={`chart-bar-${index}`}
+                    width="100%"
+                    height={`${35 + ((index * 17) % 65)}%`}
+                    borderRadius="6px 6px 0 0"
+                    className="max-w-[52px]"
+                  />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="w-full overflow-x-auto">

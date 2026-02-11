@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, Typography } from '@components/ui';
 import {
   LineChart,
@@ -24,16 +24,44 @@ const COLORS = [
 
 export default function BranchesCard({ data = [] }) {
   const [showTrends, setShowTrends] = useState(false);
+  const [axisLabelColor, setAxisLabelColor] = useState('#000000');
 
-  if (!data || data.length === 0) {
-    return (
-      <Card title="Filiallar bo'yicha statistika">
-        <div className={styles.empty}>Ma'lumot topilmadi</div>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-  const sortedData = [...data].sort((a, b) => b.count - a.count);
+    const updateAxisLabelColor = () => {
+      const root = document.documentElement;
+      const theme = root.getAttribute('data-theme');
+      setAxisLabelColor(theme === 'dark' ? '#ffffff' : '#000000');
+    };
+
+    const root = document.documentElement;
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some(
+          (mutation) =>
+            mutation.type === 'attributes' &&
+            (mutation.attributeName === 'data-theme' ||
+              mutation.attributeName === 'class')
+        )
+      ) {
+        updateAxisLabelColor();
+      }
+    });
+
+    updateAxisLabelColor();
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const sortedData = useMemo(
+    () => [...(data || [])].sort((a, b) => b.count - a.count),
+    [data]
+  );
 
   // Combine all per_day data into unified chart data
   const unifiedChartData = useMemo(() => {
@@ -55,6 +83,14 @@ export default function BranchesCard({ data = [] }) {
       return dataPoint;
     });
   }, [sortedData]);
+
+  if (!sortedData.length) {
+    return (
+      <Card title="Filiallar bo'yicha statistika">
+        <div className={styles.empty}>Ma'lumot topilmadi</div>
+      </Card>
+    );
+  }
 
   const getPercentColor = (percent) => {
     if (percent === 0) return '#9CA3AF';
@@ -140,15 +176,15 @@ export default function BranchesCard({ data = [] }) {
                     <XAxis
                       dataKey="day"
                       tickFormatter={(value) => {
-                        const [year, month, day] = value.split('.');
+                        const [, month, day] = value.split('.');
                         return `${day}.${month}`;
                       }}
-                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      tick={{ fontSize: 13, fill: axisLabelColor }}
                       axisLine={{ stroke: 'var(--chart-grid-color)' }}
                       tickLine={{ stroke: 'var(--chart-grid-color)' }}
                     />
                     <YAxis
-                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      tick={{ fontSize: 13, fill: axisLabelColor }}
                       axisLine={{ stroke: 'var(--chart-grid-color)' }}
                       tickLine={{ stroke: 'var(--chart-grid-color)' }}
                     />

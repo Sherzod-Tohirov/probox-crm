@@ -8,10 +8,44 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import formatterCurrency from '@utils/formatterCurrency'; // Import your currency formatter
 
 export default function Chart({ data, keys = {}, isCompact = false }) {
+  const [axisLabelColor, setAxisLabelColor] = useState('#000000');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateAxisLabelColor = () => {
+      const root = document.documentElement;
+      const theme = root.getAttribute('data-theme');
+      setAxisLabelColor(theme === 'dark' ? '#ffffff' : '#000000');
+    };
+
+    const root = document.documentElement;
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some(
+          (mutation) =>
+            mutation.type === 'attributes' &&
+            (mutation.attributeName === 'data-theme' ||
+              mutation.attributeName === 'class')
+        )
+      ) {
+        updateAxisLabelColor();
+      }
+    });
+
+    updateAxisLabelColor();
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Add formatter function
   const formatValue = (value) => {
     if (!value && value !== 0) return '';
@@ -62,13 +96,13 @@ export default function Chart({ data, keys = {}, isCompact = false }) {
           />
           <XAxis
             dataKey={keys.name || 'name'}
-            tick={{ fill: 'var(--chart-axis-label-color)' }}
+            tick={{ fill: axisLabelColor }}
             axisLine={{ stroke: 'var(--chart-grid-color)' }}
             tickLine={{ stroke: 'var(--chart-grid-color)' }}
             interval={0} // show all ticks
           />
           <YAxis
-            tick={{ fill: 'var(--chart-axis-label-color)' }}
+            tick={{ fill: axisLabelColor }}
             axisLine={{ stroke: 'var(--chart-grid-color)' }}
             tickLine={{ stroke: 'var(--chart-grid-color)' }}
             domain={['auto', 'auto']} // or [0, 'dataMax + 1000']

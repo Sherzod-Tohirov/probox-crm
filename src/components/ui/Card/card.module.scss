@@ -26,6 +26,13 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: v.$breakpoint-md) {
+    padding: 16px 16px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
 
 .card-title {
@@ -37,6 +44,11 @@
 .card-right-title {
   flex-shrink: 0;
   margin-left: auto;
+
+  @media (max-width: v.$breakpoint-md) {
+    margin-left: 0;
+    width: 100%;
+  }
   
   // Allow external styles to be applied to children
   :global(*) {

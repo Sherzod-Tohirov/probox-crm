@@ -64,15 +64,19 @@ function RingChart({ data, centerLabel, height = 280 }) {
         {
           type: 'text',
           left: 'center',
-          top: '50%',
+          top: 'middle',
+          z: 10,
+          silent: true,
           style: {
             text: centerLabel.title,
+            align: 'center',
+            verticalAlign: 'middle',
             textAlign: 'center',
             textVerticalAlign: 'middle',
-            fill: 'var(--chart-text-color)',
-            fontSize: 12,
-            fontWeight: 600,
-            lineHeight: 18,
+            fill: 'var(--primary-color)',
+            fontSize: 13,
+            fontWeight: 700,
+            lineHeight: 16,
           },
         },
       ];
@@ -111,11 +115,12 @@ function RingChart({ data, centerLabel, height = 280 }) {
     series: [
       {
         type: 'pie',
-        radius: ['58%', '82%'],
+        radius: ['56%', '94%'],
         center: ['50%', '50%'],
         startAngle: 90,
         avoidLabelOverlap: true,
-        itemStyle: { borderColor: 'var(--primary-bg)', borderWidth: 2 },
+        itemStyle: { borderColor: 'var(--primary-bg)', borderWidth: 1 },
+        emphasis: { scale: true },
         label: { show: false },
         labelLine: { show: false },
         data: data.map((item) => ({
@@ -192,7 +197,6 @@ function SourceSummaryCard({ item, full }) {
 
 export default function LeadsDistributionSection() {
   const total = sourceRingData.reduce((sum, item) => sum + item.value, 0);
-
   return (
     <Row direction={{ xs: 'column', lg: 'row' }} gutter={4}>
       <Col fullWidth>
@@ -202,8 +206,8 @@ export default function LeadsDistributionSection() {
             gutter={4}
             align="center"
           >
-            <Col>
-              <div style={{ width: 250, margin: '0 auto' }}>
+            <Col fullWidth>
+              <div style={{ width: '100%', maxWidth: 250, margin: '0 auto' }}>
                 <RingChart
                   data={sourceRingData}
                   centerLabel={{
@@ -220,21 +224,21 @@ export default function LeadsDistributionSection() {
                   <SourceSummaryCard item={sourceCards[0]} full />
                 </Col>
                 <Col fullWidth>
-                  <Row gutter={3} direction="row">
-                    <Col fullWidth>
+                  <Row gutter={3} direction={{ xs: 'column', md: 'row' }}>
+                    <Col fullWidth flexGrow>
                       <SourceSummaryCard item={sourceCards[1]} full />
                     </Col>
-                    <Col fullWidth>
+                    <Col fullWidth flexGrow>
                       <SourceSummaryCard item={sourceCards[2]} full />
                     </Col>
                   </Row>
                 </Col>
                 <Col fullWidth>
-                  <Row gutter={3} direction="row">
-                    <Col fullWidth>
+                  <Row gutter={3} direction={{ xs: 'column', md: 'row' }}>
+                    <Col fullWidth flexGrow>
                       <SourceSummaryCard item={sourceCards[3]} />
                     </Col>
-                    <Col fullWidth>
+                    <Col fullWidth flexGrow>
                       <SourceSummaryCard item={sourceCards[4]} />
                     </Col>
                   </Row>
@@ -247,14 +251,19 @@ export default function LeadsDistributionSection() {
 
       <Col fullWidth fullHeight>
         <Card title="Do'konlar bo'yicha">
-          <Row gutter={3} direction="row">
+          <Row
+            gutter={3}
+            direction={{ xs: 'column', md: 'row' }}
+            justify="center"
+            wrap
+          >
             {branches.map((branch) => (
               <Col key={branch} flexGrow>
-                <div className="w-[240px] max-w-full">
+                <div className="mx-auto w-full max-w-[260px]">
                   <RingChart
                     data={branchDonutSeries}
                     centerLabel={{
-                      title: branch.replace(' ', '\n'),
+                      title: branch,
                     }}
                     height={230}
                   />

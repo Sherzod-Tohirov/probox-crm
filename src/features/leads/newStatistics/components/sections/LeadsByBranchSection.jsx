@@ -40,7 +40,8 @@ export default function LeadsByBranchSection() {
     >
       <Row>
         <Col fullWidth>
-          <Table>
+          <div className="w-full overflow-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center" style={{ width: '40px' }}>
@@ -79,7 +80,8 @@ export default function LeadsByBranchSection() {
                 <TableCell className="font-semibold">—</TableCell>
               </TableRow>
             </TableFooter>
-          </Table>
+            </Table>
+          </div>
         </Col>
       </Row>
     </Card>

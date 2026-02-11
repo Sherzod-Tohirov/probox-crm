@@ -18,6 +18,7 @@ import {
   mockOverviewGaugeData,
   mockOverviewTableData,
 } from '../../utils/mockData';
+import useIsMobile from '@/hooks/useIsMobile';
 
 function TableOverview({ title, data, date, onDateChange }) {
   const { leadsOverviewTableColumns } = useLeadsOverviewTableColumns();
@@ -29,6 +30,7 @@ function TableOverview({ title, data, date, onDateChange }) {
     >
       <Row>
         <Col fullWidth>
+          <div className="w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -74,6 +76,7 @@ function TableOverview({ title, data, date, onDateChange }) {
                 </TableRow>
               </TableFooter>
             </Table>
+          </div>
         </Col>
       </Row>
     </Card>
@@ -81,6 +84,7 @@ function TableOverview({ title, data, date, onDateChange }) {
 }
 
 function GaugeOverview({ data }) {
+  const isMobile = useIsMobile();
   return (
     <Card bodyPadding="16px">
       <Row direction="column" gutter={4} align="center">
@@ -100,7 +104,7 @@ function GaugeOverview({ data }) {
             wrap
           >
             {data.items.map((item, index) => (
-              <Col flexShrink={false} key={index}>
+              <Col fullWidth={isMobile} flexShrink={false} key={index}>
                 <Gauge
                   value={item.value}
                   total={item.total}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Card, Row, Col, Typography } from '@components/ui';
+import { useMemo, useState, useEffect } from 'react';
+import { Card, Typography } from '@components/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   PieChart,
@@ -27,22 +27,44 @@ const COLORS = [
 
 export default function SourcesCard({ data = [] }) {
   const [showTrends, setShowTrends] = useState(false);
+  const [axisLabelColor, setAxisLabelColor] = useState('#000000');
 
-  if (!data || data.length === 0) {
-    return (
-      <Card title="Manbalar bo'yicha leadlar">
-        <div className={styles.empty}>Ma'lumot topilmadi</div>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-  const sortedData = [...data].sort((a, b) => b.count - a.count);
-  const pieData = sortedData.map((item, index) => ({
-    name: item.source,
-    value: item.count,
-    percent: item.percent,
-    color: COLORS[index % COLORS.length],
-  }));
+    const updateAxisLabelColor = () => {
+      const root = document.documentElement;
+      const theme = root.getAttribute('data-theme');
+      setAxisLabelColor(theme === 'dark' ? '#ffffff' : '#000000');
+    };
+
+    const root = document.documentElement;
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some(
+          (mutation) =>
+            mutation.type === 'attributes' &&
+            (mutation.attributeName === 'data-theme' ||
+              mutation.attributeName === 'class')
+        )
+      ) {
+        updateAxisLabelColor();
+      }
+    });
+
+    updateAxisLabelColor();
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const sortedData = useMemo(
+    () => [...(data || [])].sort((a, b) => b.count - a.count),
+    [data]
+  );
 
   // Combine all per_day data into unified chart data
   const unifiedChartData = useMemo(() => {
@@ -57,13 +79,27 @@ export default function SourcesCard({ data = [] }) {
     // Build chart data with all sources
     return sortedDays.map((day) => {
       const dataPoint = { day };
-      sortedData.forEach((item, index) => {
+      sortedData.forEach((item) => {
         const dayData = item.per_day?.find((d) => d.day === day);
         dataPoint[item.source] = dayData?.count || 0;
       });
       return dataPoint;
     });
   }, [sortedData]);
+
+  if (!sortedData.length) {
+    return (
+      <Card title="Manbalar bo'yicha leadlar">
+        <div className={styles.empty}>Ma'lumot topilmadi</div>
+      </Card>
+    );
+  }
+  const pieData = sortedData.map((item, index) => ({
+    name: item.source,
+    value: item.count,
+    percent: item.percent,
+    color: COLORS[index % COLORS.length],
+  }));
 
   return (
     <Card title="Manbalar bo'yicha leadlar" style={{ height: '100%' }}>
@@ -160,15 +196,15 @@ export default function SourcesCard({ data = [] }) {
                     <XAxis
                       dataKey="day"
                       tickFormatter={(value) => {
-                        const [year, month, day] = value.split('.');
+                        const [, month, day] = value.split('.');
                         return `${day}.${month}`;
                       }}
-                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      tick={{ fontSize: 13, fill: axisLabelColor }}
                       axisLine={{ stroke: 'var(--chart-grid-color)' }}
                       tickLine={{ stroke: 'var(--chart-grid-color)' }}
                     />
                     <YAxis
-                      tick={{ fontSize: 13, fill: 'var(--chart-axis-label-color)' }}
+                      tick={{ fontSize: 13, fill: axisLabelColor }}
                       axisLine={{ stroke: 'var(--chart-grid-color)' }}
                       tickLine={{ stroke: 'var(--chart-grid-color)' }}
                     />

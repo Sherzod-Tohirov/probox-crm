@@ -18,6 +18,7 @@ export default function LeadsBySourceChartSection() {
     };
 
     const rightTitle = <DateInput value={date} onChange={handleDateChange} />;
+    const chartWidth = Math.max(780, mockSourceTrendData.dates.length * 72);
 
     const option = {
         tooltip: {
@@ -43,7 +44,12 @@ export default function LeadsBySourceChartSection() {
             data: mockSourceTrendData.dates,
             boundaryGap: false,
             axisLine: { lineStyle: { color: 'var(--chart-grid-color)' } },
-            axisLabel: { color: 'var(--chart-axis-label-color)', fontSize: 12 },
+            axisLabel: {
+                color: 'var(--chart-axis-label-color)',
+                fontSize: 12,
+                interval: 0,
+                hideOverlap: false,
+            },
         },
         yAxis: {
             type: 'value',
@@ -70,7 +76,9 @@ export default function LeadsBySourceChartSection() {
         <Card title={title} rightTitle={rightTitle}>
             <Row align="stretch">
                 <Col fullWidth style={{ minWidth: 0 }}>
-                    <EChart option={option} height={350} />
+                    <div className="w-full overflow-x-auto">
+                        <EChart option={option} height={350} style={{ width: `${chartWidth}px` }} />
+                    </div>
                 </Col>
             </Row>
         </Card>

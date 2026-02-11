@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Col,
-  Modal,
-  Row,
-  Checkbox,
-  Box,
-} from '@/components/ui';
+import { Col, Modal, Row, Checkbox, Box } from '@/components/ui';
 import { DATE_FILTER_OPTIONS } from '../../constants/date';
 import moment from 'moment';
 import useIsMobile from '@/hooks/useIsMobile';
@@ -41,19 +35,27 @@ function normalizePersistedRange(range = []) {
 function Footer({ onApply, onClose, isMobile }) {
   return (
     <Row
-      direction={isMobile ? 'column' : 'row'}
+      direction="row"
       align="center"
       justify="space-between"
       gutter={isMobile ? 2 : 0}
       className={styles.footerRow}
     >
       <Col>
-        <Button variant="outline" onClick={onClose} className={styles.actionButton}>
+        <Button
+          variant="outline"
+          onClick={onClose}
+          className={styles.actionButton}
+        >
           Bekor qilish
         </Button>
       </Col>
       <Col>
-        <Button variant="default" onClick={onApply} className={styles.actionButton}>
+        <Button
+          variant="default"
+          onClick={onApply}
+          className={styles.actionButton}
+        >
           Qo'llash
         </Button>
       </Col>
@@ -64,7 +66,7 @@ function Footer({ onApply, onClose, isMobile }) {
 function DateOptions({ selectedOption, onChange }) {
   return (
     <Box paddingTop={4}>
-      <Row gutter={4}>
+      <Row gutter={{xs: 6, md: 4}} direction={{ xs: 'row', md: 'column' }} wrap>
         {DATE_FILTER_OPTIONS.map((opt) => (
           <Col key={opt.value}>
             <Checkbox
@@ -174,7 +176,9 @@ export default function DateFilterModal({
     <Modal
       isOpen={isOpen}
       title="Statistikalarni ko'rsatish"
-      footer={<Footer onApply={handleApply} onClose={onClose} isMobile={isMobile} />}
+      footer={
+        <Footer onApply={handleApply} onClose={onClose} isMobile={isMobile} />
+      }
       onClose={onClose}
       isLoading={isLoading}
       size={isMobile ? 'sm' : 'md'}
