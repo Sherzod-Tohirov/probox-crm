@@ -102,7 +102,7 @@ const MessageRenderer = ({
               groupBy((msg) => {
                 const formattedDate = moment(
                   msg?.created_at ?? msg?.createdAt
-                ).format('DD-MM-YYYY');
+                ).format('DD.MM.YYYY');
                 return formattedDate;
               }, formattedMessages)
             )

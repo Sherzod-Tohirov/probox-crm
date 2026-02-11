@@ -13,20 +13,30 @@ const formatTime = (seconds) => {
 const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
+  const activeLoadId = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [duration, setDuration] = useState(externalDuration || 0);
   const [currentTime, setCurrentTime] = useState(0);
+
   useEffect(() => {
-    if (!waveformRef.current) return;
+    if (!waveformRef.current || !src) {
+      setIsLoading(false);
+      setHasError(true);
+      return;
+    }
+
+    const loadId = ++activeLoadId.current;
+    let isDisposed = false;
 
     setIsLoading(true);
     setHasError(false);
     setIsPlaying(false);
     setCurrentTime(0);
+    setDuration(externalDuration || 0);
 
-    wavesurfer.current = WaveSurfer.create({
+    const ws = WaveSurfer.create({
       container: waveformRef.current,
       waveColor: color.text || '#666',
       backend: 'MediaElement',
@@ -37,37 +47,54 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
       height: 40,
       responsive: true,
     });
+    wavesurfer.current = ws;
 
-    wavesurfer.current.load(src);
+    ws.load(src);
 
-    wavesurfer.current.on('ready', () => {
+    ws.on('ready', () => {
+      if (isDisposed || activeLoadId.current !== loadId) return;
       setIsLoading(false);
       if (!externalDuration) {
-        setDuration(wavesurfer.current.getDuration());
+        setDuration(ws.getDuration());
       }
     });
 
-    wavesurfer.current.on('error', () => {
+    ws.on('error', (error) => {
+      if (isDisposed || activeLoadId.current !== loadId) return;
+      const errorText = String(error?.message || error || '').toLowerCase();
+      if (
+        errorText.includes('abort') ||
+        errorText.includes('aborted') ||
+        errorText.includes('interrupted')
+      ) {
+        return;
+      }
       setHasError(true);
       setIsLoading(false);
     });
 
-    wavesurfer.current.on('audioprocess', () => {
-      setCurrentTime(wavesurfer.current.getCurrentTime());
+    ws.on('audioprocess', () => {
+      if (isDisposed || activeLoadId.current !== loadId) return;
+      setCurrentTime(ws.getCurrentTime());
     });
 
-    wavesurfer.current.on('seek', () => {
-      setCurrentTime(wavesurfer.current.getCurrentTime());
+    ws.on('seek', () => {
+      if (isDisposed || activeLoadId.current !== loadId) return;
+      setCurrentTime(ws.getCurrentTime());
     });
 
-    wavesurfer.current.on('finish', () => {
+    ws.on('finish', () => {
+      if (isDisposed || activeLoadId.current !== loadId) return;
       setIsPlaying(false);
       setCurrentTime(0);
     });
 
     return () => {
-      if (wavesurfer.current) {
-        wavesurfer.current.destroy();
+      isDisposed = true;
+      if (ws) {
+        ws.destroy();
+      }
+      if (wavesurfer.current === ws) {
         wavesurfer.current = null;
       }
     };
@@ -101,11 +128,20 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
         )}
       </button>
       <div className={styles.waveformWrapper}>
-        <div ref={waveformRef} className={styles.waveform} />
+        {hasError ? (
+          <audio
+            controls
+            preload="metadata"
+            src={src}
+            style={{ width: '100%', height: 32 }}
+          />
+        ) : (
+          <div ref={waveformRef} className={styles.waveform} />
+        )}
       </div>
       <div className={styles.timer}>
         {hasError
-          ? 'Xatolik'
+          ? `${formatTime(0)} / ${formatTime(duration)}`
           : isLoading
             ? 'Yuklanmoqda...'
             : `${formatTime(currentTime)} / ${formatTime(duration)}`}
