@@ -237,7 +237,7 @@ const formatUnknownDateTime = (rawValue) => {
     /\d{2}:\d{2}/.test(asString);
 
   return hasTime
-    ? parsed.local().format('DD.MM.YYYY HH:mm')
+    ? parsed.local().format('HH:mm')
     : parsed.local().format('DD.MM.YYYY');
 };
 
