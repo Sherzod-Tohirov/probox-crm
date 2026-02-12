@@ -9,19 +9,28 @@ export function usePurchaseForm({ supplier: courier, warehouse }) {
     },
     enabled: !!courier,
   });
-  const foundSupplier =
-    suppliers?.suppliers?.length > 0 ? suppliers.suppliers[0] : null;
+  const getCurrentSupplier = (suppliers, courier) => {
+    if (!suppliers || !suppliers?.suppliers) return null;
+    if (suppliers?.suppliers?.length === 1) return suppliers.suppliers[0];
+    const foundSupplier =
+      suppliers.suppliers?.find(
+        (supplier) => String(supplier?.code) === String(courier)
+      ) ?? null;
+    return foundSupplier;
+  };
+  const currentSupplier = getCurrentSupplier(suppliers, courier);
+
   const { control, watch, setValue } = useForm({
     defaultValues: {
-      courier: foundSupplier?.name,
+      courier: currentSupplier?.name,
       warehouse: warehouse,
     },
   });
 
   useEffect(() => {
-    setValue('courier', foundSupplier?.name);
+    setValue('courier', currentSupplier?.name);
     setValue('warehouse', warehouse);
-  }, [warehouse, setValue, foundSupplier]);
+  }, [warehouse, setValue, currentSupplier]);
 
   const [supplier, setSupplier] = useState(false);
   const courierValue = watch('courier');

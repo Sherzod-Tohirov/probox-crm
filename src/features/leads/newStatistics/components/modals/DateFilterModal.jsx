@@ -66,7 +66,11 @@ function Footer({ onApply, onClose, isMobile }) {
 function DateOptions({ selectedOption, onChange }) {
   return (
     <Box paddingTop={4}>
-      <Row gutter={{xs: 6, md: 4}} direction={{ xs: 'row', md: 'column' }} wrap>
+      <Row
+        gutter={{ xs: 6, md: 4 }}
+        direction={{ xs: 'row', md: 'column' }}
+        wrap
+      >
         {DATE_FILTER_OPTIONS.map((opt) => (
           <Col key={opt.value}>
             <Checkbox
@@ -164,7 +168,7 @@ export default function DateFilterModal({
         return;
       }
     }
-  }, [isOpen, selectedOption]);
+  }, [isOpen, selectedOption, calendarRange]);
 
   const handleCalendarChange = (nextRange) => {
     setCalendarRange(nextRange);

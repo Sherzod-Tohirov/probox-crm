@@ -63,6 +63,14 @@ export function useSelectOptions(tab) {
         label: 'Mijoz filialga kela olmaydi',
       },
       {
+        value: 'KATM sababli bekor qilindi',
+        label: 'KATM sababli bekor qilindi',
+      },
+      {
+        value: 'MIB sababli bekor qilindi',
+        label: 'MIB sababli bekor qilindi',
+      },
+      {
         value: 'Skoringdan bekor qilindi',
         label: 'Skoringdan bekor qilindi',
       },
