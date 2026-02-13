@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Modal, Button, Input, Row, Col } from '@components/ui';
 
 export default function FollowUpModal({
@@ -7,13 +7,10 @@ export default function FollowUpModal({
   onConfirm,
   title = 'Qayta aloqa sanasini belgilang',
   label = 'Qayta aloqa sanasi va vaqti',
-  defaultValue = '',
+  // defaultValue = '',
 }) {
-  const [recallDate, setRecallDate] = useState(defaultValue);
+  const [recallDate, setRecallDate] = useState('');
 
-  useEffect(() => {
-    if (isOpen) setRecallDate(defaultValue);
-  }, [isOpen, defaultValue]);
   const handleConfirm = () => {
     if (!recallDate) return;
     onConfirm(recallDate);

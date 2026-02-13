@@ -26,12 +26,12 @@ export const meetingOptions = [
 
 export const statusOptions = [
   { value: 'Active', label: 'Yangi lead' },
-  { value: 'Blocked', label: 'Bloklangan' },
-  { value: 'Purchased', label: 'Xarid qildi' },
+  // { value: 'Blocked', label: 'Bloklangan' },
+  // { value: 'Purchased', label: 'Xarid qildi' },
   { value: 'Returned', label: 'Qaytarildi' },
-  { value: 'Missed', label: "O'tkazib yuborildi" },
-  { value: 'Ignored', label: "E'tiborsiz" },
-  { value: 'NoAnswer', label: 'Javob bermadi' },
+  // { value: 'Missed', label: "O'tkazib yuborildi" },
+  // { value: 'Ignored', label: "E'tiborsiz" },
+  // { value: 'NoAnswer', label: 'Javob bermadi' },
   { value: 'FollowUp', label: "Qayta a'loqa" },
   { value: 'Considering', label: "O'ylab ko'radi" },
   { value: 'WillVisitStore', label: "Do'konga boradi" },
@@ -39,11 +39,11 @@ export const statusOptions = [
   { value: 'Scoring', label: 'Skoring' },
   { value: 'ScoringResult', label: 'Skoring natija' },
   { value: 'VisitedStore', label: "Do'konga keldi" },
-  { value: 'NoPurchase', label: "Xarid bo'lmadi" },
-  { value: 'Closed', label: 'Sifatsiz' },
+  // { value: 'NoPurchase', label: "Xarid bo'lmadi" },
+  // { value: 'Closed', label: 'Sifatsiz' },
   // Legacy statuses
-  { value: 'Archived', label: 'Arxivlangan' },
-  { value: 'Processing', label: 'Jarayonda' },
+  // { value: 'Archived', label: 'Arxivlangan' },
+  // { value: 'Processing', label: 'Jarayonda' },
 ];
 
 export const passportVisitOptions = [

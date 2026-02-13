@@ -5,6 +5,7 @@ import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
 import { statusOptions } from '@/features/leads/utils/options';
 import FollowUpModal from '@/features/leads/components/modals/FollowUpModal';
+import formatDate from '@/utils/formatDate';
 
 const RECALL_MODAL_CONFIG = {
   FollowUp: {
@@ -15,14 +16,24 @@ const RECALL_MODAL_CONFIG = {
     title: "Do'konga borish sanasi belgilash",
     label: "Do'konga borish sanasi va vaqti",
   },
+  WillSendPassport: {
+    title: 'Passport yuborish sanasini belgilang',
+    label: 'Passport yuborish sanasi va vaqti',
+  },
 };
 
 export default function StatusSection({ lead, canEdit, onSave }) {
   const [recallModalStatus, setRecallModalStatus] = useState(null);
-
+  const formattedRecallDate = formatDate(
+    lead?.recallDate,
+    'YYYY.MM.DD HH:mm',
+    'DD.MM.YYYY HH:mm'
+  );
+  console.log(formattedRecallDate)
   const statusForm = useForm({
     defaultValues: {
       status: lead?.status || '',
+      recallDate: formattedRecallDate,
     },
   });
 
@@ -38,8 +49,9 @@ export default function StatusSection({ lead, canEdit, onSave }) {
     if (!lead) return;
     resetStatus({
       status: lead?.status || '',
+      recallDate: formattedRecallDate,
     });
-  }, [lead, resetStatus]);
+  }, [lead, resetStatus, formattedRecallDate]);
 
   const onSubmit = handleStatusSubmit((values) => {
     if (RECALL_MODAL_CONFIG[values?.status]) {
@@ -64,7 +76,10 @@ export default function StatusSection({ lead, canEdit, onSave }) {
 
   const handleRecallClose = () => {
     setRecallModalStatus(null);
-    resetStatus({ status: lead?.status || '' });
+    resetStatus({
+      status: lead?.status || '',
+      recallDate: formattedRecallDate,
+    });
   };
 
   const modalConfig = RECALL_MODAL_CONFIG[recallModalStatus] || {};
@@ -74,17 +89,31 @@ export default function StatusSection({ lead, canEdit, onSave }) {
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Row gutter={4}>
           <Col>
-            <FormField
-              name="status"
-              label="Status"
-              type="select"
-              control={statusControl}
-              disabled={!canEdit}
-              span={{ xs: 24, md: 12 }}
-              placeholderOption={true}
-              options={statusOptions}
-              defaultValue={lead?.status}
-            />
+            <Row direction="row" gutter={4}>
+              <Col>
+                <FormField
+                  name="status"
+                  label="Status"
+                  type="select"
+                  control={statusControl}
+                  disabled={!canEdit}
+                  span={{ xs: 24, md: 12 }}
+                  placeholderOption={true}
+                  options={statusOptions}
+                  defaultValue={lead?.status}
+                />
+              </Col>
+              <Col>
+                <FormField
+                  name="recallDate"
+                  label="Qayta aloqa vaqti"
+                  type="datetime"
+                  control={statusControl}
+                  disabled={true}
+                  span={{ xs: 24, md: 12 }}
+                />
+              </Col>
+            </Row>
           </Col>
           <Col>
             {canEdit && (

@@ -70,9 +70,9 @@ const STATUS_META = {
   },
   Ignored: {
     label: "E'tiborsiz",
-    textColor: '#475569',
-    bgColor: '#f1f5f9',
-    borderColor: '#cbd5e1',
+    textColor: '#ffffff',
+    bgColor: '#ca5cdd',
+    borderColor: '#ffffff',
     icon: EyeOff,
   },
   NoAnswer: {
@@ -603,12 +603,24 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'callCount',
-        title: "Qo'ng'iroq soni",
+        title: "Umumiy qo'ng'iroq soni",
         icon: 'telephoneFilled',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
         renderCell: (row) => {
           const value = row.callCount ?? 0;
+          if (value == 0) return '-';
+          return <span>{value}</span>;
+        },
+      },
+      {
+        key: 'noAnswerCount',
+        title: "Javob berilmagan qo'ng'iroq soni",
+        icon: 'telephoneFilled',
+        minWidth: '160px',
+        cellStyle: { whiteSpace: 'nowrap' },
+        renderCell: (row) => {
+          const value = row.noAnswerCount ?? 0;
           if (value == 0) return '-';
           return <span>{value}</span>;
         },

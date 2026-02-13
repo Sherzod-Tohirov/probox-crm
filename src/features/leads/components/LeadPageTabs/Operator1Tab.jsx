@@ -113,7 +113,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                   <FormField
                     name="noAnswerCount"
                     type="select"
-                    label="Javob berilmagan qo'ngiroqlar soni"
+                    label="Javob berilmagan qo'ng'iroqlar soni"
                     control={control}
                     options={callCountOptions}
                     disabled={!canEdit}

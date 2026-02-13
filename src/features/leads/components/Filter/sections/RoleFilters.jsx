@@ -105,7 +105,24 @@ export default function RoleFilters({
           >
             <SelectField
               name="callCount"
-              label="Qo'ng'iroq soni"
+              label="Umumiy qo'ng'iroq soni"
+              options={callCountOptions}
+              control={control}
+            />
+          </Col>
+          <Col
+            xs={12}
+            sm={6}
+            md={2}
+            lg={1.5}
+            xl={1.2}
+            className={
+              isMobile ? styles['mobile-full-width'] : styles.compactCol
+            }
+          >
+            <SelectField
+              name="noAnswerCount"
+              label="Javob berilmagani soni"
               options={callCountOptions}
               control={control}
             />
