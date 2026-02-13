@@ -31,6 +31,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         called: leadData.called ?? false,
         callTime: leadData.callTime ?? '',
         answered: leadData.answered ?? false,
+        noAnswerCount: leadData?.noAnswerCount ?? '',
         callCount: leadData.callCount ?? '',
         interested: leadData.interested ?? '',
         rejectionReason: leadData.rejectionReason ?? '',
@@ -102,7 +103,17 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                   <FormField
                     name="callCount"
                     type="select"
-                    label="Qo'ng'iroqlar soni"
+                    label="Umumiy qo'ng'iroqlar soni"
+                    control={control}
+                    options={callCountOptions}
+                    disabled={!canEdit}
+                  />
+                </Col>
+                <Col>
+                  <FormField
+                    name="noAnswerCount"
+                    type="select"
+                    label="Javob berilmagan qo'ngiroqlar soni"
                     control={control}
                     options={callCountOptions}
                     disabled={!canEdit}

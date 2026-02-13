@@ -570,8 +570,11 @@
     color: v.$secondary-color !important;
   }
 
-  &.disabled {
+  &.disabled,
+  &:global(.flatpickr-disabled) {
     color: v.$primary-disabled-color !important;
+    opacity: 0.4;
+    pointer-events: none;
   }
 }
 

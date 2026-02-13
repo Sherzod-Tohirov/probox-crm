@@ -115,7 +115,7 @@ export default function RoleFilters({
 
       {hasRole(role, ['Operator1', 'Operator2', 'OperatorM', 'CEO']) && (
         <>
-          <Col
+          {/* <Col
             xs={12}
             sm={6}
             md={2}
@@ -131,8 +131,8 @@ export default function RoleFilters({
               options={booleanOptionsAll}
               control={control}
             />
-          </Col>
-          <Col
+          </Col> */}
+          {/* <Col
             xs={12}
             sm={6}
             md={2}
@@ -148,7 +148,7 @@ export default function RoleFilters({
               options={booleanOptionsAll}
               control={control}
             />
-          </Col>
+          </Col> */}
           <Col
             xs={12}
             sm={6}
@@ -166,7 +166,7 @@ export default function RoleFilters({
               control={control}
             />
           </Col>
-          <Col
+          {/* <Col
             xs={12}
             sm={6}
             md={2}
@@ -182,7 +182,7 @@ export default function RoleFilters({
               options={callCountOptions}
               control={control}
             />
-          </Col>
+          </Col> */}
         </>
       )}
 

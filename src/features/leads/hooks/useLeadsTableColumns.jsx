@@ -547,7 +547,7 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'operator',
-        title: 'Operator 1',
+        title: 'Operator',
         icon: 'users',
         width: { xs: '20%', md: '12%', xl: '10%' },
         minWidth: '140px',
@@ -603,7 +603,7 @@ export default function useLeadsTableColumns() {
       },
       {
         key: 'callCount',
-        title: "Qo'ng'iroq soni 1",
+        title: "Qo'ng'iroq soni",
         icon: 'telephoneFilled',
         minWidth: '160px',
         cellStyle: { whiteSpace: 'nowrap' },
@@ -613,74 +613,74 @@ export default function useLeadsTableColumns() {
           return <span>{value}</span>;
         },
       },
-      {
-        key: 'operator2',
-        title: 'Operator 2',
-        icon: 'users',
-        width: { xs: '20%', md: '12%', xl: '10%' },
-        minWidth: '140px',
-        cellStyle: {
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        },
-        renderCell: (row) => {
-          const value = row.operator2;
-          return (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                maxWidth: '100%',
-              }}
-            >
-              {value ? (
-                <span style={{ display: 'inline-flex' }}>
-                  {iconsMap.avatar}
-                </span>
-              ) : null}
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {findOperatorName(value)}
-              </span>
-            </span>
-          );
-        },
-      },
-      {
-        key: 'called2',
-        title: "Qo'ng'iroq qilindimi 2",
-        icon: 'telephoneFilled',
-        minWidth: '160px',
-        cellStyle: { whiteSpace: 'nowrap' },
-        renderCell: (row) => {
-          const value = row.called2;
-          return <ConfirmBadge confirm={value} />;
-        },
-      },
-      {
-        key: 'answered2',
-        title: 'Javob berildimi 2',
-        icon: 'telephoneFilled',
-        minWidth: '160px',
-        cellStyle: { whiteSpace: 'nowrap' },
-        renderCell: (row) => {
-          const value = row.answered2;
-          return <ConfirmBadge confirm={value} />;
-        },
-      },
-      {
-        key: 'callCount2',
-        title: "Qo'ng'iroq soni 2",
-        icon: 'telephoneFilled',
-        minWidth: '160px',
-        cellStyle: { whiteSpace: 'nowrap' },
-        renderCell: (row) => {
-          const value = row.callCount2 ?? 0;
-          if (value == 0) return '-';
-          return <span>{value}</span>;
-        },
-      },
+      // {
+      //   key: 'operator2',
+      //   title: 'Operator 2',
+      //   icon: 'users',
+      //   width: { xs: '20%', md: '12%', xl: '10%' },
+      //   minWidth: '140px',
+      //   cellStyle: {
+      //     whiteSpace: 'nowrap',
+      //     overflow: 'hidden',
+      //     textOverflow: 'ellipsis',
+      //   },
+      //   renderCell: (row) => {
+      //     const value = row.operator2;
+      //     return (
+      //       <span
+      //         style={{
+      //           display: 'inline-flex',
+      //           alignItems: 'center',
+      //           gap: 6,
+      //           maxWidth: '100%',
+      //         }}
+      //       >
+      //         {value ? (
+      //           <span style={{ display: 'inline-flex' }}>
+      //             {iconsMap.avatar}
+      //           </span>
+      //         ) : null}
+      //         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      //           {findOperatorName(value)}
+      //         </span>
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   key: 'called2',
+      //   title: "Qo'ng'iroq qilindimi 2",
+      //   icon: 'telephoneFilled',
+      //   minWidth: '160px',
+      //   cellStyle: { whiteSpace: 'nowrap' },
+      //   renderCell: (row) => {
+      //     const value = row.called2;
+      //     return <ConfirmBadge confirm={value} />;
+      //   },
+      // },
+      // {
+      //   key: 'answered2',
+      //   title: 'Javob berildimi 2',
+      //   icon: 'telephoneFilled',
+      //   minWidth: '160px',
+      //   cellStyle: { whiteSpace: 'nowrap' },
+      //   renderCell: (row) => {
+      //     const value = row.answered2;
+      //     return <ConfirmBadge confirm={value} />;
+      //   },
+      // },
+      // {
+      //   key: 'callCount2',
+      //   title: "Qo'ng'iroq soni 2",
+      //   icon: 'telephoneFilled',
+      //   minWidth: '160px',
+      //   cellStyle: { whiteSpace: 'nowrap' },
+      //   renderCell: (row) => {
+      //     const value = row.callCount2 ?? 0;
+      //     if (value == 0) return '-';
+      //     return <span>{value}</span>;
+      //   },
+      // },
       {
         key: 'seller',
         title: 'Sotuvchi',
@@ -903,40 +903,40 @@ export default function useLeadsTableColumns() {
         },
       },
 
-      {
-        key: 'comment',
-        title: 'Izoh',
-        icon: 'chatBubble',
-        width: { xs: '40%', md: '22%', xl: '20%' },
-        minWidth: '160px',
-        maxWidth: '300px',
-        cellStyle: {
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        },
-        renderCell: (row) => {
-          const value = row.comment;
-          if (!value) return '-';
-          return (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                maxWidth: '100%',
-              }}
-            >
-              <span style={{ display: 'inline-flex' }}>
-                {iconsMap.chatBubble}
-              </span>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {value}
-              </span>
-            </span>
-          );
-        },
-      },
+      // {
+      //   key: 'comment',
+      //   title: 'Izoh',
+      //   icon: 'chatBubble',
+      //   width: { xs: '40%', md: '22%', xl: '20%' },
+      //   minWidth: '160px',
+      //   maxWidth: '300px',
+      //   cellStyle: {
+      //     whiteSpace: 'nowrap',
+      //     overflow: 'hidden',
+      //     textOverflow: 'ellipsis',
+      //   },
+      //   renderCell: (row) => {
+      //     const value = row.comment;
+      //     if (!value) return '-';
+      //     return (
+      //       <span
+      //         style={{
+      //           display: 'inline-flex',
+      //           alignItems: 'center',
+      //           gap: 6,
+      //           maxWidth: '100%',
+      //         }}
+      //       >
+      //         <span style={{ display: 'inline-flex' }}>
+      //           {iconsMap.chatBubble}
+      //         </span>
+      //         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      //           {value}
+      //         </span>
+      //       </span>
+      //     );
+      //   },
+      // },
     ],
     [findOperatorName, findBranchName]
   );
