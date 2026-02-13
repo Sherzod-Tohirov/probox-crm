@@ -28,18 +28,18 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
     if (!form) return;
     if (leadData) {
       reset({
-        called: leadData.called,
-        callTime: leadData.callTime,
-        answered: leadData.answered,
-        callCount: leadData.callCount,
-        interested: leadData.interested,
-        rejectionReason: leadData.rejectionReason,
-        passportVisit: leadData.passportVisit,
-        jshshir: leadData.jshshir,
-        passportId: leadData.passportId,
+        called: leadData.called ?? false,
+        callTime: leadData.callTime ?? '',
+        answered: leadData.answered ?? false,
+        callCount: leadData.callCount ?? '',
+        interested: leadData.interested ?? '',
+        rejectionReason: leadData.rejectionReason ?? '',
+        passportVisit: leadData.passportVisit ?? '',
+        jshshir: leadData.jshshir ?? '',
+        passportId: leadData.passportId ?? '',
         meetingDate: normalizeDate(leadData.meetingDate),
-        branch: leadData.branch,
-        meetingHappened: leadData.meetingHappened,
+        branch: leadData.branch ?? '',
+        meetingHappened: leadData.meetingHappened ?? false,
       });
     }
   }, [leadData, reset, form]);

@@ -21,7 +21,7 @@ export default function ClientExtraInfoSection({ lead, onSave }) {
   } = clientsExtraInfoForm;
 
   const isclientInfoExtraDirty = clientsExtraInfoForm.formState.isDirty;
-
+  const fieldClientFullName = clientsExtraInfoForm.watch('clientFullName');
   useEffect(() => {
     if (!lead) return;
     resetClientInfoExtra({
@@ -52,7 +52,17 @@ export default function ClientExtraInfoSection({ lead, onSave }) {
                   type="text"
                   name="clientFullName"
                   label="Mijoz F.I.O"
-                  control={clientInfoExtraControl}
+                  value={fieldClientFullName}
+                  onChange={(e) => {
+                    clientsExtraInfoForm.setValue(
+                      'clientFullName',
+                      String(e.target.value).toUpperCase(),
+                      {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      }
+                    );
+                  }}
                 />
               </Col>
               <Col>

@@ -259,7 +259,9 @@ export default function useLeadPageData(leadId) {
                       : { ...(prev || {}), images: deduped };
                   });
                 }
-              } catch (_) {}
+              } catch (err) {
+                console.log(err);
+              }
 
               updateLocal(item.id, { status: 'success', progress: 100 });
               // Remove local to avoid duplicate once server item exists
@@ -355,7 +357,9 @@ export default function useLeadPageData(leadId) {
                       : { ...(prev || {}), images: deduped };
                   });
                 }
-              } catch (_) {}
+              } catch (err) {
+                console.log(err);
+              }
               updateLocal(file.id, { status: 'success', progress: 100 });
               removeLocal(file.id);
               queryClient.invalidateQueries(['lead-files', leadId]);

@@ -241,10 +241,14 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
                               placeholder="Ism Familiya"
                               value={watch('clientName')}
                               onChange={(e) =>
-                                setValue('clientName', e.target.value, {
-                                  shouldDirty: true,
-                                  shouldValidate: true,
-                                })
+                                setValue(
+                                  'clientName',
+                                  String(e.target.value).toUpperCase(),
+                                  {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  }
+                                )
                               }
                             />
                           </Col>

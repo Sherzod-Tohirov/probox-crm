@@ -179,6 +179,7 @@ const StatusBadge = ({ status }) => {
         variant="soft"
         size="md"
         style={{
+          minWidth: '142px',
           color: meta.textColor,
           backgroundColor: meta.bgColor,
           border: `1px solid ${meta.borderColor}`,

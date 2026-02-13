@@ -7,6 +7,8 @@ import moment from 'moment';
 export default function FormField({
   name,
   label,
+  value,
+  onChange,
   control,
   options,
   dateOptions = {},
@@ -210,7 +212,8 @@ export default function FormField({
   if (!control) {
     const directProps = {
       ...commonProps,
-      value: defaultValue,
+      value: value ?? defaultValue,
+      ...(onChange ? { onChange } : {}),
     };
 
     switch (type) {
