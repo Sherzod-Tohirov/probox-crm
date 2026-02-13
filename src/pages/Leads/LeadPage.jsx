@@ -22,7 +22,7 @@ import Messenger from '@components/ui/Messenger';
 
 // Import tab components
 import Operator1Tab from '@/features/leads/components/LeadPageTabs/Operator1Tab';
-import Operator2Tab from '@/features/leads/components/LeadPageTabs/Operator2Tab';
+// import Operator2Tab from '@/features/leads/components/LeadPageTabs/Operator2Tab';
 import SellerTab from '@/features/leads/components/LeadPageTabs/SellerTab';
 import ScoringTab from '@/features/leads/components/LeadPageTabs/ScoringTab';
 // Import section components
@@ -208,7 +208,7 @@ export default function LeadPage() {
     () => [
       {
         key: 'operator1',
-        label: 'Operator1',
+        label: 'Operator',
         content: (
           <Operator1Tab
             leadId={id}
@@ -217,21 +217,21 @@ export default function LeadPage() {
           />
         ),
       },
-      {
-        key: 'operator2',
-        label: 'Operator2',
-        content: (
-          <Operator2Tab
-            leadId={id}
-            leadData={lead}
-            canEdit={
-              canEditTab('operator2') ||
-              canEditTab('operator1') ||
-              canEditTab('operatorM')
-            }
-          />
-        ),
-      },
+      // {
+      //   key: 'operator2',
+      //   label: 'Operator2',
+      //   content: (
+      //     <Operator2Tab
+      //       leadId={id}
+      //       leadData={lead}
+      //       canEdit={
+      //         canEditTab('operator2') ||
+      //         canEditTab('operator1') ||
+      //         canEditTab('operatorM')
+      //       }
+      //     />
+      //   ),
+      // },
       {
         key: 'seller',
         label: 'Sotuvchi',

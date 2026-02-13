@@ -125,7 +125,9 @@ const FIELD_LABELS = {
   operator_ext: 'Operator raqami',
   client_phone: 'Mijoz telefoni',
   source: 'Manba',
+  seller: 'Sotuvchi',
   meetingDate: 'Uchrashuv sanasi',
+  meetingConfirmed: 'Uchrashuv tasdiqlandimi',
   meetingConfirmedDate: 'Uchrashuv tasdiqlangan sana',
   callCount: "Qo'ng'iroqlar soni",
   passport: 'Passport',
@@ -153,6 +155,12 @@ const FIELD_LABELS = {
   seen: "Ko'rildimi",
   closed: 'Sifatsiz',
   clientFullName: 'Mijoz F.I.O',
+  region: 'Viloyat',
+  district: 'Tuman',
+  neighborhood: 'Mahalla',
+  street: "Ko'cha",
+  house: 'Uy raqami',
+  address2: "Qo'shimcha manzil",
 };
 
 const STATUS_LABELS = {
@@ -474,7 +482,7 @@ export default function Message({
         msg?.['SlpCode'],
         executors?.map((e) => e?.['SlpCode']) || []
       ),
-    [msg?.['SlpCode'], executors]
+    [msg, executors]
   );
 
   const audioUrl = useMemo(() => {
@@ -488,7 +496,7 @@ export default function Message({
     if (baseMessageText !== null && baseMessageText !== undefined)
       return 'text';
     return null;
-  }, [audioUrl, msg?.Image, baseMessageText]);
+  }, [audioUrl, msg, baseMessageText]);
 
   const actionInfo = useMemo(() => {
     if (!msg?.action) return null;
@@ -540,12 +548,12 @@ export default function Message({
     });
     return map;
   }, [executors]);
-
   const formatChangeValueForUi = useCallback(
     (field, value) => {
       const fieldKey = String(field || '').toLowerCase();
       if (
         fieldKey === 'slpcode' ||
+        fieldKey === 'seller' ||
         fieldKey === 'operator' ||
         fieldKey === 'operatorfrom' ||
         fieldKey === 'operatorto' ||

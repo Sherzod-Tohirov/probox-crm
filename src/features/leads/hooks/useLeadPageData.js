@@ -112,7 +112,13 @@ export default function useLeadPageData(leadId) {
 
   const canEditStatus = useMemo(() => {
     if (isBlocked) return false;
-    return hasRole(currentUserRole, ['OperatorM', 'CEO', 'Scoring']);
+    return hasRole(currentUserRole, [
+      'OperatorM',
+      'CEO',
+      'Scoring',
+      'Operator1',
+      'Operator2',
+    ]);
   }, [currentUserRole, isBlocked]);
 
   const canEditBlockedStatus = hasRole(currentUserRole, ['CEO']);

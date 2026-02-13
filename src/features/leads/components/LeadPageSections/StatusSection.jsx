@@ -1,11 +1,25 @@
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Row, Col, Button } from '@components/ui';
 import FieldGroup from '@/features/leads/components/LeadPageForm/FieldGroup';
 import FormField from '@/features/leads/components/LeadPageForm/FormField';
 import { statusOptions } from '@/features/leads/utils/options';
+import FollowUpModal from '@/features/leads/components/modals/FollowUpModal';
+
+const RECALL_MODAL_CONFIG = {
+  FollowUp: {
+    title: 'Qayta aloqa sanasini belgilang',
+    label: 'Qayta aloqa sanasi va vaqti',
+  },
+  WillVisitStore: {
+    title: "Do'konga borish sanasi belgilash",
+    label: "Do'konga borish sanasi va vaqti",
+  },
+};
 
 export default function StatusSection({ lead, canEdit, onSave }) {
+  const [recallModalStatus, setRecallModalStatus] = useState(null);
+
   const statusForm = useForm({
     defaultValues: {
       status: lead?.status || '',
@@ -28,11 +42,32 @@ export default function StatusSection({ lead, canEdit, onSave }) {
   }, [lead, resetStatus]);
 
   const onSubmit = handleStatusSubmit((values) => {
+    if (RECALL_MODAL_CONFIG[values?.status]) {
+      setRecallModalStatus(values.status);
+      return;
+    }
+
     const payload = {
       status: values?.status ?? '',
     };
     onSave(payload);
   });
+
+  const handleRecallConfirm = (recallDate) => {
+    const payload = {
+      status: recallModalStatus,
+      recallDate,
+    };
+    onSave(payload);
+    setRecallModalStatus(null);
+  };
+
+  const handleRecallClose = () => {
+    setRecallModalStatus(null);
+    resetStatus({ status: lead?.status || '' });
+  };
+
+  const modalConfig = RECALL_MODAL_CONFIG[recallModalStatus] || {};
 
   return (
     <FieldGroup title="Status ma'lumotlari">
@@ -68,6 +103,14 @@ export default function StatusSection({ lead, canEdit, onSave }) {
           </Col>
         </Row>
       </form>
+      <FollowUpModal
+        isOpen={!!recallModalStatus}
+        onClose={handleRecallClose}
+        onConfirm={handleRecallConfirm}
+        title={modalConfig.title}
+        label={modalConfig.label}
+        defaultValue={lead?.recallDate || ''}
+      />
     </FieldGroup>
   );
 }
