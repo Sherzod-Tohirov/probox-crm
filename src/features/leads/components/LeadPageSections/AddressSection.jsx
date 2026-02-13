@@ -34,7 +34,9 @@ export default function AddressSection({ lead, canEdit, onSave, isPending }) {
     [lead]
   );
 
-  const addressForm = useForm(defaultValues);
+  const addressForm = useForm({
+    defaultValues,
+  });
 
   const {
     control: addressControl,

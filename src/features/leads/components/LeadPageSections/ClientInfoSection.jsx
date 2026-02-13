@@ -16,7 +16,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 control={null}
                 disabled={true}
                 span={{ xs: 24, md: 12 }}
-                defaultValue={lead?.clientName}
+                defaultValue={lead?.clientName ?? ''}
               />
             </Col>
             <Col>
@@ -26,7 +26,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 control={null}
                 disabled={true}
                 span={{ xs: 24, md: 12 }}
-                defaultValue={lead?.birthDate}
+                defaultValue={lead?.birthDate ?? ''}
               />
             </Col>
             <Col>
@@ -36,7 +36,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 control={null}
                 disabled={true}
                 span={{ xs: 24, md: 12 }}
-                defaultValue={lead?.age}
+                defaultValue={lead?.age ?? ''}
               />
             </Col>
           </Row>
@@ -51,7 +51,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 type="passportId"
                 disabled={true}
                 span={{ xs: 24, md: 8 }}
-                defaultValue={lead?.passportId}
+                defaultValue={lead?.passportId ?? ''}
               />
             </Col>
             <Col>
@@ -62,7 +62,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 type="jshshir"
                 disabled={true}
                 span={{ xs: 24, md: 8 }}
-                defaultValue={lead?.jshshir}
+                defaultValue={lead?.jshshir ?? ''}
               />
             </Col>
             <Col>
@@ -70,6 +70,7 @@ export default function ClientInfoSection({ lead, onLimitHistoryClick }) {
                 name="finalLimit"
                 label="Yakuniy limit"
                 control={null}
+                disabled={true}
                 icon="history"
                 canClickIcon={true}
                 onIconClick={onLimitHistoryClick}

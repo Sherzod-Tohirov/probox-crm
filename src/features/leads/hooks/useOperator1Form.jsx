@@ -22,18 +22,18 @@ export default function useOperator1Form(leadId, leadData, onSuccess) {
   const { alert } = useAlert();
   const form = useForm({
     defaultValues: {
-      called: leadData?.called || false,
-      callTime: leadData?.callTime || '',
-      answered: leadData?.answered || false,
-      callCount: leadData?.callCount || '',
-      interested: leadData?.interested || '',
-      rejectionReason: leadData?.rejectionReason || '',
-      passportVisit: leadData?.passportVisit || '',
-      jshshir: leadData?.jshshir || '',
-      passportId: leadData?.passportId || '',
-      meetingHappened: leadData?.meetingHappened || false,
+      called: leadData?.called ?? false,
+      callTime: leadData?.callTime ?? '',
+      answered: leadData?.answered ?? false,
+      callCount: leadData?.callCount ?? '',
+      interested: leadData?.interested ?? '',
+      rejectionReason: leadData?.rejectionReason ?? '',
+      passportVisit: leadData?.passportVisit ?? '',
+      jshshir: leadData?.jshshir ?? '',
+      passportId: leadData?.passportId ?? '',
+      meetingHappened: leadData?.meetingHappened ?? false,
       meetingDate: normalizeDate(leadData?.meetingDate),
-      branch: leadData?.branch,
+      branch: leadData?.branch ?? '',
     },
   });
 
