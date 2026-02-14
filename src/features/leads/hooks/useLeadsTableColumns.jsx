@@ -273,7 +273,7 @@ export default function useLeadsTableColumns() {
       },
       Kiruvchi: {
         icon: 'telephone',
-        bgColor: '#16c822ff',
+        bgColor: '#0ea5e9',
         textColor: '#fff',
         name: 'Kiruvchi',
       },
