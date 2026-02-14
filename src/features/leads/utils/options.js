@@ -54,7 +54,6 @@ export const passportVisitOptions = [
 ];
 
 export const statusFilterOptions = [
-  { value: 'unmarked', label: 'Barchasi' },
   { value: 'Active', label: 'Yang lead' },
   { value: 'Blocked', label: 'Bloklangan' },
   { value: 'Purchased', label: 'Xarid qildi' },

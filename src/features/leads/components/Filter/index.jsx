@@ -18,6 +18,7 @@ import SelectField from './fields/SelectField';
 import {
   booleanOptionsAll,
   sourceOptions as leadSourceOptions,
+  statusFilterOptions,
 } from '../../utils/options';
 import { normalizeFilterState, serializeFilter } from './utils';
 import { REJECTION_REASON_OPTIONS } from '../../utils/constants';
@@ -80,6 +81,7 @@ export default function LeadsFilter({
         branchOptions,
         operator1Options,
         operator2Options,
+        statusFilterOptions,
         leadSourceOptions,
         REJECTION_REASON_OPTIONS
       ),
@@ -192,18 +194,23 @@ export default function LeadsFilter({
     const normalizedInitialState = { ...initialLeadsFilterState };
 
     // Set multi-select fields to empty arrays
-    ['source', 'branch', 'operator', 'operator2', 'seller', 'scoring'].forEach(
-      (field) => {
-        normalizedInitialState[field] = [];
-      }
-    );
+    [
+      'source',
+      'branch',
+      'operator',
+      'operator2',
+      'seller',
+      'scoring',
+      'status',
+    ].forEach((field) => {
+      normalizedInitialState[field] = [];
+    });
 
     // Set select fields to their default option objects
     normalizedInitialState.meeting = { value: '', label: 'Hammasi' };
     normalizedInitialState.meetingDateStart = '';
     normalizedInitialState.meetingDateEnd = '';
     normalizedInitialState.isBlocked = { value: '', label: 'Barchasi' };
-    normalizedInitialState.status = { value: 'unmarked', label: 'Barchasi' };
     normalizedInitialState.purchase = { value: '', label: 'Barchasi' };
     normalizedInitialState.called = { value: '', label: 'Barchasi' };
     normalizedInitialState.answered = { value: '', label: 'Barchasi' };
