@@ -126,6 +126,7 @@ const FIELD_LABELS = {
   client_phone: 'Mijoz telefoni',
   source: 'Manba',
   seller: 'Sotuvchi',
+  meetingHappened: "Uchrashuv bo'ldimi",
   meetingDate: 'Uchrashuv sanasi',
   meetingConfirmed: 'Uchrashuv tasdiqlandimi',
   meetingConfirmedDate: 'Uchrashuv tasdiqlangan sana',
