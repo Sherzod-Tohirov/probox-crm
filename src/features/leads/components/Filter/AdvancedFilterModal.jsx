@@ -94,6 +94,7 @@ export default function AdvancedFilterModal({
         branchOptions,
         operator1Options,
         operator2Options,
+        statusFilterOptions,
         leadSourceOptions,
         shouldLoadSeller ? sellerOptions : [],
         shouldLoadScoring ? scoringOptions : []
@@ -220,7 +221,7 @@ export default function AdvancedFilterModal({
                   />
                 </Col>
                 <Col xs={12} sm={6} md={2} lg={1.5} xl={1.2}>
-                  <SelectField
+                  <MultiSelectField
                     name="status"
                     label="Status"
                     options={statusFilterOptions}

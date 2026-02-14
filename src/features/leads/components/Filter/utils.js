@@ -3,6 +3,7 @@ export function normalizeFilterState(
   branchOptions = [],
   operator1Options = [],
   operator2Options = [],
+  statusOptions = [],
   sourceOptions = [],
   sellerOptions = [],
   scoringOptions = [],
@@ -49,6 +50,9 @@ export function normalizeFilterState(
       rejectionReasonOptions
     );
   }
+  if (!Array.isArray(normalized.status)) {
+    normalized.status = toArrayFromCSV(normalized.status, statusOptions);
+  }
 
   return normalized;
 }
@@ -60,7 +64,6 @@ export function serializeFilter(values) {
   const selectFields = [
     'meeting',
     'isBlocked',
-    'status',
     'purchase',
     'called',
     'answered',
@@ -105,6 +108,7 @@ export function serializeFilter(values) {
   if (payload.scoring) payload.scoring = serializeMulti(payload.scoring);
   if (payload.rejectionReason)
     payload.rejectionReason = serializeMulti(payload.rejectionReason);
+  if (payload.status) payload.status = serializeMulti(payload.status);
 
   // Preserve meetingDateStart and meetingDateEnd if meeting is selected
   const meetingValue = payload.meeting;
