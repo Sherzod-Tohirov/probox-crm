@@ -63,9 +63,9 @@ const STATUS_META = {
   },
   Missed: {
     label: "O'tkazib yuborildi",
-    textColor: '#c2410c',
-    bgColor: '#ffedd5',
-    borderColor: '#fdba74',
+    textColor: '#7f1d1d',
+    bgColor: '#fecaca',
+    borderColor: '#f87171',
     icon: PhoneMissed,
   },
   Ignored: {
