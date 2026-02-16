@@ -74,7 +74,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     label="Qo'ng'iroq qilindimi?"
                     control={control}
                     type="confirm"
-                    disabled={!canEdit}
+                    disabled={true}
                   />
                 </Col>
                 <Col>
@@ -83,7 +83,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     label="Javob berildimi?"
                     control={control}
                     type="confirm"
-                    disabled={!canEdit}
+                    disabled={true}
                   />
                 </Col>
                 <Col>
@@ -119,7 +119,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     disabled={!canEdit}
                   />
                 </Col>
-                <Col>
+                {/* <Col>
                   <FormField
                     name="interested"
                     label="Qiziqish bildirildimi?"
@@ -127,7 +127,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
                     type="confirm"
                     disabled={!canEdit}
                   />
-                </Col>
+                </Col> */}
                 <Col>
                   <FormField
                     name="rejectionReason"
@@ -144,15 +144,6 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
           </Row>
         </FieldGroup>
         <FieldGroup title="Shaxsiy hujjatlar">
-          <FormField
-            name="passportVisit"
-            label="Pasport/Tashrif"
-            control={control}
-            type="select"
-            options={passportVisitOptions}
-            placeholderOption={true}
-            disabled={!canEdit}
-          />
           <FormField
             name="jshshir"
             label="JSHSHIR"
