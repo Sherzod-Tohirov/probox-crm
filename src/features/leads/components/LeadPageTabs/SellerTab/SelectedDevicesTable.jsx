@@ -5,7 +5,7 @@ import { useSelectedDevicesColumns } from './useSelectedDevicesColumns';
 
 export default function SelectedDevicesTable({
   selectedDeviceData,
-  selectedDevices,
+  // selectedDevices,
   rentPeriodOptions,
   canEdit,
   onImeiSelect,

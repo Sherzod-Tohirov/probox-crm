@@ -205,27 +205,27 @@ export const CALCULATION_TYPE_OPTIONS = [
 ];
 // Ustama foizlari periodga qarab
 const MARKUP_PERCENTAGES = {
-  1: 0.055, // 5.5%
-  2: 0.11, // 11%
-  3: 0.17, // 17%
-  4: 0.25, // 25%
-  5: 0.33, // 33%
-  6: 0.39, // 39%
-  7: 0.45, // 45%
-  8: 0.49, // 49%
-  9: 0.52, // 52%
-  10: 0.58, // 58%
-  11: 0.61, // 61%
-  12: 0.67, // 67%
-  13: 0.71, // 71%
-  14: 0.76, // 76%
-  15: 0.81, // 81%
+  1: 0.05, // 5%
+  2: 0.09, // 9%
+  3: 0.14, // 14%
+  4: 0.18, // 18%
+  5: 0.22, // 22%
+  6: 0.26, // 26%
+  7: 0.31, // 31%
+  8: 0.35, // 35%
+  9: 0.39, // 39%
+  10: 0.44, // 44%
+  11: 0.48, // 48%
+  12: 0.52, // 52%
+  13: 0.56, // 56%
+  14: 0.61, // 61%
+  15: 0.65, // 65%
 };
 
 export const getMarkupPercentage = (period) => {
   const periodNum = Number(period);
   if (!periodNum || periodNum < 1) return 0.05;
-  if (periodNum > 15) return 0.7;
+  if (periodNum > 15) return 0.65;
   return MARKUP_PERCENTAGES[periodNum] || 0.05;
 };
 
