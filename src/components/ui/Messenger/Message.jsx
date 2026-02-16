@@ -1,376 +1,17 @@
-import moment from 'moment';
+import { createElement } from 'react';
 import classNames from 'classnames';
-import {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  createElement,
-} from 'react';
-import {
-  UserPlus,
-  PenSquare,
-  RefreshCcw,
-  Users,
-  FileEdit,
-  Phone,
-  PhoneCall,
-  PhoneMissed,
-  PhoneOff,
-  CircleSlash,
-  StickyNote,
-  Cog,
-  PhoneIncoming,
-  PhoneOutgoing,
-  ArrowRightLeft,
-} from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useFloating, shift, offset, autoUpdate } from '@floating-ui/react-dom';
 
 import { Col, Button, Typography, Box } from '@components/ui';
-import useFetchExecutors from '@hooks/data/useFetchExecutors';
-import useAuth from '@hooks/useAuth';
-import useTheme from '@hooks/useTheme';
 import iconsMap from '@utils/iconsMap';
-import getMessageColorForUser from '@utils/getMessageColorForUser';
+import { API_CLIENT_IMAGES } from '@utils/apiUtils';
 import styles from './styles/messenger.module.scss';
-import { API_CLIENT_AUDIOS, API_CLIENT_IMAGES } from '@utils/apiUtils';
 import AudioPlayer from './AudioPlayer';
 
-const ACTION_META = {
-  lead_created: {
-    label: 'Lead yaratildi',
-    color: '#22c55e',
-    icon: UserPlus,
-  },
-  lead_updated: {
-    label: 'Lead yangilandi',
-    color: '#3b82f6',
-    icon: PenSquare,
-  },
-  status_changed: {
-    label: "Status o'zgardi",
-    color: '#f59e0b',
-    icon: RefreshCcw,
-  },
-  operator_changed: {
-    label: "Operator o'zgardi",
-    color: '#0ea5e9',
-    icon: Users,
-  },
-  field_changed: {
-    label: "Maydon o'zgardi",
-    color: '#8b5cf6',
-    icon: FileEdit,
-  },
-  call_started: {
-    label: "Qo'ng'iroq boshlandi",
-    color: '#06b6d4',
-    icon: Phone,
-  },
-  call_answered: {
-    label: "Qo'ng'iroq qabul qilindi",
-    color: '#16a34a',
-    icon: PhoneCall,
-  },
-  call_no_answer: {
-    label: "Qo'ng'iroqqa javob berilmadi",
-    color: '#f97316',
-    icon: PhoneMissed,
-  },
-  call_missed: {
-    label: "O'tkazib yuborilgan qo'ng'iroq",
-    color: '#ef4444',
-    icon: PhoneMissed,
-  },
-  call_ended: {
-    label: "Qo'ng'iroq yakunlandi",
-    color: '#64748b',
-    icon: PhoneOff,
-  },
-  auto_closed: {
-    label: 'Tizim avtomatik yopdi',
-    color: '#a855f7',
-    icon: CircleSlash,
-  },
-  auto_ignored: {
-    label: 'Tizim avtomatik e’tiborsiz qoldirdi',
-    color: '#94a3b8',
-    icon: CircleSlash,
-  },
-  note: {
-    label: 'Eslatma',
-    color: '#14b8a6',
-    icon: StickyNote,
-  },
-};
-
-const FIELD_LABELS = {
-  status: 'Status',
-  operator: 'Operator',
-  slpCode: 'Operator',
-  operatorFrom: 'Avvalgi operator',
-  operatorTo: 'Yangi operator',
-  answered: 'Javob berdi',
-  interested: 'Qiziqdimi',
-  rejectionReason: 'Rad etish sababi',
-  callTime: "Qo'ng'iroq vaqti",
-  call_time: "Qo'ng'iroq vaqti",
-  'call time': "Qo'ng'iroq vaqti",
-  callDuration: "Qo'ng'iroq davomiyligi",
-  call_duration: "Qo'ng'iroq davomiyligi",
-  duration: 'Davomiyligi',
-  accountcode: 'Qo‘ng‘iroq turi',
-  direction: "Yo'nalish",
-  operator_ext: 'Operator raqami',
-  client_phone: 'Mijoz telefoni',
-  source: 'Manba',
-  seller: 'Sotuvchi',
-  meetingHappened: "Uchrashuv bo'ldimi",
-  meetingDate: 'Uchrashuv sanasi',
-  meetingConfirmed: 'Uchrashuv tasdiqlandimi',
-  meetingConfirmedDate: 'Uchrashuv tasdiqlangan sana',
-  callCount: "Qo'ng'iroqlar soni",
-  passport: 'Passport',
-  visit: 'Tashrif',
-  scoring: 'Skoring',
-  scoringResult: 'Skoring natija',
-  finalLimit: 'Yakuniy limit',
-  firstPayment: "Boshlang'ich to'lov",
-  monthlyPayment: 'Oylik to‘lov',
-  installmentMonths: "To'lov muddati",
-  clientName: 'Mijoz ismi',
-  clientPhone: 'Mijoz telefoni',
-  branch: 'Filial',
-  branchId: 'Filial',
-  SlpCode: 'Operator',
-  operatorId: 'Operator',
-  isBlocked: 'Bloklanganmi',
-  isDeleted: "O'chirilganmi",
-  isSystem: 'Tizimmi',
-  phone: 'Telefon',
-  address: 'Manzil',
-  note: 'Eslatma',
-  comment: 'Izoh',
-  comments: 'Izoh',
-  seen: "Ko'rildimi",
-  closed: 'Sifatsiz',
-  clientFullName: 'Mijoz F.I.O',
-  region: 'Viloyat',
-  district: 'Tuman',
-  neighborhood: 'Mahalla',
-  street: "Ko'cha",
-  house: 'Uy raqami',
-  address2: "Qo'shimcha manzil",
-};
-
-const STATUS_LABELS = {
-  Active: 'Yangi lead',
-  Blocked: 'Bloklangan',
-  Purchased: 'Xarid qildi',
-  Returned: 'Qaytarildi',
-  Missed: "O'tkazib yuborildi",
-  Ignored: "E'tiborsiz",
-  NoAnswer: 'Javob bermadi',
-  FollowUp: "Qayta a'loqa",
-  Considering: "O'ylab ko'radi",
-  WillVisitStore: "Do'konga boradi",
-  WillSendPassport: 'Passport yuboradi',
-  Scoring: 'Skoring',
-  ScoringResult: 'Skoring natija',
-  VisitedStore: "Do'konga keldi",
-  NoPurchase: "Xarid bo'lmadi",
-  Closed: 'Sifatsiz',
-};
-
-const translateFieldLabel = (field) => {
-  const key = String(field || '').trim();
-  if (!key) return 'Maydon';
-  if (FIELD_LABELS[key]) return FIELD_LABELS[key];
-  const lowerKey = key.toLowerCase();
-  if (FIELD_LABELS[lowerKey]) return FIELD_LABELS[lowerKey];
-
-  const normalized = key
-    .replace(/\./g, ' ')
-    .replace(/[_-]/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .trim();
-  if (!normalized) return 'Maydon';
-  return normalized[0].toUpperCase() + normalized.slice(1);
-};
-
-const parseMomentFromUnknown = (rawValue) => {
-  if (rawValue === null || rawValue === undefined || rawValue === '')
-    return null;
-
-  if (moment.isMoment(rawValue) && rawValue.isValid()) return rawValue.clone();
-
-  if (typeof rawValue === 'number' && Number.isFinite(rawValue)) {
-    const absolute = Math.abs(rawValue);
-    if (absolute >= 1e12) {
-      const m = moment(rawValue);
-      return m.isValid() ? m : null;
-    }
-    if (absolute >= 1e9) {
-      const m = moment.unix(rawValue);
-      return m.isValid() ? m : null;
-    }
-    return null;
-  }
-
-  const value = String(rawValue).trim();
-  if (!value) return null;
-
-  if (/^\d{13}$/.test(value)) {
-    const m = moment(Number(value));
-    return m.isValid() ? m : null;
-  }
-  if (/^\d{10}$/.test(value)) {
-    const m = moment.unix(Number(value));
-    return m.isValid() ? m : null;
-  }
-
-  const m = moment(value);
-  return m.isValid() ? m : null;
-};
-
-const formatUnknownDateTime = (rawValue) => {
-  const parsed = parseMomentFromUnknown(rawValue);
-  if (!parsed) return null;
-
-  const asString = String(rawValue ?? '');
-  const hasTime =
-    typeof rawValue === 'number' ||
-    /^\d{10,13}$/.test(asString) ||
-    asString.includes('T') ||
-    /\d{2}:\d{2}/.test(asString);
-
-  return hasTime
-    ? parsed.local().format('HH:mm')
-    : parsed.local().format('DD.MM.YYYY');
-};
-
-const formatHistoryDateTime = (rawDate) => {
-  return formatUnknownDateTime(rawDate) || '—';
-};
-
-const formatChangeValue = (field, value) => {
-  if (value === true) return 'Ha';
-  if (value === false) return "Yo'q";
-  if (String(value).toLowerCase() === 'true') return 'Ha';
-  if (String(value).toLowerCase() === 'false') return "Yo'q";
-  if (value === null || value === undefined || value === '') return '—';
-
-  if (field === 'status') {
-    const translated = STATUS_LABELS[String(value)];
-    return translated || String(value);
-  }
-
-  const fieldKey = String(field || '').toLowerCase();
-  const normalizedFieldKey = fieldKey.replace(/\s+/g, '_').replace(/-/g, '_');
-  const raw = String(value);
-  const normalized = raw.toLowerCase();
-
-  const isDateLikeField =
-    /(?:^|_|\.)(date|time|stamp)(?:$|_)/i.test(normalizedFieldKey) ||
-    /(?:^|_)(createdat|updatedat|created_at|updated_at|start_stamp|end_stamp|calltime|call_time)(?:$|_)/i.test(
-      normalizedFieldKey
-    );
-  if (isDateLikeField) {
-    const formatted = formatUnknownDateTime(value);
-    if (formatted) return formatted;
-  }
-
-  if (
-    normalizedFieldKey === 'accountcode' ||
-    normalizedFieldKey === 'direction'
-  ) {
-    if (normalized === 'inbound') return 'Kiruvchi';
-    if (normalized === 'outbound') return 'Chiquvchi';
-  }
-
-  return String(value);
-};
-
-const getCallDirectionMeta = (msg = {}) => {
-  const rawDirection = String(
-    msg?.direction || msg?.pbx?.direction || msg?.pbx?.accountcode || ''
-  ).toLowerCase();
-
-  if (rawDirection === 'inbound') {
-    return {
-      icon: PhoneIncoming,
-      label: 'Kiruvchi qo‘ng‘iroq',
-    };
-  }
-  if (rawDirection === 'outbound') {
-    return {
-      icon: PhoneOutgoing,
-      label: 'Chiquvchi qo‘ng‘iroq',
-    };
-  }
-  return {
-    icon: ArrowRightLeft,
-    label: "Qo'ng'iroq yo'nalishi noma'lum",
-  };
-};
-
-// Helper: ensure colored bubbles look good in dark/light themes
-const toRgba = (color, alpha = 1) => {
-  if (!color) return '';
-  // rgba(a,b,c,d)
-  const rgbaMatch = color.match(
-    /^rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/i
-  );
-  if (rgbaMatch) {
-    const [, r, g, b] = rgbaMatch;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  // #RRGGBB or #RGB
-  const hex = color.trim();
-  if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-    let r, g, b;
-    if (hex.length === 4) {
-      r = parseInt(hex[1] + hex[1], 16);
-      g = parseInt(hex[2] + hex[2], 16);
-      b = parseInt(hex[3] + hex[3], 16);
-    } else {
-      r = parseInt(hex.slice(1, 3), 16);
-      g = parseInt(hex.slice(3, 5), 16);
-      b = parseInt(hex.slice(5, 7), 16);
-    }
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  // Fallback: return as-is
-  return color;
-};
-
-const MESSAGE_VARIANTS = {
-  hidden: {
-    opacity: 0,
-    y: 18,
-    scale: 0.98,
-  },
-  visible: (index = 0) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: 'tween',
-      duration: 0.28,
-      delay: Math.min(Math.max(index, 0), 10) * 0.07,
-    },
-  }),
-  exit: {
-    opacity: 0,
-    y: -12,
-    scale: 0.98,
-    transition: {
-      type: 'tween',
-      duration: 0.18,
-    },
-  },
-};
+import { MESSAGE_VARIANTS } from './utils/constants';
+import { translateFieldLabel, toRgba } from './utils/formatters';
+import useMessageData from './hooks/useMessageData';
+import useMessageActions from './hooks/useMessageActions';
 
 export default function Message({
   msg,
@@ -379,219 +20,45 @@ export default function Message({
   size,
   animationIndex = 0,
 }) {
-  const { data: executors } = useFetchExecutors();
-  const { user } = useAuth();
-  const { currentTheme } = useTheme();
-  const [showMenu, setShowMenu] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const baseMessageText = msg?.Comments ?? msg?.message ?? '';
-  const [messageText, setMessageText] = useState(baseMessageText);
-  const [editText, setEditText] = useState(baseMessageText);
-  const isTextMessage =
-    msg?.Audio === null &&
-    msg?.Image === null &&
-    baseMessageText !== null &&
-    baseMessageText !== undefined;
 
-  const { x, y, strategy, update, refs } = useFloating({
-    placement: 'top-end',
-    middleware: [offset(0), shift()],
+  const {
+    user,
+    currentTheme,
+    timestamp,
+    timestampDateTime,
+    msgColor,
+    audioUrl,
+    messageType,
+    headerInfo,
+    changeList,
+    actorLabel,
+    formatChangeValueForUi,
+    bubbleBg,
+    accentColor,
+    isTextMessage,
+  } = useMessageData(msg, baseMessageText);
+
+  const {
+    showMenu,
+    setShowMenu,
+    editMode,
+    setEditMode,
+    isSubmitting,
+    messageText,
+    editText,
+    setEditText,
+    handleContextMenu,
+    handleEditSubmit,
+    floating: { x, y, strategy, refs },
+  } = useMessageActions({
+    msg,
+    user,
+    isTextMessage,
+    baseMessageText,
+    onEditMessage,
+    onDeleteMessage,
   });
-
-  useEffect(() => {
-    if (!refs.reference.current || !refs.floating.current) return;
-    return autoUpdate(refs.reference.current, refs.floating.current, update);
-  }, [refs.reference, refs.floating, update]);
-
-  useEffect(() => {
-    setMessageText(baseMessageText);
-    setEditText(baseMessageText);
-  }, [baseMessageText]);
-
-  const handleContextMenu = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (
-        !msg?.isSystem &&
-        !msg?.action &&
-        String(msg?.['SlpCode']) === String(user?.SlpCode) &&
-        isTextMessage
-      ) {
-        setShowMenu(true);
-        update();
-      }
-    },
-    [msg, user?.SlpCode, update, isTextMessage]
-  );
-
-  const handleEditSubmit = useCallback(async () => {
-    try {
-      setIsSubmitting(true);
-      if (editText === '') {
-        onDeleteMessage(msg?._id);
-        return;
-      }
-      if (editText !== baseMessageText && typeof onEditMessage === 'function') {
-        setMessageText(editText);
-        await onEditMessage(msg?._id, { Comments: editText });
-      }
-    } catch (error) {
-      setMessageText(baseMessageText);
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-      setEditMode(false);
-    }
-  }, [editText, msg?._id, baseMessageText, onEditMessage, onDeleteMessage]);
-
-  const handleClickOutside = useCallback(
-    (e) => {
-      if (
-        refs.floating.current &&
-        !refs.floating.current?.contains(e.target) &&
-        !refs.reference.current?.contains(e.target)
-      ) {
-        setShowMenu(false);
-      }
-    },
-    [refs.floating, refs.reference]
-  );
-
-  useEffect(() => {
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMenu, handleClickOutside]);
-
-  // Memoize expensive computations
-  const timestamp = useMemo(
-    () => formatHistoryDateTime(msg?.created_at ?? msg?.createdAt),
-    [msg?.created_at, msg?.createdAt]
-  );
-  const timestampDateTime = useMemo(() => {
-    const parsed = moment(msg?.created_at ?? msg?.createdAt);
-    return parsed.isValid() ? parsed.toISOString() : undefined;
-  }, [msg?.created_at, msg?.createdAt]);
-
-  const msgColor = useMemo(
-    () =>
-      getMessageColorForUser(
-        msg?.['SlpCode'],
-        executors?.map((e) => e?.['SlpCode']) || []
-      ),
-    [msg, executors]
-  );
-
-  const audioUrl = useMemo(() => {
-    const path = msg?.Audio?.url;
-    return path ? `${API_CLIENT_AUDIOS}${path}` : null;
-  }, [msg?.Audio?.url]);
-
-  const messageType = useMemo(() => {
-    if (audioUrl) return 'audio';
-    if (msg?.['Image']) return 'image';
-    if (baseMessageText !== null && baseMessageText !== undefined)
-      return 'text';
-    return null;
-  }, [audioUrl, msg, baseMessageText]);
-
-  const actionInfo = useMemo(() => {
-    if (!msg?.action) return null;
-    const meta = ACTION_META[msg.action] || {
-      label: msg.action,
-      color: '#64748b',
-      icon: Cog,
-    };
-    const isCallAction = String(msg.action).startsWith('call_');
-    const directionMeta = isCallAction ? getCallDirectionMeta(msg) : null;
-    return { ...meta, directionMeta };
-  }, [msg]);
-
-  const systemAudioActionInfo = useMemo(() => {
-    if (!msg?.isSystem || messageType !== 'audio' || msg?.action) return null;
-    const directionMeta = getCallDirectionMeta(msg);
-    return {
-      label: baseMessageText || "Qo'ng'iroq yozuvi",
-      color: '#0ea5e9',
-      icon: PhoneCall,
-      directionMeta,
-    };
-  }, [msg, messageType, baseMessageText]);
-
-  const headerInfo = actionInfo || systemAudioActionInfo;
-
-  const changeList = useMemo(() => {
-    if (!Array.isArray(msg?.changes)) return [];
-    return msg.changes.filter(Boolean);
-  }, [msg?.changes]);
-
-  const actorLabel = useMemo(() => {
-    if (msg?.isSystem) return 'Tizim';
-    if (msg?.['SlpCode'] === user?.SlpCode) return 'Siz';
-    const found = executors?.find(
-      (executor) => String(executor?.SlpCode) === String(msg?.SlpCode)
-    );
-    if (found) return found?.SlpName;
-    return `Operator ${msg?.['SlpCode'] ?? '-'}`;
-  }, [msg, executors, user?.SlpCode]);
-
-  const executorsByCode = useMemo(() => {
-    const map = new Map();
-    (executors || []).forEach((executor) => {
-      const code = executor?.SlpCode;
-      if (code !== null && code !== undefined && code !== '') {
-        map.set(String(code), executor?.SlpName || String(code));
-      }
-    });
-    return map;
-  }, [executors]);
-  const formatChangeValueForUi = useCallback(
-    (field, value) => {
-      const fieldKey = String(field || '').toLowerCase();
-      if (
-        fieldKey === 'slpcode' ||
-        fieldKey === 'seller' ||
-        fieldKey === 'operator' ||
-        fieldKey === 'operatorfrom' ||
-        fieldKey === 'operatorto' ||
-        fieldKey === 'operatorid'
-      ) {
-        const key = String(value ?? '').trim();
-        if (!key) return '—';
-        return executorsByCode.get(key) || key;
-      }
-      return formatChangeValue(field, value);
-    },
-    [executorsByCode]
-  );
-
-  // Theme-aware bubble background to keep readable contrast in dark mode
-  const bubbleBg = useMemo(() => {
-    if (!msgColor?.bg) return undefined;
-    return currentTheme === 'dark' ? toRgba(msgColor.bg, 0.25) : msgColor.bg;
-  }, [msgColor?.bg, currentTheme]);
-
-  // Theme-aware accent color for author/icon
-  const accentColor = useMemo(() => {
-    return currentTheme === 'dark' ? '#e5e7eb' : msgColor?.text;
-  }, [currentTheme, msgColor?.text]);
-  useEffect(() => {
-    if (!audioUrl) return;
-    const audio = new Audio(audioUrl);
-
-    audio.preload = 'metadata';
-
-    audio.onloadedmetadata = () => {};
-
-    // Cleanup
-    return () => {
-      audio.src = '';
-    };
-  }, [audioUrl]);
 
   return (
     <motion.div

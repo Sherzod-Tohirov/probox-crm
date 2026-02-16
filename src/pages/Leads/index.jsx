@@ -296,6 +296,14 @@ export default function Leads() {
                   };
                 }
               }
+
+              if(row?.consideringBumped) {
+                return {
+                  backgroundColor: isDark
+                    ? 'rgba(255, 200, 100, 0.25)'
+                    : 'rgba(255, 245, 180, 0.6)',
+                };
+              }
             }}
           />
         </Col>
