@@ -28,7 +28,7 @@ export const statusOptions = [
   { value: 'Active', label: 'Yangi lead', isNotSelectable: true },
   { value: 'Blocked', label: 'Bloklangan', isNotSelectable: true },
   { value: 'Purchased', label: 'Xarid qildi', isNotSelectable: true },
-  { value: 'Returned', label: 'Qaytarildi', isNotSelectable: true },
+  { value: 'Returned', label: 'Qaytarildi' },
   { value: 'Missed', label: "O'tkazib yuborildi", isNotSelectable: true },
   { value: 'Ignored', label: "E'tiborsiz", isNotSelectable: true },
   { value: 'NoAnswer', label: 'Javob bermadi', isNotSelectable: true },
