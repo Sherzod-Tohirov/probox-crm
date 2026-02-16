@@ -21,8 +21,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
   const { control, reset } = form || {};
   const isMobile = useIsMobile();
   const { rejectReasonOptions } = useSelectOptions('common');
-  const { passportVisitOptions, callCountOptions } =
-    useSelectOptions('operator1');
+  const { callCountOptions } = useSelectOptions('operator1');
   // Reset form when leadData changes
   useEffect(() => {
     if (!form) return;
@@ -35,7 +34,7 @@ export default function Operator1Tab({ leadId, leadData, canEdit, onSuccess }) {
         callCount: leadData.callCount ?? '',
         interested: leadData.interested ?? '',
         rejectionReason: leadData.rejectionReason ?? '',
-        passportVisit: leadData.passportVisit ?? '',
+        // passportVisit: leadData.passportVisit ?? '',
         jshshir: leadData.jshshir ?? '',
         passportId: leadData.passportId ?? '',
         meetingDate: normalizeDate(leadData.meetingDate),

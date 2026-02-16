@@ -533,7 +533,10 @@ export default function useInvoice(options = {}) {
         leadId: leadId,
         U_leadId: leadId,
         clientPhone: leadData.clientPhone || '',
-        clientName: leadData.clientName || leadData.clientFullName || '',
+        clientName:
+          (leadData.clientFullName?.trim().split(/\s+/).length >= 3
+            ? leadData.clientFullName
+            : leadData.clientName) || '',
         jshshir: leadData.jshshir || leadData.jsshir || '',
         passportId: leadData.passportId || '',
         clientAddress: clientAddress,

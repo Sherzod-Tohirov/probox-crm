@@ -26,9 +26,6 @@ export const AVAILABLE_LEAD_STATUSES = [
   'ScoringResult',
   'VisitedStore',
   'NoPurchase',
-  // Legacy statuses (keep for backward compatibility)
-  'Archived',
-  'Processing',
 ];
 
 export const ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS = [
