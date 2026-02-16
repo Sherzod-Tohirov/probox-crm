@@ -41,9 +41,6 @@ export const statusOptions = [
   { value: 'VisitedStore', label: "Do'konga keldi" },
   { value: 'NoPurchase', label: "Xarid bo'lmadi", isNotSelectable: true },
   { value: 'Closed', label: 'Sifatsiz', isNotSelectable: true },
-  // Legacy statuses
-  { value: 'Archived', label: 'Arxivlangan', isNotSelectable: true },
-  { value: 'Processing', label: 'Jarayonda', isNotSelectable: true },
 ];
 
 export const passportVisitOptions = [
@@ -71,9 +68,6 @@ export const statusFilterOptions = [
   { value: 'VisitedStore', label: "Do'konga keldi" },
   { value: 'NoPurchase', label: "Xarid bo'lmadi" },
   { value: 'Closed', label: 'Sifatsiz' },
-  // Legacy statuses
-  { value: 'Archived', label: 'Arxivlangan' },
-  { value: 'Processing', label: 'Jarayonda' },
 ];
 
 export const callCountOptions = [

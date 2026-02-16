@@ -121,7 +121,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
         acceptedReason: isNotFalsy(leadData.acceptedReason),
       });
     }
-  }, [leadData, reset]);
+  }, [leadData, form, reset]);
   useEffect(() => {
     if (!form) return;
     if (fieldScore !== undefined) {

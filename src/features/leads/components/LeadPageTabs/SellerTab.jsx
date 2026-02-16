@@ -286,6 +286,31 @@ export default function SellerTab({
       return;
     }
 
+    // Mijoz ismini tekshirish (kamida 3 qismdan iborat bo'lishi kerak)
+    const names = [leadData?.clientFullName, leadData?.clientName].map((name) =>
+      name.trim()
+    );
+    const nameParts = names.some(
+      (name) => name.split(/\s+/).filter(Boolean).length >= 3
+    );
+    if (!nameParts) {
+      alert(
+        "Mijoz ismi to'liq to'ldirilishi kerak.\nMisol uchun: Alisherov Alisher Alisher o'g'li",
+        {
+          type: 'error',
+        }
+      );
+      return;
+    }
+
+    // Mijoz statusini tekshirish
+    if (['Closed'].includes(leadData?.status)) {
+      alert("Mijoz statusi sotuv qilish uchun o'zgartirilishi kerak!", {
+        type: 'error',
+      });
+      return;
+    }
+
     if (!leadId) {
       alert('Lead ID topilmadi', { type: 'error' });
       return;
@@ -307,7 +332,14 @@ export default function SellerTab({
     }
 
     setIsInvoiceModalOpen(true);
-  }, [userSignature, leadId, selectedDevices, isAddressAvailable]);
+  }, [
+    userSignature,
+    leadId,
+    selectedDevices,
+    isAddressAvailable,
+    leadData?.clientFullName,
+    leadData?.clientName,
+  ]);
 
   // Invoice modal orqali yuborish
   const handleSendInvoice = useCallback(
