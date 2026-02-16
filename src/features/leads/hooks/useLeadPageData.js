@@ -112,7 +112,7 @@ export default function useLeadPageData(leadId) {
 
   const canEditStatus = useMemo(() => {
     if (isBlocked) return false;
-    return true
+    return true;
     // return hasRole(currentUserRole, [
     //   'OperatorM',
     //   'CEO',
@@ -467,7 +467,7 @@ export default function useLeadPageData(leadId) {
     if (lead?.seen === false) {
       updateLead.mutate({ seen: true });
     }
-  }, [lead, user]);
+  }, [lead, user, role, updateLead]);
   return {
     lead,
     role,

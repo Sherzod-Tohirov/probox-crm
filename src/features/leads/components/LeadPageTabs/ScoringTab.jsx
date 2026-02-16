@@ -143,37 +143,41 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
   }, [fieldBirthDate, setValue, form]);
   useEffect(() => {
     if (!form) return;
-    if (leadData?.finalLimit) return;
-    const isProvided = (value) => {
-      if (typeof value === 'boolean') return true;
-      if (typeof value === 'number') return !Number.isNaN(value);
-      if (Array.isArray(value)) return value.length > 0;
-      return value !== undefined && value !== null && value !== '';
-    };
-    const allProvided =
-      isProvided(fieldAge) &&
-      isProvided(fieldKatm) &&
-      isProvided(fieldKatmPayment) &&
-      isProvided(fieldPaymentHistory) &&
-      isProvided(fieldMib) &&
-      isProvided(fieldMibIrresponsible) &&
-      isProvided(fieldAliment) &&
-      isProvided(fieldOfficialSalary);
-    const providedAny =
-      isProvided(fieldAge) ||
-      isProvided(fieldKatm) ||
-      isProvided(fieldKatmPayment) ||
-      isProvided(fieldPaymentHistory) ||
-      isProvided(fieldMib) ||
-      isProvided(fieldMibIrresponsible) ||
-      isProvided(fieldAliment) ||
-      isProvided(fieldOfficialSalary);
-    if (!providedAny) {
+
+    // If finalLimit already has a value, keep it and mark status
+    if (leadData?.finalLimit !== null && leadData?.finalLimit !== undefined) {
+      const existing = Number(normalizeNumber(leadData.finalLimit));
+      setLimitStatus(existing > 0 ? 'has_limit' : 'no_limit');
+      return;
+    }
+
+    const fields = [
+      fieldAge,
+      fieldKatm,
+      fieldKatmPayment,
+      fieldPaymentHistory,
+      fieldMib,
+      fieldMibIrresponsible,
+      fieldAliment,
+      fieldOfficialSalary,
+    ];
+
+    const isProvided = (v) =>
+      typeof v === 'boolean' ||
+      (typeof v === 'number' && !Number.isNaN(v)) ||
+      (Array.isArray(v)
+        ? v.length > 0
+        : v !== undefined && v !== null && v !== '');
+
+    const providedCount = fields.filter(isProvided).length;
+
+    if (providedCount === 0) {
       setLimitStatus('not_provided');
       setValue('finalLimit', '', { shouldValidate: true });
       return;
     }
-    if (!allProvided) {
+
+    if (providedCount < fields.length) {
       setLimitStatus('in_progress');
       setValue('finalLimit', '', { shouldValidate: true });
       return;
@@ -198,14 +202,12 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
     setValue('finalLimit', formatterCurrency(_.round(computed, -3)), {
       shouldValidate: true,
     });
-    if (!computed || computed <= 0) {
-      setLimitStatus('no_limit');
-    } else {
-      setLimitStatus('has_limit');
-    }
+    setLimitStatus(computed > 0 ? 'has_limit' : 'no_limit');
   }, [
     form,
     setValue,
+    leadData?.finalLimit,
+    leadData?.region,
     fieldAge,
     fieldKatm,
     fieldKatmPayment,
@@ -392,7 +394,7 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
                     {leadData?.finalLimit && (
                       <Col>
                         <Typography variant="caption" color="warning">
-                          Limit 1 oy uchun keltirilgan
+                          Limit allaqachon hisoblangan va foydalanishga tayyor
                         </Typography>
                       </Col>
                     )}
