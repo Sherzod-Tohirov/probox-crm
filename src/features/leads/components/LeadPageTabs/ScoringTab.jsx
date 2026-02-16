@@ -393,9 +393,19 @@ export default function ScoringTab({ leadId, leadData, canEdit, onSuccess }) {
                     </Col>
                     {leadData?.finalLimit && (
                       <Col>
-                        <Typography variant="caption" color="warning">
-                          Limit allaqachon hisoblangan va foydalanishga tayyor
-                        </Typography>
+                        <Row gutter={2}>
+                          <Col>
+                            <Typography variant="caption" color="warning">
+                              Limit allaqachon hisoblangan va foydalanishga
+                              tayyor
+                            </Typography>
+                          </Col>
+                          <Col>
+                            <Typography variant="caption" color="info">
+                              Limit 1 oy uchun keltirilgan
+                            </Typography>
+                          </Col>
+                        </Row>
                       </Col>
                     )}
                   </Row>
