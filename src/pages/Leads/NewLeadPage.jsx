@@ -1,33 +1,29 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
 
 import useLeadPageData from '@/features/leads/hooks/useLeadPageData';
-import useToggle from '@hooks/useToggle';
-import useClickOutside from '@hooks/helper/useClickOutside';
 import useMessengerActions from '@hooks/useMessengerActions';
 import useFetchMessages from '@hooks/data/useFetchMessages';
 import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 import useFetchLeadLimitHistory from '@/hooks/data/leads/useFetchLeadLimitHistory';
-import Messenger from '@components/ui/Messenger';
+import { Messenger } from '@/components/shadcn/ui/messenger';
 import { LeadLimitHistoryModal } from '@/features/leads/components/modals/LeadLimitHistoryModal';
+import useAuth from '@hooks/useAuth';
 
 import { Button } from '@/components/shadcn/ui/button';
-import ClientInfoCard from './sections/ClientInfoCard';
-import PaymentScoreCard from './sections/PaymentScoreCard';
-import LeadInfoCard from './sections/LeadInfoCard';
-import ContractCard from './sections/ContractCard';
-import SidebarPassport from './sections/SidebarPassport';
-import SidebarServiceInfo from './sections/SidebarServiceInfo';
-import SidebarPurchaseHistory from './sections/SidebarPurchaseHistory';
+import ClientInfoCard from '@features/newLeads/sections/ClientInfoCard';
+import PaymentScoreCard from '@features/newLeads/sections/PaymentScoreCard';
+import LeadInfoCard from '@features/newLeads/sections/LeadInfoCard';
+import ContractCard from '@features/newLeads/sections/ContractCard';
+import SidebarPassport from '@features/newLeads/sections/SidebarPassport';
+import SidebarPurchaseHistory from '@features/newLeads/sections/SidebarPurchaseHistory';
+import ServiceInfoModal from '@features/newLeads/components/ServiceInfoModal';
 
 export default function NewLeadPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const messengerRef = useRef(null);
-  const { isOpen, toggle } = useToggle('messenger');
-
   const {
     lead,
     isLoading,
@@ -44,6 +40,9 @@ export default function NewLeadPage() {
 
   const [isLimitHistoryModalOpen, setLimitHistoryModalOpen] = useState(false);
   const [enableFetchLimitHistory, setEnableFetchLimitHistory] = useState(false);
+  const [isServiceInfoModalOpen, setServiceInfoModalOpen] = useState(false);
+
+  const { user } = useAuth();
 
   const { data: rate } = useFetchCurrency();
   const { data: invoiceScoreData } = useFetchInvoiceScore({
@@ -72,15 +71,13 @@ export default function NewLeadPage() {
   } = useFetchMessages({
     entityType: 'lead',
     entityId: id,
-    enabled: isOpen,
+    enabled: true,
   });
 
   const { sendMessage, editMessage, deleteMessage } = useMessengerActions({
     entityType: 'lead',
     entityId: id,
   });
-
-  useClickOutside(messengerRef, toggle, isOpen);
 
   const handleSave = (payload) => {
     updateLead.mutate(payload);
@@ -135,7 +132,7 @@ export default function NewLeadPage() {
             <button
               type="button"
               onClick={() => navigate('/leads')}
-              className="flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-[10px] transition-colors hover:bg-[var(--filter-input-bg)]"
+              className="flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-full border-transparent transition-colors bg-[var(--primary-input-bg)] hover:opacity-80"
               style={{ color: 'var(--primary-color)' }}
             >
               <ArrowLeft size={20} />
@@ -192,44 +189,25 @@ export default function NewLeadPage() {
 
             <ContractCard leadData={lead} invoiceScoreData={invoiceScoreData} />
 
-            {/* Messenger inline */}
-            <div
-              className="rounded-[20px] border border-[var(--primary-border-color)] bg-[var(--primary-bg)]"
-              style={{ minHeight: 400 }}
-            >
-              <div
-                className="border-b px-[20px] py-[14px]"
-                style={{ borderColor: 'var(--primary-border-color)' }}
-              >
-                <h3
-                  className="text-[17px] font-semibold"
-                  style={{ color: 'var(--primary-color)' }}
-                >
-                  Izohlar va harakatlar tarixi
-                </h3>
-              </div>
-              <div style={{ height: 500 }}>
-                <Messenger
-                  ref={messengerRef}
-                  messages={messages}
-                  hasToggleControl={false}
-                  isLoading={isMessagesLoading}
-                  onSendMessage={sendMessage}
-                  onEditMessage={editMessage}
-                  onDeleteMessage={deleteMessage}
-                  isOpen={true}
-                  entityType="lead"
-                  onLoadMore={fetchNextPage}
-                  hasMore={hasNextPage}
-                  isLoadingMore={isFetchingNextPage}
-                  embedded
-                />
-              </div>
+            {/* Messenger - New Shadcn Component */}
+            <div style={{ height: 600 }}>
+              <Messenger
+                messages={messages}
+                currentUserId={user?.SlpCode}
+                onSendMessage={sendMessage}
+                onEditMessage={editMessage}
+                onDeleteMessage={deleteMessage}
+                isLoading={isMessagesLoading}
+                onLoadMore={fetchNextPage}
+                hasMore={Boolean(hasNextPage)}
+                isLoadingMore={isFetchingNextPage}
+                replyEnabled={false}
+              />
             </div>
           </div>
 
           {/* Right column — sidebar */}
-          <div className="flex w-full flex-col gap-[20px] lg:w-[320px] lg:flex-shrink-0">
+          <div className="flex w-full flex-col gap-[20px] lg:w-[320px] lg:shrink-0">
             <SidebarPassport
               uploadValue={uploadValue}
               onFilesChange={setPassportFiles}
@@ -238,7 +216,13 @@ export default function NewLeadPage() {
               canEdit={canEditTab('all')}
             />
 
-            <SidebarServiceInfo lead={lead} executors={executors} />
+            <Button
+              variant="outline"
+              onClick={() => setServiceInfoModalOpen(true)}
+              className="w-full"
+            >
+              Xizmat ma'lumotlarini tahrirlash
+            </Button>
 
             <SidebarPurchaseHistory invoiceScoreData={invoiceScoreData} />
           </div>
@@ -250,6 +234,14 @@ export default function NewLeadPage() {
         onClose={() => setLimitHistoryModalOpen(false)}
         data={limitHistoryData}
         isLoading={limitHistoryLoading}
+      />
+
+      <ServiceInfoModal
+        isOpen={isServiceInfoModalOpen}
+        onClose={() => setServiceInfoModalOpen(false)}
+        lead={lead}
+        executors={executors}
+        onSave={(data) => updateLead.mutate(data)}
       />
     </>
   );

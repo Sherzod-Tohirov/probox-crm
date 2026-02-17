@@ -159,6 +159,9 @@ export const FIELD_LABELS = {
   comments: 'Izoh',
   closed: 'Sifatsiz',
   visit: 'Tashrif',
+  newTime: "Yangi o'zgarish vaqti",
+  consideringBumped: "O'ylab ko'rish",
+  consideringBumpedReason: "O'ylab ko'rish sababi",
 };
 
 export const STATUS_LABELS = {
@@ -198,6 +201,7 @@ export const DATETIME_FIELDS = new Set([
   'createdAt',
   'updated_at',
   'updatedAt',
+  'newTime',
 ]);
 
 // Pul maydonlari (1,000,000 formatda ko'rsatiladi)

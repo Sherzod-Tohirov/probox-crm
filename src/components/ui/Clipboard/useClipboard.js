@@ -14,17 +14,37 @@ export default function useClipboard(options = {}) {
           await navigator.clipboard.writeText(value);
           ok = true;
         } else {
+          // Fallback for older browsers without clipboard API
           const ta = document.createElement('textarea');
           ta.value = value;
           ta.style.position = 'fixed';
           ta.style.opacity = '0';
+          ta.style.pointerEvents = 'none';
           document.body.appendChild(ta);
+          ta.focus();
           ta.select();
-          document.execCommand('copy');
+          ta.setSelectionRange(0, ta.value.length);
+
+          // Use Selection API as fallback instead of deprecated execCommand
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(ta);
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          // Try clipboard API first, then fall back to execCommand as last resort
+          try {
+            await navigator.clipboard.writeText(value);
+            ok = true;
+          } catch {
+            // execCommand is deprecated but still needed for some older browsers
+            ok = document.execCommand('copy');
+          }
+
+          selection.removeAllRanges();
           document.body.removeChild(ta);
-          ok = true;
         }
-      } catch (_) {
+      } catch {
         ok = false;
       }
 
