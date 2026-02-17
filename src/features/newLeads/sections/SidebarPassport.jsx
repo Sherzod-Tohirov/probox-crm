@@ -43,14 +43,14 @@ export default function SidebarPassport({
             {images.map((img) => (
               <div
                 key={img.id}
-                className="group relative aspect-square overflow-hidden rounded-[10px] border border-[var(--primary-border-color)]"
+                className="group relative aspect-square overflow-hidden rounded-[10px] border border-(--primary-border-color)"
               >
                 {img.isPdf ? (
                   <a
                     href={img.pdfUrl || img.preview}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-full w-full items-center justify-center bg-[var(--filter-input-bg)] text-[12px] font-medium"
+                    className="flex h-full w-full items-center justify-center bg-(--filter-input-bg) text-[12px] font-medium"
                     style={{ color: 'var(--secondary-color)' }}
                   >
                     PDF
@@ -67,14 +67,24 @@ export default function SidebarPassport({
                   <button
                     type="button"
                     onClick={() => onDelete?.(img.id)}
-                    className="absolute right-[4px] top-[4px] flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded-full bg-red-500 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    className="absolute right-[4px] top-[4px] flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded-full text-[10px] opacity-0 transition-opacity group-hover:opacity-100"
+                    style={{
+                      backgroundColor: 'var(--danger-color)',
+                      color: 'var(--button-color)',
+                    }}
                   >
                     ✕
                   </button>
                 )}
                 {img.status === 'yuklanmoqda' && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <div className="h-[24px] w-[24px] animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ backgroundColor: 'var(--metric-pill-overlay-bg)' }}
+                  >
+                    <div
+                      className="h-[24px] w-[24px] animate-spin rounded-full border-2 border-t-transparent"
+                      style={{ borderColor: 'var(--primary-color)' }}
+                    />
                   </div>
                 )}
               </div>

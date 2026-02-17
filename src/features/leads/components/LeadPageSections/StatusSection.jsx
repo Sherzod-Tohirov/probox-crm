@@ -89,7 +89,7 @@ export default function StatusSection({ lead, canEdit, onSave }) {
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Row gutter={4}>
           <Col>
-            <Row direction="row" gutter={4}>
+            <Row direction="row" gutter={4} wrap>
               <Col>
                 <FormField
                   name="status"

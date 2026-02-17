@@ -26,6 +26,7 @@ export default function useFetchLeads(options = {}) {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     keepPreviousData: true,
+    staleTime: 60_000,
     retry: false,
     ...options.queryOptions,
   });

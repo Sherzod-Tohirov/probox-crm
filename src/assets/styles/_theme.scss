@@ -81,6 +81,11 @@
   --metric-pill-overlay-bg: #ffffff66;
   --success-chip-bg: #dff4e7;
   --success-chip-color: #1e9f56;
+  --payment-gauge-danger: #ef4444;
+  --payment-gauge-warning: #f97316;
+  --payment-gauge-caution: #eab308;
+  --payment-gauge-good: #22c55e;
+  --payment-gauge-excellent: #1cf271;
   --segmented-bg: #eef2f7;
   --segmented-active-bg: #ffffff;
   --segmented-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -129,7 +134,7 @@
   --success-color: #30916d;
 
   /* Info colors - Dark Mode */
-  --info-bg: rgb(56 189 248 / 15%); 
+  --info-bg: rgb(56 189 248 / 15%);
   --info-color: #38bdf8;
 
   // Warning colors
@@ -173,6 +178,11 @@
   --metric-pill-overlay-bg: #1f293799;
   --success-chip-bg: #173827;
   --success-chip-color: #65d59a;
+  --payment-gauge-danger: #f87171;
+  --payment-gauge-warning: #fb923c;
+  --payment-gauge-caution: #facc15;
+  --payment-gauge-good: #4ade80;
+  --payment-gauge-excellent: #34d399;
   --segmented-bg: #2a313d;
   --segmented-active-bg: #374254;
   --segmented-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);

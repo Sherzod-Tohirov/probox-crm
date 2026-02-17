@@ -1,7 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Copy } from 'lucide-react';
-import { useCallback } from 'react';
-
+import { Clipboard } from '@components/ui';
 export default function ReadOnlyField({
   label,
   value,
@@ -10,12 +8,6 @@ export default function ReadOnlyField({
   highlight,
   copyable,
 }) {
-  const handleCopy = useCallback(() => {
-    if (value && copyable) {
-      navigator.clipboard.writeText(String(value));
-    }
-  }, [value, copyable]);
-
   return (
     <div className={cn('flex flex-col gap-[4px]', className)}>
       <span
@@ -28,29 +20,29 @@ export default function ReadOnlyField({
         className={cn(
           'flex h-[40px] items-center gap-[8px] rounded-[10px] border px-[12px] text-[14px] font-medium',
           highlight
-            ? 'border-amber-400/50 bg-amber-400/10'
-            : 'border-[var(--primary-border-color)] bg-[var(--filter-input-bg)]'
+            ? ''
+            : 'border-[var(--primary-border-color)] bg-[var(--primary-input-bg)]'
         )}
-        style={{ color: highlight ? '#f59e0b' : 'var(--primary-color)' }}
+        style={
+          highlight
+            ? {
+                borderColor: 'var(--success-color)',
+                backgroundColor: 'var(--success-bg)',
+                color: 'var(--success-color)',
+              }
+            : { color: 'var(--primary-color)' }
+        }
       >
         {icon && (
           <span
-            className="flex-shrink-0"
+            className="shrink-0"
             style={{ color: 'var(--secondary-color)' }}
           >
             {icon}
           </span>
         )}
         <span className="flex-1 truncate">{value || '—'}</span>
-        {copyable && value && (
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex-shrink-0 cursor-pointer opacity-40 transition-opacity hover:opacity-80"
-          >
-            <Copy size={14} />
-          </button>
-        )}
+        {copyable && value && <Clipboard text={value} />}
       </div>
     </div>
   );
