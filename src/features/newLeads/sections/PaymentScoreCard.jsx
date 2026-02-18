@@ -216,7 +216,7 @@ function MetricCard({
     >
       <div className="flex items-start justify-between gap-[8px]">
         <div
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border"
+          className="flex h-[34px] w-[34px] items-center justify-center rounded-[8px] border"
           style={{
             color: iconColor,
             backgroundColor: 'var(--primary-bg)',
@@ -227,21 +227,21 @@ function MetricCard({
         </div>
         {badge ? (
           <span
-            className="rounded-[10px] px-[8px] py-[2px] text-[10px] font-semibold"
+            className="rounded-[6px] min-w-[44px] h-[22px] px-[8px] py-[2px] text-[12px] text-center font-semibold"
             style={badgeStyle}
           >
             {badge}
           </span>
         ) : null}
       </div>
-      <span
-        className={`truncate text-[17px] font-bold ${valueClassName || ''}`}
+      <p
+        className={`truncate text-[20px] leading-[28px] font-bold ${valueClassName || ''}`}
         style={{ color: valueColor }}
       >
         {value}
-      </span>
+      </p>
       <span
-        className="truncate text-[11px] leading-tight"
+        className="truncate text-[12px] leading-[16px]"
         style={{ color: labelColor }}
       >
         {label}

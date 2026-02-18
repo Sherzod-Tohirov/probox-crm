@@ -19,7 +19,7 @@ import LeadInfoCard from '@features/newLeads/sections/LeadInfoCard';
 import ContractCard from '@features/newLeads/sections/ContractCard';
 import SidebarPassport from '@features/newLeads/sections/SidebarPassport';
 import SidebarPurchaseHistory from '@features/newLeads/sections/SidebarPurchaseHistory';
-import ServiceInfoModal from '@features/newLeads/components/ServiceInfoModal';
+import SidebarServiceInfo from '@features/newLeads/sections/SidebarServiceInfo';
 
 export default function NewLeadPage() {
   const { id } = useParams();
@@ -29,7 +29,6 @@ export default function NewLeadPage() {
     isLoading,
     isError,
     error,
-    executors,
     updateLead,
     setPassportFiles,
     uploadValue,
@@ -40,7 +39,6 @@ export default function NewLeadPage() {
 
   const [isLimitHistoryModalOpen, setLimitHistoryModalOpen] = useState(false);
   const [enableFetchLimitHistory, setEnableFetchLimitHistory] = useState(false);
-  const [isServiceInfoModalOpen, setServiceInfoModalOpen] = useState(false);
 
   const { user } = useAuth();
 
@@ -125,9 +123,15 @@ export default function NewLeadPage() {
 
   return (
     <>
-      <div className="flex h-full w-full flex-col gap-[20px] overflow-y-auto p-[20px] lg:p-[28px]">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+      <div className="flex w-full flex-col gap-[20px]">
+        {/* Sticky Header */}
+        <div
+          className="sticky top-0 z-10 -mx-[6rem] flex shrink-0 items-center justify-between px-[6rem] py-[16px]"
+          style={{
+            background: 'var(--primary-bg)',
+            borderBottom: '1px solid var(--primary-border-color)',
+          }}
+        >
           <div className="flex items-center gap-[12px]">
             <button
               type="button"
@@ -216,13 +220,7 @@ export default function NewLeadPage() {
               canEdit={canEditTab('all')}
             />
 
-            <Button
-              variant="outline"
-              onClick={() => setServiceInfoModalOpen(true)}
-              className="w-full"
-            >
-              Xizmat ma'lumotlarini tahrirlash
-            </Button>
+            <SidebarServiceInfo lead={lead} leadId={id} />
 
             <SidebarPurchaseHistory invoiceScoreData={invoiceScoreData} />
           </div>
@@ -234,14 +232,6 @@ export default function NewLeadPage() {
         onClose={() => setLimitHistoryModalOpen(false)}
         data={limitHistoryData}
         isLoading={limitHistoryLoading}
-      />
-
-      <ServiceInfoModal
-        isOpen={isServiceInfoModalOpen}
-        onClose={() => setServiceInfoModalOpen(false)}
-        lead={lead}
-        executors={executors}
-        onSave={(data) => updateLead.mutate(data)}
       />
     </>
   );

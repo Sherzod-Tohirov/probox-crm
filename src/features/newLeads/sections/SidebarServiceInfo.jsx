@@ -1,13 +1,52 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/shadcn/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/shadcn/ui/tabs';
+import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn/ui/card';
 import { Select, SelectOption } from '@/components/shadcn/ui/select';
 import { Input } from '@/components/shadcn/ui/input';
-import { useState } from 'react';
+import { Button } from '@/components/shadcn/ui/button';
+import useAuth from '@hooks/useAuth';
+import useOperator1Form from '@/features/leads/hooks/useOperator1Form';
+import useSellerForm from '@/features/leads/hooks/useSellerForm';
+import useScoringForm from '@/features/leads/hooks/useScoringForm';
+import { useSelectOptions } from '@/features/leads/hooks/useSelectOptions';
+import useFetchBranches from '@/hooks/data/useFetchBranches';
+import { normalizeDate } from '@/features/leads/utils/date';
+import moment from 'moment';
+
+const TABS = [
+  { key: 'operator', label: 'Operator' },
+  { key: 'seller', label: 'Sotuvchi' },
+  { key: 'scoring', label: 'Tekshiruv' },
+];
+
+const TAB_TO_ROLE = {
+  operator: ['Operator1', 'OperatorM'],
+  seller: ['Seller'],
+  scoring: ['Scoring'],
+};
+
+const ROLE_TO_TAB = {
+  Operator1: 'operator',
+  OperatorM: 'operator',
+  Seller: 'seller',
+  Scoring: 'scoring',
+};
+
+function canEditTabRole(userRole, tabKey) {
+  return (TAB_TO_ROLE[tabKey] ?? []).includes(userRole);
+}
 
 function LabeledField({ label, children }) {
   return (
-    <div className="flex flex-col gap-[4px]">
-      <span className="text-[12px] font-medium" style={{ color: 'var(--secondary-color)' }}>
+    <div className="flex w-full flex-col gap-[4px]">
+      <span
+        className="text-[12px] font-medium"
+        style={{ color: 'var(--secondary-color)' }}
+      >
         {label}
       </span>
       {children}
@@ -15,94 +54,485 @@ function LabeledField({ label, children }) {
   );
 }
 
-export default function SidebarServiceInfo({ lead, executors }) {
-  const [activeTab, setActiveTab] = useState('operator');
+function OperatorFields({ leadId, leadData, canEdit }) {
+  const { form, handleSubmit, isSubmitting } = useOperator1Form(
+    leadId,
+    leadData
+  );
+  const { register, reset } = form;
+  const { data: branches } = useFetchBranches();
+  const { callCountOptions, rejectReasonOptions } = {
+    ...useSelectOptions('operator1'),
+    ...useSelectOptions('common'),
+  };
+
+  useEffect(() => {
+    if (leadData) {
+      reset({
+        called: leadData.called ?? false,
+        callTime: leadData.callTime ?? '',
+        answered: leadData.answered ?? false,
+        noAnswerCount: leadData.noAnswerCount ?? '',
+        callCount: leadData.callCount ?? '',
+        interested: leadData.interested ?? '',
+        rejectionReason: leadData.rejectionReason ?? '',
+        jshshir: leadData.jshshir ?? '',
+        passportId: leadData.passportId ?? '',
+        meetingHappened: leadData.meetingHappened ?? false,
+        meetingDate: normalizeDate(leadData.meetingDate),
+        branch: leadData.branch ?? '',
+      });
+    }
+  }, [leadData, reset]);
+
+  const branchOptions = (branches ?? []).map((b) => ({
+    value: b._id || b.id,
+    label: b.name,
+  }));
+
+  return (
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
+      <LabeledField label="Umumiy qo'ng'iroqlar soni">
+        <Select
+          {...register('callCount')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {(callCountOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Javob berilmagan qo'ng'iroqlar">
+        <Select
+          {...register('noAnswerCount')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {(callCountOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Rad etish sababi">
+        <Select
+          {...register('rejectionReason')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {(rejectReasonOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="JSHSHIR">
+        <Input
+          {...register('jshshir')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Passport ID">
+        <Input
+          {...register('passportId')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Uchrashuv sanasi">
+        <Input
+          {...register('meetingDate')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="kk.oo.yyyy"
+        />
+      </LabeledField>
+      <LabeledField label="Filial">
+        <Select {...register('branch')} disabled={!canEdit} className="w-full">
+          <SelectOption value="">Tanlang</SelectOption>
+          {branchOptions.map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      {canEdit && (
+        <Button
+          type="submit"
+          size="sm"
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+        </Button>
+      )}
+    </form>
+  );
+}
+
+function SellerFields({ leadId, leadData, canEdit }) {
+  const { form, handleSubmit, isSubmitting } = useSellerForm(leadId, leadData);
+  const { register, reset } = form;
+  const { sellerOptions, sellTypeOptions, branchOptions } =
+    useSelectOptions('seller');
+  const { rejectReasonOptions } = useSelectOptions('common');
+
+  useEffect(() => {
+    if (leadData) {
+      reset({
+        meetingConfirmed: leadData.meetingConfirmed || false,
+        meetingConfirmedDate: leadData.meetingConfirmedDate
+          ? moment(leadData.meetingConfirmedDate, 'YYYY.MM.DD').format(
+              'DD.MM.YYYY'
+            )
+          : '',
+        branch2: leadData.branch2 ?? '',
+        seller: leadData.seller === null ? 'null' : (leadData.seller ?? ''),
+        purchase: leadData.purchase || false,
+        rejectionReason2: leadData.rejectionReason2 || '',
+        purchaseDate: leadData.purchaseDate
+          ? moment(leadData.purchaseDate, 'YYYY.MM.DD').format('DD.MM.YYYY')
+          : '',
+        saleType: leadData.saleType || '',
+        passportId: leadData.passportId || '',
+        jshshir: leadData.jshshir || '',
+        conditionFilter: 'all',
+        searchBranchFilter: 'all',
+      });
+    }
+  }, [leadData, reset]);
+
+  return (
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
+      <LabeledField label="Uchrashuv tasdiqlandi">
+        <Select
+          {...register('meetingConfirmed')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          <SelectOption value="true">Ha</SelectOption>
+          <SelectOption value="false">Yo'q</SelectOption>
+        </Select>
+      </LabeledField>
+      <LabeledField label="Tasdiqlangan sana">
+        <Input
+          {...register('meetingConfirmedDate')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="kk.oo.yyyy"
+        />
+      </LabeledField>
+      <LabeledField label="Filial">
+        <Select {...register('branch2')} disabled={!canEdit} className="w-full">
+          <SelectOption value="">Tanlang</SelectOption>
+          {(branchOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Sotuvchi">
+        <Select {...register('seller')} disabled={!canEdit} className="w-full">
+          <SelectOption value="null">—</SelectOption>
+          {(sellerOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Savdo turi">
+        <Select
+          {...register('saleType')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          {(sellTypeOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Rad etish sababi">
+        <Select
+          {...register('rejectionReason2')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {(rejectReasonOptions ?? []).map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="JSHSHIR">
+        <Input
+          {...register('jshshir')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Passport ID">
+        <Input
+          {...register('passportId')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      {canEdit && (
+        <Button
+          type="submit"
+          size="sm"
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+        </Button>
+      )}
+    </form>
+  );
+}
+
+function ScoringFields({ leadId, leadData, canEdit }) {
+  const { form, handleSubmit, isSubmitting } = useScoringForm(leadId, leadData);
+  const { register, reset } = form;
+
+  useEffect(() => {
+    if (leadData) {
+      reset({
+        clientFullName: leadData.clientFullName || '',
+        birthDate: leadData.birthDate
+          ? moment(
+              leadData.birthDate,
+              ['DD.MM.YYYY', 'YYYY.MM.DD', moment.ISO_8601],
+              true
+            ).format('DD.MM.YYYY')
+          : '',
+        age: leadData.age ?? '',
+        score: leadData.score ?? '',
+        katm: leadData.katm ?? '',
+        katmPayment: leadData.katmPayment ?? '',
+        paymentHistory: leadData.paymentHistory || '',
+        mib: leadData.mib ?? '',
+        mibIrresponsible: leadData.mibIrresponsible ?? '',
+        aliment: leadData.aliment ?? '',
+        officialSalary: leadData.officialSalary ?? '',
+        finalLimit: leadData.finalLimit ?? '',
+        finalPercentage: leadData.finalPercentage ?? '',
+        acceptedReason: leadData.acceptedReason || '',
+      });
+    }
+  }, [leadData, reset]);
+
+  const paymentHistoryOptions = [
+    { value: '0 Kun', label: '0 Kun' },
+    { value: '30 kun AQ', label: '30 kun AQ' },
+    { value: 'Keyinga oy AQ', label: 'Keyinga oy AQ' },
+    { value: '31-60 kun AQ', label: '31-60 kun AQ' },
+    { value: '61-90 kun AQ', label: '61-90 kun AQ' },
+    { value: '91 kun AQ', label: '91 kun AQ' },
+    { value: 'SUD', label: 'SUD' },
+  ];
+
+  const acceptedReasonOptions = [
+    { value: 'Yaxshi mijoz', label: 'Yaxshi mijoz' },
+    { value: 'Unduruv ruxsat bergan', label: 'Unduruv ruxsat bergan' },
+    { value: 'Limit chiqdi', label: 'Limit chiqdi' },
+  ];
+
+  return (
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
+      <LabeledField label="Mijoz F.I.O">
+        <Input
+          {...register('clientFullName')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Tug'ilgan sana">
+        <Input
+          {...register('birthDate')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="kk.oo.yyyy"
+        />
+      </LabeledField>
+      <LabeledField label="Ball (score)">
+        <Input
+          type="number"
+          {...register('score')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="KATM to'lov">
+        <Input
+          {...register('katmPayment')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="To'lov tarixi">
+        <Select
+          {...register('paymentHistory')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {paymentHistoryOptions.map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      <LabeledField label="Rasmiy oylik">
+        <Input
+          {...register('officialSalary')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="MIB">
+        <Input
+          {...register('mib')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Aliment">
+        <Input
+          {...register('aliment')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Yakuniy foiz">
+        <Input
+          type="number"
+          {...register('finalPercentage')}
+          disabled={!canEdit}
+          className="w-full"
+          placeholder="—"
+        />
+      </LabeledField>
+      <LabeledField label="Qabul qilingan sabab">
+        <Select
+          {...register('acceptedReason')}
+          disabled={!canEdit}
+          className="w-full"
+        >
+          <SelectOption value="">Tanlang</SelectOption>
+          {acceptedReasonOptions.map((o) => (
+            <SelectOption key={o.value} value={o.value}>
+              {o.label}
+            </SelectOption>
+          ))}
+        </Select>
+      </LabeledField>
+      {canEdit && (
+        <Button
+          type="submit"
+          size="sm"
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+        </Button>
+      )}
+    </form>
+  );
+}
+
+export default function SidebarServiceInfo({ lead, leadId }) {
+  const { user } = useAuth();
+  const userRole = user?.U_role || user?.role;
+
+  const canEditOperator = canEditTabRole(userRole, 'operator');
+  const canEditSeller = canEditTabRole(userRole, 'seller');
+  const canEditScoring = canEditTabRole(userRole, 'scoring');
+
+  const defaultTab = ROLE_TO_TAB[userRole] ?? 'operator';
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Xizmat ma'lumotlari</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-[14px]">
-        <Tabs value={activeTab} onChange={setActiveTab}>
-          <TabsList className="w-full">
-            <TabsTrigger value="operator" className="flex-1">Operator</TabsTrigger>
-            <TabsTrigger value="seller" className="flex-1">Sotuvchi</TabsTrigger>
-            <TabsTrigger value="scoring" className="flex-1">Tekshiruvchi</TabsTrigger>
-          </TabsList>
+      <CardContent className="flex flex-col gap-[16px]">
+        {/* Radio group */}
+        <div className="flex items-center gap-[16px]">
+          {TABS.map(({ key, label }) => (
+            <label
+              key={key}
+              className="flex cursor-pointer items-center gap-[6px]"
+            >
+              <input
+                type="radio"
+                name="serviceTab"
+                checked={activeTab === key}
+                onChange={() => setActiveTab(key)}
+                className="h-[15px] w-[15px] cursor-pointer accent-(--button-bg)"
+              />
+              <span
+                className="text-[13px] font-medium"
+                style={{ color: 'var(--primary-color)' }}
+              >
+                {label}
+              </span>
+            </label>
+          ))}
+        </div>
 
-          <TabsContent value="operator">
-            <div className="flex flex-col gap-[12px]">
-              <div className="grid grid-cols-2 gap-[10px]">
-                <LabeledField label="Uchrashuv tasdiqlandimi">
-                  <Select disabled value={lead?.meetingConfirmed ? 'true' : ''}>
-                    <SelectOption value="">Tanlang</SelectOption>
-                    <SelectOption value="true">Ha</SelectOption>
-                    <SelectOption value="false">Yo'q</SelectOption>
-                  </Select>
-                </LabeledField>
-                <LabeledField label="Vaqti">
-                  <Input type="text" disabled value={lead?.meetingDate || ''} placeholder="kk.oo.yyyy | 00:00" />
-                </LabeledField>
-              </div>
-              <LabeledField label="Filial">
-                <Select disabled value={lead?.branch || ''}>
-                  <SelectOption value="">Tanlang</SelectOption>
-                </Select>
-              </LabeledField>
-              <LabeledField label="Sotuvchi">
-                <Select disabled value={lead?.seller || ''}>
-                  <SelectOption value="">Tanlang</SelectOption>
-                  {(executors || [])
-                    .filter((e) => e?.U_role === 'Seller')
-                    .map((e) => (
-                      <SelectOption key={e.SlpCode} value={String(e.SlpCode)}>
-                        {e.SlpName}
-                      </SelectOption>
-                    ))}
-                </Select>
-              </LabeledField>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="seller">
-            <div className="flex flex-col gap-[12px]">
-              <LabeledField label="Uchrashuv tasdiqlandimi">
-                <Select disabled value={lead?.meetingConfirmed ? 'true' : ''}>
-                  <SelectOption value="">Tanlang</SelectOption>
-                  <SelectOption value="true">Ha</SelectOption>
-                  <SelectOption value="false">Yo'q</SelectOption>
-                </Select>
-              </LabeledField>
-              <LabeledField label="Savdo turi">
-                <Select disabled value={lead?.saleType || ''}>
-                  <SelectOption value="">Tanlang</SelectOption>
-                </Select>
-              </LabeledField>
-              <LabeledField label="Xarid amalga oshdimi">
-                <Select disabled value={lead?.purchase ? 'true' : ''}>
-                  <SelectOption value="">Tanlang</SelectOption>
-                  <SelectOption value="true">Ha</SelectOption>
-                  <SelectOption value="false">Yo'q</SelectOption>
-                </Select>
-              </LabeledField>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="scoring">
-            <div className="flex flex-col gap-[12px]">
-              <LabeledField label="Skoring natija">
-                <Input type="text" disabled value={lead?.scoringResult || ''} placeholder="—" />
-              </LabeledField>
-              <LabeledField label="KATM">
-                <Input type="text" disabled value={lead?.katm || ''} placeholder="—" />
-              </LabeledField>
-              <LabeledField label="MIB">
-                <Input type="text" disabled value={lead?.mib || ''} placeholder="—" />
-              </LabeledField>
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* Tab content */}
+        {activeTab === 'operator' && (
+          <OperatorFields
+            leadId={leadId}
+            leadData={lead}
+            canEdit={canEditOperator}
+          />
+        )}
+        {activeTab === 'seller' && (
+          <SellerFields
+            leadId={leadId}
+            leadData={lead}
+            canEdit={canEditSeller}
+          />
+        )}
+        {activeTab === 'scoring' && (
+          <ScoringFields
+            leadId={leadId}
+            leadData={lead}
+            canEdit={canEditScoring}
+          />
+        )}
       </CardContent>
     </Card>
   );
