@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Cog,
   CornerDownLeft,
@@ -219,7 +220,7 @@ const MessengerAudioPlayer = ({ source, duration, isOwn = false }) => {
 
   return (
     <div
-      className={cn('w-full max-w-[360px] space-y-[8px]', isOwn && 'ml-auto')}
+      className={cn('w-full max-w-[420px] space-y-[8px]', isOwn && 'ml-auto')}
     >
       <audio
         controls
@@ -390,7 +391,7 @@ const MessengerMessage = ({
         )}
       </div>
 
-      <div className={cn('min-w-0 max-w-[75%]', isOwn && 'text-right')}>
+      <div className={cn('min-w-0 w-full', isOwn && 'text-right')}>
         <div
           className={cn(
             'mb-[2px] flex flex-wrap items-center gap-x-[8px] gap-y-[2px]',
@@ -646,44 +647,59 @@ const MessengerMessage = ({
                 isOwn && 'justify-end'
               )}
             >
-              {isDeleteConfirmOpen ? (
-                <div
-                  className="absolute bottom-full right-0 z-20 mb-[6px] w-[190px] rounded-[10px] border p-[8px] shadow-lg"
-                  style={{
-                    backgroundColor: 'var(--primary-bg)',
-                    borderColor: 'var(--primary-border-color)',
-                  }}
-                >
-                  <p
-                    className="text-[12px] text-left"
-                    style={{ color: 'var(--primary-color)' }}
+              <AnimatePresence>
+                {isDeleteConfirmOpen ? (
+                  <motion.div
+                    key="delete-confirm"
+                    initial={{ opacity: 0, scale: 0.85, y: 6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.85, y: 6 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    className="absolute bottom-full right-0 z-20 mb-[6px] w-[190px] rounded-[10px] border p-[8px] shadow-lg"
+                    style={{
+                      backgroundColor: 'var(--primary-bg)',
+                      borderColor: 'var(--primary-border-color)',
+                      transformOrigin: 'bottom right',
+                    }}
                   >
-                    Xabarni o'chirasizmi?
-                  </p>
-                  <div className="mt-[6px] flex gap-[6px]">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={isDeleting}
-                      className="grow h-[26px] px-[8px] text-[11px]"
-                      onClick={onCancelDelete}
+                    <p
+                      className="text-[12px] text-left"
+                      style={{ color: 'var(--primary-color)' }}
                     >
-                      Yo'q
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      disabled={isDeleting}
-                      className="grow h-[26px] px-[8px] text-[11px]"
-                      onClick={onConfirmDelete}
-                    >
-                      {isDeleting ? "O'chirilmoqda..." : 'Ha'}
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
+                      Xabarni o'chirasizmi?
+                    </p>
+                    <div className="mt-[6px] flex gap-[6px]">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isDeleting}
+                        className="grow h-[26px] px-[8px] text-[11px]"
+                        onClick={onCancelDelete}
+                      >
+                        Yo'q
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        disabled={isDeleting}
+                        className="grow h-[26px] gap-[4px] px-[8px] text-[11px]"
+                        onClick={onConfirmDelete}
+                      >
+                        {isDeleting ? (
+                          <>
+                            <Loader2 size={11} className="animate-spin" />
+                            O'chirilmoqda...
+                          </>
+                        ) : (
+                          'Ha'
+                        )}
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
               {!isOwn ? (
                 <Button
@@ -1054,72 +1070,89 @@ export const Messenger = ({
             className="divide-y divide-slate-200"
             style={{ borderColor: 'var(--primary-border-color)' }}
           >
-            {sortedMessages.map((message, index) => {
-              const messageId = getMessageId(message);
-              const messageText = getMessageText(message);
-              const senderCode = getSenderCode(message);
-              const isOwnMessage =
-                senderCode != null && currentUserId != null
-                  ? String(senderCode) === String(currentUserId)
-                  : message?.senderId === currentUserId;
-              const canManageMessage =
-                isOwnMessage &&
-                !isSystemMessage(message) &&
-                !message?.action &&
-                isTextMessage(message);
+            <AnimatePresence initial={false}>
+              {sortedMessages.map((message, index) => {
+                const messageId = getMessageId(message);
+                const messageText = getMessageText(message);
+                const senderCode = getSenderCode(message);
+                const isOwnMessage =
+                  senderCode != null && currentUserId != null
+                    ? String(senderCode) === String(currentUserId)
+                    : message?.senderId === currentUserId;
+                const canManageMessage =
+                  isOwnMessage &&
+                  !isSystemMessage(message) &&
+                  !message?.action &&
+                  isTextMessage(message);
 
-              return (
-                <MessengerMessage
-                  key={messageId || `${getMessageTimestamp(message)}-${index}`}
-                  message={message}
-                  currentUserId={currentUserId}
-                  executorsMap={executorsMap}
-                  replyEnabled={replyEnabled}
-                  onReply={onReply}
-                  isEditing={editingMessageId === messageId}
-                  editingText={editingText}
-                  isSavingEdit={isSavingEdit}
-                  isDeleting={deletingMessageId === messageId}
-                  onEditingTextChange={setEditingText}
-                  onCancelEdit={() => {
-                    setEditingMessageId(null);
-                    setEditingText('');
-                    setDeleteConfirmMessageId(null);
-                  }}
-                  onSaveEdit={handleEditSave}
-                  onStartEdit={
-                    onEditMessage &&
-                    messageId &&
-                    canManageMessage &&
-                    !deletingMessageId
-                      ? () => {
-                          setDeleteConfirmMessageId(null);
-                          setEditingMessageId(messageId);
-                          setEditingText(messageText || '');
-                        }
-                      : undefined
-                  }
-                  isDeleteConfirmOpen={deleteConfirmMessageId === messageId}
-                  onCancelDelete={() => setDeleteConfirmMessageId(null)}
-                  onRequestDelete={
-                    onDeleteMessage &&
-                    messageId &&
-                    canManageMessage &&
-                    !deletingMessageId
-                      ? () => setDeleteConfirmMessageId(messageId)
-                      : undefined
-                  }
-                  onConfirmDelete={
-                    onDeleteMessage &&
-                    messageId &&
-                    canManageMessage &&
-                    !deletingMessageId
-                      ? () => handleDeleteMessage(messageId)
-                      : undefined
-                  }
-                />
-              );
-            })}
+                const msgKey =
+                  messageId || `${getMessageTimestamp(message)}-${index}`;
+                const staggerDelay = Math.min(index * 0.04, 0.3);
+                return (
+                  <motion.div
+                    key={msgKey}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6, transition: { duration: 0.18 } }}
+                    transition={{
+                      duration: 0.25,
+                      delay: staggerDelay,
+                      ease: 'easeOut',
+                    }}
+                  >
+                    <MessengerMessage
+                      message={message}
+                      currentUserId={currentUserId}
+                      executorsMap={executorsMap}
+                      replyEnabled={replyEnabled}
+                      onReply={onReply}
+                      isEditing={editingMessageId === messageId}
+                      editingText={editingText}
+                      isSavingEdit={isSavingEdit}
+                      isDeleting={deletingMessageId === messageId}
+                      onEditingTextChange={setEditingText}
+                      onCancelEdit={() => {
+                        setEditingMessageId(null);
+                        setEditingText('');
+                        setDeleteConfirmMessageId(null);
+                      }}
+                      onSaveEdit={handleEditSave}
+                      onStartEdit={
+                        onEditMessage &&
+                        messageId &&
+                        canManageMessage &&
+                        !deletingMessageId
+                          ? () => {
+                              setDeleteConfirmMessageId(null);
+                              setEditingMessageId(messageId);
+                              setEditingText(messageText || '');
+                            }
+                          : undefined
+                      }
+                      isDeleteConfirmOpen={deleteConfirmMessageId === messageId}
+                      onCancelDelete={() => setDeleteConfirmMessageId(null)}
+                      onRequestDelete={
+                        onDeleteMessage &&
+                        messageId &&
+                        canManageMessage &&
+                        !deletingMessageId
+                          ? () => setDeleteConfirmMessageId(messageId)
+                          : undefined
+                      }
+                      onConfirmDelete={
+                        onDeleteMessage &&
+                        messageId &&
+                        canManageMessage &&
+                        !deletingMessageId
+                          ? () => handleDeleteMessage(messageId)
+                          : undefined
+                      }
+                    />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         )}
       </div>
