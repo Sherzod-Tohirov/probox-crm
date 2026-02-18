@@ -355,8 +355,8 @@ const MessengerMessage = ({
       }
     : isOwn
       ? {
-          backgroundColor: 'var(--info-bg)',
-          borderColor: 'var(--info-color)',
+          backgroundColor: 'color-mix(in srgb, #22c55e 12%, transparent)',
+          borderColor: 'color-mix(in srgb, #22c55e 40%, transparent)',
         }
       : {
           backgroundColor: 'var(--filter-input-bg)',
@@ -390,7 +390,7 @@ const MessengerMessage = ({
         )}
       </div>
 
-      <div className={cn('min-w-0 flex-1', isOwn && 'text-right')}>
+      <div className={cn('min-w-0 max-w-[75%]', isOwn && 'text-right')}>
         <div
           className={cn(
             'mb-[2px] flex flex-wrap items-center gap-x-[8px] gap-y-[2px]',
@@ -655,18 +655,18 @@ const MessengerMessage = ({
                   }}
                 >
                   <p
-                    className="text-[12px]"
+                    className="text-[12px] text-left"
                     style={{ color: 'var(--primary-color)' }}
                   >
                     Xabarni o'chirasizmi?
                   </p>
-                  <div className="mt-[6px] flex justify-end gap-[6px]">
+                  <div className="mt-[6px] flex gap-[6px]">
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       disabled={isDeleting}
-                      className="h-[26px] px-[8px] text-[11px]"
+                      className="grow h-[26px] px-[8px] text-[11px]"
                       onClick={onCancelDelete}
                     >
                       Yo'q
@@ -676,17 +676,10 @@ const MessengerMessage = ({
                       variant="destructive"
                       size="sm"
                       disabled={isDeleting}
-                      className="h-[26px] min-w-[74px] justify-center px-[8px] text-[11px]"
+                      className="grow h-[26px] px-[8px] text-[11px]"
                       onClick={onConfirmDelete}
                     >
-                      {isDeleting ? (
-                        <>
-                          <Loader2 size={12} className="animate-spin" />
-                          Ha
-                        </>
-                      ) : (
-                        'Ha'
-                      )}
+                      {isDeleting ? "O'chirilmoqda..." : 'Ha'}
                     </Button>
                   </div>
                 </div>
@@ -787,6 +780,8 @@ export const Messenger = ({
   const previousLengthRef = useRef(0);
   const loadMoreScrollStateRef = useRef(null);
   const isLoadMorePendingRef = useRef(false);
+  const deleteScrollStateRef = useRef(null);
+  const isSendingRef = useRef(false);
 
   const sortedMessages = useMemo(() => {
     const safeMessages = Array.isArray(messages)
@@ -815,9 +810,22 @@ export const Messenger = ({
       return;
     }
 
+    if (deleteScrollStateRef.current) {
+      const prevState = deleteScrollStateRef.current;
+      const heightDiff = node.scrollHeight - prevState.scrollHeight;
+      node.scrollTop = Math.max(0, prevState.scrollTop + heightDiff);
+      deleteScrollStateRef.current = null;
+      previousLengthRef.current = sortedMessages.length;
+      return;
+    }
+
     const isFirstPaint = previousLengthRef.current === 0;
-    const newMessageAdded = sortedMessages.length > previousLengthRef.current;
-    if (isFirstPaint || newMessageAdded) {
+    const messageCountIncreased =
+      sortedMessages.length > previousLengthRef.current;
+    const shouldScrollToBottom =
+      isFirstPaint || (messageCountIncreased && isSendingRef.current);
+
+    if (shouldScrollToBottom) {
       requestAnimationFrame(() => {
         node.scrollTo({
           top: node.scrollHeight,
@@ -845,6 +853,7 @@ export const Messenger = ({
 
     try {
       setIsSendingMessage(true);
+      isSendingRef.current = true;
 
       if (selectedFile && onSendFile) {
         await onSendFile(selectedFile);
@@ -863,6 +872,9 @@ export const Messenger = ({
       console.error('Message send error:', error);
     } finally {
       setIsSendingMessage(false);
+      setTimeout(() => {
+        isSendingRef.current = false;
+      }, 1000);
     }
   }, [
     inputValue,
@@ -900,9 +912,17 @@ export const Messenger = ({
 
       try {
         setDeletingMessageId(messageId);
+        const node = messagesContainerRef.current;
+        if (node) {
+          deleteScrollStateRef.current = {
+            scrollTop: node.scrollTop,
+            scrollHeight: node.scrollHeight,
+          };
+        }
         await onDeleteMessage(messageId);
       } catch (error) {
         console.error('Message delete error:', error);
+        deleteScrollStateRef.current = null;
       } finally {
         setDeletingMessageId((prev) => (prev === messageId ? null : prev));
         setDeleteConfirmMessageId((prev) => (prev === messageId ? null : prev));
@@ -1031,7 +1051,7 @@ export const Messenger = ({
           </div>
         ) : (
           <div
-            className="divide-y"
+            className="divide-y divide-slate-200"
             style={{ borderColor: 'var(--primary-border-color)' }}
           >
             {sortedMessages.map((message, index) => {
