@@ -228,14 +228,12 @@ export default function Leads() {
         return {
           backgroundColor: isDark
             ? 'rgba(255, 200, 100, 0.25)'
-            : 'rgba(255, 245, 180, 0.6)',
+            : 'rgba(255, 245, 180, 0.35)',
         };
       }
       if (row?.status === 'Missed') {
         return {
-          backgroundColor: isDark
-            ? 'rgba(220, 60, 60, 0.3)'
-            : 'rgba(255, 150, 150, 0.6)',
+          backgroundColor: isDark ? '#ffcbcb66' : '#ffcbcb66',
         };
       }
     },
