@@ -192,7 +192,56 @@ export default function Leads() {
   }, [leadsTableColumns, visibleColumns]);
 
   // Highlight new leads briefly and refetch on socket event
-  const [highlighted, setHighlighted] = useState({}); // { [id]: true }
+  const [highlighted, setHighlighted] = useState({});
+
+  const isDark = currentTheme === 'dark';
+
+  const getRowStyles = useCallback(
+    (row) => {
+      if (row?.id === currentLead?.id) {
+        return {
+          backgroundColor: isDark
+            ? 'rgba(222, 216, 216, 0.15)'
+            : 'rgba(231, 231, 231, 0.78)',
+        };
+      }
+      if (highlighted[row?.id]) {
+        return {
+          backgroundColor: isDark
+            ? 'rgba(255, 220, 130, 0.25)'
+            : 'rgba(255, 245, 200, 0.9)',
+          transition: 'background-color 0.8s ease',
+        };
+      }
+      if (
+        ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS.includes(role) &&
+        row.seen === false &&
+        row.status === 'Returned'
+      ) {
+        return {
+          backgroundColor: isDark
+            ? 'rgba(255, 100, 100, 0.2)'
+            : 'rgba(255, 200, 200, 0.5)',
+        };
+      }
+      if (row?.consideringBumped) {
+        return {
+          backgroundColor: isDark
+            ? 'rgba(255, 200, 100, 0.25)'
+            : 'rgba(255, 245, 180, 0.6)',
+        };
+      }
+      if (row?.status === 'Missed') {
+        return {
+          backgroundColor: isDark
+            ? 'rgba(220, 60, 60, 0.3)'
+            : 'rgba(255, 150, 150, 0.6)',
+        };
+      }
+    },
+    [isDark, currentLead?.id, highlighted, role]
+  );
+
   useEffect(() => {
     const onNew = (e) => {
       const records = e?.detail?.records;
@@ -269,42 +318,7 @@ export default function Leads() {
             onRowClick={handleRowClick}
             containerClass={tableDensityClass}
             rowNumberOffset={currentPage * pageSize}
-            getRowStyles={(row) => {
-              const isDark = currentTheme === 'dark';
-              if (row?.id === currentLead?.id) {
-                return {
-                  backgroundColor: isDark
-                    ? 'rgba(222, 216, 216, 0.15)'
-                    : 'rgba(231, 231, 231, 0.78)',
-                };
-              }
-              if (highlighted[row?.id]) {
-                return {
-                  backgroundColor: isDark
-                    ? 'rgba(255, 220, 130, 0.25)'
-                    : 'rgba(255, 245, 200, 0.9)',
-                  transition: 'background-color 0.8s ease',
-                };
-              }
-
-              if (ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS.includes(role)) {
-                if (row.seen === false && row.status === 'Returned') {
-                  return {
-                    backgroundColor: isDark
-                      ? 'rgba(255, 100, 100, 0.2)'
-                      : 'rgba(255, 200, 200, 0.5)',
-                  };
-                }
-              }
-
-              if(row?.consideringBumped) {
-                return {
-                  backgroundColor: isDark
-                    ? 'rgba(255, 200, 100, 0.25)'
-                    : 'rgba(255, 245, 180, 0.6)',
-                };
-              }
-            }}
+            getRowStyles={getRowStyles}
           />
         </Col>
       </Row>
