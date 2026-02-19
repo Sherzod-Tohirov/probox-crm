@@ -8,14 +8,7 @@ import useMessengerActions from '@hooks/useMessengerActions';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
 import { statusOptions } from '@/features/leads/utils/options';
 import { Messenger } from '@/components/shadcn/ui/messenger';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/shadcn/ui/dialog';
+import { Modal } from '@components/ui';
 import { Button } from '@/components/shadcn/ui/button';
 import { Input } from '@/components/shadcn/ui/input';
 import { Select, SelectOption } from '@/components/shadcn/ui/select';
@@ -42,11 +35,15 @@ function firstDefined(source, keys) {
 }
 
 function normalizeInboundCallPayload(rawRecord) {
+  // Unwrap notification wrapper produced by normalizeInboundCallNotification
+  const source =
+    rawRecord?.type === 'inboundCall' && rawRecord?.data
+      ? rawRecord.data
+      : rawRecord;
+
   const merged = {
-    ...(rawRecord?.lead && typeof rawRecord.lead === 'object'
-      ? rawRecord.lead
-      : {}),
-    ...(rawRecord || {}),
+    ...(source?.lead && typeof source.lead === 'object' ? source.lead : {}),
+    ...(source || {}),
   };
 
   const leadId = firstDefined(merged, [
@@ -213,7 +210,7 @@ export default function InboundCallLeadModal() {
         .filter((record) => record?.leadId)
         .filter((record) => belongsToCurrentUser(record, user));
 
-      if (!recordsForCurrentUser.length) return;
+      // if (!recordsForCurrentUser.length) return;
 
       const nextInboundLead =
         recordsForCurrentUser[recordsForCurrentUser.length - 1];
@@ -260,170 +257,156 @@ export default function InboundCallLeadModal() {
   }, [inboundLead, reset]);
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          handleClose();
-        }
-      }}
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Kiruvchi qo'ng'iroq uchun tezkor lead oynasi"
+      size="lg"
+      className="w-[96vw] max-w-[1080px] max-h-[94vh]"
     >
-      <DialogContent
-        onClose={handleClose}
-        className="w-[96vw] max-w-[1080px] max-h-[94vh]"
-      >
-        <DialogHeader>
-          <DialogTitle>Kiruvchi qo'ng'iroq uchun tezkor lead oynasi</DialogTitle>
-          <DialogDescription>
-            Lead: {leadId || "Noma'lum"} • Operator: {user?.SlpCode ?? '—'}
-          </DialogDescription>
-        </DialogHeader>
+      <form onSubmit={onSubmit} className="flex flex-col gap-[18px]">
+        <p className="text-[12px]" style={{ color: 'var(--secondary-color)' }}>
+          Lead: {leadId || "Noma'lum"} • Operator: {user?.SlpCode ?? '—'}
+        </p>
+        <div className="grid gap-[12px] md:grid-cols-2 xl:grid-cols-3">
+          <FormField label="Isim familya">
+            <Input
+              type="text"
+              placeholder="Mijoz ism familiyasi"
+              {...register('clientFullName')}
+            />
+          </FormField>
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-[18px]">
-          <div className="grid gap-[12px] md:grid-cols-2 xl:grid-cols-3">
-            <FormField label="Isim familya">
-              <Input
-                type="text"
-                placeholder="Mijoz ism familiyasi"
-                {...register('clientFullName')}
-              />
-            </FormField>
+          <FormField label="Telefon raqam">
+            <Input type="tel" placeholder="+998" {...register('clientPhone')} />
+          </FormField>
 
-            <FormField label="Telefon raqam">
-              <Input
-                type="tel"
-                placeholder="+998"
-                {...register('clientPhone')}
-              />
-            </FormField>
+          <FormField label="Status">
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value || ''}
+                  onChange={(value) => field.onChange(value)}
+                >
+                  <SelectOption value="">Tanlang</SelectOption>
+                  {statusOptions.map((option) => (
+                    <SelectOption
+                      key={option.value}
+                      value={option.value}
+                      disabled={Boolean(
+                        option.isNotSelectable && option.value !== field.value
+                      )}
+                    >
+                      {option.label}
+                    </SelectOption>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormField>
 
-            <FormField label="Status">
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value || ''}
-                    onChange={(value) => field.onChange(value)}
-                  >
-                    <SelectOption value="">Tanlang</SelectOption>
-                    {statusOptions.map((option) => (
-                      <SelectOption
-                        key={option.value}
-                        value={option.value}
-                        disabled={Boolean(
-                          option.isNotSelectable && option.value !== field.value
-                        )}
-                      >
-                        {option.label}
-                      </SelectOption>
-                    ))}
-                  </Select>
-                )}
-              />
-            </FormField>
+          <FormField label="Rad etish sabablari">
+            <Input
+              type="text"
+              placeholder="Sababni kiriting"
+              {...register('rejectionReason')}
+            />
+          </FormField>
 
-            <FormField label="Rad etish sabablari">
-              <Input
-                type="text"
-                placeholder="Sababni kiriting"
-                {...register('rejectionReason')}
-              />
-            </FormField>
+          <FormField label="JSHSHIR">
+            <Controller
+              name="jshshir"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={14}
+                  placeholder="14 ta raqam"
+                  value={field.value || ''}
+                  onChange={(event) => {
+                    const digits = String(event?.target?.value || '')
+                      .replace(/[^0-9]/g, '')
+                      .slice(0, 14);
+                    field.onChange(digits);
+                  }}
+                />
+              )}
+            />
+          </FormField>
 
-            <FormField label="JSSHR">
-              <Controller
-                name="jshshir"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={14}
-                    placeholder="14 ta raqam"
-                    value={field.value || ''}
-                    onChange={(event) => {
-                      const digits = String(event?.target?.value || '')
-                        .replace(/[^0-9]/g, '')
-                        .slice(0, 14);
-                      field.onChange(digits);
-                    }}
-                  />
-                )}
-              />
-            </FormField>
+          <FormField label="Passport ID">
+            <Controller
+              name="passportId"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  maxLength={9}
+                  placeholder="AA1234567"
+                  value={field.value || ''}
+                  onChange={(event) => {
+                    const formatted = String(event?.target?.value || '')
+                      .toUpperCase()
+                      .replace(/[^A-Z0-9]/g, '')
+                      .replace(/^([A-Z]{0,2})([0-9]{0,7}).*/, '$1$2');
+                    field.onChange(formatted);
+                  }}
+                />
+              )}
+            />
+          </FormField>
+        </div>
 
-            <FormField label="PASSPORT ID">
-              <Controller
-                name="passportId"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    maxLength={9}
-                    placeholder="AA1234567"
-                    value={field.value || ''}
-                    onChange={(event) => {
-                      const formatted = String(event?.target?.value || '')
-                        .toUpperCase()
-                        .replace(/[^A-Z0-9]/g, '')
-                        .replace(/^([A-Z]{0,2})([0-9]{0,7}).*/, '$1$2');
-                      field.onChange(formatted);
-                    }}
-                  />
-                )}
-              />
-            </FormField>
-          </div>
-
-          <div className="space-y-[10px]">
-            <div className="flex items-center justify-between">
+        <div className="space-y-[10px]">
+          {/* <div className="flex items-center justify-between">
               <h4
                 className="text-[14px] font-semibold"
                 style={{ color: 'var(--primary-color)' }}
               >
                 Messenger
               </h4>
-            </div>
+            </div> */}
 
-            <div className="h-[360px] min-h-[280px]">
-              <Messenger
-                className="h-full"
-                messages={messages}
-                currentUserId={user?.SlpCode}
-                onSendMessage={sendMessage}
-                onEditMessage={editMessage}
-                onDeleteMessage={deleteMessage}
-                isLoading={isMessagesLoading}
-                onLoadMore={fetchNextPage}
-                hasMore={Boolean(hasNextPage)}
-                isLoadingMore={isFetchingNextPage}
-                replyEnabled={false}
-              />
-            </div>
+          <div className="h-[360px] min-h-[280px]">
+            <Messenger
+              className="h-full"
+              messages={messages}
+              currentUserId={user?.SlpCode}
+              onSendMessage={sendMessage}
+              onEditMessage={editMessage}
+              onDeleteMessage={deleteMessage}
+              isLoading={isMessagesLoading}
+              onLoadMore={fetchNextPage}
+              hasMore={Boolean(hasNextPage)}
+              isLoadingMore={isFetchingNextPage}
+              replyEnabled={false}
+            />
           </div>
+        </div>
 
-          <DialogFooter className="border-t pt-[12px] sm:justify-between sm:items-center">
-            <span
-              className="text-[12px]"
-              style={{ color: 'var(--secondary-color)' }}
+        <div className="flex items-center justify-between gap-[8px] border-t pt-[12px]">
+          <span
+            className="text-[12px]"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            Lead ID: {leadId || '—'}
+          </span>
+          <div className="flex items-center gap-[8px]">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Yopish
+            </Button>
+            <Button
+              type="submit"
+              disabled={updateLead.isPending || !isDirty || !leadId}
             >
-              Lead ID: {leadId || '—'}
-            </span>
-            <div className="flex items-center gap-[8px]">
-              <Button type="button" variant="outline" onClick={handleClose}>
-                Yopish
-              </Button>
-              <Button
-                type="submit"
-                disabled={updateLead.isPending || !isDirty || !leadId}
-              >
-                {updateLead.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
-              </Button>
-            </div>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+              {updateLead.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+            </Button>
+          </div>
+        </div>
+      </form>
+    </Modal>
   );
 }

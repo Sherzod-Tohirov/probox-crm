@@ -99,7 +99,6 @@ export function serializeFilter(values) {
           .map((item) => (typeof item === 'object' ? item.value : item))
           .join(',')
       : arr;
-  console.log(payload, 'before');
   if (payload.source) payload.source = serializeMulti(payload.source);
   if (payload.branch) payload.branch = serializeMulti(payload.branch);
   if (payload.operator) payload.operator = serializeMulti(payload.operator);
@@ -140,7 +139,6 @@ export function serializeFilter(values) {
     }
     // keep booleans (including false) and numbers as-is
   });
-  console.log(payload, 'payload');
   return payload;
 }
 

@@ -252,7 +252,7 @@ export default function useSocketNotifications() {
         },
       },
       {
-        event: 'inbound_call',
+        event: 'pbx_answered',
         logLabel: 'socket payload inbound call',
         browserEvent: 'probox:inbound-call',
         normalize: normalizeInboundCallNotification,

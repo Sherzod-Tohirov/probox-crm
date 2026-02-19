@@ -29,7 +29,6 @@ export default function StatusSection({ lead, canEdit, onSave }) {
     'YYYY.MM.DD HH:mm',
     'DD.MM.YYYY HH:mm'
   );
-  console.log(formattedRecallDate);
   const statusForm = useForm({
     defaultValues: {
       status: lead?.status || '',
@@ -43,7 +42,7 @@ export default function StatusSection({ lead, canEdit, onSave }) {
     reset: resetStatus,
   } = statusForm;
 
-  const isStatusDirty = statusForm.formState.isDirty;
+  // const isStatusDirty = statusForm.formState.isDirty;
 
   useEffect(() => {
     if (!lead) return;
