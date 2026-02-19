@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
-import formatDate, { formatDateWithHour } from '@/utils/formatDate';
+import { formatDateWithHour } from '@/utils/formatDate';
 
 const LS_KEY = 'probox.notifications';
 
@@ -12,6 +12,8 @@ const NEW_LEAD_ALLOWED_ROLES = [];
 
 function toArray(payload) {
   if (!payload) return [];
+  if (Array.isArray(payload?.records)) return payload.records.filter(Boolean);
+  if (Array.isArray(payload?.data)) return payload.data.filter(Boolean);
   return (Array.isArray(payload) ? payload : [payload]).filter(Boolean);
 }
 
@@ -34,7 +36,9 @@ function readFromStorage() {
 function writeToStorage(list) {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(list.slice(0, 100)));
-  } catch (_) {}
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function getSocketBaseUrl() {
@@ -106,6 +110,40 @@ function normalizeAgreementDateNotification(payload) {
   };
 }
 
+function normalizeInboundCallNotification(payload) {
+  const leadId =
+    payload?.leadId ??
+    payload?.leadID ??
+    payload?.LeadId ??
+    payload?.id ??
+    payload?._id;
+  const callId =
+    payload?.callId ??
+    payload?.CallId ??
+    payload?.pbx?.uniqueid ??
+    payload?.uniqueid;
+
+  const id =
+    callId ??
+    `${leadId ?? 'call'}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  const title = "Kiruvchi qo'ng'iroq";
+  const clientName =
+    payload?.clientFullName || payload?.clientName || payload?.name || 'Mijoz';
+  const phone = payload?.clientPhone || payload?.phone || '';
+
+  return {
+    id: `inbound-call-${id}`,
+    type: 'inboundCall',
+    title,
+    message: [clientName, phone].filter(Boolean).join(' • '),
+    createdAt: Date.now(),
+    read: false,
+    link: leadId ? `/leads/${leadId}` : undefined,
+    data: payload,
+  };
+}
+
 export default function useSocketNotifications() {
   const { user, token } = useSelector((state) => state.auth);
   const socketRef = useRef(null);
@@ -152,7 +190,9 @@ export default function useSocketNotifications() {
     setNotifications(() => {
       try {
         localStorage.removeItem(LS_KEY);
-      } catch (_) {}
+      } catch (err) {
+        console.log(err);
+      }
       return [];
     });
   }, []);
@@ -211,6 +251,26 @@ export default function useSocketNotifications() {
           return belongsToCurrentUser(record, currentUser);
         },
       },
+      {
+        event: 'inbound_call',
+        logLabel: 'socket payload inbound call',
+        browserEvent: 'probox:inbound-call',
+        normalize: normalizeInboundCallNotification,
+        dispatchOnlyNotified: true,
+        shouldNotify: (record, currentUser) => {
+          return belongsToCurrentUser(record, currentUser);
+        },
+      },
+      {
+        event: 'incoming_call',
+        logLabel: 'socket payload incoming call',
+        browserEvent: 'probox:inbound-call',
+        normalize: normalizeInboundCallNotification,
+        dispatchOnlyNotified: true,
+        shouldNotify: (record, currentUser) => {
+          return belongsToCurrentUser(record, currentUser);
+        },
+      },
     ];
 
     const socketHandlers = handlerConfigs.map((config) => {
@@ -222,9 +282,13 @@ export default function useSocketNotifications() {
         const records = toArray(payload);
         if (!records.length) return;
 
+        const notifiedRecords = [];
+
         records.forEach((record) => {
           if (!user || !record) return;
           if (!config.shouldNotify?.(record, user)) return;
+
+          notifiedRecords.push(record);
 
           const notif = config.normalize?.(record);
           if (notif) {
@@ -232,7 +296,11 @@ export default function useSocketNotifications() {
           }
         });
 
-        dispatchRecordsEvent(config.browserEvent, records);
+        const recordsForBrowserEvent = config.dispatchOnlyNotified
+          ? notifiedRecords
+          : records;
+
+        dispatchRecordsEvent(config.browserEvent, recordsForBrowserEvent);
       };
 
       socket.on(config.event, handler);

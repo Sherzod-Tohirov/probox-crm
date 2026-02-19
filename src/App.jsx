@@ -12,6 +12,7 @@ import PrimaryLayout from '@layouts/PrimaryLayout';
 import Sidebar from '@components/Sidebar';
 import Header from '@components/Header';
 import Offline from '@pages/helper/Offline';
+import InboundCallLeadModal from '@/features/leads/components/modals/InboundCallLeadModal';
 
 import useAuth from '@hooks/useAuth';
 import useAlert from '@hooks/useAlert';
@@ -68,6 +69,7 @@ function App() {
           <Outlet />
         </DashboardLayout>
       </PrimaryLayout>
+      <InboundCallLeadModal />
       <AlertContainer />
     </MainLayout>
   );

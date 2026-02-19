@@ -167,7 +167,7 @@ export default function ServiceInfoModal({
                     {...register('meetingConfirmed')}
                     disabled={!canEditOperator}
                   >
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     <SelectOption value="true">Ha</SelectOption>
                     <SelectOption value="false">Yo'q</SelectOption>
                   </Select>
@@ -184,7 +184,7 @@ export default function ServiceInfoModal({
 
                 <LabeledField label="Javob berildimi?">
                   <Select disabled={!canEditOperator}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     <SelectOption value="true">Ha</SelectOption>
                     <SelectOption value="false">Yo'q</SelectOption>
                   </Select>
@@ -192,7 +192,7 @@ export default function ServiceInfoModal({
 
                 <LabeledField label="Qiziqish bildirildi?">
                   <Select disabled={!canEditOperator}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     <SelectOption value="true">Ha</SelectOption>
                     <SelectOption value="false">Yo'q</SelectOption>
                   </Select>
@@ -200,19 +200,19 @@ export default function ServiceInfoModal({
 
                 <LabeledField label="Rad etish sababi?">
                   <Select disabled={!canEditOperator}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                   </Select>
                 </LabeledField>
 
                 <LabeledField label="Filial">
                   <Select {...register('branch')} disabled={!canEditOperator}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                   </Select>
                 </LabeledField>
 
                 <LabeledField label="Sotuvchi">
                   <Select {...register('seller')} disabled={!canEditOperator}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     {(executors || [])
                       .filter((e) => e?.U_role === 'Seller')
                       .map((e) => (
@@ -232,7 +232,7 @@ export default function ServiceInfoModal({
                     {...register('meetingConfirmed')}
                     disabled={!canEditSeller}
                   >
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     <SelectOption value="true">Ha</SelectOption>
                     <SelectOption value="false">Yo'q</SelectOption>
                   </Select>
@@ -240,13 +240,13 @@ export default function ServiceInfoModal({
 
                 <LabeledField label="Savdo turi">
                   <Select {...register('saleType')} disabled={!canEditSeller}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                   </Select>
                 </LabeledField>
 
                 <LabeledField label="Xarid amalga oshdimi">
                   <Select {...register('purchase')} disabled={!canEditSeller}>
-                    <SelectOption value="">Tanglang</SelectOption>
+                    <SelectOption value="">Tanlang</SelectOption>
                     <SelectOption value="true">Ha</SelectOption>
                     <SelectOption value="false">Yo'q</SelectOption>
                   </Select>

@@ -1,11 +1,11 @@
 import { Card, CardContent } from '@/components/shadcn/ui/card';
 import {
-  BadgeDollarSign,
   BadgeCheck,
   ReceiptText,
   Files,
   CalendarDays,
   CalendarClock,
+  Wallet,
 } from 'lucide-react';
 import formatterCurrency from '@/utils/formatterCurrency';
 
@@ -80,7 +80,7 @@ function GaugeChart({ score }) {
 
   return (
     <div
-      className="flex flex-col items-center rounded-[18px] border px-[16px] py-[14px]"
+      className="flex flex-col h-full justify-center items-center rounded-[18px] border px-[16px] py-[14px]"
       style={{
         backgroundColor: palette.panelBg,
         borderColor: palette.panelBorder,
@@ -92,7 +92,7 @@ function GaugeChart({ score }) {
       >
         To'lov ko'rsatkichi
       </h3>
-      <svg viewBox="0 0 200 120" className="w-[164px]">
+      <svg viewBox="0 0 200 140" className="w-[164px]">
         <path
           d={`M ${p0.x} ${p0.y} A ${radius} ${radius} 0 0 1 ${p10.x} ${p10.y}`}
           fill="none"
@@ -155,7 +155,7 @@ function GaugeChart({ score }) {
         )}
         <text
           x={centerX}
-          y={centerY + 5}
+          y={centerY - 10}
           textAnchor="middle"
           className="text-[30px] font-bold"
           style={{ fill: palette.value, fontFamily: 'inherit' }}
@@ -172,19 +172,19 @@ function GaugeChart({ score }) {
           {getLabel(clamped)}
         </text>
         <text
-          x="20"
-          y="115"
+          x="14"
+          y="125"
           textAnchor="start"
-          className="text-[11px]"
+          className="text-[14px]"
           style={{ fill: palette.scale, fontFamily: 'inherit' }}
         >
           0
         </text>
         <text
-          x="180"
-          y="115"
+          x="185"
+          y="125"
           textAnchor="end"
-          className="text-[11px]"
+          className="text-[14px]"
           style={{ fill: palette.scale, fontFamily: 'inherit' }}
         >
           10
@@ -216,7 +216,7 @@ function MetricCard({
     >
       <div className="flex items-start justify-between gap-[8px]">
         <div
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border"
+          className="flex h-[34px] w-[34px] items-center justify-center rounded-[8px] border"
           style={{
             color: iconColor,
             backgroundColor: 'var(--primary-bg)',
@@ -227,21 +227,21 @@ function MetricCard({
         </div>
         {badge ? (
           <span
-            className="rounded-[10px] px-[8px] py-[2px] text-[10px] font-semibold"
+            className="rounded-[6px] min-w-[44px] h-[22px] px-[8px] py-[2px] text-[12px] text-center font-semibold"
             style={badgeStyle}
           >
             {badge}
           </span>
         ) : null}
       </div>
-      <span
-        className={`truncate text-[17px] font-bold ${valueClassName || ''}`}
+      <p
+        className={`truncate text-[20px] leading-[28px] font-bold ${valueClassName || ''}`}
         style={{ color: valueColor }}
       >
         {value}
-      </span>
+      </p>
       <span
-        className="truncate text-[11px] leading-tight"
+        className="truncate text-[12px] leading-[16px]"
         style={{ color: labelColor }}
       >
         {label}
@@ -368,11 +368,10 @@ export default function PaymentScoreCard({
           <div className="h-full">
             <GaugeChart score={paymentScore} />
           </div>
-
           <div className="flex flex-col gap-[12px]">
             <div className="grid gap-[12px] md:grid-cols-3">
               <TopAmountCard
-                icon={BadgeDollarSign}
+                icon={Wallet}
                 value={formatUzs(totalSum)}
                 label="Umumiy summa"
                 valueColor="var(--info-color)"

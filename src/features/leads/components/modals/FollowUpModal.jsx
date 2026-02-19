@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Button, Input, Row, Col } from '@components/ui';
+import formatDate from '@/utils/formatDate';
 
 export default function FollowUpModal({
   isOpen,
@@ -7,9 +8,17 @@ export default function FollowUpModal({
   onConfirm,
   title = 'Qayta aloqa sanasini belgilang',
   label = 'Qayta aloqa sanasi va vaqti',
-  // defaultValue = '',
+  defaultValue = '',
 }) {
-  const [recallDate, setRecallDate] = useState('');
+  const formattedDefaultValue = defaultValue
+    ? formatDate(defaultValue, 'YYYY.MM.DD HH:mm', 'DD.MM.YYYY HH:mm')
+    : '';
+
+  const [recallDate, setRecallDate] = useState(formattedDefaultValue);
+
+  useEffect(() => {
+    setRecallDate(formattedDefaultValue);
+  }, [formattedDefaultValue]);
 
   const handleConfirm = () => {
     if (!recallDate) return;
@@ -18,7 +27,7 @@ export default function FollowUpModal({
   };
 
   const handleClose = () => {
-    setRecallDate('');
+    setRecallDate(formattedDefaultValue);
     onClose();
   };
 
