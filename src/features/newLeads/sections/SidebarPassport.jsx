@@ -56,12 +56,20 @@ export default function SidebarPassport({
                     PDF
                   </a>
                 ) : (
-                  <img
-                    src={img.previewLarge || img.preview}
-                    alt={img.fileName || 'passport'}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
+                  <a
+                    href={img.previewLarge || img.preview}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full w-full"
+                    tabIndex={0}
+                  >
+                    <img
+                      src={img.previewLarge || img.preview}
+                      alt={img.fileName || 'passport'}
+                      className="h-full w-full object-cover transition-opacity hover:opacity-85"
+                      loading="lazy"
+                    />
+                  </a>
                 )}
                 {canEdit && (
                   <button

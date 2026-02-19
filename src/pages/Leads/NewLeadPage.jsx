@@ -30,6 +30,9 @@ export default function NewLeadPage() {
     isError,
     error,
     updateLead,
+    executors,
+    isOperatorManager,
+    canEditStatus,
     setPassportFiles,
     uploadValue,
     handleUploadSingle,
@@ -126,7 +129,7 @@ export default function NewLeadPage() {
       <div className="flex w-full flex-col gap-[20px]">
         {/* Sticky Header */}
         <div
-          className="sticky top-0 z-10 -mx-[6rem] flex shrink-0 items-center justify-between px-[6rem] py-[16px]"
+          className="sticky top-0 z-10 -mx-24 flex shrink-0 items-center justify-between px-24 py-[16px]"
           style={{
             background: 'var(--primary-bg)',
             borderBottom: '1px solid var(--primary-border-color)',
@@ -165,7 +168,7 @@ export default function NewLeadPage() {
               lead={lead}
               onLimitHistoryClick={() => setLimitHistoryModalOpen(true)}
             />
-
+            
             <PaymentScoreCard
               paymentScore={invoiceScoreData?.score ?? null}
               totalSum={
@@ -189,9 +192,20 @@ export default function NewLeadPage() {
               averagePaymentDay={invoiceScoreData?.avgPaymentDelay ?? 0}
             />
 
-            <LeadInfoCard lead={lead} />
+            <LeadInfoCard
+              lead={lead}
+              executors={executors ?? []}
+              isOperatorManager={isOperatorManager}
+              canEditStatus={canEditStatus}
+              onSave={(data) => updateLead.mutate(data)}
+            />
 
-            <ContractCard leadData={lead} invoiceScoreData={invoiceScoreData} />
+            <ContractCard
+              leadId={id}
+              leadData={lead}
+              invoiceScoreData={invoiceScoreData}
+              canEdit={canEditTab('seller')}
+            />
 
             {/* Messenger - New Shadcn Component */}
             <div style={{ height: 600 }}>

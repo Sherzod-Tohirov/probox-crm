@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Controller } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
 import { Select, SelectOption } from '@/components/shadcn/ui/select';
 import { Input } from '@/components/shadcn/ui/input';
 import { Button } from '@/components/shadcn/ui/button';
+import { DateInput } from '@/components/shadcn/ui/date-input';
 import useAuth from '@hooks/useAuth';
 import useOperator1Form from '@/features/leads/hooks/useOperator1Form';
 import useSellerForm from '@/features/leads/hooks/useSellerForm';
@@ -40,9 +42,33 @@ function canEditTabRole(userRole, tabKey) {
   return (TAB_TO_ROLE[tabKey] ?? []).includes(userRole);
 }
 
-function LabeledField({ label, children }) {
+// DateInput outputs 'YYYY-MM-DD'; hooks expect 'DD.MM.YYYY'. This wrapper converts.
+function ControlledDateInput({ name, control, disabled }) {
   return (
-    <div className="flex w-full flex-col gap-[4px]">
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <DateInput
+          value={field.value}
+          onChange={(val) =>
+            field.onChange(
+              val ? moment(val, 'YYYY-MM-DD').format('DD.MM.YYYY') : ''
+            )
+          }
+          disabled={disabled}
+          className="w-full"
+        />
+      )}
+    />
+  );
+}
+
+function LabeledField({ label, children, className }) {
+  return (
+    <div
+      className={`flex w-full flex-col gap-[4px]${className ? ' ' + className : ''}`}
+    >
       <span
         className="text-[12px] font-medium"
         style={{ color: 'var(--secondary-color)' }}
@@ -59,7 +85,11 @@ function OperatorFields({ leadId, leadData, canEdit }) {
     leadId,
     leadData
   );
-  const { register, reset } = form;
+  const {
+    register,
+    reset,
+    formState: { isDirty },
+  } = form;
   const { data: branches } = useFetchBranches();
   const { callCountOptions, rejectReasonOptions } = {
     ...useSelectOptions('operator1'),
@@ -92,88 +122,94 @@ function OperatorFields({ leadId, leadData, canEdit }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
-      <LabeledField label="Umumiy qo'ng'iroqlar soni">
-        <Select
-          {...register('callCount')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {(callCountOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Javob berilmagan qo'ng'iroqlar">
-        <Select
-          {...register('noAnswerCount')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {(callCountOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Rad etish sababi">
-        <Select
-          {...register('rejectionReason')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {(rejectReasonOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="JSHSHIR">
-        <Input
-          {...register('jshshir')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Passport ID">
-        <Input
-          {...register('passportId')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Uchrashuv sanasi">
-        <Input
-          {...register('meetingDate')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="kk.oo.yyyy"
-        />
-      </LabeledField>
-      <LabeledField label="Filial">
-        <Select {...register('branch')} disabled={!canEdit} className="w-full">
-          <SelectOption value="">Tanlang</SelectOption>
-          {branchOptions.map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
+      <div className="grid grid-cols-2 gap-[10px]">
+        <LabeledField label="Umumiy qo'ng'iroqlar soni">
+          <Select
+            {...register('callCount')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {(callCountOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Javob berilmagan">
+          <Select
+            {...register('noAnswerCount')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {(callCountOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="JSHSHIR">
+          <Input
+            {...register('jshshir')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Passport ID">
+          <Input
+            {...register('passportId')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Uchrashuv sanasi va vaqti" className="col-span-2">
+          <input
+            {...register('meetingDate')}
+            type="datetime-local"
+            disabled={!canEdit}
+            className="h-[40px] w-full rounded-[8px] border border-[var(--primary-border-color)] bg-[var(--primary-bg)] px-[12px] text-[14px] text-[var(--primary-color)] outline-none disabled:opacity-50"
+          />
+        </LabeledField>
+        <LabeledField label="Filial">
+          <Select
+            {...register('branch')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {branchOptions.map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Rad etish sababi" className="col-span-2">
+          <Select
+            {...register('rejectionReason')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {(rejectReasonOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+      </div>
       {canEdit && (
         <Button
           type="submit"
           size="sm"
           className="w-full"
-          disabled={isSubmitting}
+          disabled={!isDirty || isSubmitting}
         >
           {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
         </Button>
@@ -182,9 +218,20 @@ function OperatorFields({ leadId, leadData, canEdit }) {
   );
 }
 
+const BOOL_SET_VALUE_AS = (v) => {
+  if (v === 'true') return true;
+  if (v === 'false') return false;
+  return v;
+};
+
 function SellerFields({ leadId, leadData, canEdit }) {
   const { form, handleSubmit, isSubmitting } = useSellerForm(leadId, leadData);
-  const { register, reset } = form;
+  const {
+    register,
+    control,
+    reset,
+    formState: { isDirty },
+  } = form;
   const { sellerOptions, sellTypeOptions, branchOptions } =
     useSelectOptions('seller');
   const { rejectReasonOptions } = useSelectOptions('common');
@@ -216,94 +263,121 @@ function SellerFields({ leadId, leadData, canEdit }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
-      <LabeledField label="Uchrashuv tasdiqlandi">
-        <Select
-          {...register('meetingConfirmed')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          <SelectOption value="true">Ha</SelectOption>
-          <SelectOption value="false">Yo'q</SelectOption>
-        </Select>
-      </LabeledField>
-      <LabeledField label="Tasdiqlangan sana">
-        <Input
-          {...register('meetingConfirmedDate')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="kk.oo.yyyy"
-        />
-      </LabeledField>
-      <LabeledField label="Filial">
-        <Select {...register('branch2')} disabled={!canEdit} className="w-full">
-          <SelectOption value="">Tanlang</SelectOption>
-          {(branchOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Sotuvchi">
-        <Select {...register('seller')} disabled={!canEdit} className="w-full">
-          <SelectOption value="null">—</SelectOption>
-          {(sellerOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Savdo turi">
-        <Select
-          {...register('saleType')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          {(sellTypeOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Rad etish sababi">
-        <Select
-          {...register('rejectionReason2')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {(rejectReasonOptions ?? []).map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="JSHSHIR">
-        <Input
-          {...register('jshshir')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Passport ID">
-        <Input
-          {...register('passportId')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
+      <div className="grid grid-cols-2 gap-[10px]">
+        <LabeledField label="Uchrashuv tasdiqlandi">
+          <Select
+            {...register('meetingConfirmed', { setValueAs: BOOL_SET_VALUE_AS })}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            <SelectOption value="true">Ha</SelectOption>
+            <SelectOption value="false">Yo'q</SelectOption>
+          </Select>
+        </LabeledField>
+        <LabeledField label="Tasdiqlangan sana" className="col-span-2">
+          <ControlledDateInput
+            name="meetingConfirmedDate"
+            control={control}
+            disabled={!canEdit}
+          />
+        </LabeledField>
+        <LabeledField label="Filial">
+          <Select
+            {...register('branch2')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {(branchOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Sotuvchi">
+          <Select
+            {...register('seller')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="null">—</SelectOption>
+            {(sellerOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Savdo turi">
+          <Select
+            {...register('saleType')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            {(sellTypeOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Xarid amalga oshdimi?">
+          <Select
+            {...register('purchase', { setValueAs: BOOL_SET_VALUE_AS })}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            <SelectOption value="true">Ha</SelectOption>
+            <SelectOption value="false">Yo'q</SelectOption>
+          </Select>
+        </LabeledField>
+        <LabeledField label="Xarid sanasi" className="col-span-2">
+          <ControlledDateInput
+            name="purchaseDate"
+            control={control}
+            disabled={!canEdit}
+          />
+        </LabeledField>
+        <LabeledField label="JSHSHIR">
+          <Input
+            {...register('jshshir')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Passport ID">
+          <Input
+            {...register('passportId')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Rad etish sababi" className="col-span-2">
+          <Select
+            {...register('rejectionReason2')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {(rejectReasonOptions ?? []).map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+      </div>
       {canEdit && (
         <Button
           type="submit"
           size="sm"
           className="w-full"
-          disabled={isSubmitting}
+          disabled={!isDirty || isSubmitting}
         >
           {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
         </Button>
@@ -314,7 +388,12 @@ function SellerFields({ leadId, leadData, canEdit }) {
 
 function ScoringFields({ leadId, leadData, canEdit }) {
   const { form, handleSubmit, isSubmitting } = useScoringForm(leadId, leadData);
-  const { register, reset } = form;
+  const {
+    register,
+    control,
+    reset,
+    formState: { isDirty },
+  } = form;
 
   useEffect(() => {
     if (leadData) {
@@ -361,106 +440,107 @@ function ScoringFields({ leadId, leadData, canEdit }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
-      <LabeledField label="Mijoz F.I.O">
-        <Input
-          {...register('clientFullName')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Tug'ilgan sana">
-        <Input
-          {...register('birthDate')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="kk.oo.yyyy"
-        />
-      </LabeledField>
-      <LabeledField label="Ball (score)">
-        <Input
-          type="number"
-          {...register('score')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="KATM to'lov">
-        <Input
-          {...register('katmPayment')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="To'lov tarixi">
-        <Select
-          {...register('paymentHistory')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {paymentHistoryOptions.map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
-      <LabeledField label="Rasmiy oylik">
-        <Input
-          {...register('officialSalary')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="MIB">
-        <Input
-          {...register('mib')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Aliment">
-        <Input
-          {...register('aliment')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Yakuniy foiz">
-        <Input
-          type="number"
-          {...register('finalPercentage')}
-          disabled={!canEdit}
-          className="w-full"
-          placeholder="—"
-        />
-      </LabeledField>
-      <LabeledField label="Qabul qilingan sabab">
-        <Select
-          {...register('acceptedReason')}
-          disabled={!canEdit}
-          className="w-full"
-        >
-          <SelectOption value="">Tanlang</SelectOption>
-          {acceptedReasonOptions.map((o) => (
-            <SelectOption key={o.value} value={o.value}>
-              {o.label}
-            </SelectOption>
-          ))}
-        </Select>
-      </LabeledField>
+      <div className="grid grid-cols-2 gap-[10px]">
+        <LabeledField label="Mijoz F.I.O" className="col-span-2">
+          <Input
+            {...register('clientFullName')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Tug'ilgan sana" className="col-span-2">
+          <ControlledDateInput
+            name="birthDate"
+            control={control}
+            disabled={!canEdit}
+          />
+        </LabeledField>
+        <LabeledField label="Ball (score)">
+          <Input
+            type="number"
+            {...register('score')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="KATM to'lov">
+          <Input
+            {...register('katmPayment')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="To'lov tarixi">
+          <Select
+            {...register('paymentHistory')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {paymentHistoryOptions.map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+        <LabeledField label="Rasmiy oylik">
+          <Input
+            {...register('officialSalary')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="MIB">
+          <Input
+            {...register('mib')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Aliment">
+          <Input
+            {...register('aliment')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Yakuniy foiz">
+          <Input
+            type="number"
+            {...register('finalPercentage')}
+            disabled={!canEdit}
+            className="w-full"
+            placeholder="—"
+          />
+        </LabeledField>
+        <LabeledField label="Qabul qilingan sabab" className="col-span-2">
+          <Select
+            {...register('acceptedReason')}
+            disabled={!canEdit}
+            className="w-full"
+          >
+            <SelectOption value="">Tanlang</SelectOption>
+            {acceptedReasonOptions.map((o) => (
+              <SelectOption key={o.value} value={o.value}>
+                {o.label}
+              </SelectOption>
+            ))}
+          </Select>
+        </LabeledField>
+      </div>
       {canEdit && (
         <Button
           type="submit"
           size="sm"
           className="w-full"
-          disabled={isSubmitting}
+          disabled={!isDirty || isSubmitting}
         >
           {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
         </Button>

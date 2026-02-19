@@ -29,7 +29,7 @@ export default function StatusSection({ lead, canEdit, onSave }) {
     'YYYY.MM.DD HH:mm',
     'DD.MM.YYYY HH:mm'
   );
-  console.log(formattedRecallDate)
+  console.log(formattedRecallDate);
   const statusForm = useForm({
     defaultValues: {
       status: lead?.status || '',
@@ -119,11 +119,7 @@ export default function StatusSection({ lead, canEdit, onSave }) {
             {canEdit && (
               <Row>
                 <Col>
-                  <Button
-                    disabled={!isStatusDirty}
-                    variant="filled"
-                    type="submit"
-                  >
+                  <Button variant="filled" type="submit">
                     Statusni saqlash
                   </Button>
                 </Col>
