@@ -457,10 +457,9 @@ export default function InboundCallLeadModal() {
               control={control}
               render={({ field }) => (
                 <Input
-                  type="date"
-                  includeTime
-                  variant="filled"
+                  type="text"
                   disabled
+                  placeholder="DD.MM.YYYY HH:mm"
                   value={field.value || ''}
                   onChange={() => {}}
                 />

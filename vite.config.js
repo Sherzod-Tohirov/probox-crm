@@ -14,6 +14,9 @@ dotenv.config();
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/',
+  build: {
+    manifest: true,
+  },
   server: {
     port: process.env.PORT || 3000,
     proxy: {
