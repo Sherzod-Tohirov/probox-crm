@@ -1,6 +1,6 @@
 import styles from '@/pages/Leads/styles/style.module.scss';
 import { formatCurrencyUZS } from '@/features/leads/utils/deviceUtils';
-import { Typography } from '@/components/ui';
+// import { Typography } from '@/components/ui';
 
 export default function PaymentScoreGauge({
   paymentScore,

@@ -6,8 +6,12 @@ import useAlert from '@hooks/useAlert';
 import useFetchMessages from '@hooks/data/useFetchMessages';
 import useMessengerActions from '@hooks/useMessengerActions';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import useFetchLeadById from '@/hooks/data/leads/useFetchLeadById';
+import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
+import useFetchCurrency from '@/hooks/data/useFetchCurrency';
 import FollowUpModal from '@/features/leads/components/modals/FollowUpModal';
 import formatDate from '@/utils/formatDate';
+import PaymentScoreGauge from '@/features/leads/components/LeadPageSections/PaymentScoreGauge';
 import { statusOptions } from '@/features/leads/utils/options';
 import { Messenger } from '@/components/shadcn/ui/messenger';
 import { Modal } from '@components/ui';
@@ -176,6 +180,18 @@ export default function InboundCallLeadModal() {
 
   const updateLead = useMutateLead(leadId);
 
+  const { data: leadData } = useFetchLeadById(leadId, {
+    enabled: Boolean(isOpen && leadId),
+  });
+
+  const cardCode = leadData?.cardCode || leadData?.CardCode || '';
+
+  const { data: invoiceScoreData } = useFetchInvoiceScore({
+    CardCode: cardCode,
+    enabled: Boolean(isOpen && cardCode),
+  });
+
+  const { data: rate } = useFetchCurrency();
   const {
     data: messages,
     isLoading: isMessagesLoading,
@@ -343,8 +359,45 @@ export default function InboundCallLeadModal() {
       title="Qo'ng'iroq uchun tezkor lead oynasi"
       size="lg"
       className="w-[96vw] max-w-[1080px] max-h-[94vh]"
+      footer={
+        <div className="flex items-center justify-between gap-[8px]">
+          <div className="flex gap-[8px] items-center">
+            <span
+              className="text-[12px]"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              Lead ID: {leadId || '—'}
+            </span>
+            <Button
+              className="bg-transparent border-none text-sky-400"
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={handleOpenLead}
+            >
+              <Link /> leadni ochish
+            </Button>
+          </div>
+          <div className="flex items-center gap-[8px]">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Yopish
+            </Button>
+            <Button
+              type="submit"
+              form="inbound-call-form"
+              disabled={updateLead.isPending || !isDirty || !leadId}
+            >
+              {updateLead.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+            </Button>
+          </div>
+        </div>
+      }
     >
-      <form onSubmit={onSubmit} className="flex flex-col gap-[18px]">
+      <form
+        id="inbound-call-form"
+        onSubmit={onSubmit}
+        className="flex flex-col gap-[18px]"
+      >
         <p className="text-[12px]" style={{ color: 'var(--secondary-color)' }}>
           Operator: {user?.SlpName ?? '—'}
         </p>
@@ -490,6 +543,31 @@ export default function InboundCallLeadModal() {
           </FormField>
         </div>
 
+        <PaymentScoreGauge
+          paymentScore={invoiceScoreData?.score ?? null}
+          limit={invoiceScoreData?.limit || 0}
+          trustLabel={invoiceScoreData?.trustLabel || ''}
+          totalSum={
+            invoiceScoreData?.totalAmount && rate?.Rate
+              ? invoiceScoreData.totalAmount * rate.Rate
+              : 0
+          }
+          closedSum={
+            invoiceScoreData?.totalPaid && rate?.Rate
+              ? invoiceScoreData.totalPaid * rate.Rate
+              : 0
+          }
+          overdueDebt={
+            invoiceScoreData?.overdueDebt && rate?.Rate
+              ? invoiceScoreData.overdueDebt * rate.Rate
+              : 0
+          }
+          totalContracts={invoiceScoreData?.totalContracts ?? 0}
+          openContracts={invoiceScoreData?.openContracts ?? 0}
+          longestDelay={invoiceScoreData?.maxDelay ?? 0}
+          averagePaymentDay={invoiceScoreData?.avgPaymentDelay ?? 0}
+        />
+
         <div className="space-y-[10px]">
           {/* <div className="flex items-center justify-between">
               <h4
@@ -514,37 +592,6 @@ export default function InboundCallLeadModal() {
               isLoadingMore={isFetchingNextPage}
               replyEnabled={false}
             />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-[8px] border-t pt-[12px]">
-          <div className="flex gap-[8px] items-center">
-            <span
-              className="text-[12px]"
-              style={{ color: 'var(--secondary-color)' }}
-            >
-              Lead ID: {leadId || '—'}
-            </span>
-            <Button
-              className="bg-transparent border-none text-sky-400"
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={handleOpenLead}
-            >
-              <Link /> leadni ochish
-            </Button>
-          </div>
-          <div className="flex items-center gap-[8px]">
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Yopish
-            </Button>
-            <Button
-              type="submit"
-              disabled={updateLead.isPending || !isDirty || !leadId}
-            >
-              {updateLead.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
-            </Button>
           </div>
         </div>
       </form>
