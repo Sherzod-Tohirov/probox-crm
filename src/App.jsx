@@ -19,6 +19,7 @@ import useAlert from '@hooks/useAlert';
 import useToggle from '@hooks/useToggle';
 import useTheme from '@hooks/useTheme';
 import useOnlineStatus from '@hooks/useOnlineStatus';
+import useAppUpdateChecker from '@hooks/useAppUpdateChecker';
 
 import { isMessengerRoute } from '@utils/routesConfig';
 import { setGlobalAlert } from '@utils/globalAlert';
@@ -37,6 +38,7 @@ function App() {
 
   // Initialize theme on app mount
   useTheme();
+  useAppUpdateChecker();
 
   useEffect(() => {
     // Toggle off messenger when route changes
