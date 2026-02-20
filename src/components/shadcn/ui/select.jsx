@@ -10,7 +10,7 @@ const Select = React.forwardRef(
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           className={cn(
-            'h-[40px] appearance-none rounded-[8px] border pl-5 pr-12 text-[16px] font-medium leading-none outline-none transition-colors cursor-pointer',
+            'h-[40px] appearance-none rounded-[8px] border px-[14px] py-[8px] text-[16px] font-medium leading-none outline-none transition-colors cursor-pointer',
             'border-[var(--primary-border-color)]',
             'focus:ring-2 focus:ring-[var(--primary-button-border-color)] focus:ring-offset-0',
             className

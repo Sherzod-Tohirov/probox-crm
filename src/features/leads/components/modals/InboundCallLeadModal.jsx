@@ -12,6 +12,9 @@ import { Modal } from '@components/ui';
 import { Button } from '@/components/shadcn/ui/button';
 import { Input } from '@/components/shadcn/ui/input';
 import { Select, SelectOption } from '@/components/shadcn/ui/select';
+import { useSelectOptions } from '../../hooks/useSelectOptions';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'lucide-react';
 
 const INBOUND_CALL_EVENT = 'probox:inbound-call';
 
@@ -35,15 +38,11 @@ function firstDefined(source, keys) {
 }
 
 function normalizeInboundCallPayload(rawRecord) {
-  // Unwrap notification wrapper produced by normalizeInboundCallNotification
-  const source =
-    rawRecord?.type === 'inboundCall' && rawRecord?.data
-      ? rawRecord.data
-      : rawRecord;
-
   const merged = {
-    ...(source?.lead && typeof source.lead === 'object' ? source.lead : {}),
-    ...(source || {}),
+    ...(rawRecord?.lead && typeof rawRecord.lead === 'object'
+      ? rawRecord.lead
+      : {}),
+    ...(rawRecord || {}),
   };
 
   const leadId = firstDefined(merged, [
@@ -117,11 +116,11 @@ function FormField({ label, children }) {
 export default function InboundCallLeadModal() {
   const { user } = useAuth();
   const { alert } = useAlert();
-
+  const navigate = useNavigate();
   const [isOpen, setOpen] = useState(false);
   const [inboundLead, setInboundLead] = useState(null);
   const lastInboundRef = useRef({ key: '', at: 0 });
-
+  const { rejectReasonOptions } = useSelectOptions('common');
   const {
     register,
     control,
@@ -210,7 +209,7 @@ export default function InboundCallLeadModal() {
         .filter((record) => record?.leadId)
         .filter((record) => belongsToCurrentUser(record, user));
 
-      // if (!recordsForCurrentUser.length) return;
+      if (!recordsForCurrentUser.length) return;
 
       const nextInboundLead =
         recordsForCurrentUser[recordsForCurrentUser.length - 1];
@@ -220,6 +219,7 @@ export default function InboundCallLeadModal() {
         nextInboundLead?.clientPhone,
         nextInboundLead?.SlpCode,
       ].join('|');
+      console.log(event, 'event');
       const now = Date.now();
       if (
         lastInboundRef.current.key === dedupeKey &&
@@ -235,6 +235,11 @@ export default function InboundCallLeadModal() {
     },
     [user]
   );
+
+  const handleOpenLead = useCallback(() => {
+    navigate(`/leads/${leadId}`);
+    setOpen(false);
+  }, [navigate, leadId]);
 
   useEffect(() => {
     window.addEventListener(INBOUND_CALL_EVENT, handleInboundCall);
@@ -260,13 +265,13 @@ export default function InboundCallLeadModal() {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Kiruvchi qo'ng'iroq uchun tezkor lead oynasi"
+      title="Qo'ng'iroq uchun tezkor lead oynasi"
       size="lg"
       className="w-[96vw] max-w-[1080px] max-h-[94vh]"
     >
       <form onSubmit={onSubmit} className="flex flex-col gap-[18px]">
         <p className="text-[12px]" style={{ color: 'var(--secondary-color)' }}>
-          Lead: {leadId || "Noma'lum"} • Operator: {user?.SlpCode ?? '—'}
+          Operator: {user?.SlpName ?? '—'}
         </p>
         <div className="grid gap-[12px] md:grid-cols-2 xl:grid-cols-3">
           <FormField label="Isim familya">
@@ -287,6 +292,7 @@ export default function InboundCallLeadModal() {
               control={control}
               render={({ field }) => (
                 <Select
+                  className="w-full"
                   value={field.value || ''}
                   onChange={(value) => field.onChange(value)}
                 >
@@ -308,10 +314,29 @@ export default function InboundCallLeadModal() {
           </FormField>
 
           <FormField label="Rad etish sabablari">
-            <Input
-              type="text"
-              placeholder="Sababni kiriting"
-              {...register('rejectionReason')}
+            <Controller
+              name="rejectionReason"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  className="w-full"
+                  value={field.value || ''}
+                  onChange={(value) => field.onChange(value)}
+                >
+                  <SelectOption value="">Tanlang</SelectOption>
+                  {rejectReasonOptions.map((option) => (
+                    <SelectOption
+                      key={option.value}
+                      value={option.value}
+                      disabled={Boolean(
+                        option.isNotSelectable && option.value !== field.value
+                      )}
+                    >
+                      {option.label}
+                    </SelectOption>
+                  ))}
+                </Select>
+              )}
             />
           </FormField>
 
@@ -388,12 +413,23 @@ export default function InboundCallLeadModal() {
         </div>
 
         <div className="flex items-center justify-between gap-[8px] border-t pt-[12px]">
-          <span
-            className="text-[12px]"
-            style={{ color: 'var(--secondary-color)' }}
-          >
-            Lead ID: {leadId || '—'}
-          </span>
+          <div className="flex gap-[8px] items-center">
+            <span
+              className="text-[12px]"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              Lead ID: {leadId || '—'}
+            </span>
+            <Button
+              className="bg-transparent border-none text-sky-400"
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={handleOpenLead}
+            >
+              <Link /> leadni ochish
+            </Button>
+          </div>
           <div className="flex items-center gap-[8px]">
             <Button type="button" variant="outline" onClick={handleClose}>
               Yopish

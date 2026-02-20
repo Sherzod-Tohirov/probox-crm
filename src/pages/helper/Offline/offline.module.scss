@@ -62,8 +62,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.2); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 
 .title {
@@ -76,6 +83,10 @@
   @media (max-width: v.$breakpoint-md) {
     font-size: 4rem;
   }
+}
+
+.desc-wrapper {
+  max-width: 310px;
 }
 
 .desc {

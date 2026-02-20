@@ -261,16 +261,6 @@ export default function useSocketNotifications() {
           return belongsToCurrentUser(record, currentUser);
         },
       },
-      {
-        event: 'incoming_call',
-        logLabel: 'socket payload incoming call',
-        browserEvent: 'probox:inbound-call',
-        normalize: normalizeInboundCallNotification,
-        dispatchOnlyNotified: true,
-        shouldNotify: (record, currentUser) => {
-          return belongsToCurrentUser(record, currentUser);
-        },
-      },
     ];
 
     const socketHandlers = handlerConfigs.map((config) => {
