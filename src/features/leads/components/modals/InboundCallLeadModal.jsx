@@ -6,6 +6,8 @@ import useAlert from '@hooks/useAlert';
 import useFetchMessages from '@hooks/data/useFetchMessages';
 import useMessengerActions from '@hooks/useMessengerActions';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
+import FollowUpModal from '@/features/leads/components/modals/FollowUpModal';
+import formatDate from '@/utils/formatDate';
 import { statusOptions } from '@/features/leads/utils/options';
 import { Messenger } from '@/components/shadcn/ui/messenger';
 import { Modal } from '@components/ui';
@@ -18,6 +20,21 @@ import { Link } from 'lucide-react';
 
 const INBOUND_CALL_EVENT = 'probox:inbound-call';
 
+const RECALL_MODAL_CONFIG = {
+  FollowUp: {
+    title: 'Qayta aloqa sanasini belgilang',
+    label: 'Qayta aloqa sanasi va vaqti',
+  },
+  WillVisitStore: {
+    title: "Do'konga borish sanasi belgilash",
+    label: "Do'konga borish sanasi va vaqti",
+  },
+  WillSendPassport: {
+    title: 'Passport yuborish sanasini belgilang',
+    label: 'Passport yuborish sanasi va vaqti',
+  },
+};
+
 const DEFAULT_FORM_VALUES = {
   clientFullName: '',
   clientPhone: '',
@@ -25,6 +42,7 @@ const DEFAULT_FORM_VALUES = {
   rejectionReason: '',
   jshshir: '',
   passportId: '',
+  recallDate: '',
 };
 
 function firstDefined(source, keys) {
@@ -99,6 +117,27 @@ function belongsToCurrentUser(record, user) {
   return false;
 }
 
+function formatPhoneDisplay(raw) {
+  const digits = String(raw || '').replace(/\D/g, '');
+  // Strip leading 998 prefix to work with the 9-digit local number
+  const local = digits.startsWith('998') ? digits.slice(3) : digits;
+  const d = local.slice(0, 9);
+  if (!d) return '';
+  let result = '+998';
+  if (d.length > 0) result += ' ' + d.slice(0, 2);
+  if (d.length > 2) result += ' ' + d.slice(2, 5);
+  if (d.length > 5) result += ' ' + d.slice(5, 7);
+  if (d.length > 7) result += ' ' + d.slice(7, 9);
+  return result;
+}
+
+function normalizePhoneValue(display) {
+  const digits = String(display || '').replace(/\D/g, '');
+  if (!digits) return '';
+  const local = digits.startsWith('998') ? digits.slice(3) : digits;
+  return local ? '998' + local.slice(0, 9) : '';
+}
+
 function FormField({ label, children }) {
   return (
     <div className="flex flex-col gap-[6px]">
@@ -119,6 +158,7 @@ export default function InboundCallLeadModal() {
   const navigate = useNavigate();
   const [isOpen, setOpen] = useState(false);
   const [inboundLead, setInboundLead] = useState(null);
+  const [recallModalStatus, setRecallModalStatus] = useState(null);
   const lastInboundRef = useRef({ key: '', at: 0 });
   const { rejectReasonOptions } = useSelectOptions('common');
   const {
@@ -126,6 +166,7 @@ export default function InboundCallLeadModal() {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { isDirty },
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
@@ -155,8 +196,41 @@ export default function InboundCallLeadModal() {
   const handleClose = useCallback(() => {
     setOpen(false);
     setInboundLead(null);
+    setRecallModalStatus(null);
     reset(DEFAULT_FORM_VALUES);
   }, [reset]);
+
+  const saveLeadPayload = useCallback(
+    (values, recallDate) => {
+      const payload = {
+        clientFullName: String(values?.clientFullName || '').trim(),
+        clientPhone: String(values?.clientPhone || '').trim(),
+        status: String(values?.status || '').trim(),
+        rejectionReason: String(values?.rejectionReason || '').trim(),
+        jshshir: String(values?.jshshir || '').trim(),
+        passportId: String(values?.passportId || '')
+          .trim()
+          .toUpperCase(),
+        ...(recallDate ? { recallDate } : {}),
+      };
+
+      updateLead.mutate(payload, {
+        onSuccess: () => {
+          alert("Qo'ng'iroq bo'yicha lead ma'lumotlari saqlandi", {
+            type: 'success',
+          });
+          handleClose();
+        },
+        onError: (error) => {
+          alert(
+            error?.message || "Lead ma'lumotlarini saqlashda xatolik yuz berdi",
+            { type: 'error' }
+          );
+        },
+      });
+    },
+    [updateLead, alert, handleClose]
+  );
 
   const onSubmit = handleSubmit((values) => {
     if (!leadId) {
@@ -166,32 +240,30 @@ export default function InboundCallLeadModal() {
       return;
     }
 
-    const payload = {
-      clientFullName: String(values?.clientFullName || '').trim(),
-      clientPhone: String(values?.clientPhone || '').trim(),
-      status: String(values?.status || '').trim(),
-      rejectionReason: String(values?.rejectionReason || '').trim(),
-      jshshir: String(values?.jshshir || '').trim(),
-      passportId: String(values?.passportId || '')
-        .trim()
-        .toUpperCase(),
-    };
+    if (RECALL_MODAL_CONFIG[values?.status]) {
+      setRecallModalStatus(values.status);
+      return;
+    }
 
-    updateLead.mutate(payload, {
-      onSuccess: () => {
-        alert("Qo'ng'iroq bo'yicha lead ma'lumotlari saqlandi", {
-          type: 'success',
-        });
-        handleClose();
-      },
-      onError: (error) => {
-        alert(
-          error?.message || "Lead ma'lumotlarini saqlashda xatolik yuz berdi",
-          { type: 'error' }
-        );
-      },
-    });
+    saveLeadPayload(values);
   });
+
+  const handleRecallConfirm = (recallDate) => {
+    const currentValues = {
+      clientFullName: watch('clientFullName'),
+      clientPhone: watch('clientPhone'),
+      status: recallModalStatus,
+      rejectionReason: watch('rejectionReason'),
+      jshshir: watch('jshshir'),
+      passportId: watch('passportId'),
+    };
+    setRecallModalStatus(null);
+    saveLeadPayload(currentValues, recallDate);
+  };
+
+  const handleRecallClose = () => {
+    setRecallModalStatus(null);
+  };
 
   const handleInboundCall = useCallback(
     (event) => {
@@ -208,7 +280,6 @@ export default function InboundCallLeadModal() {
         .map((record) => normalizeInboundCallPayload(record))
         .filter((record) => record?.leadId)
         .filter((record) => belongsToCurrentUser(record, user));
-
       if (!recordsForCurrentUser.length) return;
 
       const nextInboundLead =
@@ -219,7 +290,6 @@ export default function InboundCallLeadModal() {
         nextInboundLead?.clientPhone,
         nextInboundLead?.SlpCode,
       ].join('|');
-      console.log(event, 'event');
       const now = Date.now();
       if (
         lastInboundRef.current.key === dedupeKey &&
@@ -258,6 +328,11 @@ export default function InboundCallLeadModal() {
       rejectionReason: inboundLead.rejectionReason || '',
       jshshir: inboundLead.jshshir || '',
       passportId: inboundLead.passportId || '',
+      recallDate: formatDate(
+        inboundLead.recallDate,
+        'YYYY.MM.DD HH:mm',
+        'DD.MM.YYYY HH:mm'
+      ),
     });
   }, [inboundLead, reset]);
 
@@ -283,7 +358,21 @@ export default function InboundCallLeadModal() {
           </FormField>
 
           <FormField label="Telefon raqam">
-            <Input type="tel" placeholder="+998" {...register('clientPhone')} />
+            <Controller
+              name="clientPhone"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="+998 XX XXX XX XX"
+                  value={formatPhoneDisplay(field.value)}
+                  onChange={(e) => {
+                    field.onChange(normalizePhoneValue(e.target.value));
+                  }}
+                />
+              )}
+            />
           </FormField>
 
           <FormField label="Status">
@@ -357,6 +446,23 @@ export default function InboundCallLeadModal() {
                       .slice(0, 14);
                     field.onChange(digits);
                   }}
+                />
+              )}
+            />
+          </FormField>
+
+          <FormField label="Qayta aloqa vaqti">
+            <Controller
+              name="recallDate"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="date"
+                  includeTime
+                  variant="filled"
+                  disabled
+                  value={field.value || ''}
+                  onChange={() => {}}
                 />
               )}
             />
@@ -443,6 +549,14 @@ export default function InboundCallLeadModal() {
           </div>
         </div>
       </form>
+      <FollowUpModal
+        isOpen={!!recallModalStatus}
+        onClose={handleRecallClose}
+        onConfirm={handleRecallConfirm}
+        title={RECALL_MODAL_CONFIG[recallModalStatus]?.title}
+        label={RECALL_MODAL_CONFIG[recallModalStatus]?.label}
+        defaultValue={inboundLead?.recallDate || ''}
+      />
     </Modal>
   );
 }
