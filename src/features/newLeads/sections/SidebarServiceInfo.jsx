@@ -114,7 +114,7 @@ function OperatorFields({ leadId, leadData, canEdit }) {
     formState: { isDirty },
   } = form;
   const { data: branches } = useFetchBranches();
-  const { callCountOptions, rejectReasonOptions } = {
+  const { rejectReasonOptions } = {
     ...useSelectOptions('operator1'),
     ...useSelectOptions('common'),
   };
@@ -150,11 +150,8 @@ function OperatorFields({ leadId, leadData, canEdit }) {
           name="called"
           control={control}
           render={({ field }) => (
-            <button
-              type="button"
-              disabled={!canEdit}
-              onClick={() => field.onChange(!field.value)}
-              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+            <div
+              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] pointer-events-none select-none"
               style={
                 field.value
                   ? {
@@ -182,18 +179,15 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
               <span className="text-[11px] font-semibold">Qo'ng'iroq</span>
-            </button>
+            </div>
           )}
         />
         <Controller
           name="answered"
           control={control}
           render={({ field }) => (
-            <button
-              type="button"
-              disabled={!canEdit}
-              onClick={() => field.onChange(!field.value)}
-              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+            <div
+              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] pointer-events-none select-none"
               style={
                 field.value
                   ? {
@@ -221,7 +215,7 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span className="text-[11px] font-semibold">Javob berdi</span>
-            </button>
+            </div>
           )}
         />
         <Controller
@@ -230,11 +224,8 @@ function OperatorFields({ leadId, leadData, canEdit }) {
           render={({ field }) => {
             const isActive = field.value === true || field.value === 'true';
             return (
-              <button
-                type="button"
-                disabled={!canEdit}
-                onClick={() => field.onChange(isActive ? '' : true)}
-                className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+              <div
+                className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] pointer-events-none select-none"
                 style={
                   isActive
                     ? {
@@ -262,7 +253,7 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                   <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                 </svg>
                 <span className="text-[11px] font-semibold">Qiziqdi</span>
-              </button>
+              </div>
             );
           }}
         />
@@ -270,32 +261,22 @@ function OperatorFields({ leadId, leadData, canEdit }) {
 
       <div className="grid grid-cols-2 gap-[10px]">
         <LabeledField label="Umumiy qo'ng'iroqlar">
-          <ControlledSelect
-            name="callCount"
-            control={control}
-            disabled={!canEdit}
-          >
-            <SelectOption value="">Tanlang</SelectOption>
-            {(callCountOptions ?? []).map((o) => (
-              <SelectOption key={o.value} value={o.value}>
-                {o.label}
-              </SelectOption>
-            ))}
-          </ControlledSelect>
+          <Input
+            {...register('callCount')}
+            readOnly
+            disabled
+            className="w-full"
+            placeholder="—"
+          />
         </LabeledField>
         <LabeledField label="Javob berilmagan">
-          <ControlledSelect
-            name="noAnswerCount"
-            control={control}
-            disabled={!canEdit}
-          >
-            <SelectOption value="">Tanlang</SelectOption>
-            {(callCountOptions ?? []).map((o) => (
-              <SelectOption key={o.value} value={o.value}>
-                {o.label}
-              </SelectOption>
-            ))}
-          </ControlledSelect>
+          <Input
+            {...register('noAnswerCount')}
+            readOnly
+            disabled
+            className="w-full"
+            placeholder="—"
+          />
         </LabeledField>
         <LabeledField label="JSHSHIR" className="col-span-2">
           <Input
@@ -547,9 +528,9 @@ function ScoringFields({ leadId, leadData, canEdit }) {
         katm: leadData.katm ?? '',
         katmPayment: leadData.katmPayment ?? '',
         paymentHistory: leadData.paymentHistory || '',
-        mib: leadData.mib ?? '',
+        mib: leadData.mib || '',
         mibIrresponsible: leadData.mibIrresponsible ?? '',
-        aliment: leadData.aliment ?? '',
+        aliment: leadData.aliment || '',
         officialSalary: leadData.officialSalary ?? '',
         finalLimit: leadData.finalLimit ?? '',
         finalPercentage: leadData.finalPercentage ?? '',
