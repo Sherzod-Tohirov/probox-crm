@@ -10,10 +10,10 @@ export default function HeaderFilters({
   isMobile,
   branchOptions,
   operator1Options,
-  operator2Options,
+  // operator2Options,
   isBranchesLoading,
   isOperator1Loading,
-  isOperator2Loading,
+  // isOperator2Loading,
   // minimal = false,
   onSearchSubmit,
 }) {
@@ -92,7 +92,7 @@ export default function HeaderFilters({
           >
             <MultiSelectField
               name="operator"
-              label="Operator 1"
+              label="Operator"
               options={operator1Options}
               isLoading={isOperator1Loading}
               control={control}
@@ -101,7 +101,7 @@ export default function HeaderFilters({
             />
           </Col>
 
-          <Col
+          {/* <Col
             xs={12}
             sm={6}
             md={2}
@@ -118,7 +118,7 @@ export default function HeaderFilters({
               showAvatars={true}
               avatarSize={22}
             />
-          </Col>
+          </Col> */}
         </>
       )}
     </Row>
