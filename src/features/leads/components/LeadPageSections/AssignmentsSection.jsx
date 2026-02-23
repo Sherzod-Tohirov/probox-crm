@@ -16,6 +16,7 @@ export default function AssignmentsSection({
     defaultValues: {
       operator: lead?.operator ? String(lead.operator) : '',
       operator2: lead?.operator2 ? String(lead.operator2) : '',
+      scoring: lead?.scoring ? String(lead?.scoring) : '',
     },
   });
 
@@ -29,57 +30,42 @@ export default function AssignmentsSection({
 
   useEffect(() => {
     if (!lead) return;
-
-    const defaultValues = {
-      operator: lead?.operator ? String(lead.operator) : '',
-      operator2: lead?.operator2 ? String(lead.operator2) : '',
-    };
-
-    resetAssignments(defaultValues, {
-      keepDirty: false,
-    });
+    resetAssignments(
+      {
+        operator: lead.operator ? String(lead.operator) : '',
+        operator2: lead.operator2 ? String(lead.operator2) : '',
+        scoring: lead.scoring ? String(lead.scoring) : '',
+      },
+      { keepDirty: false }
+    );
   }, [lead, resetAssignments]);
 
-  const operator1Options = useMemo(() => {
-    const operator1Executors = executors.filter(
-      (executor) => String(executor.U_role) === 'Operator1'
-    );
-    return selectOptionsCreator(operator1Executors, {
-      label: 'SlpName',
-      value: 'SlpCode',
-      includeEmpty: true,
-      isEmptySelectable: true,
-    });
+  const roleOptions = useMemo(() => {
+    const byRole = (role) =>
+      selectOptionsCreator(
+        executors.filter((e) => String(e.U_role) === role),
+        {
+          label: 'SlpName',
+          value: 'SlpCode',
+          includeEmpty: true,
+          isEmptySelectable: true,
+        }
+      );
+    return {
+      operator1: byRole('Operator1'),
+      operator2: byRole('Operator2'),
+      scoring: byRole('Scoring'),
+    };
   }, [executors]);
 
-  const operator2Options = useMemo(() => {
-    const operator2Executors = executors.filter(
-      (executor) => String(executor.U_role) === 'Operator2'
-    );
-    return selectOptionsCreator(operator2Executors, {
-      label: 'SlpName',
-      value: 'SlpCode',
-      includeEmpty: true,
-      isEmptySelectable: true,
-    });
-  }, [executors]);
-
-  const operatorName = useMemo(
-    () => findExecutor(executors, lead?.operator)?.SlpName || '-',
-    [executors, lead?.operator]
-  );
-
-  const operator2Name = useMemo(
-    () => findExecutor(executors, lead?.operator2)?.SlpName || '-',
-    [executors, lead?.operator2]
-  );
+  const executorName = (id) => findExecutor(executors, id)?.SlpName || '-';
 
   const onSubmit = handleAssignmentsSubmit((values) => {
-    const payload = {
-      operator: String(values?.operator) || '',
-      operator2: String(values?.operator2) || '',
-    };
-    onSave(payload);
+    onSave({
+      operator: values.operator ? String(values.operator) : '',
+      operator2: values.operator2 ? String(values.operator2) : '',
+      scoring: values.scoring ? String(values.scoring) : '',
+    });
   });
 
   return (
@@ -93,7 +79,7 @@ export default function AssignmentsSection({
                 label="Operator 1"
                 control={assignmentsControl}
                 type="select"
-                options={operator1Options}
+                options={roleOptions.operator1}
                 disabled={!isOperatorManager}
               />
             </Col>
@@ -103,7 +89,7 @@ export default function AssignmentsSection({
                 label="Operator 2"
                 control={assignmentsControl}
                 type="select"
-                options={operator2Options}
+                options={roleOptions.operator2}
                 disabled={!isOperatorManager}
               />
             </Col>
@@ -112,6 +98,7 @@ export default function AssignmentsSection({
                 name="seller"
                 label="Sotuvchi"
                 control={null}
+                type="select"
                 disabled
                 defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
               />
@@ -120,9 +107,9 @@ export default function AssignmentsSection({
               <FormField
                 name="scoring"
                 label="Scoring"
-                control={null}
-                disabled
-                defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
+                control={assignmentsControl}
+                type="select"
+                options={roleOptions.scoring}
               />
             </Col>
           </Row>
@@ -146,7 +133,7 @@ export default function AssignmentsSection({
             control={null}
             disabled
             span={{ xs: 24, md: 8 }}
-            defaultValue={operatorName}
+            defaultValue={executorName(lead?.operator)}
           />
           <FormField
             name="operator2"
@@ -154,7 +141,7 @@ export default function AssignmentsSection({
             control={null}
             disabled
             span={{ xs: 24, md: 8 }}
-            defaultValue={operator2Name}
+            defaultValue={executorName(lead?.operator2)}
           />
           <FormField
             name="seller"
@@ -162,7 +149,7 @@ export default function AssignmentsSection({
             control={null}
             disabled
             span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.seller)?.SlpName}
+            defaultValue={executorName(lead?.seller)}
           />
           <FormField
             name="scoring"
@@ -170,7 +157,7 @@ export default function AssignmentsSection({
             control={null}
             disabled
             span={{ xs: 24, md: 8 }}
-            defaultValue={findExecutor(executors, lead?.scoring)?.SlpName}
+            defaultValue={executorName(lead?.scoring)}
           />
         </>
       )}
