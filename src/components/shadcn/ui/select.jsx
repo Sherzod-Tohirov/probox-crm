@@ -8,7 +8,7 @@ const Select = React.forwardRef(
         <select
           ref={ref}
           value={value}
-          onChange={(e) => onChange?.(e.target.value)}
+          onChange={onChange}
           className={cn(
             'h-[40px] appearance-none rounded-[8px] border px-[14px] py-[8px] text-[16px] font-medium leading-none outline-none transition-colors cursor-pointer',
             'border-[var(--primary-border-color)]',

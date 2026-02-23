@@ -42,8 +42,33 @@ function canEditTabRole(userRole, tabKey) {
   return (TAB_TO_ROLE[tabKey] ?? []).includes(userRole);
 }
 
-// DateInput outputs 'YYYY-MM-DD'; hooks expect 'DD.MM.YYYY'. This wrapper converts.
-function ControlledDateInput({ name, control, disabled }) {
+function ControlledSelect({
+  name,
+  control,
+  disabled,
+  className,
+  children,
+  setValueAs,
+}) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <Select
+          value={field.value ?? ''}
+          onChange={(val) => field.onChange(setValueAs ? setValueAs(val) : val)}
+          disabled={disabled}
+          className={className ?? 'w-full'}
+        >
+          {children}
+        </Select>
+      )}
+    />
+  );
+}
+
+function ControlledDateInput({ name, control, disabled, withTime = false }) {
   return (
     <Controller
       name={name}
@@ -51,12 +76,9 @@ function ControlledDateInput({ name, control, disabled }) {
       render={({ field }) => (
         <DateInput
           value={field.value}
-          onChange={(val) =>
-            field.onChange(
-              val ? moment(val, 'YYYY-MM-DD').format('DD.MM.YYYY') : ''
-            )
-          }
+          onChange={(val) => field.onChange(val ?? '')}
           disabled={disabled}
+          withTime={withTime}
           className="w-full"
         />
       )}
@@ -87,6 +109,7 @@ function OperatorFields({ leadId, leadData, canEdit }) {
   );
   const {
     register,
+    control,
     reset,
     formState: { isDirty },
   } = form;
@@ -119,15 +142,138 @@ function OperatorFields({ leadId, leadData, canEdit }) {
     value: b._id || b.id,
     label: b.name,
   }));
-
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
+      {/* Toggle row: called / answered / interested */}
+      <div className="grid grid-cols-3 gap-[6px]">
+        <Controller
+          name="called"
+          control={control}
+          render={({ field }) => (
+            <button
+              type="button"
+              disabled={!canEdit}
+              onClick={() => field.onChange(!field.value)}
+              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+              style={
+                field.value
+                  ? {
+                      backgroundColor: 'var(--button-bg)',
+                      borderColor: 'var(--button-bg)',
+                      color: 'var(--button-color)',
+                    }
+                  : {
+                      backgroundColor: 'var(--primary-input-bg)',
+                      borderColor: 'var(--primary-border-color)',
+                      color: 'var(--secondary-color)',
+                    }
+              }
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              <span className="text-[11px] font-semibold">Qo'ng'iroq</span>
+            </button>
+          )}
+        />
+        <Controller
+          name="answered"
+          control={control}
+          render={({ field }) => (
+            <button
+              type="button"
+              disabled={!canEdit}
+              onClick={() => field.onChange(!field.value)}
+              className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+              style={
+                field.value
+                  ? {
+                      backgroundColor: 'var(--success-color)',
+                      borderColor: 'var(--success-color)',
+                      color: '#fff',
+                    }
+                  : {
+                      backgroundColor: 'var(--primary-input-bg)',
+                      borderColor: 'var(--primary-border-color)',
+                      color: 'var(--secondary-color)',
+                    }
+              }
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span className="text-[11px] font-semibold">Javob berdi</span>
+            </button>
+          )}
+        />
+        <Controller
+          name="interested"
+          control={control}
+          render={({ field }) => {
+            const isActive = field.value === true || field.value === 'true';
+            return (
+              <button
+                type="button"
+                disabled={!canEdit}
+                onClick={() => field.onChange(isActive ? '' : true)}
+                className="flex flex-col items-center gap-[4px] rounded-[10px] border px-[8px] py-[8px] transition-all disabled:opacity-50"
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: 'var(--warning-color)',
+                        borderColor: 'var(--warning-color)',
+                        color: '#fff',
+                      }
+                    : {
+                        backgroundColor: 'var(--primary-input-bg)',
+                        borderColor: 'var(--primary-border-color)',
+                        color: 'var(--secondary-color)',
+                      }
+                }
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                </svg>
+                <span className="text-[11px] font-semibold">Qiziqdi</span>
+              </button>
+            );
+          }}
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-[10px]">
-        <LabeledField label="Umumiy qo'ng'iroqlar soni">
-          <Select
-            {...register('callCount')}
+        <LabeledField label="Umumiy qo'ng'iroqlar">
+          <ControlledSelect
+            name="callCount"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {(callCountOptions ?? []).map((o) => (
@@ -135,13 +281,13 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Javob berilmagan">
-          <Select
-            {...register('noAnswerCount')}
+          <ControlledSelect
+            name="noAnswerCount"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {(callCountOptions ?? []).map((o) => (
@@ -149,9 +295,9 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
-        <LabeledField label="JSHSHIR">
+        <LabeledField label="JSHSHIR" className="col-span-2">
           <Input
             {...register('jshshir')}
             disabled={!canEdit}
@@ -159,7 +305,7 @@ function OperatorFields({ leadId, leadData, canEdit }) {
             placeholder="—"
           />
         </LabeledField>
-        <LabeledField label="Passport ID">
+        <LabeledField label="Passport ID" className="col-span-2">
           <Input
             {...register('passportId')}
             disabled={!canEdit}
@@ -168,32 +314,28 @@ function OperatorFields({ leadId, leadData, canEdit }) {
           />
         </LabeledField>
         <LabeledField label="Uchrashuv sanasi va vaqti" className="col-span-2">
-          <input
-            {...register('meetingDate')}
-            type="datetime-local"
+          <ControlledDateInput
+            name="meetingDate"
+            control={control}
             disabled={!canEdit}
-            className="h-[40px] w-full rounded-[8px] border border-[var(--primary-border-color)] bg-[var(--primary-bg)] px-[12px] text-[14px] text-[var(--primary-color)] outline-none disabled:opacity-50"
+            withTime
           />
         </LabeledField>
-        <LabeledField label="Filial">
-          <Select
-            {...register('branch')}
-            disabled={!canEdit}
-            className="w-full"
-          >
+        <LabeledField label="Filial" className="col-span-2">
+          <ControlledSelect name="branch" control={control} disabled={!canEdit}>
             <SelectOption value="">Tanlang</SelectOption>
             {branchOptions.map((o) => (
               <SelectOption key={o.value} value={o.value}>
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Rad etish sababi" className="col-span-2">
-          <Select
-            {...register('rejectionReason')}
+          <ControlledSelect
+            name="rejectionReason"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {(rejectReasonOptions ?? []).map((o) => (
@@ -201,19 +343,17 @@ function OperatorFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
       </div>
-      {canEdit && (
-        <Button
-          type="submit"
-          size="sm"
-          className="w-full"
-          disabled={!isDirty || isSubmitting}
-        >
-          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
-        </Button>
-      )}
+      <Button
+        type="submit"
+        size="sm"
+        className="w-full"
+        disabled={!canEdit || !isDirty || isSubmitting}
+      >
+        {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+      </Button>
     </form>
   );
 }
@@ -264,16 +404,17 @@ function SellerFields({ leadId, leadData, canEdit }) {
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-[12px]">
       <div className="grid grid-cols-2 gap-[10px]">
-        <LabeledField label="Uchrashuv tasdiqlandi">
-          <Select
-            {...register('meetingConfirmed', { setValueAs: BOOL_SET_VALUE_AS })}
+        <LabeledField label="Uchrashuv tasdiqlandi" className="col-span-2">
+          <ControlledSelect
+            name="meetingConfirmed"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
+            setValueAs={BOOL_SET_VALUE_AS}
           >
             <SelectOption value="">Tanlang</SelectOption>
             <SelectOption value="true">Ha</SelectOption>
             <SelectOption value="false">Yo'q</SelectOption>
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Tasdiqlangan sana" className="col-span-2">
           <ControlledDateInput
@@ -283,10 +424,10 @@ function SellerFields({ leadId, leadData, canEdit }) {
           />
         </LabeledField>
         <LabeledField label="Filial">
-          <Select
-            {...register('branch2')}
+          <ControlledSelect
+            name="branch2"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {(branchOptions ?? []).map((o) => (
@@ -294,45 +435,42 @@ function SellerFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Sotuvchi">
-          <Select
-            {...register('seller')}
-            disabled={!canEdit}
-            className="w-full"
-          >
+          <ControlledSelect name="seller" control={control} disabled={!canEdit}>
             <SelectOption value="null">—</SelectOption>
             {(sellerOptions ?? []).map((o) => (
               <SelectOption key={o.value} value={o.value}>
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Savdo turi">
-          <Select
-            {...register('saleType')}
+          <ControlledSelect
+            name="saleType"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             {(sellTypeOptions ?? []).map((o) => (
               <SelectOption key={o.value} value={o.value}>
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Xarid amalga oshdimi?">
-          <Select
-            {...register('purchase', { setValueAs: BOOL_SET_VALUE_AS })}
+          <ControlledSelect
+            name="purchase"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
+            setValueAs={BOOL_SET_VALUE_AS}
           >
             <SelectOption value="">Tanlang</SelectOption>
             <SelectOption value="true">Ha</SelectOption>
             <SelectOption value="false">Yo'q</SelectOption>
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Xarid sanasi" className="col-span-2">
           <ControlledDateInput
@@ -358,10 +496,10 @@ function SellerFields({ leadId, leadData, canEdit }) {
           />
         </LabeledField>
         <LabeledField label="Rad etish sababi" className="col-span-2">
-          <Select
-            {...register('rejectionReason2')}
+          <ControlledSelect
+            name="rejectionReason2"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {(rejectReasonOptions ?? []).map((o) => (
@@ -369,19 +507,17 @@ function SellerFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
       </div>
-      {canEdit && (
-        <Button
-          type="submit"
-          size="sm"
-          className="w-full"
-          disabled={!isDirty || isSubmitting}
-        >
-          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
-        </Button>
-      )}
+      <Button
+        type="submit"
+        size="sm"
+        className="w-full"
+        disabled={!canEdit || !isDirty || isSubmitting}
+      >
+        {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+      </Button>
     </form>
   );
 }
@@ -474,10 +610,10 @@ function ScoringFields({ leadId, leadData, canEdit }) {
           />
         </LabeledField>
         <LabeledField label="To'lov tarixi">
-          <Select
-            {...register('paymentHistory')}
+          <ControlledSelect
+            name="paymentHistory"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {paymentHistoryOptions.map((o) => (
@@ -485,7 +621,7 @@ function ScoringFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
         <LabeledField label="Rasmiy oylik">
           <Input
@@ -521,10 +657,10 @@ function ScoringFields({ leadId, leadData, canEdit }) {
           />
         </LabeledField>
         <LabeledField label="Qabul qilingan sabab" className="col-span-2">
-          <Select
-            {...register('acceptedReason')}
+          <ControlledSelect
+            name="acceptedReason"
+            control={control}
             disabled={!canEdit}
-            className="w-full"
           >
             <SelectOption value="">Tanlang</SelectOption>
             {acceptedReasonOptions.map((o) => (
@@ -532,19 +668,17 @@ function ScoringFields({ leadId, leadData, canEdit }) {
                 {o.label}
               </SelectOption>
             ))}
-          </Select>
+          </ControlledSelect>
         </LabeledField>
       </div>
-      {canEdit && (
-        <Button
-          type="submit"
-          size="sm"
-          className="w-full"
-          disabled={!isDirty || isSubmitting}
-        >
-          {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
-        </Button>
-      )}
+      <Button
+        type="submit"
+        size="sm"
+        className="w-full"
+        disabled={!canEdit || !isDirty || isSubmitting}
+      >
+        {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+      </Button>
     </form>
   );
 }
@@ -567,28 +701,62 @@ export default function SidebarServiceInfo({ lead, leadId }) {
         <CardTitle>Xizmat ma'lumotlari</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-[16px]">
-        {/* Radio group */}
-        <div className="flex items-center gap-[16px]">
-          {TABS.map(({ key, label }) => (
-            <label
-              key={key}
-              className="flex cursor-pointer items-center gap-[6px]"
-            >
-              <input
-                type="radio"
-                name="serviceTab"
-                checked={activeTab === key}
-                onChange={() => setActiveTab(key)}
-                className="h-[15px] w-[15px] cursor-pointer accent-(--button-bg)"
-              />
-              <span
-                className="text-[13px] font-medium"
-                style={{ color: 'var(--primary-color)' }}
+        {/* Radio-style tab group */}
+        <div className="flex items-center gap-[6px]">
+          {TABS.map(({ key, label }) => {
+            const isActive = activeTab === key;
+            return (
+              <label
+                key={key}
+                className="flex flex-1 cursor-pointer items-center justify-center gap-[6px] rounded-[8px] px-[10px] py-[7px] transition-all"
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: 'var(--button-bg)',
+                        color: 'var(--button-color)',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.10)',
+                      }
+                    : {
+                        backgroundColor: 'var(--primary-input-bg)',
+                        color: 'var(--secondary-color)',
+                        border: '1px solid var(--primary-border-color)',
+                      }
+                }
               >
-                {label}
-              </span>
-            </label>
-          ))}
+                <input
+                  type="radio"
+                  name="serviceTab"
+                  value={key}
+                  checked={isActive}
+                  onChange={() => setActiveTab(key)}
+                  className="sr-only"
+                />
+                {/* Custom radio circle */}
+                <span
+                  className="flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full border-[2px] transition-all"
+                  style={
+                    isActive
+                      ? {
+                          borderColor: 'var(--button-color)',
+                          backgroundColor: 'transparent',
+                        }
+                      : {
+                          borderColor: 'var(--secondary-color)',
+                          backgroundColor: 'transparent',
+                        }
+                  }
+                >
+                  {isActive && (
+                    <span
+                      className="h-[6px] w-[6px] rounded-full"
+                      style={{ backgroundColor: 'var(--button-color)' }}
+                    />
+                  )}
+                </span>
+                <span className="text-[12px] font-semibold">{label}</span>
+              </label>
+            );
+          })}
         </div>
 
         {/* Tab content */}

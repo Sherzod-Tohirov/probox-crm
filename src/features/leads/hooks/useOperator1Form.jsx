@@ -55,8 +55,13 @@ export default function useOperator1Form(leadId, leadData, onSuccess) {
   const handleSubmit = form.handleSubmit((data) => {
     // Filter only Operator1 fields
     const filteredData = {};
+    const numberFields = ['callCount', 'noAnswerCount'];
     OPERATOR1_FIELDS.forEach((field) => {
       if (data[field] !== undefined && data[field] !== '') {
+        if (numberFields.includes(field)) {
+          filteredData[field] = Number(data[field]);
+          return;
+        }
         filteredData[field] = data[field];
       }
     });
