@@ -57,7 +57,8 @@ const MessageRenderer = ({
   useLayoutEffect(() => {
     const currentCount = formattedMessages.length;
     const isFirstPaint = previousMessageCountRef.current === 0;
-    const isNewMessageAppended = currentCount >= previousMessageCountRef.current;
+    const isNewMessageAppended =
+      currentCount >= previousMessageCountRef.current;
     const shouldAutoScroll =
       !isLoadingMore &&
       (isFirstPaint || isNewMessageAppended || wasNearBottomRef.current);
@@ -129,11 +130,7 @@ const MessageRenderer = ({
     <div className={styles['messenger-messages']} ref={scrollRef}>
       {/* Load More Button for infinite scroll */}
       {hasMore && onLoadMore && (
-        <Box
-          align="center"
-          justify="center"
-          style={{ marginBottom: '1rem' }}
-        >
+        <Box align="center" justify="center" style={{ marginBottom: '1rem' }}>
           <Button
             onClick={(e) => {
               e.stopPropagation();
@@ -179,14 +176,14 @@ const MessageRenderer = ({
                       ? Math.max(0, totalMessageCount - animationIndex - 1)
                       : 0;
                   return (
-                  <Message
-                    msg={message}
-                    key={message?.['_id']}
-                    onEditMessage={onEditMessage}
-                    onDeleteMessage={onDeleteMessage}
-                    size={size}
-                    animationIndex={staggerIndex}
-                  />
+                    <Message
+                      msg={message}
+                      key={message?.['_id']}
+                      onEditMessage={onEditMessage}
+                      onDeleteMessage={onDeleteMessage}
+                      size={size}
+                      animationIndex={staggerIndex}
+                    />
                   );
                 })}
               </AnimatePresence>
