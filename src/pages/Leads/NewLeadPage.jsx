@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
 
 import useLeadPageData from '@/features/leads/hooks/useLeadPageData';
@@ -80,9 +80,7 @@ export default function NewLeadPage() {
     entityId: id,
   });
 
-  const handleSave = (payload) => {
-    updateLead.mutate(payload);
-  };
+  const leadInfoRef = useRef(null);
 
   // Loading skeleton
   if (isLoading) {
@@ -152,7 +150,7 @@ export default function NewLeadPage() {
             </h1>
           </div>
           <Button
-            onClick={() => handleSave({})}
+            onClick={() => leadInfoRef.current?.submit()}
             disabled={updateLead.isPending}
           >
             <Save size={16} />
@@ -168,7 +166,7 @@ export default function NewLeadPage() {
               lead={lead}
               onLimitHistoryClick={() => setLimitHistoryModalOpen(true)}
             />
-            
+
             <PaymentScoreCard
               paymentScore={invoiceScoreData?.score ?? null}
               totalSum={
@@ -193,6 +191,7 @@ export default function NewLeadPage() {
             />
 
             <LeadInfoCard
+              ref={leadInfoRef}
               lead={lead}
               executors={executors ?? []}
               isOperatorManager={isOperatorManager}

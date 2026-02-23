@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Card,
@@ -64,6 +64,99 @@ const CONDITION_FILTER_OPTIONS = [
   { value: 'B/U', label: 'B/U' },
 ];
 
+const PAGE_SIZE = 12;
+
+const CONDITION_BADGE = {
+  Yangi: { bg: 'var(--success-bg)', color: 'var(--success-color)' },
+  'B/U': {
+    bg: 'var(--warning-bg, #fef3c7)',
+    color: 'var(--warning-color, #d97706)',
+  },
+};
+
+function DeviceResultCard({ item, onSelect }) {
+  const badge = CONDITION_BADGE[item.condition] || {
+    bg: 'var(--primary-bg)',
+    color: 'var(--secondary-color)',
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(item)}
+      className="flex w-full items-start gap-[10px] rounded-[10px] border px-[12px] py-[10px] text-left transition-colors hover:bg-[var(--primary-table-hover-bg)]"
+      style={{ borderColor: 'var(--primary-border-color)' }}
+    >
+      <div className="flex min-w-0 flex-1 flex-col gap-[4px]">
+        <div className="flex items-center gap-[6px]">
+          <span
+            className="truncate text-[13px] font-semibold leading-[18px]"
+            style={{ color: 'var(--primary-color)' }}
+          >
+            {item.name}
+          </span>
+          {item.condition && (
+            <span
+              className="shrink-0 rounded-[4px] px-[6px] py-[1px] text-[10px] font-semibold"
+              style={{ backgroundColor: badge.bg, color: badge.color }}
+            >
+              {item.condition}
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-[8px] gap-y-[2px]">
+          {item.storage && (
+            <span
+              className="text-[11px]"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              {item.storage}
+            </span>
+          )}
+          {item.color && (
+            <span
+              className="text-[11px]"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              {item.color}
+            </span>
+          )}
+          {item.whsName && (
+            <span
+              className="rounded-[4px] px-[5px] py-[1px] text-[10px]"
+              style={{
+                backgroundColor: 'var(--primary-input-bg)',
+                color: 'var(--secondary-color)',
+                border: '1px solid var(--primary-border-color)',
+              }}
+            >
+              {item.whsName}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex shrink-0 flex-col items-end gap-[4px]">
+        <span
+          className="text-[13px] font-bold"
+          style={{ color: 'var(--success-color)' }}
+        >
+          {item.price || '—'}
+        </span>
+        {item.onHand && (
+          <span
+            className="text-[10px] font-medium"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            {item.onHand}
+          </span>
+        )}
+      </div>
+    </button>
+  );
+}
+
 function DeviceSearchInput({
   canEdit,
   searchTerm,
@@ -73,6 +166,29 @@ function DeviceSearchInput({
   onSelect,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef(null);
+
+  const visibleItems = searchResults.slice(0, visibleCount);
+  const hasMore = visibleCount < searchResults.length;
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [searchResults]);
+
+  useEffect(() => {
+    if (!hasMore || !sentinelRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => c + PAGE_SIZE);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, visibleItems.length]);
 
   const handleSelect = (item) => {
     onSelect(item);
@@ -116,44 +232,38 @@ function DeviceSearchInput({
         }}
         align="start"
       >
-        <div className="max-h-[280px] overflow-y-auto p-[6px]">
+        <div className="max-h-[360px] overflow-y-auto p-[6px]">
           {isSearching ? (
-            <div
-              className="px-[10px] py-[12px] text-[13px]"
-              style={{ color: 'var(--secondary-color)' }}
-            >
-              Qidirilmoqda...
+            <div className="flex flex-col gap-[6px] p-[4px]">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[64px] animate-pulse rounded-[10px]"
+                  style={{ backgroundColor: 'var(--primary-input-bg)' }}
+                />
+              ))}
             </div>
-          ) : searchResults.length ? (
-            searchResults.map((item) => (
-              <button
-                key={item.id || `${item.name}-${item.whsCode}`}
-                type="button"
-                onClick={() => handleSelect(item)}
-                className="flex w-full flex-col gap-[2px] rounded-[8px] px-[10px] py-[8px] text-left transition-colors hover:bg-[var(--primary-table-hover-bg)]"
-              >
-                <span
-                  className="text-[13px] font-semibold"
-                  style={{ color: 'var(--primary-color)' }}
+          ) : visibleItems.length ? (
+            <div className="flex flex-col gap-[4px]">
+              {visibleItems.map((item) => (
+                <DeviceResultCard
+                  key={item.id || `${item.name}-${item.whsCode}`}
+                  item={item}
+                  onSelect={handleSelect}
+                />
+              ))}
+              {hasMore && (
+                <div
+                  ref={sentinelRef}
+                  className="flex items-center justify-center py-[8px]"
                 >
-                  {item.name}
-                </span>
-                <span
-                  className="text-[11px]"
-                  style={{ color: 'var(--secondary-color)' }}
-                >
-                  {[item.storage, item.color, item.onHand]
-                    .filter(Boolean)
-                    .join(' • ')}
-                </span>
-                <span
-                  className="text-[12px] font-medium"
-                  style={{ color: 'var(--success-color)' }}
-                >
-                  {item.price || '—'}
-                </span>
-              </button>
-            ))
+                  <div
+                    className="h-[6px] w-[6px] animate-pulse rounded-full"
+                    style={{ backgroundColor: 'var(--secondary-color)' }}
+                  />
+                </div>
+              )}
+            </div>
           ) : (
             <div
               className="px-[10px] py-[12px] text-[13px]"
@@ -363,6 +473,10 @@ export default function ContractCard({
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const handleDeviceSearchRef = useRef(handleDeviceSearch);
+  useEffect(() => {
+    handleDeviceSearchRef.current = handleDeviceSearch;
+  }, [handleDeviceSearch]);
 
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
@@ -529,7 +643,7 @@ export default function ContractCard({
 
       setIsSearching(true);
       try {
-        const result = await handleDeviceSearch(query, 1);
+        const result = await handleDeviceSearchRef.current(query, 1);
         if (!isActive) return;
         setSearchResults(Array.isArray(result?.data) ? result.data : []);
       } catch {
@@ -543,7 +657,7 @@ export default function ContractCard({
       isActive = false;
       clearTimeout(timer);
     };
-  }, [searchTerm, handleDeviceSearch]);
+  }, [searchTerm, conditionFilter, searchBranchFilter]);
 
   return (
     <Card>
