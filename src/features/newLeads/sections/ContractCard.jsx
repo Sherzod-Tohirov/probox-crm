@@ -657,7 +657,7 @@ export default function ContractCard({
       isActive = false;
       clearTimeout(timer);
     };
-  }, [searchTerm]);
+  }, [searchTerm, conditionFilter, searchBranchFilter]);
 
   return (
     <Card>

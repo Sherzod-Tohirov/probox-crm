@@ -84,8 +84,24 @@ export const REJECTION_REASON_OPTIONS = [
     label: 'Mijoz filialga kela olmaydi',
   },
   {
+    value: 'KATM sababli bekor qilindi',
+    label: 'KATM sababli bekor qilindi',
+  },
+  {
+    value: 'MIB sababli bekor qilindi',
+    label: 'MIB sababli bekor qilindi',
+  },
+  {
     value: 'Skoringdan bekor qilindi',
     label: 'Skoringdan bekor qilindi',
+  },
+  {
+    value: "To'lov bo'yicha, Procare",
+    label: "To'lov bo'yicha, Procare",
+  },
+  {
+    value: "Muammo bo'yicha, Procare",
+    label: "Muammo bo'yicha, Procare",
   },
   {
     value: 'Umuman aloqaga chiqib bo`lmadi',
