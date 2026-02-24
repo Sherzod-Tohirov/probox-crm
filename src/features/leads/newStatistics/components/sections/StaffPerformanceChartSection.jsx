@@ -57,7 +57,7 @@ export default function StaffPerformanceChartSection({
     ...config,
     data: operatorRows.map((item) => toNumber(item?.totals?.[config.key])),
   }));
-  const chartWidth = Math.max(1100, operatorRows.length * 120);
+  const chartWidth = Math.max(1100, operatorRows.length * 160);
 
   const option = {
     tooltip: {
@@ -66,6 +66,22 @@ export default function StaffPerformanceChartSection({
       backgroundColor: 'var(--primary-bg)',
       borderColor: 'var(--primary-border-color)',
       textStyle: { color: 'var(--chart-text-color)', fontSize: 13 },
+      formatter: (params) => {
+        const fullName =
+          operatorRows[params[0]?.dataIndex]?.displayName ??
+          params[0]?.axisValue;
+        const rows = params
+          .map(
+            (p) =>
+              `<div style="display:flex;align-items:center;gap:6px;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};"></span>
+                <span>${p.seriesName}</span>
+                <span style="margin-left:auto;font-weight:700;padding-left:12px;">${p.value}</span>
+              </div>`
+          )
+          .join('');
+        return `<div style="min-width:160px;"><div style="font-weight:700;margin-bottom:6px;">${fullName}</div>${rows}</div>`;
+      },
     },
     legend: {
       data: enhancedSeries.map((s) => s.name),
@@ -76,7 +92,7 @@ export default function StaffPerformanceChartSection({
       left: '0%',
       right: '3%',
       top: '0%',
-      bottom: '10%',
+      bottom: '15%',
       containLabel: true,
     },
     xAxis: {
@@ -85,9 +101,12 @@ export default function StaffPerformanceChartSection({
       axisLine: { lineStyle: { color: 'var(--primary-border-color)' } },
       axisLabel: {
         color: 'var(--chart-axis-label-color)',
-        fontSize: 13.5,
+        fontSize: 12,
         interval: 0,
-        rotate: operatorRows.length > 10 ? 22 : 0,
+        rotate: 30,
+        overflow: 'truncate',
+        width: 80,
+        formatter: (name) => name.split(' ')[0],
       },
     },
     yAxis: {
@@ -115,7 +134,10 @@ export default function StaffPerformanceChartSection({
     <Card
       title={title}
       rightTitle={
-        <span className='text-[16px]' style={{ color: 'var(--secondary-color)' }}>
+        <span
+          className="text-[16px]"
+          style={{ color: 'var(--secondary-color)' }}
+        >
           Jami leadlar{' '}
           <span
             style={{
@@ -160,7 +182,11 @@ export default function StaffPerformanceChartSection({
             </div>
           ) : (
             <div className="w-full overflow-x-auto">
-              <EChart option={option} height={350} style={{ width: `${chartWidth}px` }} />
+              <EChart
+                option={option}
+                height={350}
+                style={{ width: `${chartWidth}px` }}
+              />
             </div>
           )}
         </Col>

@@ -1,45 +1,50 @@
-@use "@styles/variables" as v;
-@use "@styles/mixins" as m;
+@use '@styles/variables' as v;
+@use '@styles/mixins' as m;
 
 .page-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 1000;
   @include m.flex-center;
-  background-color: v.$primary-bg;
-  backdrop-filter: blur(15px);
-}
-
-.page-loader {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  @include m.flex-center;
-  width: 100%;
-  min-height: 70vh;
-  background-color: v.$primary-bg;
-  opacity: 0.95;
-  z-index: 1000;
-  animation: fadeIn 0.2s;
-  backdrop-filter: blur(5px);
+  background-color: color-mix(in srgb, var(--primary-bg) 60%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn 0.18s ease;
 
   &.fullscreen {
     position: fixed;
     width: 100dvw;
-    height: 100%;
+    height: 100dvh;
   }
 }
 
-.skeleton-wrapper {
-  width: min(680px, 90%);
-  display: flex;
+.loader-content {
+  @include m.flex-center;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--button-bg) 18%, transparent);
+  border-top-color: v.$button-bg;
+  animation: spin 0.75s linear infinite;
+}
+
+.loader-text {
+  font-size: 3.2rem;
+  font-weight: 600;
+  color: v.$primary-color;
+  letter-spacing: 0.4px;
+  opacity: 0.75;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {

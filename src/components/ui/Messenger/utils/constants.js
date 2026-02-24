@@ -162,6 +162,7 @@ export const FIELD_LABELS = {
   newTime: "Yangi o'zgarish vaqti",
   consideringBumped: "O'ylab ko'rish",
   consideringBumpedReason: "O'ylab ko'rish sababi",
+  recallBumpedAt: "Ro'yxatda ko'tarilgan sanasi",
 };
 
 export const STATUS_LABELS = {
@@ -202,6 +203,7 @@ export const DATETIME_FIELDS = new Set([
   'updated_at',
   'updatedAt',
   'newTime',
+  'recallBumpedAt',
 ]);
 
 // Pul maydonlari (1,000,000 formatda ko'rsatiladi)

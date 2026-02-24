@@ -6,7 +6,7 @@ import useToggle from '@hooks/useToggle';
 import MessageForm from './MessageForm';
 import MessageRenderer from './MessageRenderer';
 import { ClipLoader } from 'react-spinners';
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useCallback, useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 export const Messenger = (
@@ -25,6 +25,21 @@ export const Messenger = (
   ref
 ) => {
   const { isOpen, toggle } = useToggle('messenger');
+  const [isSending, setIsSending] = useState(false);
+  const pendingIdRef = useRef(0);
+
+  const handleSendMessage = useCallback(
+    async (data) => {
+      pendingIdRef.current++;
+      setIsSending(true);
+      try {
+        await onSendMessage(data);
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [onSendMessage]
+  );
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -78,7 +93,11 @@ export const Messenger = (
         )}
       </div>
       <div className={styles['messenger-footer']}>
-        <MessageForm onSubmit={onSendMessage} entityType={entityType} />
+        <MessageForm
+          onSubmit={handleSendMessage}
+          entityType={entityType}
+          isSending={isSending}
+        />
       </div>
     </motion.div>,
     document.body
