@@ -216,19 +216,6 @@ const LeadInfoCard = forwardRef(function LeadInfoCard(
       ),
     [executors]
   );
-  const operator2Options = useMemo(
-    () =>
-      selectOptionsCreator(
-        (executors ?? []).filter((e) => String(e.U_role) === 'Operator2'),
-        {
-          label: 'SlpName',
-          value: 'SlpCode',
-          includeEmpty: true,
-          isEmptySelectable: true,
-        }
-      ),
-    [executors]
-  );
 
   const operatorName = useMemo(
     () =>
