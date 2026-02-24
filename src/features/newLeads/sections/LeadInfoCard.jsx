@@ -364,14 +364,24 @@ const LeadInfoCard = forwardRef(function LeadInfoCard(
                 <SectionDivider title="Manzil ma'lumotlari" />
                 <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3">
                   <LabeledField label="Viloyat">
-                    <Select {...register('region')} className="w-full">
-                      <SelectOption value="">Tanlang</SelectOption>
-                      {REGION_OPTIONS.map((r) => (
-                        <SelectOption key={r.value} value={r.value}>
-                          {r.label}
-                        </SelectOption>
-                      ))}
-                    </Select>
+                    <RHFController
+                      name="region"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="w-full"
+                        >
+                          <SelectOption value="">Tanlang</SelectOption>
+                          {REGION_OPTIONS.map((r) => (
+                            <SelectOption key={r.value} value={r.value}>
+                              {r.label}
+                            </SelectOption>
+                          ))}
+                        </Select>
+                      )}
+                    />
                   </LabeledField>
 
                   <LabeledField label="Tuman">
@@ -420,35 +430,46 @@ const LeadInfoCard = forwardRef(function LeadInfoCard(
                 <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3">
                   {canEditStatus && (
                     <LabeledField label="Status">
-                      <Select {...register('status')} className="w-full">
-                        <SelectOption value="">Tanlang</SelectOption>
-                        {selectableStatusOptions.map((s) => (
-                          <SelectOption key={s.value} value={s.value}>
-                            {s.label}
-                          </SelectOption>
-                        ))}
-                      </Select>
+                      <RHFController
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onChange={field.onChange}
+                            className="w-full"
+                          >
+                            <SelectOption value="">Tanlang</SelectOption>
+                            {selectableStatusOptions.map((s) => (
+                              <SelectOption key={s.value} value={s.value}>
+                                {s.label}
+                              </SelectOption>
+                            ))}
+                          </Select>
+                        )}
+                      />
                     </LabeledField>
                   )}
                   {isOperatorManager && (
                     <>
-                      <LabeledField label="Operator 1">
-                        <Select {...register('operator')} className="w-full">
-                          {operator1Options.map((o) => (
-                            <SelectOption key={o.value} value={o.value}>
-                              {o.label}
-                            </SelectOption>
-                          ))}
-                        </Select>
-                      </LabeledField>
-                      <LabeledField label="Operator 2">
-                        <Select {...register('operator2')} className="w-full">
-                          {operator2Options.map((o) => (
-                            <SelectOption key={o.value} value={o.value}>
-                              {o.label}
-                            </SelectOption>
-                          ))}
-                        </Select>
+                      <LabeledField label="Operator">
+                        <RHFController
+                          name="operator"
+                          control={control}
+                          render={({ field }) => (
+                            <Select
+                              value={field.value}
+                              onChange={field.onChange}
+                              className="w-full"
+                            >
+                              {operator1Options.map((o) => (
+                                <SelectOption key={o.value} value={o.value}>
+                                  {o.label}
+                                </SelectOption>
+                              ))}
+                            </Select>
+                          )}
+                        />
                       </LabeledField>
                     </>
                   )}

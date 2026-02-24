@@ -48,10 +48,15 @@ const messageInputRenderer = (type, form = {}, formData = {}) => {
   }
 };
 
-const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
+const MessageForm = ({
+  onSubmit,
+  size = '',
+  entityType = 'client',
+  isSending = false,
+}) => {
   const [messageType, setMessageType] = useState('text');
   const [audioBlob, setAudioBlob] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [_isRecording, setIsRecording] = useState(false);
 
   // For leads, always use text-only mode
   const isTextOnly = entityType === 'lead';
@@ -79,7 +84,9 @@ const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
 
   return (
     <form
-      className={classNames(styles['text-input-form'], styles[size])}
+      className={classNames(styles['text-input-form'], styles[size], {
+        [styles['form-sending']]: isSending,
+      })}
       onSubmit={handleSubmit(async (data) => {
         await onSubmit(data);
         reset();
@@ -166,17 +173,22 @@ const MessageForm = ({ onSubmit, size = '', entityType = 'client' }) => {
             <Col style={{ marginLeft: 'auto' }}>
               <Button
                 className={classNames(styles['send-btn'], {
-                  [styles['invalid']]: !isValid,
+                  [styles['invalid']]: !isValid || isSending,
                 })}
                 style={{ fontWeight: 500 }}
-                icon="send"
+                icon={isSending ? undefined : 'send'}
                 variant="text"
                 iconPosition="right"
                 iconColor="primary"
                 color="primary"
                 type="submit"
+                disabled={isSending}
               >
-                Yuborish
+                {isSending ? (
+                  <span className={styles['send-spinner']} />
+                ) : (
+                  'Yuborish'
+                )}
               </Button>
             </Col>
           </Row>

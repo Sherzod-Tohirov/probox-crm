@@ -1,10 +1,19 @@
 import { AVAILABLE_LEAD_SOURCES } from '@features/leads/utils/constants';
+import { isCamelCase, camelCaseToNormal } from '@utils/stringUtils';
 
 export const sourceOptions = [
-  ...AVAILABLE_LEAD_SOURCES.map((source) => ({
-    value: source,
-    label: source === 'Kiruvchi qongiroq' ? 'Eski qongiroq' : source,
-  })),
+  ...AVAILABLE_LEAD_SOURCES.map((source) => {
+    if (isCamelCase(source)) {
+      return {
+        value: source,
+        label: camelCaseToNormal(source),
+      };
+    }
+    return {
+      value: source,
+      label: source === 'Kiruvchi qongiroq' ? 'Eski qongiroq' : source,
+    };
+  }),
 ];
 
 export const booleanOptionsAll = [

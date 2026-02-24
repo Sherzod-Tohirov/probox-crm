@@ -3,6 +3,7 @@ import { useMemo, useCallback, cloneElement } from 'react';
 import {
   Archive,
   Ban,
+  Bot,
   Calculator,
   CheckCircle2,
   ClipboardCheck,
@@ -273,15 +274,21 @@ export default function useLeadsTableColumns() {
       },
       Kiruvchi: {
         icon: 'telephone',
-        bgColor: '#0ea5e9',
+        bgColor: '#10b981',
         textColor: '#fff',
         name: 'Kiruvchi',
       },
       Chiquvchi: {
         icon: 'telephone',
-        bgColor: '#1f7fbcff',
+        bgColor: '#ef4444',
         textColor: '#fff',
         name: 'Chiquvchi',
+      },
+      TelegramBot: {
+        icon: Bot,
+        bgColor: '#0088cc',
+        textColor: '#fff',
+        name: 'Telegram bot',
       },
     };
 
@@ -486,11 +493,13 @@ export default function useLeadsTableColumns() {
                   color: '#fff',
                 }}
               >
-                {iconsMap[sourceStyle.icon]
-                  ? cloneElement(iconsMap[sourceStyle.icon], {
-                      style: { color: '#fff' },
-                    })
-                  : null}
+                {iconsMap[sourceStyle.icon] ? (
+                  cloneElement(iconsMap[sourceStyle.icon], {
+                    style: { color: '#fff' },
+                  })
+                ) : (
+                  <sourceStyle.icon />
+                )}
               </span>
               <span
                 style={{
