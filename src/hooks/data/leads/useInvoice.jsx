@@ -302,7 +302,7 @@ export default function useInvoice(options = {}) {
       if (!sellerName && hasSellerCode) {
         try {
           const executorsResponse = await getExecutors({
-            include_role: 'Seller',
+            include_role: ['Seller', 'SellerM'],
           });
 
           // Response strukturasini tekshirish

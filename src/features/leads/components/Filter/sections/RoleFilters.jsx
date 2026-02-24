@@ -288,7 +288,7 @@ export default function RoleFilters({
         </>
       )}
 
-      {hasRole(role, ['Seller', 'CEO']) && (
+      {hasRole(role, ['Seller', 'SellerM', 'CEO']) && (
         <Col
           xs={12}
           sm={6}

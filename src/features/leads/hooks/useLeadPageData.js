@@ -16,12 +16,14 @@ const TAB_TO_ROLE = {
   seller: 'Seller',
   scoring: 'Scoring',
   operatorM: 'OperatorM',
+  sellerM: 'SellerM',
 };
 
 const ROLE_TO_TAB = {
   Operator1: 'operator1',
   Operator2: 'operator2',
   Seller: 'seller',
+  SellerM: 'sellerM',
   Scoring: 'scoring',
 };
 
@@ -43,7 +45,14 @@ export default function useLeadPageData(leadId) {
   });
   const { data: lead } = data ?? {};
   const { data: executors = [] } = useFetchExecutors({
-    include_role: ['Operator1', 'Operator2', 'Seller', 'Scoring', 'OperatorM'],
+    include_role: [
+      'Operator1',
+      'Operator2',
+      'Seller',
+      'SellerM',
+      'Scoring',
+      'OperatorM',
+    ],
   });
 
   const { data: filesData } = useFetchLeadFiles(
@@ -83,6 +92,7 @@ export default function useLeadPageData(leadId) {
           'Operator1',
           'Operator2',
           'Seller',
+          'SellerM',
           'Scoring',
           'OperatorM',
           'CEO',
@@ -106,6 +116,7 @@ export default function useLeadPageData(leadId) {
       canEditTab('operator2') ||
       canEditTab('operatorM') ||
       canEditTab('seller') ||
+      canEditTab('sellerM') ||
       canEditTab('scoring')
     );
   }, [canEditTab, isBlocked]);

@@ -7,7 +7,7 @@ export function useSelectOptions(tab) {
 
   const { data: executors } = useFetchExecutors({
     // branch: user?.U_branch,
-    include_role: 'Seller',
+    include_role: ['Seller', 'SellerM'],
   });
 
   const { data: branches } = useFetchBranches();

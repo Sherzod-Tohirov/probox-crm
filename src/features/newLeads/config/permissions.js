@@ -6,16 +6,16 @@
 export const TAB_PERMISSIONS = {
   operator: {
     allowedRoles: ['Operator1', 'OperatorM'],
-    fields: ['meetingConfirmed', 'meetingDate', 'branch', 'seller']
+    fields: ['meetingConfirmed', 'meetingDate', 'branch', 'seller'],
   },
   seller: {
-    allowedRoles: ['Seller'],
-    fields: ['meetingConfirmed', 'saleType', 'purchase']
+    allowedRoles: ['Seller', 'SellerM'],
+    fields: ['meetingConfirmed', 'saleType', 'purchase'],
   },
   scoring: {
     allowedRoles: ['Scoring'],
-    fields: ['scoringResult', 'katm', 'mib']
-  }
+    fields: ['scoringResult', 'katm', 'mib'],
+  },
 };
 
 /**
@@ -36,7 +36,7 @@ export const canEditTab = (userRole, tabName) => {
  * @returns {string[]} Array of tab names user can edit
  */
 export const getUserEditableTabs = (userRole) => {
-  return Object.keys(TAB_PERMISSIONS).filter(tabName => 
+  return Object.keys(TAB_PERMISSIONS).filter((tabName) =>
     canEditTab(userRole, tabName)
   );
 };

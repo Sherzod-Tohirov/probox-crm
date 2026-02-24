@@ -39,11 +39,12 @@ export default function AdvancedFilterModal({
   const { data: operator2List = [] } = useFetchExecutors({
     include_role: 'Operator2',
   });
-  const shouldLoadSeller = role === 'Seller' || role === 'CEO';
+  const shouldLoadSeller =
+    role === 'Seller' || role === 'SellerM' || role === 'CEO';
   const shouldLoadScoring = role === 'Scoring';
   const { data: sellerList = [], isLoading: isSellerLoading } =
     useFetchExecutors(
-      shouldLoadSeller ? { include_role: 'Seller' } : undefined
+      shouldLoadSeller ? { include_role: ['Seller', 'SellerM'] } : undefined
     );
   const { data: scoringList = [], isLoading: isScoringLoading } =
     useFetchExecutors(
