@@ -7,6 +7,7 @@ export const AVAILABLE_LEAD_SOURCES = [
   'Kiruvchi',
   'Chiquvchi',
   'Qayta sotuv',
+  'TelegramBot',
 ];
 
 export const AVAILABLE_LEAD_STATUSES = [
