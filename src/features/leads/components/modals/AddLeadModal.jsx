@@ -65,7 +65,7 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const { data: operators = [], isLoading: isOperatorsLoading } =
     useFetchExecutors({ include_role: 'Operator1' });
 
-  const isSeller = user?.U_role === 'Seller';
+  const isSeller = user?.U_role === 'Seller' || user?.U_role === 'SellerM';
 
   const sourceOptions = getSourceOptions(isSeller);
   const operatorOptions = getOperatorOptions(operators);
@@ -95,8 +95,8 @@ export default function AddLeadModal({ isOpen, onClose, onCreated }) {
   const selectedBranchId = watch('branchId');
   const { data: sellers = [], isLoading: isSellersLoading } = useFetchExecutors(
     selectedBranchId
-      ? { include_role: 'Seller', branch: selectedBranchId }
-      : { include_role: 'Seller' }
+      ? { include_role: ['Seller', 'SellerM'], branch: selectedBranchId }
+      : { include_role: ['Seller', 'SellerM'] }
   );
 
   const branchOptions = useMemo(

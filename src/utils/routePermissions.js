@@ -14,16 +14,30 @@ const routePermissions = {
     // Accessible to all authenticated users
   },
   '/clients': {
-    excludedRoles: ['Operator1', 'Operator2', 'Seller', 'OperatorM'], // Operators cannot access statistics
+    excludedRoles: ['Operator1', 'Operator2', 'Seller', 'SellerM', 'OperatorM'], // Operators cannot access statistics
   },
   '/clients/statistics': {
-    excludedRoles: ['Operator1', 'Operator2', 'Scoring', 'Seller', 'OperatorM'],
+    excludedRoles: [
+      'Operator1',
+      'Operator2',
+      'Scoring',
+      'Seller',
+      'SellerM',
+      'OperatorM',
+    ],
   },
   '/calendar': {
     // Accessible to all authenticated users
   },
   '/statistics': {
-    excludedRoles: ['Operator1', 'Operator2', 'Scoring', 'Seller', 'OperatorM'], // Operators cannot access statistics
+    excludedRoles: [
+      'Operator1',
+      'Operator2',
+      'Scoring',
+      'Seller',
+      'SellerM',
+      'OperatorM',
+    ], // Operators cannot access statistics
   },
   '/products': {
     // Accessible to all authenticated users
@@ -34,6 +48,7 @@ const routePermissions = {
       'Operator2',
       'Scoring',
       'Seller',
+      'SellerM',
       'OperatorM',
       'CEO',
       'Manager',
@@ -45,6 +60,7 @@ const routePermissions = {
       'Operator2',
       'Scoring',
       'Seller',
+      'SellerM',
       'OperatorM',
       'CEO',
       'Manager',

@@ -27,7 +27,7 @@ const TABS = [
 
 const TAB_TO_ROLE = {
   operator: ['Operator1', 'OperatorM'],
-  seller: ['Seller'],
+  seller: ['Seller', 'SellerM'],
   scoring: ['Scoring'],
 };
 
@@ -35,6 +35,7 @@ const ROLE_TO_TAB = {
   Operator1: 'operator',
   OperatorM: 'operator',
   Seller: 'seller',
+  SellerM: 'seller',
   Scoring: 'scoring',
 };
 

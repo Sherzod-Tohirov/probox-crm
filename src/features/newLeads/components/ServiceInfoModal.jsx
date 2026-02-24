@@ -214,7 +214,9 @@ export default function ServiceInfoModal({
                   <Select {...register('seller')} disabled={!canEditOperator}>
                     <SelectOption value="">Tanlang</SelectOption>
                     {(executors || [])
-                      .filter((e) => e?.U_role === 'Seller')
+                      .filter(
+                        (e) => e?.U_role === 'Seller' || e?.U_role === 'SellerM'
+                      )
                       .map((e) => (
                         <SelectOption key={e.SlpCode} value={String(e.SlpCode)}>
                           {e.SlpName}

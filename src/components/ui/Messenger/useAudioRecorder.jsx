@@ -50,10 +50,26 @@ const useAudioRecorder = ({
       });
       streamRef.current = stream;
 
-      const mimeType = 'audio/webm;codecs=opus';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.error('Mime type audio/webm;codecs=opus not supported');
-        throw new Error('Unsupported mime type');
+      // Try different MIME types in order of preference
+      const mimeTypes = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg;codecs=opus',
+        'audio/mp4',
+        'audio/wav',
+      ];
+
+      let mimeType = null;
+      for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+
+      if (!mimeType) {
+        console.error('No supported audio MIME type found');
+        throw new Error('No supported audio format available');
       }
 
       const mediaRecorder = new MediaRecorder(stream, { mimeType });
@@ -68,16 +84,44 @@ const useAudioRecorder = ({
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
           audioChunksRef.current.push(e.data);
+          console.log(
+            `Audio chunk received: ${e.data.size} bytes, type: ${e.data.type}`
+          );
+        } else {
+          console.warn('Received empty audio chunk');
         }
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        setAudioBlob(audioBlob);
-        const duration = await getAccurateDuration(audioBlob);
-        audioBlob.duration = duration;
-        stream.getTracks().forEach((track) => track.stop());
-        setRecordingTime(0);
+        try {
+          console.log(
+            `Creating audio blob from ${audioChunksRef.current.length} chunks`
+          );
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: mimeType,
+          });
+
+          if (audioBlob.size === 0) {
+            console.error('Audio blob is empty');
+            throw new Error('Recording failed - no audio data captured');
+          }
+
+          console.log(
+            `Audio blob created: ${audioBlob.size} bytes, type: ${audioBlob.type}`
+          );
+          setAudioBlob(audioBlob);
+
+          const duration = await getAccurateDuration(audioBlob);
+          audioBlob.duration = duration;
+          console.log(`Audio duration: ${duration}s`);
+
+          stream.getTracks().forEach((track) => track.stop());
+          setRecordingTime(0);
+        } catch (error) {
+          console.error('Error processing audio blob:', error);
+          stream.getTracks().forEach((track) => track.stop());
+          setRecordingTime(0);
+        }
       };
 
       mediaRecorder.onpause = () => {

@@ -11,6 +11,7 @@ import { omit } from 'ramda';
 import { Controller } from 'react-hook-form';
 import PhoneInput from 'react-phone-input-2';
 import * as r from 'ramda';
+import useAuth from '@/hooks/useAuth';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { formatPhoneNumber } from '@utils/formatPhoneNumber';
@@ -67,6 +68,8 @@ const Input = forwardRef(
     ref
   ) => {
     const [loadedImages, setLoadedImages] = useState({});
+    const { user } = useAuth();
+    const userRole = user?.U_role;
     const findFileType = useCallback((file) => {
       if (file.type === 'server') {
         const extension = file.image.split('.').pop()?.toLowerCase();
@@ -431,15 +434,36 @@ const Input = forwardRef(
                     </option>
                   ) : null;
                 })()}
-                {options.map((option) => (
-                  <option
-                    disabled={option.isNotSelectable}
-                    key={String(option.value)}
-                    value={String(option.value)}
-                  >
-                    {option.label}
-                  </option>
-                ))}
+                {options.map((option) => {
+                  // Check if option should be disabled based on roles
+                  let isDisabled = option.isNotSelectable || false;
+
+                  if (
+                    userRole &&
+                    option.allowedRoles &&
+                    Array.isArray(option.allowedRoles)
+                  ) {
+                    isDisabled = !option.allowedRoles.includes(userRole);
+                  }
+
+                  if (
+                    userRole &&
+                    option.excludedRoles &&
+                    Array.isArray(option.excludedRoles)
+                  ) {
+                    isDisabled = option.excludedRoles.includes(userRole);
+                  }
+
+                  return (
+                    <option
+                      disabled={isDisabled}
+                      key={String(option.value)}
+                      value={String(option.value)}
+                    >
+                      {option.label}
+                    </option>
+                  );
+                })}
               </select>
             )}
           />
@@ -508,15 +532,36 @@ const Input = forwardRef(
                 </option>
               ) : null;
             })()}
-            {options.map((option) => (
-              <option
-                disabled={option.isNotSelectable}
-                key={String(option.value)}
-                value={String(option.value)}
-              >
-                {option.label}
-              </option>
-            ))}
+            {options.map((option) => {
+              // Check if option should be disabled based on roles
+              let isDisabled = option.isNotSelectable || false;
+
+              if (
+                userRole &&
+                option.allowedRoles &&
+                Array.isArray(option.allowedRoles)
+              ) {
+                isDisabled = !option.allowedRoles.includes(userRole);
+              }
+
+              if (
+                userRole &&
+                option.excludedRoles &&
+                Array.isArray(option.excludedRoles)
+              ) {
+                isDisabled = option.excludedRoles.includes(userRole);
+              }
+
+              return (
+                <option
+                  disabled={isDisabled}
+                  key={String(option.value)}
+                  value={String(option.value)}
+                >
+                  {option.label}
+                </option>
+              );
+            })}
           </select>
         ),
         file: (
@@ -741,7 +786,22 @@ const Input = forwardRef(
           />
         ),
       }),
-      [props, type, options, commonProps, images, uniqueId]
+      [
+        props,
+        type,
+        options,
+        commonProps,
+        images,
+        uniqueId,
+        findFileType,
+        isLoading,
+        loadedImages,
+        multipleSelect,
+        searchable,
+        size,
+        userRole,
+        variant,
+      ]
     );
 
     if (variant === 'search') {

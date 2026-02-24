@@ -39,7 +39,6 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
     const ws = WaveSurfer.create({
       container: waveformRef.current,
       waveColor: color.text || '#666',
-      backend: 'MediaElement',
       progressColor: '#666',
       cursorColor: color.text || '#666',
       barWidth: 1,
@@ -128,23 +127,16 @@ const AudioPlayer = ({ src, externalDuration, color = {}, className = '' }) => {
         )}
       </button>
       <div className={styles.waveformWrapper}>
-        {hasError ? (
-          <audio
-            controls
-            preload="metadata"
-            src={src}
-            style={{ width: '100%', height: 32 }}
-          />
-        ) : (
-          <div ref={waveformRef} className={styles.waveform} />
-        )}
+        <div
+          ref={waveformRef}
+          className={classNames(styles.waveform, { [styles.hidden]: hasError })}
+        />
+        {hasError && <span className={styles.errorText}>Yuklab bo'lmadi</span>}
       </div>
       <div className={styles.timer}>
-        {hasError
-          ? `${formatTime(0)} / ${formatTime(duration)}`
-          : isLoading
-            ? 'Yuklanmoqda...'
-            : `${formatTime(currentTime)} / ${formatTime(duration)}`}
+        {isLoading
+          ? 'Yuklanmoqda...'
+          : `${formatTime(currentTime)} / ${formatTime(duration)}`}
       </div>
     </div>
   );
