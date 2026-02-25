@@ -10,23 +10,27 @@ export default function SelectedDevicesTable({
   canEdit,
   onImeiSelect,
   onRentPeriodChange,
+  onPriceChange,
   onFirstPaymentChange,
   onFirstPaymentBlur,
   onDeleteDevice,
   totalGrandTotal,
   isRentPeriodDisabled = false,
   isFirstPaymentDisabled = false,
+  isSellerM = false,
 }) {
   const selectedDeviceColumns = useSelectedDevicesColumns({
     rentPeriodOptions,
     canEdit,
     onImeiSelect,
     onRentPeriodChange,
+    onPriceChange,
     onFirstPaymentChange,
     onFirstPaymentBlur,
     onDeleteDevice,
     isRentPeriodDisabled,
     isFirstPaymentDisabled,
+    isSellerM,
   });
 
   if (!selectedDeviceData.length) return null;
@@ -58,7 +62,6 @@ export default function SelectedDevicesTable({
               Jami to'lov: {formatCurrencyUZS(totalGrandTotal)}
             </div>
           </Col>
-
         </Row>
       </Col>
     </Row>

@@ -21,12 +21,16 @@ export const Messenger = (
     onLoadMore,
     hasMore = false,
     isLoadingMore = false,
+    deletingId = null,
+    isRefetching = false,
   },
   ref
 ) => {
   const { isOpen, toggle } = useToggle('messenger');
   const [isSending, setIsSending] = useState(false);
   const pendingIdRef = useRef(0);
+
+  const [showDelayNotice, setShowDelayNotice] = useState(true);
 
   const handleSendMessage = useCallback(
     async (data) => {
@@ -75,21 +79,47 @@ export const Messenger = (
           Xabarnoma
         </Typography>
       </div>
+      {showDelayNotice && (
+        <div className={styles['messenger-delay-notice']}>
+          <span>⏳</span>
+          <span>
+            Chat yuklanishida kechikish bo&apos;lishi mumkin. Noqulaylik uchun
+            uzr so&apos;raymiz!
+          </span>
+          <button
+            className={styles['messenger-delay-notice-close']}
+            onClick={() => setShowDelayNotice(false)}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {isRefetching && !isLoading && (
+        <div className={styles['messenger-refetch-indicator']}>
+          <ClipLoader size={12} color="currentColor" />
+          <span style={{ fontSize: '2.8rem' }}>
+            Ma&apos;lumotlar yangilanmoqda...
+          </span>
+        </div>
+      )}
       <div className={styles['messenger-body']}>
         {isLoading ? (
           <div className={styles['messenger-body-loader-wrapper']}>
             <ClipLoader color="black" size={28} />
           </div>
         ) : (
-          <MessageRenderer
-            hasToggleControl={hasToggleControl}
-            onEditMessage={onEditMessage}
-            onDeleteMessage={onDeleteMessage}
-            messages={messages}
-            onLoadMore={onLoadMore}
-            hasMore={hasMore}
-            isLoadingMore={isLoadingMore}
-          />
+          <>
+            <MessageRenderer
+              hasToggleControl={hasToggleControl}
+              onEditMessage={onEditMessage}
+              onDeleteMessage={onDeleteMessage}
+              messages={messages}
+              onLoadMore={onLoadMore}
+              hasMore={hasMore}
+              isLoadingMore={isLoadingMore}
+              deletingId={deletingId}
+            />
+          </>
         )}
       </div>
       <div className={styles['messenger-footer']}>

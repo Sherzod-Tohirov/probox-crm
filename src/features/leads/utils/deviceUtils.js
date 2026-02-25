@@ -328,7 +328,7 @@ export const calculatePaymentDetails = ({
     // Agar foydalanuvchi birinchi to'lovni qo'lda kiritgan bo'lsa, uni ishlatamiz
     // Aks holda, finalPercentage dan hisoblaymiz
     let actualFirstPayment;
-    if (isFirstPaymentManual && firstPaymentNum > 0) {
+    if (isFirstPaymentManual && firstPaymentNum >= 0) {
       // Foydalanuvchi qo'lda kiritgan birinchi to'lovni 1000 ga yaxlitlaymiz
       actualFirstPayment = Math.floor(firstPaymentNum / 1000) * 1000;
     } else {
@@ -388,7 +388,7 @@ export const calculatePaymentDetails = ({
   // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz va 1000 ga yaxlitlaymiz
   // MUHIM: isFirstPaymentManual flag'ini tekshirish kerak!
   let actualFirstPayment;
-  if (isFirstPaymentManual && firstPaymentNum > 0) {
+  if (isFirstPaymentManual && firstPaymentNum >= 0) {
     // Foydalanuvchi qo'lda kiritgan birinchi to'lovni 1000 ga yaxlitlaymiz
     actualFirstPayment = Math.floor(firstPaymentNum / 1000) * 1000;
     // console.log('>>> USING MANUAL firstPayment:', {

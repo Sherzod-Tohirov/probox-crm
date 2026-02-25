@@ -67,11 +67,48 @@ const useMutateMessages = (action, options = {}) => {
   if (action === 'delete') {
     return useMutation({
       mutationFn: (id) => deleteMessage(id, { entityType }),
-      onError: (error) => {
-        console.log('Error while deleting message: ', error);
+      onMutate: async (id) => {
+        // Cancel any in-flight refetches so they don't overwrite the optimistic update
+        await queryClient.cancelQueries({ queryKey });
+
+        // Snapshot the current cache value for rollback on error
+        const previousData = queryClient.getQueryData(queryKey);
+
+        // Optimistically remove the message from all pages in the infinite query cache
+        queryClient.setQueryData(queryKey, (old) => {
+          if (!old?.pages) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => {
+              if (!page) return page;
+              // Lead pages: { data: [...], page, totalPages, ... }
+              if (Array.isArray(page.data)) {
+                return {
+                  ...page,
+                  data: page.data.filter((m) => m?._id !== id),
+                };
+              }
+              // Client pages: flat array
+              if (Array.isArray(page)) {
+                return page.filter((m) => m?._id !== id);
+              }
+              return page;
+            }),
+          };
+        });
+
+        return { previousData };
       },
-      onSuccess: (response) => {
-        invalidateMessages();
+      onError: (error, id, context) => {
+        console.log('Error while deleting message: ', error);
+        // Restore previous cache on failure
+        if (context?.previousData !== undefined) {
+          queryClient.setQueryData(queryKey, context.previousData);
+        }
+      },
+      onSuccess: () => {
+        // Refetch to confirm server state after successful delete
+        queryClient.invalidateQueries({ queryKey });
       },
     });
   }

@@ -3,7 +3,6 @@ import { DEFAULT_RENT_PERIOD } from '../utils/deviceUtils';
 import {
   extractNumericValue,
   formatCurrencyUZS,
-  formatNumberWithSeparators,
   calculatePaymentDetails,
 } from '../utils/deviceUtils';
 import { alert } from '@/utils/globalAlert';
@@ -63,7 +62,7 @@ export const useSelectedDevices = ({
       if (
         userFirstPayment !== null &&
         Number.isFinite(userFirstPayment) &&
-        userFirstPayment > 0
+        userFirstPayment >= 0
       ) {
         return userFirstPayment;
       }
@@ -162,6 +161,45 @@ export const useSelectedDevices = ({
     ]
   );
 
+  const handlePriceChange = useCallback((deviceId, rawValue) => {
+    setSelectedDevices((prev) =>
+      prev.map((device) => {
+        if (device.id !== deviceId) return device;
+
+        const stringValue =
+          typeof rawValue === 'string'
+            ? rawValue
+            : rawValue === null || rawValue === undefined
+              ? ''
+              : String(rawValue);
+
+        const sanitized = stringValue.replace(/[^\d]/g, '');
+
+        if (!sanitized) {
+          return {
+            ...device,
+            price: '0',
+            firstPayment: '',
+            isFirstPaymentManual: false,
+          };
+        }
+
+        const parsed = Number(sanitized);
+        if (Number.isNaN(parsed)) {
+          return device;
+        }
+
+        return {
+          ...device,
+          price: String(parsed),
+          // Reset firstPayment so it recalculates based on new price
+          firstPayment: '',
+          isFirstPaymentManual: false,
+        };
+      })
+    );
+  }, []);
+
   const handleFirstPaymentChange = useCallback((deviceId, rawValue) => {
     setSelectedDevices((prev) =>
       prev.map((device) => {
@@ -222,7 +260,7 @@ export const useSelectedDevices = ({
           if (
             currentFirstPayment === null ||
             !Number.isFinite(currentFirstPayment) ||
-            currentFirstPayment <= 0
+            currentFirstPayment < 0
           ) {
             return device;
           }
@@ -442,7 +480,7 @@ export const useSelectedDevices = ({
             return '';
           }
           const manual = Number(device.firstPayment);
-          return Number.isFinite(manual) && manual > 0 ? manual : '';
+          return Number.isFinite(manual) && manual >= 0 ? manual : '';
         }
 
         const totalPrice = extractNumericValue(device.price);
@@ -461,18 +499,18 @@ export const useSelectedDevices = ({
             ? null
             : Number(device.firstPayment);
 
-        // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni qaytaramiz
+        // Agar foydalanuvchi firstPayment kiritgan bo'lsa, uni ishlatamiz
         if (
           userFirstPayment !== null &&
           Number.isFinite(userFirstPayment) &&
-          userFirstPayment > 0
+          userFirstPayment >= 0
         ) {
           return userFirstPayment;
         }
 
         // Aks holda avtomatik hisoblaymiz
         const actual = getActualFirstPayment(device);
-        return actual || '';
+        return actual ?? '';
       })(),
       condition:
         device?.condition ??
@@ -518,11 +556,11 @@ export const useSelectedDevices = ({
           if (
             manualFirstPayment !== null &&
             Number.isFinite(manualFirstPayment) &&
-            manualFirstPayment > 0
+            manualFirstPayment >= 0
           ) {
             actualFirstPayment = manualFirstPayment;
           } else {
-            // Agar qo'lda kiritilgan bo'lsa lekin bo'sh yoki 0 bo'lsa, avtomatik hisoblaymiz
+            // Agar qo'lda kiritilgan bo'lsa lekin bo'sh bo'lsa, avtomatik hisoblaymiz
             actualFirstPayment = getActualFirstPayment(device);
           }
         } else {
@@ -607,11 +645,11 @@ export const useSelectedDevices = ({
           if (
             manualFirstPayment !== null &&
             Number.isFinite(manualFirstPayment) &&
-            manualFirstPayment > 0
+            manualFirstPayment >= 0
           ) {
             actualFirstPayment = manualFirstPayment;
           } else {
-            // Agar qo'lda kiritilgan bo'lsa lekin bo'sh yoki 0 bo'lsa, avtomatik hisoblaymiz
+            // Agar qo'lda kiritilgan bo'lsa lekin bo'sh bo'lsa, avtomatik hisoblaymiz
             actualFirstPayment = getActualFirstPayment(device);
           }
         } else {
@@ -738,6 +776,7 @@ export const useSelectedDevices = ({
     handleImeiSelect,
     handleDeleteDevice,
     handleRentPeriodChange,
+    handlePriceChange,
     handleFirstPaymentChange,
     handleFirstPaymentBlur,
   };

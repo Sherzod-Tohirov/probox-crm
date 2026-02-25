@@ -1,5 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import useMutateMessages from '@hooks/data/useMutateMessages';
+import useAlert from '@hooks/useAlert';
 
 /**
  * Dynamic hook for messenger actions
@@ -11,10 +12,14 @@ import useMutateMessages from '@hooks/data/useMutateMessages';
  */
 const useMessengerActions = (options = {}) => {
   const { entityType = 'client' } = options;
+  const { alert } = useAlert();
 
   const postMessageMutation = useMutateMessages('post', options);
   const deleteMessageMutation = useMutateMessages('delete', options);
   const updateMessageMutation = useMutateMessages('update', options);
+
+  // Track which message id is currently being deleted for per-message UI
+  const [deletingId, setDeletingId] = useState(null);
 
   const sendMessage = useCallback(
     async (data) => {
@@ -40,33 +45,35 @@ const useMessengerActions = (options = {}) => {
 
         if (!files.has('audio') && data.msgPhoto && data.msgPhoto.length > 0) {
           for (let i = 0; i < data.msgPhoto.length; i++) {
-            const file = data.msgPhoto[i];
             files.append('image', data.msgPhoto[i]);
           }
         }
 
         const payload = data.msgText
-          ? {
-              Comments: data.msgText ?? null,
-            }
+          ? { Comments: data.msgText ?? null }
           : null;
         await postMessageMutation.mutateAsync(payload ?? files);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        alert('Xabar yuborishda xatolik yuz berdi', 'error');
       }
     },
-    [entityType, postMessageMutation]
+    [entityType, postMessageMutation, alert]
   );
 
   const deleteMessage = useCallback(
     async (id) => {
       try {
+        setDeletingId(id);
         await deleteMessageMutation.mutateAsync(id);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        alert("Xabarni o'chirishda xatolik yuz berdi", 'error');
+      } finally {
+        setDeletingId(null);
       }
     },
-    [deleteMessageMutation]
+    [deleteMessageMutation, alert]
   );
 
   const editMessage = useCallback(
@@ -78,13 +85,23 @@ const useMessengerActions = (options = {}) => {
             : { id, ...data };
         await updateMessageMutation.mutateAsync(payload);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        alert('Xabarni tahrirlashda xatolik yuz berdi', 'error');
+        throw error;
       }
     },
-    [entityType, updateMessageMutation]
+    [entityType, updateMessageMutation, alert]
   );
 
-  return { sendMessage, deleteMessage, editMessage };
+  return {
+    sendMessage,
+    deleteMessage,
+    editMessage,
+    deletingId,
+    isSending: postMessageMutation.isPending,
+    isDeleting: deleteMessageMutation.isPending,
+    isEditing: updateMessageMutation.isPending,
+  };
 };
 
 export default useMessengerActions;

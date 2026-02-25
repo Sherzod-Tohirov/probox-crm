@@ -40,6 +40,7 @@ export default function SellerTab({
   const isOperator1 = user.U_role === 'Operator1';
   const isOperator2 = user.U_role === 'Operator2';
   const isCEO = user.U_role === 'CEO';
+  const isSellerM = user.U_role === 'SellerM';
 
   let canOperatorEdit = isOperatorM || isOperator1 || isOperator2 || isCEO;
 
@@ -169,6 +170,7 @@ export default function SellerTab({
     handleImeiSelect,
     handleDeleteDevice,
     handleRentPeriodChange,
+    handlePriceChange,
     handleFirstPaymentChange,
     handleFirstPaymentBlur,
   } = useSelectedDevices({
@@ -332,14 +334,7 @@ export default function SellerTab({
     }
 
     setIsInvoiceModalOpen(true);
-  }, [
-    userSignature,
-    leadId,
-    selectedDevices,
-    isAddressAvailable,
-    leadData?.clientFullName,
-    leadData?.clientName,
-  ]);
+  }, [userSignature, leadId, selectedDevices, isAddressAvailable, leadData]);
 
   // Invoice modal orqali yuborish
   const handleSendInvoice = useCallback(
@@ -472,6 +467,7 @@ export default function SellerTab({
         jshshir: leadData.jshshir,
         conditionFilter: 'all',
         searchBranchFilter: 'all',
+        calculationTypeFilter: 'markup',
       });
     }
   }, [leadData, reset, form]);
@@ -529,12 +525,14 @@ export default function SellerTab({
                   canEdit={canOperatorEdit || canEdit}
                   onImeiSelect={handleImeiSelect}
                   onRentPeriodChange={handleRentPeriodChange}
+                  onPriceChange={handlePriceChange}
                   onFirstPaymentChange={handleFirstPaymentChange}
                   onFirstPaymentBlur={handleFirstPaymentBlur}
                   onDeleteDevice={handleDeleteDevice}
                   totalGrandTotal={totalGrandTotal}
                   isRentPeriodDisabled={isRentPeriodDisabled}
                   isFirstPaymentDisabled={isFirstPaymentDisabled}
+                  isSellerM={isSellerM}
                 />
               </Col>
             )}
