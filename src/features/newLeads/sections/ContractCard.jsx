@@ -449,6 +449,7 @@ export default function ContractCard({
     calculationTypeFilter: calculationTypeFilter || '',
     finalPercentage,
     maximumLimit,
+    bypassMinFirstPayment: isSellerM,
   });
 
   const { fetchDeviceSeries } = useDeviceSeries({
@@ -579,14 +580,6 @@ export default function ContractCard({
       if (!leadId || !selectedDevices?.length) return;
       if (!leadData?.clientPhone) {
         alert('Mijoz telefon raqami mavjud emas', { type: 'error' });
-        return;
-      }
-      const totalPayment =
-        (paymentData.cash || 0) +
-        (paymentData.card || 0) +
-        (paymentData.terminal || 0);
-      if (totalPayment === 0) {
-        alert("To'lov summasi kiritilmagan", { type: 'error' });
         return;
       }
       const payments = [];

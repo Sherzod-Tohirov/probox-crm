@@ -39,8 +39,8 @@ export default function SellerTab({
   const isOperatorM = user.U_role === 'OperatorM';
   const isOperator1 = user.U_role === 'Operator1';
   const isOperator2 = user.U_role === 'Operator2';
-  const isCEO = user.U_role === 'CEO';
   const isSellerM = user.U_role === 'SellerM';
+  const isCEO = user.U_role === 'CEO';
 
   let canOperatorEdit = isOperatorM || isOperator1 || isOperator2 || isCEO;
 
@@ -180,6 +180,7 @@ export default function SellerTab({
     calculationTypeFilter: calculationTypeFilter || '',
     finalPercentage: finalPercentage,
     maximumLimit: maximumLimit,
+    bypassMinFirstPayment: isSellerM,
   });
 
   const { fetchDeviceSeries } = useDeviceSeries({
@@ -365,16 +366,6 @@ export default function SellerTab({
 
       if (!leadData?.clientName && !leadData?.clientFullName) {
         alert('Mijoz ismi mavjud emas', { type: 'error' });
-        return;
-      }
-
-      // Validate payment amounts
-      const totalPayment =
-        (paymentData.cash || 0) +
-        (paymentData.card || 0) +
-        (paymentData.terminal || 0);
-      if (totalPayment === 0) {
-        alert("To'lov summasi kiritilmagan", { type: 'error' });
         return;
       }
 

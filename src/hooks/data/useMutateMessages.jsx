@@ -28,90 +28,79 @@ const useMutateMessages = (action, options = {}) => {
     queryClient.invalidateQueries({ queryKey });
   };
 
-  if (action === 'post') {
-    return useMutation({
-      mutationFn: (data) => {
-        return postMessage(data, {
-          entityType,
-          entityId,
-          docEntry,
-          installmentId,
-        });
-      },
-      onError: (error) => {
-        console.log('Error while posting message: ', error);
-      },
-      onSuccess: (response) => {
-        invalidateMessages();
-      },
-    });
-  }
+  const postMutation = useMutation({
+    mutationFn: (data) =>
+      postMessage(data, { entityType, entityId, docEntry, installmentId }),
+    onError: (error) => {
+      console.log('Error while posting message: ', error);
+    },
+    onSuccess: () => {
+      invalidateMessages();
+    },
+  });
 
-  if (action === 'update') {
-    return useMutation({
-      mutationFn: (data) =>
-        putMessage(
-          data.id ?? data._id,
-          { Comments: data.Comments, message: data.message },
-          { entityType }
-        ),
-      onError: (error) => {
-        console.log('Error while updating message: ', error);
-      },
-      onSuccess: (response) => {
-        invalidateMessages();
-      },
-    });
-  }
+  const updateMutation = useMutation({
+    mutationFn: (data) =>
+      putMessage(
+        data.id ?? data._id,
+        { Comments: data.Comments, message: data.message },
+        { entityType }
+      ),
+    onError: (error) => {
+      console.log('Error while updating message: ', error);
+    },
+    onSuccess: () => {
+      invalidateMessages();
+    },
+  });
 
-  if (action === 'delete') {
-    return useMutation({
-      mutationFn: (id) => deleteMessage(id, { entityType }),
-      onMutate: async (id) => {
-        // Cancel any in-flight refetches so they don't overwrite the optimistic update
-        await queryClient.cancelQueries({ queryKey });
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteMessage(id, { entityType }),
+    onMutate: async (id) => {
+      // Cancel any in-flight refetches so they don't overwrite the optimistic update
+      await queryClient.cancelQueries({ queryKey });
 
-        // Snapshot the current cache value for rollback on error
-        const previousData = queryClient.getQueryData(queryKey);
+      // Snapshot the current cache value for rollback on error
+      const previousData = queryClient.getQueryData(queryKey);
 
-        // Optimistically remove the message from all pages in the infinite query cache
-        queryClient.setQueryData(queryKey, (old) => {
-          if (!old?.pages) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page) => {
-              if (!page) return page;
-              // Lead pages: { data: [...], page, totalPages, ... }
-              if (Array.isArray(page.data)) {
-                return {
-                  ...page,
-                  data: page.data.filter((m) => m?._id !== id),
-                };
-              }
-              // Client pages: flat array
-              if (Array.isArray(page)) {
-                return page.filter((m) => m?._id !== id);
-              }
-              return page;
-            }),
-          };
-        });
+      // Optimistically remove the message from all pages in the infinite query cache
+      queryClient.setQueryData(queryKey, (old) => {
+        if (!old?.pages) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page) => {
+            if (!page) return page;
+            // Lead pages: { data: [...], page, totalPages, ... }
+            if (Array.isArray(page.data)) {
+              return { ...page, data: page.data.filter((m) => m?._id !== id) };
+            }
+            // Client pages: flat array
+            if (Array.isArray(page)) {
+              return page.filter((m) => m?._id !== id);
+            }
+            return page;
+          }),
+        };
+      });
 
-        return { previousData };
-      },
-      onError: (error, id, context) => {
-        console.log('Error while deleting message: ', error);
-        // Restore previous cache on failure
-        if (context?.previousData !== undefined) {
-          queryClient.setQueryData(queryKey, context.previousData);
-        }
-      },
-      onSuccess: () => {
-        // Refetch to confirm server state after successful delete
-        queryClient.invalidateQueries({ queryKey });
-      },
-    });
-  }
+      return { previousData };
+    },
+    onError: (error, _id, context) => {
+      console.log('Error while deleting message: ', error);
+      // Restore previous cache on failure
+      if (context?.previousData !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+    },
+    onSuccess: () => {
+      // Refetch to confirm server state after successful delete
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
+  if (action === 'post') return postMutation;
+  if (action === 'update') return updateMutation;
+  if (action === 'delete') return deleteMutation;
 };
 
 export default useMutateMessages;
