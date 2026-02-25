@@ -19,9 +19,13 @@ export const getMessages = async (options = {}) => {
         `leads/${entityId}/chat?page=${page}&limit=${limit}`,
         'leadMessages'
       );
-      // Ensure response.data is an array
-      const data = response?.data;
-      return Array.isArray(data) ? data : [];
+      // Return full response so hook can access totalPages, page, etc.
+      return {
+        data: Array.isArray(response?.data) ? response.data : [],
+        page: response?.page ?? page,
+        totalPages: response?.totalPages ?? 1,
+        total: response?.total ?? 0,
+      };
     }
 
     // For clients: use existing endpoint

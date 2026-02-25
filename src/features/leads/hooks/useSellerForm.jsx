@@ -38,6 +38,7 @@ export default function useSellerForm(leadId, leadData, onSuccess) {
       jshshir: leadData?.jshshir || '',
       conditionFilter: 'all',
       searchBranchFilter: 'all',
+      calculationTypeFilter: 'markup',
     },
   });
 

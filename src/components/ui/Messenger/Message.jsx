@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ClipLoader } from 'react-spinners';
 
 import { Col, Button, Typography, Box } from '@components/ui';
 import iconsMap from '@utils/iconsMap';
@@ -19,6 +20,7 @@ export default function Message({
   onDeleteMessage,
   size,
   animationIndex = 0,
+  isDeleting = false,
 }) {
   const baseMessageText = msg?.Comments ?? msg?.message ?? '';
 
@@ -64,13 +66,23 @@ export default function Message({
     <motion.div
       ref={refs.setReference}
       onContextMenu={handleContextMenu}
-      className={classNames(styles.message, styles[size])}
+      className={classNames(styles.message, styles[size], {
+        [styles['message--deleting']]: isDeleting,
+      })}
       custom={animationIndex}
       variants={MESSAGE_VARIANTS}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
+      {isDeleting && (
+        <div className={styles['message-deleting-overlay']}>
+          <ClipLoader size={14} color="#e53e3e" />
+          <span className={styles['message-deleting-label']}>
+            O'chirilmoqda...
+          </span>
+        </div>
+      )}
       <Col>
         {headerInfo && (
           <div
@@ -189,10 +201,17 @@ export default function Message({
                       className={styles['message-edit-submit-btn']}
                       onClick={handleEditSubmit}
                       variant="text"
-                      icon="send"
+                      icon={isSubmitting ? undefined : 'send'}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Saqlanmoqda...' : 'Saqlash'}
+                      {isSubmitting ? (
+                        <Box dir="row" gap={1} align="center">
+                          <ClipLoader size={12} color="currentColor" />
+                          <span>Saqlanmoqda...</span>
+                        </Box>
+                      ) : (
+                        'Saqlash'
+                      )}
                     </Button>
                   )}
                   <time
@@ -309,13 +328,21 @@ export default function Message({
                     onDeleteMessage(msg?._id);
                   }}
                   variant="text"
-                  icon="deleteFilled"
+                  icon={isDeleting ? undefined : 'deleteFilled'}
+                  disabled={isDeleting}
                   className={classNames(
                     styles['message-text-menu-btn'],
                     styles['delete']
                   )}
                 >
-                  o'chirish
+                  {isDeleting ? (
+                    <Box dir="row" gap={1} align="center">
+                      <ClipLoader size={12} color="#e53e3e" />
+                      <span>O'chirilmoqda...</span>
+                    </Box>
+                  ) : (
+                    "o'chirish"
+                  )}
                 </Button>
               </li>
             </ul>

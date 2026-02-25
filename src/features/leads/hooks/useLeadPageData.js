@@ -11,19 +11,19 @@ import hasRole from '@/utils/hasRole';
 import { ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS } from '../utils/constants';
 
 const TAB_TO_ROLE = {
-  operator1: 'Operator1',
-  operator2: 'Operator2',
-  seller: 'Seller',
-  scoring: 'Scoring',
-  operatorM: 'OperatorM',
-  sellerM: 'SellerM',
+  operator1: ['Operator1'],
+  operator2: ['Operator2'],
+  seller: ['Seller', 'SellerM'], // Both Seller and SellerM can access seller tab
+  scoring: ['Scoring'],
+  operatorM: ['OperatorM'],
+  sellerM: ['SellerM'],
 };
 
 const ROLE_TO_TAB = {
   Operator1: 'operator1',
   Operator2: 'operator2',
   Seller: 'seller',
-  SellerM: 'sellerM',
+  SellerM: 'seller', // SellerM uses the seller tab
   Scoring: 'scoring',
 };
 
@@ -87,6 +87,34 @@ export default function useLeadPageData(leadId) {
       // If lead is blocked, no one can edit except for blocked status itself
       if (isBlocked) return false;
 
+      // Handle array of tab keys
+      if (Array.isArray(tabKey)) {
+        return tabKey.some((key) => {
+          if (key === 'all') {
+            return hasRole(currentUserRole, [
+              'Operator1',
+              'Operator2',
+              'Seller',
+              'SellerM',
+              'Scoring',
+              'OperatorM',
+              'CEO',
+            ]);
+          }
+
+          // Operator1 ga operator2 accesslarini ham berish
+          if (key === 'operator2' && currentUserRole === 'Operator1') {
+            return true;
+          }
+
+          const allowedRoles = TAB_TO_ROLE[key];
+          return Array.isArray(allowedRoles)
+            ? allowedRoles.includes(currentUserRole)
+            : currentUserRole === allowedRoles;
+        });
+      }
+
+      // Single tab key (original behavior)
       if (tabKey === 'all') {
         return hasRole(currentUserRole, [
           'Operator1',
@@ -104,21 +132,24 @@ export default function useLeadPageData(leadId) {
         return true;
       }
 
-      return currentUserRole === TAB_TO_ROLE[tabKey];
+      const allowedRoles = TAB_TO_ROLE[tabKey];
+      return Array.isArray(allowedRoles) 
+        ? allowedRoles.includes(currentUserRole)
+        : currentUserRole === allowedRoles;
     },
     [currentUserRole, isBlocked]
   );
 
   const canEditAddress = useMemo(() => {
     if (isBlocked) return false;
-    return (
-      canEditTab('operator1') ||
-      canEditTab('operator2') ||
-      canEditTab('operatorM') ||
-      canEditTab('seller') ||
-      canEditTab('sellerM') ||
-      canEditTab('scoring')
-    );
+    return canEditTab([
+      'operator1',
+      'operator2',
+      'operatorM',
+      'seller',
+      'sellerM',
+      'scoring',
+    ]);
   }, [canEditTab, isBlocked]);
 
   const canEditStatus = useMemo(() => {

@@ -51,12 +51,80 @@
       v.$primary-border-color;
   }
 
+  &-refetch-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 5px 0;
+    font-size: 1.1rem;
+    color: var(--primary-color, #555);
+    background: var(--secondary-bg, #f5f5f5);
+    border-bottom: 1px solid var(--primary-border-color, #e0e0e0);
+    flex-shrink: 0;
+  }
+
+  &-delay-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 2.8rem;
+    color: #7c4700;
+    background: #fff7e6;
+    border-bottom: 1px solid #ffd591;
+    flex-shrink: 0;
+    animation: fadeInDown 0.3s ease;
+
+    span:first-child {
+      flex-shrink: 0;
+    }
+
+    span:nth-child(2) {
+      flex: 1;
+      line-height: 1.4;
+    }
+  }
+
+  &-delay-notice-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7c4700;
+    font-size: 2.4rem;
+    line-height: 1;
+    padding: 0 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   &-body {
     position: relative;
     @include m.flex(start, start, 4rem, column);
     flex: 1;
     min-height: 0;
     border-radius: 10px;
+
+    .messenger-load-more-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 8px 0;
+      gap: 8px;
+      background: var(--primary-bg-color, #fff);
+      border-bottom: 1px solid var(--primary-border-color, #eee);
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: #888;
+    }
 
     .messenger-messages {
       @include m.flex(start, start, 4rem, column);
@@ -185,6 +253,33 @@
   @include m.flex(start, start, 1rem, column);
   will-change: transform;
   transform-origin: bottom left;
+
+  &--deleting {
+    opacity: 0.5;
+    pointer-events: none;
+    animation: messagePulse 0.8s ease-in-out infinite alternate;
+  }
+
+  &-deleting-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 4px 10px;
+    pointer-events: none;
+  }
+
+  &-deleting-label {
+    font-size: 2.8rem;
+    color: #e53e3e;
+    white-space: nowrap;
+  }
   &-text-wrapper {
     position: relative;
     min-width: 140px;
@@ -467,6 +562,26 @@
 @keyframes send-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes messagePulse {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

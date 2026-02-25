@@ -8,11 +8,13 @@ export const useSelectedDevicesColumns = ({
   canEdit,
   onImeiSelect,
   onRentPeriodChange,
+  onPriceChange,
   onFirstPaymentChange,
   onFirstPaymentBlur,
   onDeleteDevice,
   isRentPeriodDisabled = false,
   isFirstPaymentDisabled = false,
+  isSellerM = false,
 }) => {
   const rentPeriodOptionsWithPct = useMemo(() => {
     if (!Array.isArray(rentPeriodOptions)) return [];
@@ -110,11 +112,32 @@ export const useSelectedDevicesColumns = ({
         title: 'Narx',
         horizontal: 'start',
         width: '10%',
-        renderCell: (row) => (
-          <span className={styles['selected-device-price']}>
-            {row.price ? row.price : "0 so'm"}
-          </span>
-        ),
+        renderCell: (row) => {
+          if (isSellerM && onPriceChange) {
+            const numericPrice = Number(
+              String(row.price || '0').replace(/[^\d]/g, '')
+            );
+            return (
+              <Input
+                type="text"
+                value={formatNumberWithSeparators(numericPrice)}
+                width="100%"
+                variant="outlined"
+                inputMode="numeric"
+                onChange={(event) => {
+                  const newValue = event?.target?.value ?? '';
+                  onPriceChange(row.id, newValue);
+                }}
+                hasIcon={false}
+              />
+            );
+          }
+          return (
+            <span className={styles['selected-device-price']}>
+              {row.price ? row.price : "0 so'm"}
+            </span>
+          );
+        },
       },
       {
         key: 'rentPeriod',
@@ -221,6 +244,7 @@ export const useSelectedDevicesColumns = ({
     [
       canEdit,
       onDeleteDevice,
+      onPriceChange,
       onFirstPaymentChange,
       onFirstPaymentBlur,
       onImeiSelect,
@@ -228,6 +252,7 @@ export const useSelectedDevicesColumns = ({
       rentPeriodOptions,
       isRentPeriodDisabled,
       isFirstPaymentDisabled,
+      isSellerM,
     ]
   );
 };

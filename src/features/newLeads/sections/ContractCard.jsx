@@ -343,6 +343,7 @@ export default function ContractCard({
   const isOperator1 = user?.U_role === 'Operator1';
   const isOperator2 = user?.U_role === 'Operator2';
   const isCEO = user?.U_role === 'CEO';
+  const isSellerM = user?.U_role === 'SellerM';
   const canOperatorEdit = isOperatorM || isOperator1 || isOperator2 || isCEO;
 
   // Local form for device search filters
@@ -438,6 +439,7 @@ export default function ContractCard({
     handleImeiSelect,
     handleDeleteDevice,
     handleRentPeriodChange,
+    handlePriceChange,
     handleFirstPaymentChange,
     handleFirstPaymentBlur,
   } = useSelectedDevices({
@@ -811,9 +813,24 @@ export default function ContractCard({
                           </Select>
                         </TableCell>
                         <TableCell>
-                          {numericPrice
-                            ? `${formatNumberWithSeparators(numericPrice)} uzs`
-                            : '—'}
+                          {isSellerM ? (
+                            <Input
+                              value={
+                                numericPrice
+                                  ? formatNumberWithSeparators(numericPrice)
+                                  : ''
+                              }
+                              onChange={(e) =>
+                                handlePriceChange(device.id, e.target.value)
+                              }
+                              placeholder="0"
+                              className="h-[34px] rounded-[8px] px-[8px] text-center text-[13px]"
+                            />
+                          ) : numericPrice ? (
+                            `${formatNumberWithSeparators(numericPrice)} uzs`
+                          ) : (
+                            '—'
+                          )}
                         </TableCell>
                         <TableCell>
                           <Input

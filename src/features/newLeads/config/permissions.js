@@ -19,12 +19,22 @@ export const TAB_PERMISSIONS = {
 };
 
 /**
- * Check if user role can edit specific tab
+ * Check if user role can edit specific tab(s)
  * @param {string} userRole - Current user's role
- * @param {string} tabName - Tab name (operator, seller, scoring)
+ * @param {string|string[]} tabName - Tab name (operator, seller, scoring) or array of tab names
  * @returns {boolean}
  */
 export const canEditTab = (userRole, tabName) => {
+  // If tabName is an array, check if user can edit any of the tabs
+  if (Array.isArray(tabName)) {
+    return tabName.some((tab) => {
+      const tabPermission = TAB_PERMISSIONS[tab];
+      if (!tabPermission) return false;
+      return tabPermission.allowedRoles.includes(userRole);
+    });
+  }
+
+  // Single tab check (original behavior)
   const tabPermission = TAB_PERMISSIONS[tabName];
   if (!tabPermission) return false;
   return tabPermission.allowedRoles.includes(userRole);

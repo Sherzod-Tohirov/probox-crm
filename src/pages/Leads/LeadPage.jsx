@@ -103,6 +103,7 @@ export default function LeadPage() {
   const {
     data: messages,
     isLoading: isMessagesLoading,
+    isRefetching: isMessagesRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -113,10 +114,11 @@ export default function LeadPage() {
   });
 
   // Messenger actions
-  const { sendMessage, editMessage, deleteMessage } = useMessengerActions({
-    entityType: 'lead',
-    entityId: id,
-  });
+  const { sendMessage, editMessage, deleteMessage, deletingId } =
+    useMessengerActions({
+      entityType: 'lead',
+      entityId: id,
+    });
 
   // Handle outside click to close messenger
   useClickOutside(messengerRef, toggle, isOpen);
@@ -213,7 +215,7 @@ export default function LeadPage() {
           <Operator1Tab
             leadId={id}
             leadData={lead}
-            canEdit={canEditTab('operator1') || canEditTab('operatorM')}
+            canEdit={canEditTab(['operator1', 'operatorM'])}
           />
         ),
       },
@@ -240,7 +242,7 @@ export default function LeadPage() {
             leadId={id}
             leadData={lead}
             invoiceScoreData={invoiceScoreData}
-            canEdit={canEditTab('seller')}
+            canEdit={canEditTab(['seller', 'sellerM'])}
           />
         ),
       },
@@ -372,11 +374,13 @@ export default function LeadPage() {
         onSendMessage={sendMessage}
         onEditMessage={editMessage}
         onDeleteMessage={deleteMessage}
+        deletingId={deletingId}
         isOpen={isOpen}
         entityType="lead"
         onLoadMore={fetchNextPage}
         hasMore={hasNextPage}
         isLoadingMore={isFetchingNextPage}
+        isRefetching={isMessagesRefetching}
       />
       <LeadLimitHistoryModal
         isOpen={isLimitHistoryModalOpen}
