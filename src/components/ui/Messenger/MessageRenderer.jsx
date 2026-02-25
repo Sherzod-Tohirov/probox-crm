@@ -3,7 +3,7 @@ import Message from './Message';
 import { groupBy } from 'ramda';
 import MessageDate from './MessageDate';
 import { Box, Button } from '@components/ui';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import styles from './styles/messenger.module.scss';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
@@ -194,7 +194,17 @@ const MessageRenderer = ({
       <AnimatePresence initial={false} mode="sync">
         {groupedMessages.map(([date, messages]) => {
           return (
-            <Box dir="column" gap={2} key={date}>
+            <motion.div
+              layout
+              key={date}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                width: '100%',
+                minWidth: 0,
+              }}
+            >
               <MessageDate date={date} format={false} size={size} />
               <AnimatePresence initial={false} mode="sync">
                 {messages.map((message) => {
@@ -218,7 +228,7 @@ const MessageRenderer = ({
                   );
                 })}
               </AnimatePresence>
-            </Box>
+            </motion.div>
           );
         })}
       </AnimatePresence>
