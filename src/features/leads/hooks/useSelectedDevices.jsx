@@ -14,6 +14,7 @@ export const useSelectedDevices = ({
   calculationTypeFilter = '',
   finalPercentage = null,
   maximumLimit = null,
+  bypassMinFirstPayment = false,
 }) => {
   const [selectedDevices, setSelectedDevices] = useState([]);
   const handleImeiSelect = useCallback((deviceId, value) => {
@@ -297,7 +298,9 @@ export const useSelectedDevices = ({
           }
 
           // Agar avtomatik hisoblangan qiymat mavjud bo'lsa, 10% cheklovni tekshiramiz
+          // bypassMinFirstPayment=true bo'lsa (SellerM roli) bu cheklov qo'llanmaydi
           if (
+            !bypassMinFirstPayment &&
             autoCalculatedFirstPayment > 0 &&
             currentFirstPayment < autoCalculatedFirstPayment * 0.9
           ) {
@@ -346,6 +349,7 @@ export const useSelectedDevices = ({
       calculationTypeFilter,
       finalPercentage,
       maximumLimit,
+      bypassMinFirstPayment,
     ]
   );
 

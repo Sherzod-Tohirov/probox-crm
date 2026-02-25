@@ -30,7 +30,7 @@ export const Messenger = (
   const [isSending, setIsSending] = useState(false);
   const pendingIdRef = useRef(0);
 
-  const [showDelayNotice, setShowDelayNotice] = useState(true);
+  const [showDelayNotice, setShowDelayNotice] = useState(entityType === 'lead');
 
   const handleSendMessage = useCallback(
     async (data) => {

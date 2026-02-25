@@ -106,13 +106,13 @@ export default function useInvoice(options = {}) {
           let totalPrice = price; // Default: faqat narx
           let monthlyPayment = 0; // Oylik to'lov
 
-          console.log('🔍 STEP 1 - Initial values:', {
-            deviceName: device.name,
-            price,
-            period,
-            totalPrice_initial: totalPrice,
-            priceCheck: price && price > 0 && period > 0,
-          });
+          // console.log('🔍 STEP 1 - Initial values:', {
+          //   deviceName: device.name,
+          //   price,
+          //   period,
+          //   totalPrice_initial: totalPrice,
+          //   priceCheck: price && price > 0 && period > 0,
+          // });
 
           // Agar price va period to'g'ri bo'lsa, grandTotal ni hisoblaymiz
           if (price && price > 0 && period > 0) {
@@ -130,21 +130,21 @@ export default function useInvoice(options = {}) {
               maximumLimit: maximumLimit,
             });
 
-            console.log('🔍 STEP 2 - After calculatePaymentDetails:', {
-              deviceName: device.name,
-              paymentDetails_grandTotal: paymentDetails.grandTotal,
-              paymentDetails_monthlyPayment: paymentDetails.monthlyPayment,
-              totalPrice_before_assignment: totalPrice,
-            });
+            // console.log('🔍 STEP 2 - After calculatePaymentDetails:', {
+            //   deviceName: device.name,
+            //   paymentDetails_grandTotal: paymentDetails.grandTotal,
+            //   paymentDetails_monthlyPayment: paymentDetails.monthlyPayment,
+            //   totalPrice_before_assignment: totalPrice,
+            // });
 
             totalPrice = paymentDetails.grandTotal || price;
             monthlyPayment = paymentDetails.monthlyPayment || 0;
 
-            console.log('🔍 STEP 3 - After assignment:', {
-              deviceName: device.name,
-              totalPrice_after_assignment: totalPrice,
-              monthlyPayment_after_assignment: monthlyPayment,
-            });
+            // console.log('🔍 STEP 3 - After assignment:', {
+            //   deviceName: device.name,
+            //   totalPrice_after_assignment: totalPrice,
+            //   monthlyPayment_after_assignment: monthlyPayment,
+            // });
           }
 
           if (!itemCode || !whsCode) {
@@ -238,12 +238,12 @@ export default function useInvoice(options = {}) {
             }
           }
 
-          console.log('🔍 STEP 4 - Before return:', {
-            deviceName: device.name,
-            totalPrice_before_return: totalPrice,
-            monthlyPayment_before_return: monthlyPayment,
-            firstPayment_before_return: firstPayment,
-          });
+          // console.log('🔍 STEP 4 - Before return:', {
+          //   deviceName: device.name,
+          //   totalPrice_before_return: totalPrice,
+          //   monthlyPayment_before_return: monthlyPayment,
+          //   firstPayment_before_return: firstPayment,
+          // });
 
           const documentLine = {
             ItemCode: itemCode,
@@ -259,24 +259,24 @@ export default function useInvoice(options = {}) {
             U_SP: monthlyPayment, // Oylik to'lov
           };
 
-          console.log('🔍 STEP 5 - DocumentLine object:', {
-            deviceName: device.name,
-            documentLine_Price: documentLine.Price,
-            documentLine_UnitPrice: documentLine.UnitPrice,
-          });
+          // console.log('🔍 STEP 5 - DocumentLine object:', {
+          //   deviceName: device.name,
+          //   documentLine_Price: documentLine.Price,
+          //   documentLine_UnitPrice: documentLine.UnitPrice,
+          // });
 
           return documentLine;
         })
       );
 
-      console.log(
-        '🔍 STEP 6 - Final DocumentLines array:',
-        documentLines.map((dl) => ({
-          ItemCode: dl.ItemCode,
-          Price: dl.Price,
-          UnitPrice: dl.UnitPrice,
-        }))
-      );
+      // console.log(
+      //   '🔍 STEP 6 - Final DocumentLines array:',
+      //   documentLines.map((dl) => ({
+      //     ItemCode: dl.ItemCode,
+      //     Price: dl.Price,
+      //     UnitPrice: dl.UnitPrice,
+      //   }))
+      // );
 
       // 4. Manzil ma'lumotlarini formatlash
       const clientAddressParts = [];
