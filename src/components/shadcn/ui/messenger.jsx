@@ -691,6 +691,7 @@ const MessengerMessage = ({
                         {isDeleting ? (
                           <>
                             <Loader2 size={11} className="animate-spin" />
+                            {/* O'chirilmoqda... */}
                           </>
                         ) : (
                           'Ha'
@@ -861,16 +862,16 @@ export const Messenger = ({
           wasNearBottomRef.current));
 
     // Debug: log scroll decision
-    console.log('🔍 scroll check', {
-      isFirstPaint,
-      messageCountIncreased,
-      isSendingRef: isSendingRef.current,
-      justSentRef: justSentRef.current,
-      wasNearBottom: wasNearBottomRef.current,
-      shouldScrollToBottom,
-      currentLength: sortedMessages.length,
-      previousLength: previousLengthRef.current,
-    });
+    // console.log('🔍 scroll check', {
+    //   isFirstPaint,
+    //   messageCountIncreased,
+    //   isSendingRef: isSendingRef.current,
+    //   justSentRef: justSentRef.current,
+    //   wasNearBottom: wasNearBottomRef.current,
+    //   shouldScrollToBottom,
+    //   currentLength: sortedMessages.length,
+    //   previousLength: previousLengthRef.current,
+    // });
 
     if (shouldScrollToBottom) {
       requestAnimationFrame(() => {
