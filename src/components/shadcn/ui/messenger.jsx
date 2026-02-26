@@ -8,8 +8,9 @@ import {
 } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Cog,
+  ChevronDown,
   CornerDownLeft,
+  Cog,
   Loader2,
   Mic,
   Paperclip,
@@ -684,13 +685,12 @@ const MessengerMessage = ({
                         variant="destructive"
                         size="sm"
                         disabled={isDeleting}
-                        className="grow h-[26px] gap-[4px] px-[8px] text-[11px]"
+                        className="grow h-[26px] min-w-[80px] gap-[4px] px-[8px] text-[11px]"
                         onClick={onConfirmDelete}
                       >
                         {isDeleting ? (
                           <>
                             <Loader2 size={11} className="animate-spin" />
-                            O'chirilmoqda...
                           </>
                         ) : (
                           'Ha'
@@ -762,6 +762,7 @@ export const Messenger = ({
   onSendFile,
   onReply,
   isLoading = false,
+  isRefetching = false,
   className,
   onLoadMore,
   hasMore = false,
@@ -794,10 +795,16 @@ export const Messenger = ({
   const fileInputRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const previousLengthRef = useRef(0);
-  const loadMoreScrollStateRef = useRef(null);
   const isLoadMorePendingRef = useRef(false);
   const deleteScrollStateRef = useRef(null);
   const isSendingRef = useRef(false);
+  const wasNearBottomRef = useRef(true);
+  const justSentRef = useRef(false);
+  const [showDelayNotice, setShowDelayNotice] = useState(() => {
+    // Check localStorage first, default to true if not set
+    const stored = localStorage.getItem('messengerDelayNoticeDismissed');
+    return stored !== 'true';
+  });
 
   const sortedMessages = useMemo(() => {
     const safeMessages = Array.isArray(messages)
@@ -817,14 +824,22 @@ export const Messenger = ({
     const node = messagesContainerRef.current;
     if (!node) return;
 
-    if (loadMoreScrollStateRef.current && !isLoadingMore) {
-      const prevState = loadMoreScrollStateRef.current;
-      const heightDiff = node.scrollHeight - prevState.scrollHeight;
-      node.scrollTop = prevState.scrollTop + heightDiff;
-      loadMoreScrollStateRef.current = null;
-      previousLengthRef.current = sortedMessages.length;
-      return;
-    }
+    const updateWasNearBottom = () => {
+      const distanceToBottom =
+        node.scrollHeight - node.scrollTop - node.clientHeight;
+      wasNearBottomRef.current = distanceToBottom <= 100;
+    };
+
+    updateWasNearBottom();
+    node.addEventListener('scroll', updateWasNearBottom, { passive: true });
+    return () => node.removeEventListener('scroll', updateWasNearBottom);
+  }, []);
+
+  useEffect(() => {
+    const node = messagesContainerRef.current;
+    if (!node) return;
+
+    // No scroll position restoration needed for bottom-loading
 
     if (deleteScrollStateRef.current) {
       const prevState = deleteScrollStateRef.current;
@@ -839,7 +854,23 @@ export const Messenger = ({
     const messageCountIncreased =
       sortedMessages.length > previousLengthRef.current;
     const shouldScrollToBottom =
-      isFirstPaint || (messageCountIncreased && isSendingRef.current);
+      isFirstPaint ||
+      (messageCountIncreased &&
+        (isSendingRef.current ||
+          justSentRef.current ||
+          wasNearBottomRef.current));
+
+    // Debug: log scroll decision
+    console.log('🔍 scroll check', {
+      isFirstPaint,
+      messageCountIncreased,
+      isSendingRef: isSendingRef.current,
+      justSentRef: justSentRef.current,
+      wasNearBottom: wasNearBottomRef.current,
+      shouldScrollToBottom,
+      currentLength: sortedMessages.length,
+      previousLength: previousLengthRef.current,
+    });
 
     if (shouldScrollToBottom) {
       requestAnimationFrame(() => {
@@ -847,6 +878,12 @@ export const Messenger = ({
           top: node.scrollHeight,
           behavior: isFirstPaint ? 'auto' : 'smooth',
         });
+        // Fallback: force scroll again after a short delay in case smooth animation is interrupted
+        setTimeout(() => {
+          if (node.scrollTop + node.clientHeight < node.scrollHeight - 1) {
+            node.scrollTo({ top: node.scrollHeight, behavior: 'auto' });
+          }
+        }, 100);
       });
     }
 
@@ -870,6 +907,18 @@ export const Messenger = ({
     try {
       setIsSendingMessage(true);
       isSendingRef.current = true;
+      justSentRef.current = true;
+      setTimeout(() => {
+        justSentRef.current = false;
+      }, 3000);
+
+      // Optimistic scroll to bottom immediately when sending
+      const node = messagesContainerRef.current;
+      if (node) {
+        requestAnimationFrame(() => {
+          node.scrollTo({ top: node.scrollHeight, behavior: 'smooth' });
+        });
+      }
 
       if (selectedFile && onSendFile) {
         await onSendFile(selectedFile);
@@ -886,6 +935,7 @@ export const Messenger = ({
       resetComposer();
     } catch (error) {
       console.error('Message send error:', error);
+      justSentRef.current = false;
     } finally {
       setIsSendingMessage(false);
       setTimeout(() => {
@@ -957,13 +1007,6 @@ export const Messenger = ({
       return;
     }
 
-    const node = messagesContainerRef.current;
-    if (node) {
-      loadMoreScrollStateRef.current = {
-        scrollTop: node.scrollTop,
-        scrollHeight: node.scrollHeight,
-      };
-    }
     isLoadMorePendingRef.current = true;
     onLoadMore();
   }, [hasMore, isLoadingMore, onLoadMore]);
@@ -972,8 +1015,12 @@ export const Messenger = ({
     (event) => {
       if (!hasMore || !onLoadMore || isLoadingMore) return;
 
-      const currentScrollTop = event.currentTarget.scrollTop;
-      if (currentScrollTop <= 56) {
+      const node = event.currentTarget;
+      const { scrollTop, scrollHeight, clientHeight } = node;
+      const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Load more when within 100px of bottom
+      if (distanceToBottom <= 100) {
         handleLoadMore();
       }
     },
@@ -1023,33 +1070,54 @@ export const Messenger = ({
         </div>
       </div>
 
+      {isRefetching && !isLoading && (
+        <div
+          className=" sticky top-0 flex items-center gap-[8px] border-b px-[16px] py-[7px] text-[12px]"
+          style={{
+            borderColor: 'var(--primary-border-color)',
+            backgroundColor: 'var(--primary-input-bg)',
+            color: 'var(--secondary-color)',
+          }}
+        >
+          <Loader2 size={12} className="animate-spin" />
+          <span>Ma&apos;lumotlar yangilanmoqda...</span>
+        </div>
+      )}
+
+      {showDelayNotice && (
+        <div
+          className="flex items-center gap-[8px] border-b px-[16px] py-[8px] text-[12px]"
+          style={{
+            borderColor: 'var(--warning-color)',
+            backgroundColor: 'var(--warning-bg)',
+            color: 'var(--primary-color)',
+          }}
+        >
+          <span>⏳</span>
+          <span className="flex-1">
+            Chat yuklanishida kechikish bo&apos;lishi mumkin. Noqulaylik uchun
+            uzr so&apos;raymiz!
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setShowDelayNotice(false);
+              localStorage.setItem('messengerDelayNoticeDismissed', 'true');
+            }}
+            className="ml-[4px] flex h-[18px] w-[18px] shrink-0 cursor-pointer items-center justify-center border-none opacity-60 transition-opacity hover:opacity-100"
+            style={{ color: 'var(--primary-color)' }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       <div
         ref={messagesContainerRef}
         onScroll={handleMessagesScroll}
         className="flex-1 overflow-y-auto px-[16px] py-[12px]"
         style={{ backgroundColor: 'var(--secondary-bg)' }}
       >
-        {hasMore && onLoadMore ? (
-          <div className="mb-[8px] flex justify-center py-[2px]">
-            {isLoadingMore ? (
-              <div
-                className="inline-flex items-center gap-[6px] text-[11px]"
-                style={{ color: 'var(--secondary-color)' }}
-              >
-                <Loader2 size={13} className="animate-spin" />
-                Eski xabarlar yuklanmoqda...
-              </div>
-            ) : (
-              <span
-                className="text-[11px]"
-                style={{ color: 'var(--secondary-color)' }}
-              >
-                Yuqoriga suring, eski xabarlar yuklanadi
-              </span>
-            )}
-          </div>
-        ) : null}
-
         {isLoading ? (
           <div className="flex items-center justify-center py-[40px]">
             <Loader2
@@ -1155,6 +1223,29 @@ export const Messenger = ({
             </AnimatePresence>
           </div>
         )}
+
+        {hasMore && onLoadMore ? (
+          <div className="mt-[8px] flex justify-center py-[2px]">
+            {isLoadingMore ? (
+              <div
+                className="inline-flex items-center gap-[6px] rounded-full bg-(--primary-input-bg) px-[12px] py-[6px] text-[11px]"
+                style={{ color: 'var(--secondary-color)' }}
+              >
+                <Loader2 size={13} className="animate-spin" />
+                Yangi xabarlar yuklanmoqda...
+              </div>
+            ) : (
+              <button
+                onClick={handleLoadMore}
+                className="inline-flex items-center gap-[6px] rounded-full bg-(--primary-input-bg) px-[12px] py-[6px] text-[11px] transition-colors hover:bg-(--primary-border-color)"
+                style={{ color: 'var(--primary-color)' }}
+              >
+                <ChevronDown size={13} />
+                Yangi xabararlarni yuklash
+              </button>
+            )}
+          </div>
+        ) : null}
       </div>
 
       <div

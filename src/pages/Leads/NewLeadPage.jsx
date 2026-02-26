@@ -66,6 +66,7 @@ export default function NewLeadPage() {
   const {
     data: messages,
     isLoading: isMessagesLoading,
+    isRefetching: isMessagesRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -215,6 +216,7 @@ export default function NewLeadPage() {
                 onEditMessage={editMessage}
                 onDeleteMessage={deleteMessage}
                 isLoading={isMessagesLoading}
+                isRefetching={isMessagesRefetching}
                 onLoadMore={fetchNextPage}
                 hasMore={Boolean(hasNextPage)}
                 isLoadingMore={isFetchingNextPage}
