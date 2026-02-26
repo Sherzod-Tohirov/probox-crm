@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ClipLoader } from 'react-spinners';
+import { Pencil, Trash2 } from 'lucide-react';
 
 import { Col, Button, Typography, Box } from '@components/ui';
 import iconsMap from '@utils/iconsMap';
@@ -52,7 +53,7 @@ export default function Message({
     setEditText,
     handleContextMenu,
     handleEditSubmit,
-    floating: { x, y, strategy, refs },
+    menuRef,
   } = useMessageActions({
     msg,
     user,
@@ -64,11 +65,11 @@ export default function Message({
 
   return (
     <motion.div
-      ref={refs.setReference}
       onContextMenu={handleContextMenu}
       className={classNames(styles.message, styles[size], {
         [styles['message--deleting']]: isDeleting,
       })}
+      layout
       custom={animationIndex}
       variants={MESSAGE_VARIANTS}
       initial="hidden"
@@ -291,61 +292,46 @@ export default function Message({
       <AnimatePresence>
         {showMenu && (
           <motion.div
-            ref={refs.setFloating}
-            style={{
-              position: strategy,
-              top: !isNaN(y) ? y + 25 : 0,
-              left: !isNaN(x) ? x : 0,
-              zIndex: 99999,
-            }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className={styles['message-text-menu']}
+            ref={menuRef}
+            initial={{ opacity: 0, scale: 0.92, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 4 }}
+            transition={{ duration: 0.15 }}
+            className={styles['message-context-menu']}
           >
-            <ul className={styles['message-text-menu-list']}>
-              <li className={styles['message-text-menu-list-item']}>
-                <Button
-                  onClick={() => {
-                    setShowMenu(false);
-                    setEditMode(true);
-                  }}
-                  variant="text"
-                  icon="pencil"
-                  className={classNames(
-                    styles['message-text-menu-btn'],
-                    styles['edit']
-                  )}
-                  disabled={messageType !== 'text'}
-                >
-                  tahrirlash
-                </Button>
-              </li>
-              <li className={styles['message-text-menu-list-item']}>
-                <Button
-                  onClick={() => {
-                    setShowMenu(false);
-                    onDeleteMessage(msg?._id);
-                  }}
-                  variant="text"
-                  icon={isDeleting ? undefined : 'deleteFilled'}
-                  disabled={isDeleting}
-                  className={classNames(
-                    styles['message-text-menu-btn'],
-                    styles['delete']
-                  )}
-                >
-                  {isDeleting ? (
-                    <Box dir="row" gap={1} align="center">
-                      <ClipLoader size={12} color="#e53e3e" />
-                      <span>O'chirilmoqda...</span>
-                    </Box>
-                  ) : (
-                    "o'chirish"
-                  )}
-                </Button>
-              </li>
-            </ul>
+            <button
+              className={classNames(
+                styles['message-context-btn'],
+                styles['message-context-btn--edit']
+              )}
+              onClick={() => {
+                setShowMenu(false);
+                setEditMode(true);
+              }}
+              disabled={messageType !== 'text'}
+            >
+              <Pencil size={13} />
+              <span>Tahrirlash</span>
+            </button>
+            <div className={styles['message-context-divider']} />
+            <button
+              className={classNames(
+                styles['message-context-btn'],
+                styles['message-context-btn--delete']
+              )}
+              onClick={() => {
+                setShowMenu(false);
+                onDeleteMessage(msg?._id);
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <ClipLoader size={11} color="#e53e3e" />
+              ) : (
+                <Trash2 size={13} />
+              )}
+              <span>{isDeleting ? "O'chirilmoqda..." : "O'chirish"}</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

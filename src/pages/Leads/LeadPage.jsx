@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import {
   Row,
@@ -9,6 +9,7 @@ import {
   Card,
   SkeletonCard,
   SkeletonNavigation,
+  Button,
 } from '@components/ui';
 
 import useIsMobile from '@/hooks/useIsMobile';
@@ -49,6 +50,7 @@ import useFetchLeadLimitHistory from '@/hooks/data/leads/useFetchLeadLimitHistor
 
 export default function LeadPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const messengerRef = useRef(null);
   const { isOpen, toggle } = useToggle('messenger');
@@ -56,6 +58,7 @@ export default function LeadPage() {
   // Use custom hook for all data and logic
   const {
     lead,
+    currentUserRole,
     isLoading,
     isError,
     error,
@@ -329,6 +332,19 @@ export default function LeadPage() {
                 customBreadcrumbs={customBreadcrumbs}
               />
             </Col>
+            {/* Test button for new lead page - only for specific roles */}
+            {['CEO'].includes(currentUserRole) && (
+              <Col>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    navigate(`/leads/${id}/new`);
+                  }}
+                >
+                  Yangi sahifaga tashrif (test)
+                </Button>
+              </Col>
+            )}
           </Row>
         </Col>
 

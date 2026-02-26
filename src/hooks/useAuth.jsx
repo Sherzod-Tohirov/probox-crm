@@ -53,6 +53,11 @@ export default function useAuth() {
     } catch (_) {
       console.log(_);
     }
+    try {
+      localStorage.removeItem('messengerDelayNoticeDismissed');
+    } catch (_) {
+      console.log(_);
+    }
     dispatch(logoutUser());
   }, [dispatch, queryClient]);
 

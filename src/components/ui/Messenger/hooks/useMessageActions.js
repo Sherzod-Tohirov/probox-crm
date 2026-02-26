@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useFloating, shift, offset, autoUpdate } from '@floating-ui/react-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function useMessageActions({
   msg,
@@ -14,16 +13,7 @@ export default function useMessageActions({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [messageText, setMessageText] = useState(baseMessageText);
   const [editText, setEditText] = useState(baseMessageText);
-
-  const { x, y, strategy, update, refs } = useFloating({
-    placement: 'top-end',
-    middleware: [offset(0), shift()],
-  });
-
-  useEffect(() => {
-    if (!refs.reference.current || !refs.floating.current) return;
-    return autoUpdate(refs.reference.current, refs.floating.current, update);
-  }, [refs.reference, refs.floating, update]);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     setMessageText(baseMessageText);
@@ -40,10 +30,9 @@ export default function useMessageActions({
         isTextMessage
       ) {
         setShowMenu(true);
-        update();
       }
     },
-    [msg, user?.SlpCode, update, isTextMessage]
+    [msg, user?.SlpCode, isTextMessage]
   );
 
   const handleEditSubmit = useCallback(async () => {
@@ -66,27 +55,16 @@ export default function useMessageActions({
     }
   }, [editText, msg?._id, baseMessageText, onEditMessage, onDeleteMessage]);
 
-  const handleClickOutside = useCallback(
-    (e) => {
-      if (
-        refs.floating.current &&
-        !refs.floating.current?.contains(e.target) &&
-        !refs.reference.current?.contains(e.target)
-      ) {
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
         setShowMenu(false);
       }
-    },
-    [refs.floating, refs.reference]
-  );
-
-  useEffect(() => {
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMenu, handleClickOutside]);
+  }, [showMenu]);
 
   return {
     showMenu,
@@ -99,6 +77,6 @@ export default function useMessageActions({
     setEditText,
     handleContextMenu,
     handleEditSubmit,
-    floating: { x, y, strategy, refs },
+    menuRef,
   };
 }

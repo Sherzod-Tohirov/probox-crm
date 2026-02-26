@@ -405,7 +405,7 @@ function SellerFields({ leadId, leadData, canEdit }) {
             disabled={!canEdit}
           />
         </LabeledField>
-        <LabeledField label="Filial">
+        <LabeledField label="Filial" className="col-span-2">
           <ControlledSelect
             name="branch2"
             control={control}
@@ -419,7 +419,7 @@ function SellerFields({ leadId, leadData, canEdit }) {
             ))}
           </ControlledSelect>
         </LabeledField>
-        <LabeledField label="Sotuvchi">
+        <LabeledField label="Sotuvchi" className="col-span-2">
           <ControlledSelect name="seller" control={control} disabled={!canEdit}>
             <SelectOption value="null">—</SelectOption>
             {(sellerOptions ?? []).map((o) => (
