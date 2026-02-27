@@ -19,6 +19,9 @@ const OPERATOR1_FIELDS = [
   'branch',
 ];
 
+const JSHSHIR_REGEX = /^\d{14}$/;
+const PASSPORT_ID_REGEX = /^[A-Z]{2}\d{7}$/;
+
 export default function useOperator1Form(leadId, leadData, onSuccess) {
   const { alert } = useAlert();
   const form = useForm({
@@ -53,11 +56,53 @@ export default function useOperator1Form(leadId, leadData, onSuccess) {
   });
 
   const handleSubmit = form.handleSubmit((data) => {
+    const normalizedJshshir = String(data.jshshir || '').trim();
+    const normalizedPassportId = String(data.passportId || '')
+      .trim()
+      .toUpperCase();
+
+    let hasValidationError = false;
+
+    if (normalizedJshshir && !JSHSHIR_REGEX.test(normalizedJshshir)) {
+      form.setError('jshshir', {
+        type: 'manual',
+        message: 'JSHSHIR 14 ta raqam bo‘lishi kerak',
+      });
+      hasValidationError = true;
+    } else {
+      form.clearErrors('jshshir');
+    }
+
+    if (normalizedPassportId && !PASSPORT_ID_REGEX.test(normalizedPassportId)) {
+      form.setError('passportId', {
+        type: 'manual',
+        message: 'Passport ID formati AA1234567 bo‘lishi kerak',
+      });
+      hasValidationError = true;
+    } else {
+      form.clearErrors('passportId');
+    }
+
+    if (hasValidationError) {
+      alert("JSHSHIR yoki Passport ID formati noto'g'ri", {
+        type: 'error',
+      });
+      return;
+    }
+
     // Filter only Operator1 fields
     const filteredData = {};
     const numberFields = ['callCount', 'noAnswerCount'];
     OPERATOR1_FIELDS.forEach((field) => {
       if (data[field] !== undefined && data[field] !== '') {
+        if (field === 'jshshir') {
+          filteredData[field] = normalizedJshshir;
+          return;
+        }
+        if (field === 'passportId') {
+          filteredData[field] = normalizedPassportId;
+          return;
+        }
         if (numberFields.includes(field)) {
           filteredData[field] = Number(data[field]);
           return;

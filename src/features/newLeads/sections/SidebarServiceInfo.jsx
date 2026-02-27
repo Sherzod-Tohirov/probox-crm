@@ -43,6 +43,34 @@ function canEditTabRole(userRole, tabKey) {
   return (TAB_TO_ROLE[tabKey] ?? []).includes(userRole);
 }
 
+function sanitizeJshshirInput(value) {
+  return String(value || '')
+    .replace(/\D/g, '')
+    .slice(0, 14);
+}
+
+function sanitizePassportIdInput(value) {
+  const chars = String(value || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+
+  let result = '';
+  for (const ch of chars) {
+    if (result.length < 2) {
+      if (/[A-Z]/.test(ch)) result += ch;
+      continue;
+    }
+
+    if (result.length < 9 && /\d/.test(ch)) {
+      result += ch;
+    }
+
+    if (result.length === 9) break;
+  }
+
+  return result;
+}
+
 function ControlledSelect({
   name,
   control,
@@ -281,18 +309,29 @@ function OperatorFields({ leadId, leadData, canEdit }) {
         </LabeledField>
         <LabeledField label="JSHSHIR" className="col-span-2">
           <Input
-            {...register('jshshir')}
+            {...register('jshshir', {
+              onChange: (e) => {
+                e.target.value = sanitizeJshshirInput(e.target.value);
+              },
+            })}
             disabled={!canEdit}
             className="w-full"
             placeholder="—"
+            maxLength={14}
+            inputMode="numeric"
           />
         </LabeledField>
         <LabeledField label="Passport ID" className="col-span-2">
           <Input
-            {...register('passportId')}
+            {...register('passportId', {
+              onChange: (e) => {
+                e.target.value = sanitizePassportIdInput(e.target.value);
+              },
+            })}
             disabled={!canEdit}
             className="w-full"
             placeholder="—"
+            maxLength={9}
           />
         </LabeledField>
         <LabeledField label="Uchrashuv sanasi va vaqti" className="col-span-2">
@@ -463,18 +502,29 @@ function SellerFields({ leadId, leadData, canEdit }) {
         </LabeledField>
         <LabeledField label="JSHSHIR">
           <Input
-            {...register('jshshir')}
+            {...register('jshshir', {
+              onChange: (e) => {
+                e.target.value = sanitizeJshshirInput(e.target.value);
+              },
+            })}
             disabled={!canEdit}
             className="w-full"
             placeholder="—"
+            maxLength={14}
+            inputMode="numeric"
           />
         </LabeledField>
         <LabeledField label="Passport ID">
           <Input
-            {...register('passportId')}
+            {...register('passportId', {
+              onChange: (e) => {
+                e.target.value = sanitizePassportIdInput(e.target.value);
+              },
+            })}
             disabled={!canEdit}
             className="w-full"
             placeholder="—"
+            maxLength={9}
           />
         </LabeledField>
         <LabeledField label="Rad etish sababi" className="col-span-2">
