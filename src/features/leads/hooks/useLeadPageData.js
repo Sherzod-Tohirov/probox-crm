@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useFetchLeadById from '@/hooks/data/leads/useFetchLeadById';
 import useMutateLead from '@/hooks/data/leads/useMutateLead';
@@ -133,7 +133,7 @@ export default function useLeadPageData(leadId) {
       }
 
       const allowedRoles = TAB_TO_ROLE[tabKey];
-      return Array.isArray(allowedRoles) 
+      return Array.isArray(allowedRoles)
         ? allowedRoles.includes(currentUserRole)
         : currentUserRole === allowedRoles;
     },
@@ -504,12 +504,15 @@ export default function useLeadPageData(leadId) {
 
   // Default tab
   const defaultTab = ROLE_TO_TAB[currentUserRole] ?? 'operator1';
+  const seenMutatedRef = useRef(false);
   useEffect(() => {
     if (!ALLOWED_ROLES_FOR_SEEING_RETURNED_LEADS.includes(role)) return;
-    if (lead?.seen === false) {
+    if (lead?.seen === false && !seenMutatedRef.current) {
+      seenMutatedRef.current = true;
       updateLead.mutate({ seen: true });
     }
-  }, [lead, user, role, updateLead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lead?.seen, role]);
   return {
     lead,
     role,
