@@ -3,6 +3,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 
 import SidebarLayout from '@layouts/SidebarLayout';
 import MainLayout from '@layouts/MainLayout';
@@ -33,7 +34,7 @@ function App() {
   const { AlertContainer, alert } = useAlert();
   const { isAuthenticated } = useAuth();
   const { isOpen, toggle } = useToggle('messenger');
-  const { pathname } = useLocation();
+  const location = useLocation();
   const isOnline = useOnlineStatus();
 
   // Initialize theme on app mount
@@ -42,8 +43,8 @@ function App() {
 
   useEffect(() => {
     // Toggle off messenger when route changes
-    if (!isMessengerRoute(pathname) && isOpen) toggle();
-  }, [pathname, toggle, isOpen]);
+    if (!isMessengerRoute(location.pathname) && isOpen) toggle();
+  }, [location.pathname, toggle, isOpen]);
 
   // Set the global alert handler once
   useEffect(() => {
@@ -68,7 +69,9 @@ function App() {
       <PrimaryLayout>
         <Header />
         <DashboardLayout>
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <Outlet key={location.pathname} />
+          </AnimatePresence>
         </DashboardLayout>
       </PrimaryLayout>
       <InboundCallLeadModal />
