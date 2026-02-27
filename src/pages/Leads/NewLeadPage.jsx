@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import useLeadPageData from '@/features/leads/hooks/useLeadPageData';
 import useMessengerActions from '@hooks/useMessengerActions';
@@ -124,7 +125,15 @@ export default function NewLeadPage() {
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{
+        duration: 0.3,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      }}
+    >
       <div className="flex w-full flex-col gap-[20px]">
         {/* Sticky Header */}
         <div
@@ -137,7 +146,7 @@ export default function NewLeadPage() {
           <div className="flex items-center gap-[12px]">
             <button
               type="button"
-              onClick={() => navigate('/leads')}
+              onClick={() => navigate(-1)}
               className="flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-full border-transparent transition-colors bg-[var(--primary-input-bg)] hover:opacity-80"
               style={{ color: 'var(--primary-color)' }}
             >
@@ -248,6 +257,6 @@ export default function NewLeadPage() {
         data={limitHistoryData}
         isLoading={limitHistoryLoading}
       />
-    </>
+    </motion.div>
   );
 }

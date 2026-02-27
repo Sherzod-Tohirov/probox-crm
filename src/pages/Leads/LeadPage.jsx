@@ -11,6 +11,7 @@ import {
   SkeletonNavigation,
   Button,
 } from '@components/ui';
+import { Info, X } from 'lucide-react';
 
 import useIsMobile from '@/hooks/useIsMobile';
 import useLeadPageData from '@/features/leads/hooks/useLeadPageData';
@@ -47,6 +48,7 @@ import useFetchInvoiceScore from '@/hooks/data/clients/useFetchInvoiceScore';
 import ClientExtraInfoSection from '@/features/leads/components/LeadPageSections/ClientExtraInfoSection';
 import { LeadLimitHistoryModal } from '@/features/leads/components/modals/LeadLimitHistoryModal';
 import useFetchLeadLimitHistory from '@/hooks/data/leads/useFetchLeadLimitHistory';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function LeadPage() {
   const { id } = useParams();
@@ -54,11 +56,11 @@ export default function LeadPage() {
   const isMobile = useIsMobile();
   const messengerRef = useRef(null);
   const { isOpen, toggle } = useToggle('messenger');
+  const [showAlert, setShowAlert] = useState(true);
 
   // Use custom hook for all data and logic
   const {
     lead,
-    currentUserRole,
     isLoading,
     isError,
     error,
@@ -299,7 +301,6 @@ export default function LeadPage() {
       </>
     );
   }
-
   // Offline or error state: render stable page to avoid loops
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return <Offline />;
@@ -319,91 +320,167 @@ export default function LeadPage() {
   }
 
   return (
-    <>
-      <Row gutter={12} style={{ width: '100%', height: '100%' }}>
-        <Col fullWidth>
-          <Row
-            direction={{ xs: 'column', md: 'row' }}
-            gutter={{ xs: 2, md: 3 }}
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{
+        duration: 0.3,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      }}
+    >
+      {/* Sticky Alert Banner */}
+      <AnimatePresence>
+        {showAlert && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.04, 0.62, 0.23, 0.98],
+            }}
+            animateTransition={{
+              duration: 0.5,
+              delay: 2,
+              ease: [0.04, 0.62, 0.23, 0.98],
+            }}
+            exitTransition={{
+              duration: 0.3,
+              ease: [0.04, 0.62, 0.23, 0.98],
+            }}
+            className="overflow-hidden"
           >
-            <Col flexGrow>
-              <Navigation
-                fallbackBackPath="/leads"
-                customBreadcrumbs={customBreadcrumbs}
-              />
-            </Col>
-            {/* Test button for new lead page - only for specific roles */}
-            {['CEO'].includes(currentUserRole) && (
-              <Col>
-                <Button
-                  size="small"
-                  onClick={() => {
-                    navigate(`/leads/${id}/new`);
-                  }}
-                >
-                  Yangi sahifaga tashrif (test)
-                </Button>
-              </Col>
-            )}
-          </Row>
-        </Col>
-
-        <Col fullWidth>
-          <Row gutter={isMobile ? 4 : 6}>
-            {/* Blocked Warning Card */}
-            {isBlocked && (
-              <Col fullWidth>
-                <BlockedWarningCard />
-              </Col>
-            )}
-
-            {/* Common Fields Card */}
-            <Col fullWidth>
-              <Card title="Umumiy ma'lumotlar">{commonFields}</Card>
-            </Col>
-
-            {/* Tabs Card */}
-            <Col fullWidth>
-              <Card>
-                <Tabs tabs={tabs} value={activeTab} onChange={setActiveTab} />
-              </Card>
-            </Col>
-
-            {/* History Card */}
-            <Col fullWidth>
-              <Card title="Tarix">
-                <div className={styles['empty-state']}>
-                  <Typography variant="body2" color="textSecondary">
-                    Tarix ma'lumotlari hali mavjud emas
-                  </Typography>
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              animateTransition={{
+                duration: 0.4,
+                delay: 2.2,
+                ease: 'easeOut',
+              }}
+              exitTransition={{
+                duration: 0.3,
+                ease: 'easeIn',
+              }}
+              className="flex items-center justify-between gap-4 px-6 py-3 mb-20 bg-amber-300 rounded-[8px]"
+            >
+              <div className="flex items-center gap-3">
+                <Info size={20} color="#000" />
+                <div className="text-[14px] text-black">
+                  <span className="font-semibold text-[14px] dark:text-black">
+                    Eslatma:
+                  </span>{' '}
+                  Eski sahifa yaqin orada yopiladi. Iltimos, yangi sahifaga
+                  o'tib, undan foydalanishni o'rganing. Agar muammolar yuzaga
+                  kelsa, biz bilan bog'laning.
                 </div>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      <Messenger
-        ref={messengerRef}
-        messages={messages}
-        hasToggleControl={false}
-        isLoading={isMessagesLoading}
-        onSendMessage={sendMessage}
-        onEditMessage={editMessage}
-        onDeleteMessage={deleteMessage}
-        deletingId={deletingId}
-        isOpen={isOpen}
-        entityType="lead"
-        onLoadMore={fetchNextPage}
-        hasMore={hasNextPage}
-        isLoadingMore={isFetchingNextPage}
-        isRefetching={isMessagesRefetching}
-      />
-      <LeadLimitHistoryModal
-        isOpen={isLimitHistoryModalOpen}
-        onClose={() => setLimitHistoryModalOpen(false)}
-        data={limitHistoryData}
-        isLoading={limitHistoryLoading}
-      />
-    </>
+              </div>
+              <button
+                onClick={() => setShowAlert(false)}
+                className="rounded-full bg-transparent text-black cursor-pointer border-none p-1 transition-opacity hover:opacity-80"
+              >
+                <X size={20} color="#000" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        layout
+        transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
+      >
+        <Row gutter={12} style={{ width: '100%', height: '100%' }}>
+          <Col fullWidth>
+            <Row
+              direction={{ xs: 'column', md: 'row' }}
+              gutter={{ xs: 2, md: 3 }}
+            >
+              <Col flexGrow>
+                <Navigation
+                  fallbackBackPath="/leads"
+                  customBreadcrumbs={customBreadcrumbs}
+                />
+              </Col>
+              {/* Test button for new lead page - visible to all users */}
+              {canEditTab && (
+                <Col>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      navigate(`/leads/${id}/new`);
+                    }}
+                  >
+                    Yangi sahifaga o'tish
+                  </Button>
+                </Col>
+              )}
+            </Row>
+          </Col>
+
+          <Col fullWidth>
+            <Row gutter={isMobile ? 4 : 6}>
+              {/* Blocked Warning Card */}
+              {isBlocked && (
+                <Col fullWidth>
+                  <BlockedWarningCard />
+                </Col>
+              )}
+
+              {/* Common Fields Card */}
+              <Col fullWidth>
+                <Card title="Umumiy ma'lumotlar">{commonFields}</Card>
+              </Col>
+
+              {/* Tabs Card */}
+              <Col fullWidth>
+                <Card>
+                  <Tabs tabs={tabs} value={activeTab} onChange={setActiveTab} />
+                </Card>
+              </Col>
+
+              {/* History Card */}
+              <Col fullWidth>
+                <Card title="Tarix">
+                  <div className={styles['empty-state']}>
+                    <Typography variant="body2" color="textSecondary">
+                      Tarix ma'lumotlari hali mavjud emas
+                    </Typography>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row>
+          <Col fullWidth>
+            <Messenger
+              ref={messengerRef}
+              messages={messages}
+              hasToggleControl={false}
+              isLoading={isMessagesLoading}
+              onSendMessage={sendMessage}
+              onEditMessage={editMessage}
+              onDeleteMessage={deleteMessage}
+              deletingId={deletingId}
+              isOpen={isOpen}
+              entityType="lead"
+              onLoadMore={fetchNextPage}
+              hasMore={hasNextPage}
+              isLoadingMore={isFetchingNextPage}
+              isRefetching={isMessagesRefetching}
+            />
+          </Col>
+        </Row>
+        <LeadLimitHistoryModal
+          isOpen={isLimitHistoryModalOpen}
+          onClose={() => setLimitHistoryModalOpen(false)}
+          data={limitHistoryData}
+          isLoading={limitHistoryLoading}
+        />
+      </motion.div>
+    </motion.div>
   );
 }

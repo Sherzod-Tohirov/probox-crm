@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import {
   Card,
@@ -76,16 +77,24 @@ const CONDITION_BADGE = {
 
 function DeviceResultCard({ item, onSelect }) {
   const badge = CONDITION_BADGE[item.condition] || {
-    bg: 'var(--primary-bg)',
+    bg: 'var(--primary-input-bg)',
     color: 'var(--secondary-color)',
   };
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={() => onSelect(item)}
-      className="flex w-full items-start gap-[10px] rounded-[10px] border px-[12px] py-[10px] text-left transition-colors hover:bg-[var(--primary-table-hover-bg)]"
-      style={{ borderColor: 'var(--primary-border-color)' }}
+      className="flex w-full items-start gap-[10px] rounded-[10px] border px-[12px] py-[10px] text-left hover:shadow-md"
+      style={{
+        borderColor: 'var(--primary-border-color)',
+        backgroundColor: 'var(--primary-bg)',
+      }}
+      whileHover={{
+        backgroundColor: 'var(--primary-table-hover-bg)',
+        transition: { duration: 0.2 },
+        scale: 1.02
+      }}
     >
       <div className="flex min-w-0 flex-1 flex-col gap-[4px]">
         <div className="flex items-center gap-[6px]">
@@ -153,7 +162,7 @@ function DeviceResultCard({ item, onSelect }) {
           </span>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
 
@@ -175,6 +184,13 @@ function DeviceSearchInput({
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [searchResults]);
+
+  // Close menu only when search term is empty and menu is not manually opened
+  useEffect(() => {
+    if (!searchTerm.trim() && isOpen) {
+      setIsOpen(false);
+    }
+  }, [searchTerm, isOpen]);
 
   useEffect(() => {
     if (!hasMore || !sentinelRef.current) return;
@@ -198,28 +214,44 @@ function DeviceSearchInput({
 
   return (
     <Popover
-      open={isOpen && canEdit && (isSearching || searchResults.length > 0)}
-      onOpenChange={setIsOpen}
+      open={isOpen && canEdit && searchTerm.trim()}
+      onOpenChange={(open) => {
+        // Only close if user explicitly closes or search is empty
+        if (!open || !searchTerm.trim()) {
+          setIsOpen(false);
+        }
+      }}
     >
       <PopoverTrigger asChild>
-        <div className="relative w-full">
+        <div className="relative">
           <Search
-            size={16}
-            className="pointer-events-none absolute left-[12px] top-1/2 -translate-y-1/2"
-            style={{ color: 'var(--secondary-color)' }}
+            className="absolute left-[10px] top-[50%] translate-y-[-50%] text-(--secondary-color)"
+            size={18}
           />
           <Input
+            type="text"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (!isOpen) setIsOpen(true);
+              const value = e.target.value;
+              setSearchTerm(value);
+              // Open menu as soon as user starts typing
+              if (value.trim() && !isOpen) {
+                setIsOpen(true);
+              }
             }}
             onFocus={() => {
-              if (searchResults.length || isSearching) setIsOpen(true);
+              if (searchTerm.trim()) {
+                setIsOpen(true);
+              }
             }}
             placeholder="Qurilma nomi bo'yicha qidirish"
             disabled={!canEdit}
             className="h-[42px] pl-[34px]"
+            style={{
+              backgroundColor: 'var(--primary-input-bg)',
+              borderColor: 'var(--primary-border-color)',
+              color: 'var(--primary-color)',
+            }}
           />
         </div>
       </PopoverTrigger>
@@ -229,50 +261,71 @@ function DeviceSearchInput({
         style={{
           borderColor: 'var(--primary-border-color)',
           backgroundColor: 'var(--primary-bg)',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
         }}
         align="start"
+        sideOffset={4}
       >
-        <div className="max-h-[360px] overflow-y-auto p-[6px]">
-          {isSearching ? (
-            <div className="flex flex-col gap-[6px] p-[4px]">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-[64px] animate-pulse rounded-[10px]"
-                  style={{ backgroundColor: 'var(--primary-input-bg)' }}
-                />
-              ))}
-            </div>
-          ) : visibleItems.length ? (
-            <div className="flex flex-col gap-[4px]">
-              {visibleItems.map((item) => (
-                <DeviceResultCard
-                  key={item.id || `${item.name}-${item.whsCode}`}
-                  item={item}
-                  onSelect={handleSelect}
-                />
-              ))}
-              {hasMore && (
-                <div
-                  ref={sentinelRef}
-                  className="flex items-center justify-center py-[8px]"
-                >
-                  <div
-                    className="h-[6px] w-[6px] animate-pulse rounded-full"
-                    style={{ backgroundColor: 'var(--secondary-color)' }}
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="max-h-[360px] overflow-y-auto p-[6px]"
+          >
+            {isSearching ? (
+              <div className="flex flex-col gap-[6px] p-[4px]">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="h-[64px] animate-pulse rounded-[10px]"
+                    style={{ backgroundColor: 'var(--primary-input-bg)' }}
                   />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div
-              className="px-[10px] py-[12px] text-[13px]"
-              style={{ color: 'var(--secondary-color)' }}
-            >
-              Qurilma topilmadi
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            ) : visibleItems.length ? (
+              <div className="flex flex-col gap-[4px]">
+                <AnimatePresence>
+                  {visibleItems.map((item, index) => (
+                    <motion.div
+                      key={item.id || `${item.name}-${item.whsCode}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <DeviceResultCard item={item} onSelect={handleSelect} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {hasMore && (
+                  <div
+                    ref={sentinelRef}
+                    className="flex items-center justify-center py-[8px]"
+                  >
+                    <div
+                      className="h-[6px] w-[6px] animate-pulse rounded-full"
+                      style={{ backgroundColor: 'var(--secondary-color)' }}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="px-[10px] py-[12px] text-[13px] text-center"
+                style={{ color: 'var(--secondary-color)' }}
+              >
+                Hech narsa topilmadi
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </PopoverContent>
     </Popover>
   );
