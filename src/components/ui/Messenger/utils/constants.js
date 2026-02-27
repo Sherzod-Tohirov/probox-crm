@@ -230,21 +230,20 @@ export const OPERATOR_FIELDS = new Set([
 ]);
 
 export const MESSAGE_VARIANTS = {
-  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
   visible: (index = 0) => ({
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
       type: 'tween',
-      duration: 0.28,
-      delay: Math.min(Math.max(index, 0), 10) * 0.07,
+      duration: 0.25,
+      delay: Math.min(Math.max(index, 0), 10) * 0.05,
     },
   }),
   exit: {
     opacity: 0,
-    y: -12,
-    scale: 0.98,
-    transition: { type: 'tween', duration: 0.18 },
+    scale: 0.97,
+    transition: { type: 'tween', duration: 0.15 },
   },
 };

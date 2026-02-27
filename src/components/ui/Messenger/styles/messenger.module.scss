@@ -52,17 +52,29 @@
   }
 
   &-refetch-indicator {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
-    width: 100%;
-    padding: 5px 0;
+    padding: 5px 14px;
     font-size: 1.1rem;
     color: var(--primary-color, #555);
-    background: var(--secondary-bg, #f5f5f5);
-    border-bottom: 1px solid var(--primary-border-color, #e0e0e0);
-    flex-shrink: 0;
+    background: var(--primary-bg, #fff);
+    border: 1px solid var(--primary-border-color, #e0e0e0);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    white-space: nowrap;
+
+    [data-theme='dark'] & {
+      background: #1e2127;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
   }
 
   &-delay-notice {
@@ -677,25 +689,25 @@
 
 .message-context-menu {
   position: absolute;
-  bottom: calc(100% + 8px);
-  right: 0;
+  top: -65%;
+  right: 10%;
   left: auto;
   z-index: 9999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--primary-bg-color, #fff);
+  border-radius: 8px;
+  background: var(--primary-bg, #fff);
   box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.18),
-    0 2px 6px rgba(0, 0, 0, 0.08);
+    0 4px 16px rgba(0, 0, 0, 0.14),
+    0 1px 4px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--primary-border-color, #e5e7eb);
-  min-width: 140px;
+  min-width: 120px;
 
   [data-theme='dark'] & {
     background: #1e2023;
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -712,13 +724,13 @@
 .message-context-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 500;
   color: var(--primary-color, #374151);
   transition: background 0.13s;
@@ -748,8 +760,30 @@
     }
   }
 
-  &--edit svg {
-    color: var(--primary-color, #374151);
+  &--edit {
+    color: #2563eb;
+
+    svg {
+      color: #2563eb;
+      opacity: 0.9;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(59, 130, 246, 0.18);
+    }
+
+    [data-theme='dark'] & {
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.18);
+
+      svg {
+        color: #93c5fd;
+      }
+
+      &:hover:not(:disabled) {
+        background: rgba(59, 130, 246, 0.28);
+      }
+    }
   }
 
   &--delete {
