@@ -94,15 +94,18 @@ export const Messenger = (
           </button>
         </div>
       )}
-      {isRefetching && !isLoading && (
-        <div className={styles['messenger-refetch-indicator']}>
-          <ClipLoader size={12} color="currentColor" />
-          <span style={{ fontSize: '2.8rem' }}>
-            Ma&apos;lumotlar yangilanmoqda...
-          </span>
-        </div>
-      )}
-      <div className={styles['messenger-body']}>
+      <div
+        className={styles['messenger-body']}
+        style={{ position: 'relative' }}
+      >
+        {isRefetching && !isLoading && (
+          <div className={styles['messenger-refetch-indicator']}>
+            <ClipLoader size={12} color="currentColor" />
+            <span style={{ fontSize: '2.8rem' }}>
+              Ma&apos;lumotlar yangilanmoqda...
+            </span>
+          </div>
+        )}
         {isLoading ? (
           <div className={styles['messenger-body-loader-wrapper']}>
             <ClipLoader color="black" size={28} />

@@ -69,7 +69,6 @@ export default function Message({
       className={classNames(styles.message, styles[size], {
         [styles['message--deleting']]: isDeleting,
       })}
-      layout
       custom={animationIndex}
       variants={MESSAGE_VARIANTS}
       initial="hidden"
