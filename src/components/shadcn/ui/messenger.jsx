@@ -1017,11 +1017,10 @@ export const Messenger = ({
       if (!hasMore || !onLoadMore || isLoadingMore) return;
 
       const node = event.currentTarget;
-      const { scrollTop, scrollHeight, clientHeight } = node;
-      const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+      const { scrollTop } = node;
 
-      // Load more when within 100px of bottom
-      if (distanceToBottom <= 100) {
+      // Load older messages when scrolled near the TOP
+      if (scrollTop <= 80) {
         handleLoadMore();
       }
     },
